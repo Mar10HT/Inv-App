@@ -1,0 +1,62 @@
+<div class="fixed top-4 left-4 z-50">
+  <button matIconButton
+  color="primary"
+  
+  (click)="testClick(); sidenav.toggle()"
+>
+  <mat-icon>menu</mat-icon>
+</button>
+</div>
+
+<div class="fixed inset-0 z-30 mt-3 mb-3" >
+  <mat-sidenav-container class="h-full w-wv ">
+    <mat-sidenav
+      #sidenav
+      mode="over"
+      hasBackdrop="true"
+      class="text-white flex flex-col p-4 gap-2 pointer-events-auto w-fit text-white shadow-lg"
+    >
+    <div class=" border-b border-slate-600">
+      <h2 class="text-5xl font-bold text-center">{{title}}</h2>
+    </div>
+    <div class="text-lg font-semibold text-slate-300 flex flex-col justify-space justify-items-center gap-20 mb-10 mt-20">
+      <div class="border-b border-slate-600 ">
+        <a mat-button routerLink="/dashboard" routerLinkActive="active" class="w-full text-left">
+          <mat-icon class="text-slate-300 ">dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="border-b border-slate-600">
+      <a mat-button routerLink="/inventory" routerLinkActive="active" class="w-full text-left">
+        <mat-icon class="text-slate-300 ">inventory</mat-icon>
+        <span>Inventory</span>
+      </a>
+      </div >
+      <div class="border-b border-slate-600">
+      <a mat-button routerLink="/settings" routerLinkActive="active" class="w-full text-left">
+        <mat-icon class="text-slate-300 ">category</mat-icon>
+        <span>Categories</span>
+      </a>
+      </div>
+      <div class="border-b border-slate-600">
+      <a mat-button routerLink="/settings" routerLinkActive="active" class="w-full text-left">
+        <mat-icon class="text-slate-300">people</mat-icon>
+        <span>Users</span>
+      </a>
+      </div>
+      <div class="border-b border-slate-600">
+      <a mat-button routerLink="/settings" routerLinkActive="active" class="w-full text-left">
+        <mat-icon class="text-slate-300 ">settings</mat-icon>
+        <span>Settings</span>
+      </a>
+      </div>
+      <div class="border-b border-slate-600">
+      <a mat-button routerLink="/settings" routerLinkActive="active" class="w-full text-left">
+        <mat-icon class="text-slate-300 ">account_circle</mat-icon>
+       <span>Profile</span>
+      </a>
+      </div>
+      </div>
+    </mat-sidenav>
+  </mat-sidenav-container>
+</div>

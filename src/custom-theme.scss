@@ -1,0 +1,39 @@
+@use '@angular/material' as mat;
+$custom-primary: (
+  base: #2A2E45,
+  on-base: #E1E1E6,
+  container: #586A8A,
+  on-container: #1A1D2A
+);
+
+$custom-secondary: (
+  base: #586A8A,
+  on-base: #E1E1E6
+);
+
+$custom-tertiary: (
+  base: #A2B848,
+  on-base: #1A1D2A
+);
+
+html {
+  @include mat.theme((
+    color: (
+      primary: $custom-primary,
+      secondary: $custom-secondary,
+      tertiary: $custom-tertiary,
+      error: #A84448,
+      surface: #1A1D2A,
+      on-surface: #E1E1E6,
+      theme-type: dark
+    ),
+    density: 0
+  ));
+}
+
+body {
+  background-color:#1A1D2A;
+  color: #E1E1E6;
+  margin: 0;
+  font-family: Roboto, Arial, sans-serif;
+}

@@ -37,7 +37,7 @@ export type MenuItem = {
 export class Navigation {
   @ViewChild('drawer') drawer!: MatDrawer;
   isOpen = false;
-  title = 'ICN';
+  title = 'MENU';
   sidenavOpen = false;
   @ViewChild('sidenav') sidenav!: MatSidenav;
 

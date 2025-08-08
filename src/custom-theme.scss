@@ -1,4 +1,6 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
+
 $custom-primary: (
   base: #2A2E45,
   on-base: #E1E1E6,
@@ -29,6 +31,23 @@ html {
     ),
     density: 0
   ));
+}
+
+:root{
+  --primary: #{map.get($custom-primary, base)};
+  --primary-on: #{map.get($custom-primary, on-base)};
+  --primary-container: #{map.get($custom-primary, container)};
+  --primary-on-container: #{map.get($custom-primary, on-container)};
+  
+  --secondary: #{map.get($custom-secondary, base)};
+  --secondary-on: #{map.get($custom-secondary, on-base)};
+  
+  --tertiary: #{map.get($custom-tertiary, base)};
+  --tertiary-on: #{map.get($custom-tertiary, on-base)};
+  
+  --surface: #1A1D2A;
+  --on-surface: #E1E1E6;
+  --error: #A84448;
 }
 
 body {

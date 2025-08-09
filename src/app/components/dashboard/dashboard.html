@@ -1,1 +1,21 @@
-<p>dashboard works!</p>
+<div class="p-6 max-w-md mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+    <mat-form-field appearance="outline" class="w-full max-w-md" >
+        <label class="block text-sm font-medium text-gray-700 mb-2">Type something</label>
+        <input matInput [(ngModel)]="inputValue" (input)="onInputChange()" placeholder="Enter text here..." class="text-[var(--primary-on)]">
+    </mat-form-field>
+
+<div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-4 rounded-lg mb-4">
+    <h3 class="font-semibold text-[var(--primary-on)] mb-2">Current Value:</h3>
+    <p class="text-[var(--secondary)] font-mono">{{ inputValue || '(empty)' }}</p>
+</div>
+
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="clearInput()"
+    class="mr-2"
+  >
+    Clear Input
+  </button>
+</div>

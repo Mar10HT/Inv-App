@@ -1,1 +1,28 @@
-<p>inventory-list works!</p>
+<div class="p-6 max-w-md mx-auto">
+  <h1 class="text-3xl font-bold text-[var(--primary-on)] mb-6">Inventory</h1>
+  
+  <!-- Display received data -->
+  <div class="bg-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-4 rounded-lg mb-4">
+    <h3 class="font-semibold text-[var(--primary-on)] mb-2">📡 Data from Dashboard:</h3>
+    <p class="text-[var(--tertiary)] font-mono text-lg">
+      {{ receivedData() || '(no data yet)' }}
+    </p>
+  </div>
+
+  <!-- Display uppercase version -->
+  <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-4 rounded-lg mb-4">
+    <h3 class="font-semibold text-[var(--primary-on)] mb-2">🔤 Uppercase Version:</h3>
+    <p class="text-[var(--secondary)] font-mono text-lg">
+      {{ uppercaseData() || '(no data yet)' }}
+    </p>
+  </div>
+
+  <!-- Button to show alert -->
+  <button 
+    mat-raised-button 
+    color="accent" 
+    (click)="showAlert()"
+  >
+    Show Current Data
+  </button>
+</div>

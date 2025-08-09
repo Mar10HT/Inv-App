@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # INVICN
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.4.
@@ -58,7 +57,3 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-=======
-# Inv-App
-Just a Inventory App
->>>>>>> 9ef5eac8b07c6900954c585a7974ef2a8d3a8999

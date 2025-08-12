@@ -1,21 +1,178 @@
-<div class="p-6 max-w-md mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-    <mat-form-field appearance="outline" class="w-full max-w-md" >
-        <label class="block text-sm font-medium text-gray-700 mb-2">Type something</label>
-        <input matInput [(ngModel)]="inputValue" (input)="onInputChange()" placeholder="Enter text here..." class="text-[var(--primary-on)]">
-    </mat-form-field>
+<div class="min-h-screen bg-[var(--surface)] p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Welcome Section -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-[var(--primary-on)] mb-2">
+        Welcome back, {{ userName }}! 👋
+      </h1>
+      <p class="text-[var(--secondary)] text-lg">
+        Here's what's happening with your inventory today.
+      </p>
+    </div>
 
-<div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-4 rounded-lg mb-4">
-    <h3 class="font-semibold text-[var(--primary-on)] mb-2">Current Value:</h3>
-    <p class="text-[var(--secondary)] font-mono">{{ inputValue || '(empty)' }}</p>
-</div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Total Users Card -->
+      <div class="bg-[var(--surface-container)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-[var(--secondary)]">Total Users</p>
+            <p class="text-3xl font-bold text-[var(--primary-on)]">{{ totalUsers }}</p>
+            <p class="text-sm text-[var(--tertiary)] mt-1">+12% from last month</p>
+          </div>
+          <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-3 rounded-lg">
+            <mat-icon class="!text-[var(--secondary)]">people</mat-icon>
+          </div>
+        </div>
+      </div>
 
-  <button 
-    mat-raised-button 
-    color="primary" 
-    (click)="clearInput()"
-    class="mr-2"
-  >
-    Clear Input
-  </button>
+      <!-- Total Items Card -->
+      <div class="bg-[var(--surface-container)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-[var(--secondary)]">Total Items</p>
+            <p class="text-3xl font-bold text-[var(--primary-on)]">{{ totalItems }}</p>
+            <p class="text-sm text-[var(--tertiary)] mt-1">+8% from last month</p>
+          </div>
+          <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-3 rounded-lg">
+            <mat-icon class="!text-[var(--secondary)]">inventory</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Value Card -->
+      <div class="bg-[var(--surface-container)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-[var(--secondary)]">Total Value</p>
+            <p class="text-3xl font-bold text-[var(--primary-on)]">${{ totalValue | number:'1.2-2' }}</p>
+            <p class="text-sm text-[var(--tertiary)] mt-1">+15% from last month</p>
+          </div>
+          <div class="bg-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-3 rounded-lg">
+            <mat-icon class="!text-[var(--tertiary)]">trending_up</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <div class="bg-[var(--primary)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] overflow-hidden">
+      <div class="px-6 py-4 border-b border-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+        <h2 class="text-xl font-semibold text-[var(--primary-on)]">Recent Items</h2>
+        <p class="text-[var(--secondary)] text-sm mt-1">Manage your inventory items</p>
+      </div>
+      
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block">
+        <mat-table [dataSource]="items" class="w-full !bg-[var(--primary)]">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Item </mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)] !font-medium"> {{ item.name }} </mat-cell>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Category </mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--secondary)]"> {{ item.category }} </mat-cell>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Quantity </mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)]"> {{ item.quantity }} </mat-cell>
+          </ng-container>
+
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Price </mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)]"> ${{ item.price | number:'1.2-2' }} </mat-cell>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Status </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              <mat-chip [ngClass]="getStatusColor(item.status)" class="!text-xs !font-medium">
+                {{ item.status }}
+              </mat-chip>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              <div class="flex space-x-2">
+                <button mat-icon-button (click)="viewItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+                  <mat-icon class="!text-base">visibility</mat-icon>
+                </button>
+                <button mat-icon-button (click)="editItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+                  <mat-icon class="!text-base">edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteItem(item)" class="!text-[var(--tertiary)] hover:!bg-[color-mix(in_srgb,var(--tertiary)_10%,transparent)]">
+                  <mat-icon class="!text-base">delete</mat-icon>
+                </button>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-[color-mix(in_srgb,var(--surface)_50%,transparent)]"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                   class="hover:!bg-[color-mix(in_srgb,var(--secondary)_5%,transparent)] !transition-colors"></mat-row>
+        </mat-table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="lg:hidden divide-y divide-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+        <div *ngFor="let item of items" class="p-4">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1">
+              <h3 class="font-semibold text-[var(--primary-on)] text-lg">{{ item.name }}</h3>
+              <p class="text-[var(--secondary)] text-sm">{{ item.category }}</p>
+            </div>
+            <mat-chip [ngClass]="getStatusColor(item.status)" class="!text-xs !font-medium ml-2">
+              {{ item.status }}
+            </mat-chip>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Quantity</p>
+              <p class="text-[var(--primary-on)] font-semibold">{{ item.quantity }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Price</p>
+              <p class="text-[var(--primary-on)] font-semibold">${{ item.price | number:'1.2-2' }}</p>
+            </div>
+          </div>
+          
+          <div class="flex justify-end space-x-2 pt-2 border-t border-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+            <button mat-icon-button (click)="viewItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+              <mat-icon class="!text-base">visibility</mat-icon>
+            </button>
+            <button mat-icon-button (click)="editItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+              <mat-icon class="!text-base">edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteItem(item)" class="!text-[var(--tertiary)] hover:!bg-[color-mix(in_srgb,var(--tertiary)_10%,transparent)]">
+              <mat-icon class="!text-base">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-6 flex flex-wrap gap-4">
+      <button class="bg-[var(--primary)] text-[var(--primary-on)] px-6 py-2 rounded-lg hover:opacity-90 transition-all font-medium">
+        Add New Item
+      </button>
+      <button class="bg-[var(--secondary)] text-[var(--secondary-on)] px-6 py-2 rounded-lg hover:opacity-90 transition-all font-medium">
+        Export Data
+      </button>
+      <button class="border border-[var(--primary)] text-[var(--primary)] px-6 py-2 rounded-lg hover:bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] transition-all font-medium">
+        View Reports
+      </button>
+    </div>
+  </div>
 </div>

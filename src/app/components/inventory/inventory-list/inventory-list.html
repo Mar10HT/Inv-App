@@ -1,28 +1,88 @@
-<div class="p-6 max-w-md mx-auto">
-  <h1 class="text-3xl font-bold text-[var(--primary-on)] mb-6">Inventory</h1>
-  
-  <!-- Display received data -->
-  <div class="bg-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-4 rounded-lg mb-4">
-    <h3 class="font-semibold text-[var(--primary-on)] mb-2">📡 Data from Dashboard:</h3>
-    <p class="text-[var(--tertiary)] font-mono text-lg">
-      {{ receivedData() || '(no data yet)' }}
-    </p>
+<div class="min-h-screen bg-[var(--surface)] p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-bold text-[var(--primary-on)] mb-2">
+            Inventory Management
+          </h1>
+          <p class="Here is what is happening with your inventory today">
+
+          </p>
+        </div>
+        <button mat-raised-button (click)="addNewItem()" class="!bg-[var(--primary)] text-[var(--primary-on)] flex items-center gap-2 w-fit">
+          <mat-icon>add</mat-icon>
+          Add New Item
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Items -->
+      <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] !rounded-xl !shadow-sm hover:!shadow-md !transition-shadow">
+        <mat-card-content class="!p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-[var(--secondary)]">Total Items</p>
+              <p class="text-3xl font-bold text-[var(--primary-on)]">{{ totalItems() }}</p>
+              <p class="text-sm text-green-600 mt-1">+8% from last month</p>
+            </div>
+            <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-3 rounded-lg">
+              <mat-icon class="!text-[var(--secondary)]">inventory</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- In Stock -->
+      <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] !rounded-xl !shadow-sm hover:!shadow-md !transition-shadow">
+        <mat-card-content class="!p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-[var(--secondary)]">In Stock</p>
+              <p class="text-3xl font-bold text-[var(--primary-on)]">{{ inStockItems() }}</p>
+              <p class="text-sm text-green-600 mt-1">+12% from last month</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-lg">
+              <mat-icon class="!text-green-600">check_circle</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Low Stock -->
+      <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] !rounded-xl !shadow-sm hover:!shadow-md !transition-shadow">
+        <mat-card-content class="!p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-[var(--secondary)]">Low Stock</p>
+              <p class="text-3xl font-bold text-[var(--primary-on)]">{{ lowStockItems() }}</p>
+              <p class="text-sm text-orange-600 mt-1">+5% from last month</p>
+            </div>
+            <div class="bg-orange-100 p-3 rounded-lg">
+              <mat-icon class="!text-orange-600">warning</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- Out of Stock -->
+      <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] !rounded-xl !shadow-sm hover:!shadow-md !transition-shadow">
+        <mat-card-content class="!p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-[var(--secondary)]">Out of Stock</p>
+              <p class="text-3xl font-bold text-[var(--primary-on)]">{{ outOfStockItems() }}</p>
+              <p class="text-sm text-[var(--tertiary)] mt-1">-3% from last month</p>
+            </div>
+            <div class="bg-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-3 rounded-lg">
+              <mat-icon class="!text-[var(--tertiary)]">error</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+   
+  </div>
   </div>
 
-  <!-- Display uppercase version -->
-  <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-4 rounded-lg mb-4">
-    <h3 class="font-semibold text-[var(--primary-on)] mb-2">🔤 Uppercase Version:</h3>
-    <p class="text-[var(--secondary)] font-mono text-lg">
-      {{ uppercaseData() || '(no data yet)' }}
-    </p>
-  </div>
-
-  <!-- Button to show alert -->
-  <button 
-    mat-raised-button 
-    color="accent" 
-    (click)="showAlert()"
-  >
-    Show Current Data
-  </button>
-</div>

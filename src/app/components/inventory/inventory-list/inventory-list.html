@@ -4,13 +4,15 @@
     <div class="mb-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-[var(--primary-on)] mb-2">
-            Inventory Management
-          </h1>
-          <p class="Here is what is happening with your inventory today">
-
-          </p>
+        <div class="mb-8">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"> 
+            <div>
+              <h1 class="text-4xl font-bold text-[var(--primary-on)]">Inventory Management</h1>
+              <p class="text-[var(--secondary)] textlg">Heres whats happening with your inventory today!</p>
+            </div>
+          </div>
         </div>
+      </div>
         <button mat-raised-button (click)="addNewItem()" class="!bg-[var(--primary)] text-[var(--primary-on)] flex items-center gap-2 w-fit">
           <mat-icon>add</mat-icon>
           Add New Item
@@ -81,8 +83,48 @@
         </mat-card-content>
       </mat-card>
     </div>
-
-   
+    <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--secondary)_20%,transparent) !rounded-xl !shadow-sm mb-8">
+      <mat-card-content class="!p-6">
+        <div class="flex flex-col lg:flex-row gap-4">
+          <mat-form-field class="flex-1" appearance="outline">
+            <mat-label>Search Items...</mat-label>
+            <input matInput #searchInput [value]="searchQuery()" (input)="onSearchChange(searchInput.value)" placeholder="Search by name, category or description">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          <mat-form-field class="lg:w-48" appearance="outline">
+            <mat-label>Category</mat-label>
+            <mat-select value="selectedCategory()" (selectionChange)="onCategoryChange($event.value)">
+              <mat-option value="all">All Category</mat-option>
+              <mat-option *ngFor="let category of categories()" [value]="category">{{category}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="lg:w-48" appearance="outline">
+            <mat-label>Location</mat-label>
+            <mat-select [value]="selectedLocation()" (selectionChange)="onLocationChange($event.value)">
+              <mat-option value="all">All Locations</mat-option>
+              <mat-option *ngFor="let location of locations()" [value]="location">{{location}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <mat-form-field class="lg:w-48" appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select [value]="selectedStatus()" (selectionChange)="onStatusChange($event.value)">
+              <mat-option value="all">All Status</mat-option>
+              <mat-option value="in-stock">In Stock</mat-option>
+              <mat-option value="low-stock">Low Stock</mat-option>
+              <mat-option value="out-of-stock">Out of Stock</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button 
+            *ngIf="searchQuery() !== '' || selectedCategory() !== 'all' || selectedStatus() !== 'all'"
+            class="!border-[var(--secondary)] !text-[var(--secondary-on)] h-fit"
+            mat-stroked-button
+            (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
   </div>
 

@@ -83,7 +83,7 @@
         </mat-card-content>
       </mat-card>
     </div>
-    <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--secondary)_20%,transparent) !rounded-xl !shadow-sm mb-8">
+    <mat-card class="!bg-[var(--surface-container)] !border !border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] !rounded-xl !shadow-sm mb-8">
       <mat-card-content class="!p-6">
         <div class="flex flex-col lg:flex-row gap-4">
           <mat-form-field class="flex-1" appearance="outline">
@@ -125,6 +125,182 @@
         </div>
       </mat-card-content>
     </mat-card>
-  </div>
-  </div>
+    <mat-card class="!bg-[var(--primary)] !border !border-[color-mix(in_srgb,var(--primary)_20%,transparent)] !rounded-xl !shadow-sm overflow-hidden">
+      <mat-card-header class="!px-6 !py-4 !border-b !border-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          <div>
+            <mat-card-title class="!text-xl !font-semibold text-[var(--primary-on)] !mb-1">Recent Items</mat-card-title>
+            <mat-card-subtitle class="!text-[var(--secondary)] !text-sm">{{ dataSource.data.length }}</mat-card-subtitle>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button mat-flat-button (click)="exportData()"
+          class="!bg-[var(--secondary)] !text-[var(--secondary-on)] !text-sm flex items center gap-2">
+          <mat-icon class="!text-sm">download</mat-icon>
+          Export Data
+          </button>
+          <button mat-stroked-button (click)="resetData()"
+          class="!border-[var(--primary-on)] !text-[var(--secondary-on)] !text-sm flex items-center gap-2">
+          <mat-icon class="!text-sm">refresh</mat-icon>
+          Reset
+          </button>
+        </div>
+      </mat-card-header>
+      <div class="hidden lg:block">
+        <mat-table [dataSource]="dataSource" matSort class="w-full !bg-[var(--primary)]">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="!text-[var(--secondary)] !font-medium"> 
+              Item 
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)] !font-medium">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[var(--secondary)] rounded-lg flex items-center justify-center">
+                  <mat-icon class="!text-[var(--secondary-on)] !text-lg">inventory_2</mat-icon>
+                </div>
+                <div>
+                  <p class="font-medium">{{ item.name }}</p>
+                  <p class="text-sm text-[var(--secondary)]" *ngIf="item.description">{{ item.description.length > 50 ? (item.description | slice:0:50) + '...' : item.description }}</p>
+                </div>
+              </div>
+            </mat-cell>
+          </ng-container>
 
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="!text-[var(--secondary)] !font-medium">Category</mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--secondary)]">{{ item.category }}</mat-cell>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="!text-[var(--secondary)] !font-medium">Quantity</mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)]">{{ item.quantity }}</mat-cell>
+          </ng-container>
+
+          <!-- Location Column -->
+          <ng-container matColumnDef="location">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="!text-[var(--secondary)] !font-medium">Location</mat-header-cell>
+            <mat-cell *matCellDef="let item" class="!text-[var(--secondary)]">
+              <div class="flex items-center gap-2">
+                <mat-icon class="!text-sm">place</mat-icon>
+                <span>{{ item.location }}</span>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Last Updated Column -->
+          <ng-container matColumnDef="lastUpdated">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="!text-[var(--secondary)] !font-medium">Last Updated</mat-header-cell>
+              <mat-cell *matCellDef="let item" class="!text-[var(--secondary)]">
+                 {{ formatDate(item.lastUpdated) }}
+              </mat-cell>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="!text-[var(--secondary)] !font-medium">Status</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              <mat-chip [ngClass]="getStatusColor(item.status)" class="!text-xs !font-medium">
+                {{ item.status === 'in-stock' ? 'In Stock' : item.status === 'low-stock' ? 'Low Stock' : 'Out of Stock' }}
+              </mat-chip>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium">Actions</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              <div class="flex space-x-2">
+                <button 
+                  mat-icon-button 
+                  (click)="viewItem(item); $event.stopPropagation()"
+                  class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+                  <mat-icon class="!text-base">visibility</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  (click)="editItem(item); $event.stopPropagation()"
+                  class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+                  <mat-icon class="!text-base">edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  (click)="deleteItem(item); $event.stopPropagation()"
+                  class="!text-[var(--tertiary)] hover:!bg-[color-mix(in_srgb,var(--tertiary)_10%,transparent)]">
+                  <mat-icon class="!text-base">delete</mat-icon>
+                </button>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-[color-mix(in_srgb,var(--surface)_50%,transparent)]"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                   class="hover:!bg-[color-mix(in_srgb,var(--secondary)_5%,transparent)] !transition-colors !cursor-pointer"
+                   (click)="viewItem(row)"></mat-row>
+        </mat-table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="lg:hidden divide-y divide-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+        <div *ngIf="dataSource.data.length === 0" class="p-8 text-center">
+          <mat-icon class="!text-6xl !text-[var(--secondary)] mb-4">inventory_2</mat-icon>
+          <h3 class="text-lg font-semibold text-[var(--primary-on)] mb-2">No items found</h3>
+          <p class="text-[var(--secondary)]">Try adjusting your search or filter criteria</p>
+        </div>
+        
+        <div *ngFor="let item of dataSource.data" class="p-4">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1">
+              <h3 class="font-semibold text-[var(--primary-on)] text-lg">{{ item.name }}</h3>
+              <p class="text-[var(--secondary)] text-sm">{{ item.category }}</p>
+              <p class="text-[var(--secondary)] text-sm mt-1" *ngIf="item.description">
+                {{ item.description.length > 60 ? (item.description | slice:0:60) + '...' : item.description }}
+              </p>
+            </div>
+            <mat-chip [ngClass]="getStatusColor(item.status)" class="!text-xs !font-medium ml-2">
+              {{ item.status === 'in-stock' ? 'In Stock' : item.status === 'low-stock' ? 'Low Stock' : 'Out of Stock' }}
+            </mat-chip>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Quantity</p>
+              <p class="text-[var(--primary-on)] font-semibold">{{ item.quantity }} units</p>
+            </div>
+            <div>
+              <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Location</p>
+              <p class="text-[var(--primary-on)] font-semibold">{{ item.location }}</p>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Last Updated</p>
+            <p class="text-[var(--primary-on)] font-semibold">{{ formatDate(item.lastUpdated) }}</p>
+          </div>
+          
+          <div class="flex justify-end space-x-2 pt-2 border-t border-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+            <button 
+              mat-icon-button 
+              (click)="viewItem(item); $event.stopPropagation()"
+              class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+              <mat-icon class="!text-base">visibility</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              (click)="editItem(item); $event.stopPropagation()"
+              class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
+              <mat-icon class="!text-base">edit</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              (click)="deleteItem(item); $event.stopPropagation()"
+              class="!text-[var(--tertiary)] hover:!bg-[color-mix(in_srgb,var(--tertiary)_10%,transparent)]">
+              <mat-icon class="!text-base">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+      </div>
+    </div>

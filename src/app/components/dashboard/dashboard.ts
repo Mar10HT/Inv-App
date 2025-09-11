@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SharedData } from '../../services/shared-data.service';
+import { SharedData } from '../../services/shared-data/shared-data.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';

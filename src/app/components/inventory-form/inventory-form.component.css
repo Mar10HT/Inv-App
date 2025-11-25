@@ -1,0 +1,91 @@
+/* Dark theme Material form field customization */
+::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-label-text-color: #94a3b8;
+  --mdc-outlined-text-field-input-text-color: #ffffff;
+  --mdc-outlined-text-field-outline-color: #334155;
+  --mdc-outlined-text-field-hover-outline-color: #475569;
+  --mdc-outlined-text-field-focus-outline-color: #3b82f6;
+  --mat-form-field-container-text-color: #ffffff;
+}
+
+::ng-deep .mat-mdc-select {
+  --mat-select-panel-background-color: #1a1a1a;
+  --mat-select-trigger-text-color: #ffffff;
+}
+
+::ng-deep .mat-mdc-option {
+  --mat-option-label-text-color: #ffffff;
+  --mat-option-selected-state-label-text-color: #3b82f6;
+  --mat-option-hover-state-layer-color: rgba(59, 130, 246, 0.1);
+}
+
+::ng-deep .mat-mdc-radio-button {
+  --mdc-radio-selected-icon-color: #3b82f6;
+  --mdc-radio-selected-hover-icon-color: #2563eb;
+  --mdc-radio-selected-pressed-icon-color: #1d4ed8;
+  --mdc-radio-unselected-icon-color: #64748b;
+  --mdc-radio-unselected-hover-icon-color: #94a3b8;
+}
+
+::ng-deep .mat-mdc-card {
+  border: 1px solid #262626;
+}
+
+::ng-deep .mat-mdc-card-header {
+  border-bottom: 1px solid #262626;
+  padding-bottom: 1rem;
+}
+
+/* Custom scrollbar for select dropdowns */
+::ng-deep .mat-mdc-select-panel {
+  background-color: #1a1a1a !important;
+  border: 1px solid #334155;
+}
+
+::ng-deep .mat-mdc-select-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+::ng-deep .mat-mdc-select-panel::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::ng-deep .mat-mdc-select-panel::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::ng-deep .mat-mdc-select-panel::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Disabled input styling */
+::ng-deep .mat-mdc-form-field.mat-form-field-disabled {
+  opacity: 0.6;
+}
+
+::ng-deep .mat-mdc-form-field.mat-form-field-disabled input {
+  cursor: not-allowed;
+}
+
+/* Error state */
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid {
+  --mdc-outlined-text-field-outline-color: #ef4444;
+  --mdc-outlined-text-field-focus-outline-color: #ef4444;
+}
+
+/* Hint text */
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+/* Icons in form fields */
+::ng-deep .mat-mdc-form-field .mat-icon {
+  color: #64748b;
+}
+
+/* Spinner customization */
+::ng-deep .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #3b82f6;
+}

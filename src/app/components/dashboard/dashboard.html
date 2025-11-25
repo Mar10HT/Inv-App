@@ -1,11 +1,11 @@
-<div class="min-h-screen bg-[var(--surface)] p-6">
+<div class="min-h-screen bg-[#0a0a0a] p-6">
   <div class="max-w-7xl mx-auto">
     <!-- Welcome Section -->
     <div class="mb-8">
-      <h1 class="text-4xl font-bold text-[var(--primary-on)] mb-2">
+      <h1 class="text-4xl font-bold text-slate-300 mb-2">
         Welcome back, {{ userName }}! 👋
       </h1>
-      <p class="text-[var(--secondary)] text-lg">
+      <p class="text-slate-500 text-lg">
         Here's what's happening with your inventory today.
       </p>
     </div>
@@ -13,149 +13,197 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       <!-- Total Users Card -->
-      <div class="bg-[var(--surface-container)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-6 hover:shadow-md transition-shadow">
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-[var(--secondary)]">Total Users</p>
-            <p class="text-3xl font-bold text-[var(--primary-on)]">{{ totalUsers }}</p>
-            <p class="text-sm text-[var(--tertiary)] mt-1">+12% from last month</p>
+            <p class="text-sm font-medium text-slate-500">Total Users</p>
+            <p class="text-3xl font-bold text-slate-300">{{ totalUsers }}</p>
+            <p class="text-sm text-sky-500 mt-1">+12% from last month</p>
           </div>
-          <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-3 rounded-lg">
-            <mat-icon class="!text-[var(--secondary)]">people</mat-icon>
+          <div class="bg-[#242424] p-3 rounded-lg">
+            <mat-icon class="!text-slate-500">people</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Total Items Card -->
-      <div class="bg-[var(--surface-container)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-6 hover:shadow-md transition-shadow">
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-[var(--secondary)]">Total Items</p>
-            <p class="text-3xl font-bold text-[var(--primary-on)]">{{ totalItems }}</p>
-            <p class="text-sm text-[var(--tertiary)] mt-1">+8% from last month</p>
+            <p class="text-sm font-medium text-slate-500">Total Items</p>
+            <p class="text-3xl font-bold text-slate-300">{{ totalItems }}</p>
+            <p class="text-sm text-sky-500 mt-1">+8% from last month</p>
           </div>
-          <div class="bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] p-3 rounded-lg">
-            <mat-icon class="!text-[var(--secondary)]">inventory</mat-icon>
+          <div class="bg-[#242424] p-3 rounded-lg">
+            <mat-icon class="!text-slate-500">inventory</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Total Value Card -->
-      <div class="bg-[var(--surface-container)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-6 hover:shadow-md transition-shadow">
+      <div class="bg-[#1a1a1a] rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-[var(--secondary)]">Total Value</p>
-            <p class="text-3xl font-bold text-[var(--primary-on)]">${{ totalValue | number:'1.2-2' }}</p>
-            <p class="text-sm text-[var(--tertiary)] mt-1">+15% from last month</p>
+            <p class="text-sm font-medium text-slate-500">Total Value</p>
+            <p class="text-3xl font-bold text-slate-300">${{ totalValue | number:'1.2-2' }}</p>
+            <p class="text-sm text-[#4d7c6f] mt-1">+15% from last month</p>
           </div>
-          <div class="bg-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] p-3 rounded-lg">
-            <mat-icon class="!text-[var(--tertiary)]">trending_up</mat-icon>
+          <div class="bg-[#2d4a3f] p-3 rounded-lg">
+            <mat-icon class="!text-emerald-700">trending_up</mat-icon>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Items Table -->
-    <div class="bg-[var(--primary)] rounded-xl shadow-sm border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] overflow-hidden">
-      <div class="px-6 py-4 border-b border-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
-        <h2 class="text-xl font-semibold text-[var(--primary-on)]">Recent Items</h2>
-        <p class="text-[var(--secondary)] text-sm mt-1">Manage your inventory items</p>
+    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#2a2a2a]">
+        <h2 class="text-xl font-semibold text-slate-300">Recent Items</h2>
+        <p class="text-slate-500 text-sm mt-1">Manage your inventory items</p>
       </div>
-      
+
       <!-- Desktop Table View -->
-      <div class="hidden lg:block">
-        <mat-table [dataSource]="items" class="w-full !bg-[var(--primary)]">
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Item </mat-header-cell>
-            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)] !font-medium"> {{ item.name }} </mat-cell>
-          </ng-container>
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-[#141414]">
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Item</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Quantity</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Price</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#1e1e1e]">
+            <tr
+              *ngFor="let item of items"
+              (click)="viewItem(item)"
+              class="hover:bg-[#1e1e1e] transition-colors cursor-pointer group">
+              <!-- Item Column -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <mat-icon class="!text-[#4d7c6f] !text-lg">inventory_2</mat-icon>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-medium text-slate-300 truncate">{{ item.name }}</p>
+                    <p class="text-sm text-slate-500 truncate">{{ item.description }}</p>
+                  </div>
+                </div>
+              </td>
 
-          <!-- Category Column -->
-          <ng-container matColumnDef="category">
-            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Category </mat-header-cell>
-            <mat-cell *matCellDef="let item" class="!text-[var(--secondary)]"> {{ item.category }} </mat-cell>
-          </ng-container>
+              <!-- Category Column -->
+              <td class="px-6 py-4">
+                <span class="text-slate-400">{{ item.category }}</span>
+              </td>
 
-          <!-- Quantity Column -->
-          <ng-container matColumnDef="quantity">
-            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Quantity </mat-header-cell>
-            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)]"> {{ item.quantity }} </mat-cell>
-          </ng-container>
+              <!-- Quantity Column -->
+              <td class="px-6 py-4">
+                <span class="text-slate-300 font-medium">{{ item.quantity }}</span>
+              </td>
 
-          <!-- Price Column -->
-          <ng-container matColumnDef="price">
-            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Price </mat-header-cell>
-            <mat-cell *matCellDef="let item" class="!text-[var(--primary-on)]"> ${{ item.price | number:'1.2-2' }} </mat-cell>
-          </ng-container>
+              <!-- Price Column -->
+              <td class="px-6 py-4">
+                <span class="text-slate-300 font-medium">${{ item.price | number:'1.2-2' }}</span>
+              </td>
 
-          <!-- Status Column -->
-          <ng-container matColumnDef="status">
-            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Status </mat-header-cell>
-            <mat-cell *matCellDef="let item">
-              <mat-chip [ngClass]="getStatusColor(item.status)" class="!text-xs !font-medium">
-                {{ item.status }}
-              </mat-chip>
-            </mat-cell>
-          </ng-container>
+              <!-- Status Column -->
+              <td class="px-6 py-4">
+                <span
+                  [ngClass]="{
+                    'text-emerald-400 bg-emerald-950/50 border border-emerald-900': item.status === 'in-stock',
+                    'text-orange-400 bg-orange-950/50 border border-orange-900': item.status === 'low-stock',
+                    'text-rose-400 bg-rose-950/50 border border-rose-900': item.status === 'out-of-stock'
+                  }"
+                  class="px-3 py-1 rounded-md text-xs font-medium inline-block">
+                  {{ item.status === 'in-stock' ? 'In Stock' : item.status === 'low-stock' ? 'Low Stock' : 'Out of Stock' }}
+                </span>
+              </td>
 
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef class="!text-[var(--secondary)] !font-medium"> Actions </mat-header-cell>
-            <mat-cell *matCellDef="let item">
-              <div class="flex space-x-2">
-                <button mat-icon-button (click)="viewItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
-                  <mat-icon class="!text-base">visibility</mat-icon>
-                </button>
-                <button mat-icon-button (click)="editItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
-                  <mat-icon class="!text-base">edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="deleteItem(item)" class="!text-[var(--tertiary)] hover:!bg-[color-mix(in_srgb,var(--tertiary)_10%,transparent)]">
-                  <mat-icon class="!text-base">delete</mat-icon>
-                </button>
-              </div>
-            </mat-cell>
-          </ng-container>
-
-          <mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-[color-mix(in_srgb,var(--surface)_50%,transparent)]"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns;" 
-                   class="hover:!bg-[color-mix(in_srgb,var(--secondary)_5%,transparent)] !transition-colors"></mat-row>
-        </mat-table>
+              <!-- Actions Column -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <button
+                    mat-icon-button
+                    (click)="viewItem(item); $event.stopPropagation()"
+                    class="!text-slate-600 hover:!text-sky-400 hover:!bg-sky-950/20 !flex !items-center !justify-center">
+                    <mat-icon class="!text-base">visibility</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="editItem(item); $event.stopPropagation()"
+                    class="!text-slate-600 hover:!text-slate-300 hover:!bg-[#242424] !flex !items-center !justify-center">
+                    <mat-icon class="!text-base">edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="deleteItem(item); $event.stopPropagation()"
+                    class="!text-slate-600 hover:!text-rose-400 hover:!bg-rose-950/20 !flex !items-center !justify-center">
+                    <mat-icon class="!text-base">delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- Mobile Card View -->
-      <div class="lg:hidden divide-y divide-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
+      <div class="lg:hidden divide-y divide-[#1e1e1e]">
         <div *ngFor="let item of items" class="p-4">
-          <div class="flex justify-between items-start mb-3">
-            <div class="flex-1">
-              <h3 class="font-semibold text-[var(--primary-on)] text-lg">{{ item.name }}</h3>
-              <p class="text-[var(--secondary)] text-sm">{{ item.category }}</p>
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+              <mat-icon class="!text-[#4d7c6f] !text-lg">inventory_2</mat-icon>
             </div>
-            <mat-chip [ngClass]="getStatusColor(item.status)" class="!text-xs !font-medium ml-2">
-              {{ item.status }}
-            </mat-chip>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-semibold text-slate-300">{{ item.name }}</h3>
+              <p class="text-sm text-slate-500 truncate">{{ item.description }}</p>
+            </div>
           </div>
-          
+
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Quantity</p>
-              <p class="text-[var(--primary-on)] font-semibold">{{ item.quantity }}</p>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Category</p>
+              <p class="text-slate-400 text-sm">{{ item.category }}</p>
             </div>
             <div>
-              <p class="text-xs text-[var(--secondary)] font-medium uppercase tracking-wide">Price</p>
-              <p class="text-[var(--primary-on)] font-semibold">${{ item.price | number:'1.2-2' }}</p>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Quantity</p>
+              <p class="text-slate-300 font-semibold">{{ item.quantity }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Price</p>
+              <p class="text-slate-300 font-semibold">${{ item.price | number:'1.2-2' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Status</p>
+              <span
+                [ngClass]="{
+                  'text-emerald-400 bg-emerald-950/50 border border-emerald-900': item.status === 'in-stock',
+                  'text-orange-400 bg-orange-950/50 border border-orange-900': item.status === 'low-stock',
+                  'text-rose-400 bg-rose-950/50 border border-rose-900': item.status === 'out-of-stock'
+                }"
+                class="px-3 py-1 rounded-md text-xs font-medium inline-block mt-1">
+                {{ item.status === 'in-stock' ? 'In Stock' : item.status === 'low-stock' ? 'Low Stock' : 'Out of Stock' }}
+              </span>
             </div>
           </div>
-          
-          <div class="flex justify-end space-x-2 pt-2 border-t border-[color-mix(in_srgb,var(--secondary)_20%,transparent)]">
-            <button mat-icon-button (click)="viewItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
-              <mat-icon class="!text-base">visibility</mat-icon>
+
+          <div class="flex justify-end gap-2 pt-3 border-t border-[#2a2a2a]">
+            <button
+              (click)="viewItem(item)"
+              class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
+              <mat-icon class="!text-slate-500 !text-base">visibility</mat-icon>
             </button>
-            <button mat-icon-button (click)="editItem(item)" class="!text-[var(--secondary)] hover:!bg-[color-mix(in_srgb,var(--secondary)_10%,transparent)]">
-              <mat-icon class="!text-base">edit</mat-icon>
+            <button
+              (click)="editItem(item)"
+              class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
+              <mat-icon class="!text-slate-500 !text-base">edit</mat-icon>
             </button>
-            <button mat-icon-button (click)="deleteItem(item)" class="!text-[var(--tertiary)] hover:!bg-[color-mix(in_srgb,var(--tertiary)_10%,transparent)]">
-              <mat-icon class="!text-base">delete</mat-icon>
+            <button
+              (click)="deleteItem(item)"
+              class="p-2 hover:bg-rose-950/20 rounded-lg transition-colors">
+              <mat-icon class="!text-rose-500 !text-base">delete</mat-icon>
             </button>
           </div>
         </div>
@@ -164,13 +212,13 @@
 
     <!-- Quick Actions -->
     <div class="mt-6 flex flex-wrap gap-4">
-      <button class="bg-[var(--primary)] text-[var(--primary-on)] px-6 py-2 rounded-lg hover:opacity-90 transition-all font-medium">
+      <button class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
         Add New Item
       </button>
-      <button class="bg-[var(--secondary)] text-[var(--secondary-on)] px-6 py-2 rounded-lg hover:opacity-90 transition-all font-medium">
+      <button class="bg-slate-800 text-slate-300 px-6 py-2 rounded-lg hover:bg-slate-700 transition-all font-medium">
         Export Data
       </button>
-      <button class="border border-[var(--primary)] text-[var(--primary)] px-6 py-2 rounded-lg hover:bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] transition-all font-medium">
+      <button class="border border-sky-800 text-sky-400 px-6 py-2 rounded-lg hover:bg-sky-950/20 transition-all font-medium">
         View Reports
       </button>
     </div>

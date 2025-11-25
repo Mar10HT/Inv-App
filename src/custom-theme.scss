@@ -1,21 +1,27 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
 
+// Slate Dual Accent Palette (Desaturada - estilo Zabbix)
 $custom-primary: (
-  base: #2A2E45,
-  on-base: #E1E1E6,
-  container: #586A8A,
-  on-container: #1A1D2A
+  base: #4d7c6f,      // Verde azulado desaturado (teal grisáceo)
+  on-base: #ffffff,
+  container: #2d4a3f,  // Verde oscuro desaturado
+  on-container: #b8d4ca  // Verde claro grisáceo
 );
 
 $custom-secondary: (
-  base: #586A8A,
-  on-base: #E1E1E6
+  base: #475569,      // Slate 600 - Gris azulado
+  on-base: #ffffff
 );
 
 $custom-tertiary: (
-  base: #A2B848,
-  on-base: #1A1D2A
+  base: #6b7bb5,      // Azul desaturado (slate blue)
+  on-base: #ffffff
+);
+
+$custom-error: (
+  base: #b85c5c,      // Rojo desaturado (grisáceo)
+  on-base: #ffffff
 );
 
 html {
@@ -24,9 +30,9 @@ html {
       primary: $custom-primary,
       secondary: $custom-secondary,
       tertiary: $custom-tertiary,
-      error: #A84448,
-      surface: #1A1D2A,
-      on-surface: #E1E1E6,
+      error: $custom-error,
+      surface: #0a0a0a,      // Negro casi puro
+      on-surface: #cbd5e1,   // Slate 300
       theme-type: dark
     ),
     density: 0
@@ -34,25 +40,39 @@ html {
 }
 
 :root{
+  // Acentos principales (desaturados)
   --primary: #{map.get($custom-primary, base)};
   --primary-on: #{map.get($custom-primary, on-base)};
   --primary-container: #{map.get($custom-primary, container)};
   --primary-on-container: #{map.get($custom-primary, on-container)};
-  
+
   --secondary: #{map.get($custom-secondary, base)};
   --secondary-on: #{map.get($custom-secondary, on-base)};
-  
+
   --tertiary: #{map.get($custom-tertiary, base)};
   --tertiary-on: #{map.get($custom-tertiary, on-base)};
-  
-  --surface: #1A1D2A;
-  --on-surface: #E1E1E6;
-  --error: #A84448;
+
+  // Estados (desaturados)
+  --error: #{map.get($custom-error, base)};
+  --warning: #c8884d;   // Naranja desaturado (grisáceo)
+  --success: #4d7c6f;   // Verde desaturado (mismo que primary)
+
+  // Superficies (negro puro y neutro)
+  --surface: #0a0a0a;          // Negro casi puro - Fondo principal
+  --surface-variant: #1a1a1a;  // Negro más claro para variantes
+  --surface-elevated: #242424; // Gris oscuro para elementos elevados
+  --surface-container: #1a1a1a; // Alias - mismo que variant
+  --on-surface: #cbd5e1;       // Slate 300 - Texto menos brillante
+  --on-surface-variant: #64748b; // Slate 500 - Texto secundario menos brillante
+
+  // Bordes (más sutiles)
+  --border: #2a2a2a;        // Gris muy oscuro
+  --border-subtle: #1a1a1a; // Casi negro
 }
 
 body {
-  background-color:#1A1D2A;
-  color: #E1E1E6;
+  background-color: #0a0a0a;  // Negro casi puro
+  color: #cbd5e1;  // Slate 300 - menos brillante
   margin: 0;
   font-family: Roboto, Arial, sans-serif;
 }

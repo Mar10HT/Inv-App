@@ -1,15 +1,15 @@
 
-<div class="fixed top-6 z-50 transition-all duration-500 ease-in-out" 
-     [class.left-6]="!sidenav.opened" 
-     [class.left-[270px]]="sidenav.opened" 
+<div class="fixed top-6 z-50 transition-all duration-500 ease-in-out"
+     [class.left-6]="!sidenav.opened"
+     [class.left-[270px]]="sidenav.opened"
      [class.rotate-90]="sidenav.opened">
-  <button 
+  <button
     matIconButton
     (click)="sidenav.toggle()"
     aria-label="Toggle navigation menu"
-    class="hover:!scale-105 active:!scale-95 !bg-[color-mix(in_srgb,var(--primary)_80%,transparent)] backdrop-blur-sm !text-[var(--primary-on)] hover:!bg-[color-mix(in_srgb,var(--primary)_90%,transparent)] transition-all duration-300 ease-in-out shadow-lg border border-[color-mix(in_srgb,var(--primary-on)_20%,transparent)]"
+    class="hover:!scale-105 active:!scale-95 !bg-[#2a2a2a] !text-white hover:!bg-slate-600 transition-all duration-300 ease-in-out shadow-lg border border-slate-600"
   >
-    <mat-icon class="!text-xl !text-[var(--primary-on)] transition-transform duration-300 ease-in-out">{{ sidenav.opened ? 'close' : 'menu' }}</mat-icon>
+    <mat-icon class="!text-xl !text-white transition-transform duration-300 ease-in-out">{{ sidenav.opened ? 'close' : 'menu' }}</mat-icon>
   </button>
 </div>
 
@@ -20,108 +20,113 @@
       mode="over"
       hasBackdrop="true"
       (backdropClick)="sidenav.close()"
-      class="!w-80 !bg-[linear-gradient(135deg,var(--primary)_0%,var(--surface)_50%,var(--primary)_100%)] backdrop-blur-xl border-r border-[color-mix(in_srgb,var(--secondary)_30%,transparent)]"
+      class="!w-80 !bg-[#0a0a0a] border-r border-[#2a2a2a]"
       [style.transition]="'transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1)'"
     >
-      <div class="p-6 border-b border-[color-mix(in_srgb,var(--secondary)_30%,transparent)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--secondary)_20%,transparent)_0%,transparent_100%)]">
-        <h2 class="text-2xl font-bold text-[var(--primary-on)] tracking-tight">{{title}}</h2>
-        <div class="w-12 h-1 bg-[linear-gradient(90deg,var(--tertiary)_0%,var(--secondary)_100%)] rounded-full mt-2"></div>
+      <div class="p-6 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+        <h2 class="text-2xl font-bold text-slate-300 tracking-tight">{{ menuTitle() }}</h2>
+        <div class="w-12 h-1 bg-[#4d7c6f] rounded-full mt-2"></div>
       </div>
       <nav class="flex flex-col p-4 gap-2 mt-4">
-        
-        <a 
-          mat-button 
-          routerLink="/dashboard" 
-          routerLinkActive="!bg-[linear-gradient(90deg,color-mix(in_srgb,var(--tertiary)_20%,transparent)_0%,color-mix(in_srgb,var(--secondary)_20%,transparent)_100%)] !border-r-4 !border-[var(--tertiary)]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] !transition-all !duration-300 !ease-in-out !border-0"
+
+        <a
+          mat-button
+          routerLink="/dashboard"
+          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
+          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
         >
           <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--secondary)_40%,transparent)] transition-all duration-300 ease-in-out">
-              <mat-icon class="!text-[var(--primary-on)] !text-xl group-hover:!text-[var(--primary-on)] transition-all duration-300 ease-in-out">dashboard</mat-icon>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
+              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">dashboard</mat-icon>
             </div>
-            <span class="!text-[var(--primary-on)] !font-medium !text-base group-hover:!text-[var(--primary-on)] transition-all duration-300 ease-in-out">Dashboard</span>
+            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ dashboardLabel() }}</span>
           </div>
         </a>
-        <a 
-          mat-button 
-          routerLink="/inventory" 
-          routerLinkActive="!bg-[linear-gradient(90deg,color-mix(in_srgb,var(--tertiary)_20%,transparent)_0%,color-mix(in_srgb,var(--secondary)_20%,transparent)_100%)] !border-r-4 !border-[var(--tertiary)]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] !transition-all !duration-200 !border-0"
+        <a
+          mat-button
+          routerLink="/inventory"
+          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
+          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
         >
           <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--secondary)_40%,transparent)] transition-colors duration-200">
-              <mat-icon class="!text-[var(--primary-on)] !text-xl group-hover:!text-[var(--primary-on)] transition-colors duration-200">inventory</mat-icon>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
+              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">inventory</mat-icon>
             </div>
-            <span class="!text-[var(--primary-on)] !font-medium !text-base group-hover:!text-[var(--primary-on)] transition-colors duration-200">Inventory</span>
+            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ inventoryLabel() }}</span>
           </div>
         </a>
-        <a 
-          mat-button 
-          routerLink="/categories" 
-          routerLinkActive="!bg-[linear-gradient(90deg,color-mix(in_srgb,var(--tertiary)_20%,transparent)_0%,color-mix(in_srgb,var(--secondary)_20%,transparent)_100%)] !border-r-4 !border-[var(--tertiary)]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] !transition-all !duration-200 !border-0"
+        <a
+          mat-button
+          routerLink="/categories"
+          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
+          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
         >
           <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--secondary)_40%,transparent)] transition-colors duration-200">
-              <mat-icon class="!text-[var(--primary-on)] !text-xl group-hover:!text-[var(--primary-on)] transition-colors duration-200">category</mat-icon>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
+              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">category</mat-icon>
             </div>
-            <span class="!text-[var(--primary-on)] !font-medium !text-base group-hover:!text-[var(--primary-on)] transition-colors duration-200">Categories</span>
+            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ warehousesLabel() }}</span>
           </div>
         </a>
-        <a 
-          mat-button 
-          routerLink="/users" 
-          routerLinkActive="!bg-[linear-gradient(90deg,color-mix(in_srgb,var(--tertiary)_20%,transparent)_0%,color-mix(in_srgb,var(--secondary)_20%,transparent)_100%)] !border-r-4 !border-[var(--tertiary)]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] !transition-all !duration-200 !border-0"
+        <a
+          mat-button
+          routerLink="/users"
+          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
+          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
         >
           <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--secondary)_40%,transparent)] transition-colors duration-200">
-              <mat-icon class="!text-[var(--primary-on)] !text-xl group-hover:!text-[var(--primary-on)] transition-colors duration-200">people</mat-icon>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
+              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">people</mat-icon>
             </div>
-            <span class="!text-[var(--primary-on)] !font-medium !text-base group-hover:!text-[var(--primary-on)] transition-colors duration-200">Users</span>
+            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ usersLabel() }}</span>
           </div>
         </a>
 
-        <a 
-          mat-button 
-          routerLink="/settings" 
-          routerLinkActive="!bg-[linear-gradient(90deg,color-mix(in_srgb,var(--tertiary)_20%,transparent)_0%,color-mix(in_srgb,var(--secondary)_20%,transparent)_100%)] !border-r-4 !border-[var(--tertiary)]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] !transition-all !duration-200 !border-0"
+        <a
+          mat-button
+          routerLink="/settings"
+          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
+          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
         >
           <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--secondary)_40%,transparent)] transition-colors duration-200">
-              <mat-icon class="!text-[var(--primary-on)] !text-xl group-hover:!text-[var(--primary-on)] transition-colors duration-200">settings</mat-icon>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
+              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">settings</mat-icon>
             </div>
-            <span class="!text-[var(--primary-on)] !font-medium !text-base group-hover:!text-[var(--primary-on)] transition-colors duration-200">Settings</span>
+            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ settingsLabel() }}</span>
           </div>
         </a>
 
-        <div class="h-px bg-[linear-gradient(90deg,transparent_0%,var(--secondary)_50%,transparent_100%)] my-4"></div>
-        <a 
-          mat-button 
-          routerLink="/profile" 
-          routerLinkActive="!bg-[linear-gradient(90deg,color-mix(in_srgb,var(--tertiary)_20%,transparent)_0%,color-mix(in_srgb,var(--secondary)_20%,transparent)_100%)] !border-r-4 !border-[var(--tertiary)]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] !transition-all !duration-200 !border-0"
+        <div class="h-px bg-[#2a2a2a] my-4"></div>
+        <a
+          mat-button
+          routerLink="/profile"
+          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
+          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
         >
           <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--secondary)_30%,transparent)] group-hover:bg-[color-mix(in_srgb,var(--secondary)_40%,transparent)] transition-colors duration-200">
-              <mat-icon class="!text-[var(--primary-on)] !text-xl group-hover:!text-[var(--primary-on)] transition-colors duration-200">account_circle</mat-icon>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
+              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">account_circle</mat-icon>
             </div>
-            <span class="!text-[var(--primary-on)] !font-medium !text-base group-hover:!text-[var(--primary-on)] transition-colors duration-200">Profile</span>
+            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ profileLabel() }}</span>
           </div>
         </a>
 
       </nav>
 
-      <div class="mt-auto p-4 border-t border-[color-mix(in_srgb,var(--secondary)_30%,transparent)]">
-        <div class="flex items-center gap-3 p-3 rounded-lg bg-[color-mix(in_srgb,var(--primary)_30%,transparent)]">
-          <div class="w-8 h-8 rounded-full bg-[linear-gradient(90deg,var(--tertiary)_0%,var(--secondary)_100%)] flex items-center justify-center">
-            <mat-icon class="!text-[var(--tertiary-on)] !text-sm">person</mat-icon>
+      <div class="mt-auto p-4 border-t border-[#2a2a2a]">
+        <div class="flex items-center gap-3 p-3 rounded-lg bg-[#242424] mb-4">
+          <div class="w-8 h-8 rounded-full bg-[#4d7c6f] flex items-center justify-center">
+            <mat-icon class="!text-white !text-sm">person</mat-icon>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-[var(--primary-on)] truncate">User Name</p>
-            <p class="text-xs text-[var(--secondary)] truncate">user@example.com</p>
+            <p class="text-sm font-medium text-slate-300 truncate">User Name</p>
+            <p class="text-xs text-slate-400 truncate">user@example.com</p>
           </div>
+        </div>
+
+        <!-- Language Selector -->
+        <div class="flex items-center justify-center p-2 rounded-lg bg-[#242424]">
+          <app-language-selector></app-language-selector>
         </div>
       </div>
 

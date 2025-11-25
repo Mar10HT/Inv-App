@@ -1,0 +1,394 @@
+<div class="min-h-screen bg-[#0a0a0a] p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <button
+        mat-icon-button
+        (click)="onCancel()"
+        class="!text-slate-400 hover:!text-white mb-4"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="text-3xl font-bold text-white mb-2">
+        {{ 'INVENTORY.FORM.TITLE' | translate }}
+      </h1>
+      <p class="text-slate-400">
+        {{ 'INVENTORY.FORM.SUBTITLE' | translate }}
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="inventoryForm" (ngSubmit)="onSubmit()">
+      <!-- Item Type Selection -->
+      <mat-card class="!bg-[#1a1a1a] !text-white mb-6 !shadow-xl">
+        <mat-card-header class="!mb-4">
+          <mat-card-title class="!text-white !text-lg flex items-center gap-2">
+            <mat-icon class="!text-blue-400">category</mat-icon>
+            {{ 'INVENTORY.FORM.ITEM_TYPE.TITLE' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-radio-group
+            formControlName="itemType"
+            (change)="onItemTypeChange($event.value)"
+            class="flex flex-col gap-4"
+          >
+            <mat-radio-button [value]="ItemType.BULK" class="!text-white">
+              <div class="ml-2">
+                <div class="font-semibold text-white">
+                  {{ 'INVENTORY.FORM.ITEM_TYPE.BULK' | translate }}
+                </div>
+                <div class="text-sm text-slate-400">
+                  {{ 'INVENTORY.FORM.ITEM_TYPE.BULK_HINT' | translate }}
+                </div>
+              </div>
+            </mat-radio-button>
+
+            <mat-radio-button [value]="ItemType.UNIQUE" class="!text-white">
+              <div class="ml-2">
+                <div class="font-semibold text-white">
+                  {{ 'INVENTORY.FORM.ITEM_TYPE.UNIQUE' | translate }}
+                </div>
+                <div class="text-sm text-slate-400">
+                  {{ 'INVENTORY.FORM.ITEM_TYPE.UNIQUE_HINT' | translate }}
+                </div>
+              </div>
+            </mat-radio-button>
+          </mat-radio-group>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Basic Information -->
+      <mat-card class="!bg-[#1a1a1a] !text-white mb-6 !shadow-xl">
+        <mat-card-header class="!mb-4">
+          <mat-card-title class="!text-white !text-lg flex items-center gap-2">
+            <mat-icon class="!text-green-400">info</mat-icon>
+            {{ 'INVENTORY.FORM.BASIC_INFO.TITLE' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Name -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.BASIC_INFO.NAME' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="name"
+                [placeholder]="'INVENTORY.FORM.BASIC_INFO.NAME_PLACEHOLDER' | translate"
+              />
+              <mat-icon matPrefix class="!text-slate-400">label</mat-icon>
+              @if (hasError('name')) {
+                <mat-error>{{ getErrorMessage('name') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Category -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.BASIC_INFO.CATEGORY' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="category"
+                [placeholder]="'INVENTORY.FORM.BASIC_INFO.CATEGORY_PLACEHOLDER' | translate"
+              />
+              <mat-icon matPrefix class="!text-slate-400">category</mat-icon>
+              @if (hasError('category')) {
+                <mat-error>{{ getErrorMessage('category') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Description (full width) -->
+            <mat-form-field appearance="outline" class="w-full md:col-span-2">
+              <mat-label>{{ 'INVENTORY.FORM.BASIC_INFO.DESCRIPTION' | translate }}</mat-label>
+              <textarea
+                matInput
+                formControlName="description"
+                rows="3"
+                [placeholder]="'INVENTORY.FORM.BASIC_INFO.DESCRIPTION_PLACEHOLDER' | translate"
+              ></textarea>
+              <mat-icon matPrefix class="!text-slate-400">description</mat-icon>
+              @if (hasError('description')) {
+                <mat-error>{{ getErrorMessage('description') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Location -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.BASIC_INFO.LOCATION' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="location"
+                [placeholder]="'INVENTORY.FORM.BASIC_INFO.LOCATION_PLACEHOLDER' | translate"
+              />
+              <mat-icon matPrefix class="!text-slate-400">place</mat-icon>
+              @if (hasError('location')) {
+                <mat-error>{{ getErrorMessage('location') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Warehouse -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.WAREHOUSE.LABEL' | translate }}</mat-label>
+              <mat-select formControlName="warehouseId">
+                @if (warehousesLoading()) {
+                  <mat-option disabled>
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </mat-option>
+                }
+                @for (warehouse of warehouses(); track warehouse.id) {
+                  <mat-option [value]="warehouse.id">
+                    {{ warehouse.name }} - {{ warehouse.location }}
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix class="!text-slate-400">warehouse</mat-icon>
+              @if (hasError('warehouseId')) {
+                <mat-error>{{ getErrorMessage('warehouseId') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Identifiers Section (Dynamic based on type) -->
+      <mat-card class="!bg-[#1a1a1a] !text-white mb-6 !shadow-xl">
+        <mat-card-header class="!mb-4">
+          <mat-card-title class="!text-white !text-lg flex items-center gap-2">
+            <mat-icon class="!text-purple-400">qr_code</mat-icon>
+            {{ 'INVENTORY.FORM.IDENTIFIERS.TITLE' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (isUniqueItem()) {
+            <!-- UNIQUE Item Identifiers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>{{ 'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG' | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="serviceTag"
+                  [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG_PLACEHOLDER' | translate"
+                />
+                <mat-icon matPrefix class="!text-slate-400">tag</mat-icon>
+                @if (hasError('serviceTag')) {
+                  <mat-error>{{ getErrorMessage('serviceTag') }}</mat-error>
+                }
+                <mat-hint>{{ 'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG_HINT' | translate }}</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>{{ 'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER' | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="serialNumber"
+                  [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER_PLACEHOLDER' | translate"
+                />
+                <mat-icon matPrefix class="!text-slate-400">numbers</mat-icon>
+                <mat-hint>{{ 'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER_HINT' | translate }}</mat-hint>
+              </mat-form-field>
+            </div>
+          } @else {
+            <!-- BULK Item Identifiers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>{{ 'INVENTORY.FORM.IDENTIFIERS.SKU' | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="sku"
+                  [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SKU_PLACEHOLDER' | translate"
+                />
+                <mat-icon matPrefix class="!text-slate-400">inventory</mat-icon>
+                @if (hasError('sku')) {
+                  <mat-error>{{ getErrorMessage('sku') }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>{{ 'INVENTORY.FORM.IDENTIFIERS.BARCODE' | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="barcode"
+                  [placeholder]="'INVENTORY.FORM.IDENTIFIERS.BARCODE_PLACEHOLDER' | translate"
+                />
+                <mat-icon matPrefix class="!text-slate-400">barcode</mat-icon>
+                @if (hasError('barcode')) {
+                  <mat-error>{{ getErrorMessage('barcode') }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Quantity & Stock -->
+      <mat-card class="!bg-[#1a1a1a] !text-white mb-6 !shadow-xl">
+        <mat-card-header class="!mb-4">
+          <mat-card-title class="!text-white !text-lg flex items-center gap-2">
+            <mat-icon class="!text-orange-400">inventory_2</mat-icon>
+            {{ 'INVENTORY.FORM.QUANTITY.TITLE' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Quantity -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.QUANTITY.CURRENT' | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="quantity"
+                [placeholder]="'0'"
+              />
+              <mat-icon matPrefix class="!text-slate-400">calculate</mat-icon>
+              @if (hasError('quantity')) {
+                <mat-error>{{ getErrorMessage('quantity') }}</mat-error>
+              }
+              @if (isUniqueItem()) {
+                <mat-hint>{{ 'INVENTORY.FORM.QUANTITY.UNIQUE_HINT' | translate }}</mat-hint>
+              }
+            </mat-form-field>
+
+            <!-- Min Quantity -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.QUANTITY.MINIMUM' | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="minQuantity"
+                [placeholder]="'0'"
+              />
+              <mat-icon matPrefix class="!text-slate-400">warning</mat-icon>
+              @if (hasError('minQuantity')) {
+                <mat-error>{{ getErrorMessage('minQuantity') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Price & Supplier -->
+      <mat-card class="!bg-[#1a1a1a] !text-white mb-6 !shadow-xl">
+        <mat-card-header class="!mb-4">
+          <mat-card-title class="!text-white !text-lg flex items-center gap-2">
+            <mat-icon class="!text-yellow-400">attach_money</mat-icon>
+            {{ 'INVENTORY.FORM.PRICE.TITLE' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Price -->
+            <mat-form-field appearance="outline" class="w-full md:col-span-2">
+              <mat-label>{{ 'INVENTORY.FORM.PRICE.AMOUNT' | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                step="0.01"
+                formControlName="price"
+                [placeholder]="'0.00'"
+              />
+              <mat-icon matPrefix class="!text-slate-400">payments</mat-icon>
+              @if (hasError('price')) {
+                <mat-error>{{ getErrorMessage('price') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Currency -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.PRICE.CURRENCY' | translate }}</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option [value]="Currency.HNL">HNL (L)</mat-option>
+                <mat-option [value]="Currency.USD">USD ($)</mat-option>
+              </mat-select>
+              <mat-icon matPrefix class="!text-slate-400">currency_exchange</mat-icon>
+            </mat-form-field>
+
+            <!-- Supplier -->
+            <mat-form-field appearance="outline" class="w-full md:col-span-3">
+              <mat-label>{{ 'INVENTORY.FORM.SUPPLIER.LABEL' | translate }}</mat-label>
+              <mat-select formControlName="supplierId">
+                <mat-option [value]="''">{{ 'INVENTORY.FORM.SUPPLIER.NONE' | translate }}</mat-option>
+                @if (suppliersLoading()) {
+                  <mat-option disabled>
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </mat-option>
+                }
+                @for (supplier of suppliers(); track supplier.id) {
+                  <mat-option [value]="supplier.id">
+                    {{ supplier.name }}
+                    @if (supplier.location) {
+                      - {{ supplier.location }}
+                    }
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix class="!text-slate-400">business</mat-icon>
+              <mat-hint>{{ 'INVENTORY.FORM.SUPPLIER.HINT' | translate }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Assignment Section (Only for UNIQUE items) -->
+      @if (isUniqueItem()) {
+        <mat-card class="!bg-[#1a1a1a] !text-white mb-6 !shadow-xl">
+          <mat-card-header class="!mb-4">
+            <mat-card-title class="!text-white !text-lg flex items-center gap-2">
+              <mat-icon class="!text-pink-400">person</mat-icon>
+              {{ 'INVENTORY.FORM.ASSIGNMENT.TITLE' | translate }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'INVENTORY.FORM.ASSIGNMENT.USER' | translate }}</mat-label>
+              <mat-select formControlName="assignedToUserId">
+                <mat-option [value]="''">{{ 'INVENTORY.FORM.ASSIGNMENT.UNASSIGNED' | translate }}</mat-option>
+                @if (usersLoading()) {
+                  <mat-option disabled>
+                    <mat-spinner diameter="20"></mat-spinner>
+                  </mat-option>
+                }
+                @for (user of assignableUsers(); track user.id) {
+                  <mat-option [value]="user.id">
+                    {{ user.name }} ({{ user.email }})
+                    <span class="text-xs text-slate-400 ml-2">
+                      - {{ user.role }}
+                    </span>
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix class="!text-slate-400">assignment_ind</mat-icon>
+              <mat-hint>{{ 'INVENTORY.FORM.ASSIGNMENT.HINT' | translate }}</mat-hint>
+            </mat-form-field>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Form Actions -->
+      <div class="flex justify-end gap-4">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="onCancel()"
+          class="!text-slate-300 !border-slate-600"
+          [disabled]="loading()"
+        >
+          <mat-icon>cancel</mat-icon>
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+
+        <button
+          mat-raised-button
+          type="submit"
+          class="!bg-blue-600 !text-white hover:!bg-blue-700"
+          [disabled]="inventoryForm.invalid || loading()"
+        >
+          @if (loading()) {
+            <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+          } @else {
+            <mat-icon>save</mat-icon>
+          }
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

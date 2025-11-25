@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Dashboard } from './components/dashboard/dashboard';
 import { InventoryList } from './components/inventory/inventory-list/inventory-list';
-import { InventoryForm } from './components/inventory/inventory-form/inventory-form';
+import { InventoryFormComponent } from './components/inventory-form/inventory-form.component';
 import { InventoryItem } from './components/inventory/inventory-item/inventory-item';
 import { Categories } from './components/categories/categories';
 import { Profile } from './components/profile/profile';
@@ -18,8 +18,8 @@ export const routes: Routes = [
     path: 'inventory',
     children: [
       { path: '', component: InventoryList },
-      { path: 'add', component: InventoryForm },
-      { path: 'edit/:id', component: InventoryForm },
+      { path: 'add', component: InventoryFormComponent },
+      { path: 'edit/:id', component: InventoryFormComponent },
       { path: ':id', component: InventoryItem}
     ]
   },

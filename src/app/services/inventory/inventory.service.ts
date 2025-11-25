@@ -1,10 +1,15 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { InventoryItemInterface } from '../../interfaces/inventory-item.interface';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { InventoryItemInterface, CreateInventoryItemDto, UpdateInventoryItemDto, ItemType, Currency } from '../../interfaces/inventory-item.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/inventory`;
   private readonly STORAGE_KEY = 'inventory_items';
   private itemsSignal = signal<InventoryItemInterface[]>([]);
   
@@ -48,85 +53,221 @@ export class InventoryService {
 
   private initializeWithMockData(): void {
     const mockData: InventoryItemInterface[] = [
-      // Fresh Produce
-      { id: '1', name: 'Organic Bananas', description: 'Fresh organic bananas, per bunch', quantity: 24, category: 'Fresh Produce', location: 'Aisle 1-A', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '2', name: 'Red Apples', description: 'Crisp red apples, per lb', quantity: 5, category: 'Fresh Produce', location: 'Aisle 1-A', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      { id: '3', name: 'Fresh Spinach', description: 'Baby spinach leaves, 5oz bag', quantity: 0, category: 'Fresh Produce', location: 'Aisle 1-B', lastUpdated: new Date(2024, 0, 13), status: 'out-of-stock' },
-      { id: '4', name: 'Organic Carrots', description: 'Fresh organic carrots, 2lb bag', quantity: 18, category: 'Fresh Produce', location: 'Aisle 1-A', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '5', name: 'Roma Tomatoes', description: 'Fresh roma tomatoes, per lb', quantity: 12, category: 'Fresh Produce', location: 'Aisle 1-B', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      
-      // Dairy
-      { id: '6', name: 'Whole Milk', description: 'Fresh whole milk, 1 gallon', quantity: 15, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '7', name: 'Greek Yogurt', description: 'Plain Greek yogurt, 32oz', quantity: 3, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      { id: '8', name: 'Cheddar Cheese', description: 'Sharp cheddar cheese, 8oz block', quantity: 22, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '9', name: 'Butter', description: 'Unsalted butter, 1lb', quantity: 8, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 16), status: 'low-stock' },
-      
-      // Bakery
-      { id: '10', name: 'Whole Wheat Bread', description: 'Fresh whole wheat bread loaf', quantity: 12, category: 'Bakery', location: 'Bakery Section', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '11', name: 'Croissants', description: 'Butter croissants, pack of 6', quantity: 0, category: 'Bakery', location: 'Bakery Section', lastUpdated: new Date(2024, 0, 13), status: 'out-of-stock' },
-      { id: '12', name: 'Bagels', description: 'Everything bagels, pack of 6', quantity: 16, category: 'Bakery', location: 'Bakery Section', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      
-      // Beverages
-      { id: '13', name: 'Orange Juice', description: 'Fresh squeezed orange juice, 64oz', quantity: 9, category: 'Beverages', location: 'Aisle 5', lastUpdated: new Date(2024, 0, 15), status: 'low-stock' },
-      { id: '14', name: 'Sparkling Water', description: 'Lemon sparkling water, 12-pack', quantity: 25, category: 'Beverages', location: 'Aisle 5', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '15', name: 'Coffee Beans', description: 'Medium roast coffee beans, 12oz bag', quantity: 14, category: 'Beverages', location: 'Aisle 6', lastUpdated: new Date(2024, 0, 14), status: 'in-stock' },
-      
-      // Meat & Seafood
-      { id: '16', name: 'Chicken Breast', description: 'Boneless chicken breast, per lb', quantity: 6, category: 'Meat & Seafood', location: 'Meat Counter', lastUpdated: new Date(2024, 0, 16), status: 'low-stock' },
-      { id: '17', name: 'Ground Beef', description: '85/15 ground beef, per lb', quantity: 18, category: 'Meat & Seafood', location: 'Meat Counter', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '18', name: 'Fresh Salmon', description: 'Atlantic salmon fillet, per lb', quantity: 8, category: 'Meat & Seafood', location: 'Seafood Counter', lastUpdated: new Date(2024, 0, 16), status: 'low-stock' },
-      
-      // Pantry & Dry Goods
-      { id: '19', name: 'Pasta', description: 'Spaghetti pasta, 1lb box', quantity: 30, category: 'Pantry & Dry Goods', location: 'Aisle 3', lastUpdated: new Date(2024, 0, 14), status: 'in-stock' },
-      { id: '20', name: 'Rice', description: 'Long grain white rice, 5lb bag', quantity: 12, category: 'Pantry & Dry Goods', location: 'Aisle 3', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '21', name: 'Olive Oil', description: 'Extra virgin olive oil, 500ml', quantity: 7, category: 'Pantry & Dry Goods', location: 'Aisle 4', lastUpdated: new Date(2024, 0, 13), status: 'low-stock' },
-      
-      // Frozen Foods
-      { id: '22', name: 'Frozen Peas', description: 'Frozen green peas, 16oz bag', quantity: 0, category: 'Frozen Foods', location: 'Frozen Aisle', lastUpdated: new Date(2024, 0, 12), status: 'out-of-stock' },
-      { id: '23', name: 'Ice Cream', description: 'Vanilla ice cream, 1.5qt', quantity: 11, category: 'Frozen Foods', location: 'Frozen Aisle', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '24', name: 'Frozen Pizza', description: 'Pepperoni pizza, 12 inch', quantity: 4, category: 'Frozen Foods', location: 'Frozen Aisle', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      
-      // Health & Beauty
-      { id: '25', name: 'Shampoo', description: 'Moisturizing shampoo, 16oz', quantity: 13, category: 'Health & Beauty', location: 'Aisle 8', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '26', name: 'Toothpaste', description: 'Fluoride toothpaste, 4oz tube', quantity: 9, category: 'Health & Beauty', location: 'Aisle 8', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      
-      // Household
-      { id: '27', name: 'Paper Towels', description: 'Absorbent paper towels, 8-pack', quantity: 16, category: 'Household', location: 'Aisle 9', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '28', name: 'Dish Soap', description: 'Liquid dish soap, 24oz', quantity: 2, category: 'Household', location: 'Aisle 9', lastUpdated: new Date(2024, 0, 13), status: 'low-stock' },
-      { id: '29', name: 'Laundry Detergent', description: 'Liquid laundry detergent, 64oz', quantity: 0, category: 'Household', location: 'Aisle 10', lastUpdated: new Date(2024, 0, 11), status: 'out-of-stock' },
-      { id: '30', name: 'Toilet Paper', description: 'Soft toilet paper, 12-pack', quantity: 21, category: 'Household', location: 'Aisle 9', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' }
+      // BULK Items
+      {
+        id: '1',
+        name: 'Tornillos M6x20mm',
+        description: 'Tornillos hexagonales de acero inoxidable',
+        quantity: 500,
+        minQuantity: 100,
+        category: 'Ferretería',
+        location: 'Estante A-3',
+        lastUpdated: new Date(2024, 0, 15),
+        status: 'in-stock',
+        itemType: ItemType.BULK,
+        sku: 'TOR-M6-20',
+        barcode: '7501234567890',
+        price: 0.50,
+        currency: Currency.HNL,
+        warehouseId: 'warehouse-1'
+      },
+      {
+        id: '2',
+        name: 'Papel Bond Carta',
+        description: 'Resma de papel bond tamaño carta, 500 hojas',
+        quantity: 15,
+        minQuantity: 20,
+        category: 'Oficina',
+        location: 'Bodega Principal',
+        lastUpdated: new Date(2024, 0, 14),
+        status: 'low-stock',
+        itemType: ItemType.BULK,
+        sku: 'PAP-BON-CTA',
+        barcode: '7501234567891',
+        price: 85.00,
+        currency: Currency.HNL,
+        warehouseId: 'warehouse-1'
+      },
+      // UNIQUE Items
+      {
+        id: '3',
+        name: 'Laptop Dell Latitude 5420',
+        description: 'Laptop empresarial Intel Core i5, 16GB RAM, 512GB SSD',
+        quantity: 1,
+        minQuantity: 1,
+        category: 'Electrónica',
+        location: 'Oficina TI',
+        lastUpdated: new Date(2024, 0, 16),
+        status: 'in-stock',
+        itemType: ItemType.UNIQUE,
+        serviceTag: 'DEL123456AB',
+        serialNumber: 'SN123456789',
+        price: 25000.00,
+        currency: Currency.HNL,
+        warehouseId: 'warehouse-1'
+      },
+      {
+        id: '4',
+        name: 'Monitor HP 24"',
+        description: 'Monitor Full HD 24 pulgadas, entrada HDMI y DisplayPort',
+        quantity: 1,
+        minQuantity: 1,
+        category: 'Electrónica',
+        location: 'Almacén 2',
+        lastUpdated: new Date(2024, 0, 15),
+        status: 'in-stock',
+        itemType: ItemType.UNIQUE,
+        serviceTag: 'HP987654XY',
+        price: 4500.00,
+        currency: Currency.HNL,
+        warehouseId: 'warehouse-1'
+      },
+      {
+        id: '5',
+        name: 'Impresora Multifuncional Canon',
+        description: 'Impresora multifuncional a color con WiFi',
+        quantity: 1,
+        minQuantity: 1,
+        category: 'Electrónica',
+        location: 'Sala de Impresión',
+        lastUpdated: new Date(2024, 0, 13),
+        status: 'in-stock',
+        itemType: ItemType.UNIQUE,
+        serviceTag: 'CAN456789ZZ',
+        serialNumber: 'CNSER987654',
+        price: 6800.00,
+        currency: Currency.HNL,
+        warehouseId: 'warehouse-1',
+        assignedToUserId: 'user-1',
+        assignedAt: new Date(2024, 0, 13)
+      }
     ];
 
     this.itemsSignal.set(mockData);
     this.saveToStorage();
   }
 
-  // CRUD Operations
+  // HTTP API Methods
+  loading = signal<boolean>(false);
+  error = signal<string | null>(null);
+
+  getAllItems(): Observable<InventoryItemInterface[]> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    return this.http.get<InventoryItemInterface[]>(this.apiUrl).pipe(
+      tap({
+        next: (items) => {
+          const itemsWithDates = items.map(item => ({
+            ...item,
+            lastUpdated: new Date(item.lastUpdated),
+            assignedAt: item.assignedAt ? new Date(item.assignedAt) : undefined
+          }));
+          this.itemsSignal.set(itemsWithDates);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+          // Fallback to localStorage if API fails
+          this.loadFromStorage();
+        }
+      })
+    );
+  }
+
+  createItem(item: CreateInventoryItemDto): Observable<InventoryItemInterface> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    return this.http.post<InventoryItemInterface>(this.apiUrl, item).pipe(
+      tap({
+        next: (newItem) => {
+          const itemWithDates = {
+            ...newItem,
+            lastUpdated: new Date(newItem.lastUpdated),
+            assignedAt: newItem.assignedAt ? new Date(newItem.assignedAt) : undefined
+          };
+          this.itemsSignal.update(items => [...items, itemWithDates]);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+        }
+      })
+    );
+  }
+
+  updateItem(id: string, updates: UpdateInventoryItemDto): Observable<InventoryItemInterface> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    return this.http.put<InventoryItemInterface>(`${this.apiUrl}/${id}`, updates).pipe(
+      tap({
+        next: (updatedItem) => {
+          const itemWithDates = {
+            ...updatedItem,
+            lastUpdated: new Date(updatedItem.lastUpdated),
+            assignedAt: updatedItem.assignedAt ? new Date(updatedItem.assignedAt) : undefined
+          };
+          this.itemsSignal.update(items =>
+            items.map(item => item.id === id ? itemWithDates : item)
+          );
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+        }
+      })
+    );
+  }
+
+  deleteItem(id: string): Observable<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap({
+        next: () => {
+          this.itemsSignal.update(items => items.filter(item => item.id !== id));
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+        }
+      })
+    );
+  }
+
+  // Legacy local methods (kept for backward compatibility)
   addItem(item: Omit<InventoryItemInterface, 'id' | 'lastUpdated'>): void {
     const newItem: InventoryItemInterface = {
       ...item,
       id: this.generateId(),
       lastUpdated: new Date()
     };
-    
+
     const currentItems = this.itemsSignal();
     this.itemsSignal.set([...currentItems, newItem]);
     this.saveToStorage();
   }
 
-  updateItem(id: string, updates: Partial<Omit<InventoryItemInterface, 'id'>>): void {
+  updateItemLocal(id: string, updates: Partial<Omit<InventoryItemInterface, 'id'>>): void {
     const currentItems = this.itemsSignal();
-    const updatedItems = currentItems.map(item => 
-      item.id === id 
+    const updatedItems = currentItems.map(item =>
+      item.id === id
         ? { ...item, ...updates, lastUpdated: new Date() }
         : item
     );
-    
+
     this.itemsSignal.set(updatedItems);
     this.saveToStorage();
   }
 
-  deleteItem(id: string): void {
+  deleteItemLocal(id: string): void {
     const currentItems = this.itemsSignal();
     const filteredItems = currentItems.filter(item => item.id !== id);
     this.itemsSignal.set(filteredItems);

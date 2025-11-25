@@ -1,7 +1,9 @@
-import { Component, computed, signal, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 // Angular Material imports
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -26,6 +28,7 @@ import { InventoryItemInterface } from '../../../interfaces/inventory-item.inter
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterModule,
@@ -64,32 +67,74 @@ export class InventoryList implements OnInit {
   selectedCategory = signal('all');
   selectedLocation = signal('all');
   selectedStatus = signal('all');
-  
+
+  // Debounced search
+  private searchSubject = new Subject<string>();
+
   // Computed values
   categories = computed(() => this.inventoryService.categories());
   locations = computed(() => this.inventoryService.locations());
-  
-  // Stats
-  totalItems = computed(() => this.inventoryService.getTotalItems());
-  lowStockItems = computed(() => this.inventoryService.getLowStockItems().length);
-  outOfStockItems = computed(() => this.inventoryService.getItemsByStatus('out-of-stock').length);
-  inStockItems = computed(() => this.inventoryService.getItemsByStatus('in-stock').length);
+
+  // ✅ OPTIMIZED: Reactive filtered items with computed signal
+  filteredItems = computed(() => {
+    const search = this.searchQuery().toLowerCase();
+    const category = this.selectedCategory();
+    const location = this.selectedLocation();
+    const status = this.selectedStatus();
+    const allItems = this.inventoryService.items();
+
+    return allItems.filter(item => {
+      const matchesSearch = !search ||
+        item.name.toLowerCase().includes(search) ||
+        item.description.toLowerCase().includes(search);
+
+      const matchesCategory = category === 'all' || item.category === category;
+      const matchesLocation = location === 'all' || item.location === location;
+      const matchesStatus = status === 'all' || item.status === status;
+
+      return matchesSearch && matchesCategory && matchesLocation && matchesStatus;
+    });
+  });
+
+  // ✅ OPTIMIZED: Single iteration for all stats (O(n) instead of O(4n))
+  stats = computed(() => {
+    const items = this.filteredItems();
+
+    return items.reduce((acc, item) => {
+      acc.total++;
+      if (item.status === 'in-stock') acc.inStock++;
+      else if (item.status === 'low-stock') acc.lowStock++;
+      else if (item.status === 'out-of-stock') acc.outOfStock++;
+      return acc;
+    }, { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 });
+  });
 
   constructor(
     private inventoryService: InventoryService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {
+    // ✅ OPTIMIZED: Auto-sync filtered items with table data source
+    effect(() => {
+      this.dataSource.data = this.filteredItems();
+    });
+  }
 
   ngOnInit(): void {
-    this.loadData();
-    this.setupFilters();
+    // ✅ OPTIMIZED: Debounced search - waits 300ms after last keystroke
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(value => {
+      this.searchQuery.set(value);
+    });
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+
     // Custom sort for status
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -104,52 +149,22 @@ export class InventoryList implements OnInit {
     };
   }
 
-  private loadData(): void {
-    this.applyFilters();
-  }
-
-  private setupFilters(): void {
-    // Watch for filter changes and reapply filters
-    const updateFilters = () => {
-      this.applyFilters();
-    };
-
-    // Set up reactive filters
-    setInterval(() => {
-      updateFilters();
-    }, 100); // Simple polling for demo - in production use proper reactive patterns
-  }
-
-  applyFilters(): void {
-    const filters = {
-      search: this.searchQuery(),
-      category: this.selectedCategory(),
-      location: this.selectedLocation(),
-      status: this.selectedStatus()
-    };
-
-    const filteredItems = this.inventoryService.getFilteredItems(filters);
-    this.dataSource.data = filteredItems;
-  }
-
+  // ✅ OPTIMIZED: Debounced search input
   onSearchChange(value: string): void {
-    this.searchQuery.set(value);
-    this.applyFilters();
+    this.searchSubject.next(value);
   }
 
+  // ✅ OPTIMIZED: No need to call applyFilters() - computed signal handles it reactively
   onCategoryChange(category: string): void {
     this.selectedCategory.set(category);
-    this.applyFilters();
   }
 
   onLocationChange(location: string): void {
     this.selectedLocation.set(location);
-    this.applyFilters();
   }
 
   onStatusChange(status: string): void {
     this.selectedStatus.set(status);
-    this.applyFilters();
   }
 
   clearFilters(): void {
@@ -157,27 +172,26 @@ export class InventoryList implements OnInit {
     this.selectedCategory.set('all');
     this.selectedLocation.set('all');
     this.selectedStatus.set('all');
-    this.applyFilters();
   }
 
   // CRUD Operations
   viewItem(item: InventoryItemInterface): void {
     // Navigate to item detail view
     // Implementation depends on routing setup
-    console.log('View item:', item);
+    // TODO: Implement navigation
   }
 
   editItem(item: InventoryItemInterface): void {
     // Navigate to edit form
     // Implementation depends on routing setup
-    console.log('Edit item:', item);
+    // TODO: Implement navigation
   }
 
   deleteItem(item: InventoryItemInterface): void {
     const confirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
     if (confirmed) {
       this.inventoryService.deleteItem(item.id);
-      this.loadData();
+      // ✅ OPTIMIZED: No need to call loadData() - signal updates automatically
       this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
         duration: 3000,
         panelClass: ['snackbar-success']
@@ -214,8 +228,7 @@ export class InventoryList implements OnInit {
 
   // Add new item
   addNewItem(): void {
-    // Navigate to add form
-    console.log('Add new item');
+    this.router.navigate(['/inventory/add']);
   }
 
   // Export functionality (bonus)
@@ -263,7 +276,7 @@ trackByFn(index: number, item: InventoryItemInterface): any {
     const confirmed = confirm('Are you sure you want to reset all data to default?');
     if (confirmed) {
       this.inventoryService.resetToMockData();
-      this.loadData();
+      // ✅ OPTIMIZED: No need to call loadData() - signal updates automatically
       this.snackBar.open('Data has been reset to default', 'Close', {
         duration: 3000,
         panelClass: ['snackbar-success']

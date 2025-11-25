@@ -1,0 +1,62 @@
+/* Fix Material Icon centering issues */
+::ng-deep mat-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+/* Force perfect centering for icon containers */
+::ng-deep .flex.items-center.justify-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Specific fix for inventory icons in cards */
+::ng-deep .w-10.h-10,
+::ng-deep .w-12.h-12 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+::ng-deep .w-10.h-10 mat-icon,
+::ng-deep .w-12.h-12 mat-icon {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Fix for action buttons */
+::ng-deep button[mat-icon-button] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+::ng-deep button mat-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+}
+
+/* Ensure mat-icon-button background appears centered */
+::ng-deep button[mat-icon-button] .mat-mdc-button-persistent-ripple,
+::ng-deep button[mat-icon-button] .mat-mdc-button-ripple {
+  border-radius: 50% !important;
+}
+
+/* Ensure select dropdowns render correctly */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select option {
+  background-color: #242424;
+  color: rgb(203 213 225);
+}

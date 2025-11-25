@@ -1,0 +1,205 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventario",
+    "warehouses": "Bodegas",
+    "suppliers": "Proveedores",
+    "users": "Usuarios",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión"
+  },
+  "COMMON": {
+    "SAVE": "Guardar",
+    "CANCEL": "Cancelar",
+    "DELETE": "Eliminar",
+    "EDIT": "Editar",
+    "ADD": "Agregar",
+    "SEARCH": "Buscar",
+    "FILTER": "Filtrar",
+    "EXPORT": "Exportar",
+    "IMPORT": "Importar",
+    "LOADING": "Cargando...",
+    "NO_DATA": "No hay datos",
+    "CONFIRM": "Confirmar",
+    "YES": "Sí",
+    "NO": "No",
+    "CREATE": "Crear",
+    "UPDATE": "Actualizar",
+    "NONE": "Ninguno",
+    "UNASSIGNED": "Sin asignar",
+    "ALL": "Todos",
+    "ACTIONS": "Acciones",
+    "STATUS": "Estado",
+    "TOTAL": "Total"
+  },
+  "FORM": {
+    "VALIDATION": {
+      "REQUIRED": "Este campo es requerido",
+      "MIN_LENGTH": "Mínimo {{length}} caracteres",
+      "MAX_LENGTH": "Máximo {{length}} caracteres",
+      "EMAIL": "Email inválido",
+      "MIN_VALUE": "Valor mínimo: {{value}}",
+      "MAX_VALUE": "Valor máximo: {{value}}",
+      "REQUIRE_EITHER": "Se requiere al menos uno de estos campos"
+    }
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "minLength": "Mínimo {{min}} caracteres",
+    "maxLength": "Máximo {{max}} caracteres",
+    "email": "Email inválido",
+    "min": "Valor mínimo: {{min}}",
+    "max": "Valor máximo: {{max}}",
+    "requireEither": "Se requiere al menos uno de estos campos"
+  },
+  "INVENTORY": {
+    "FORM": {
+      "TITLE": "Nuevo Item de Inventario",
+      "SUBTITLE": "Complete la información del item según su tipo (ÚNICO o CANTIDAD)",
+      "ITEM_TYPE": {
+        "TITLE": "Tipo de Item",
+        "BULK": "Item por Cantidad (BULK)",
+        "BULK_HINT": "Items contados por unidades o cantidad (ej: tornillos, papel, repuestos genéricos)",
+        "UNIQUE": "Item Único (UNIQUE)",
+        "UNIQUE_HINT": "Items individuales con identificador único (ej: laptops, servidores, equipos específicos)"
+      },
+      "BASIC_INFO": {
+        "TITLE": "Información Básica",
+        "NAME": "Nombre del Item",
+        "NAME_PLACEHOLDER": "Ej: Laptop Dell Latitude 5420",
+        "CATEGORY": "Categoría",
+        "CATEGORY_PLACEHOLDER": "Ej: Electrónica, Oficina, etc.",
+        "DESCRIPTION": "Descripción",
+        "DESCRIPTION_PLACEHOLDER": "Describa el item con detalles importantes...",
+        "LOCATION": "Ubicación Física",
+        "LOCATION_PLACEHOLDER": "Ej: Estante A-5, Pasillo 3"
+      },
+      "WAREHOUSE": {
+        "LABEL": "Bodega",
+        "HINT": "Seleccione la bodega donde se almacena este item"
+      },
+      "IDENTIFIERS": {
+        "TITLE": "Identificadores",
+        "SERVICE_TAG": "Service Tag",
+        "SERVICE_TAG_PLACEHOLDER": "Ej: DEL123456AB",
+        "SERVICE_TAG_HINT": "Requerido para items UNIQUE",
+        "SERIAL_NUMBER": "Número de Serie",
+        "SERIAL_NUMBER_PLACEHOLDER": "Ej: SN123456789",
+        "SERIAL_NUMBER_HINT": "Opcional para items UNIQUE",
+        "SKU": "SKU (Stock Keeping Unit)",
+        "SKU_PLACEHOLDER": "Ej: LAP-DELL-5420",
+        "BARCODE": "Código de Barras",
+        "BARCODE_PLACEHOLDER": "Ej: 1234567890123"
+      },
+      "QUANTITY": {
+        "TITLE": "Cantidad e Inventario",
+        "CURRENT": "Cantidad Actual",
+        "MINIMUM": "Cantidad Mínima",
+        "UNIQUE_HINT": "Los items UNIQUE siempre tienen cantidad = 1"
+      },
+      "PRICE": {
+        "TITLE": "Precio y Proveedor",
+        "AMOUNT": "Precio",
+        "CURRENCY": "Moneda"
+      },
+      "SUPPLIER": {
+        "LABEL": "Proveedor",
+        "NONE": "Sin proveedor",
+        "HINT": "Opcional: Seleccione el proveedor de este item"
+      },
+      "ASSIGNMENT": {
+        "TITLE": "Asignación de Item",
+        "USER": "Asignar a Usuario",
+        "UNASSIGNED": "Sin asignar",
+        "HINT": "Solo para items UNIQUE: Asigne este item a un usuario específico"
+      }
+    }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "addItem": "Agregar Item",
+    "editItem": "Editar Item",
+    "deleteItem": "Eliminar Item",
+    "itemType": {
+      "bulk": "Item por Cantidad",
+      "bulkDesc": "Items contados por unidades (ej: tornillos, papel)",
+      "unique": "Item Único",
+      "uniqueDesc": "Items individuales con identificador (ej: laptops, equipos)"
+    },
+    "form": {
+      "title": "Formulario de Inventario",
+      "addTitle": "Agregar Nuevo Item",
+      "editTitle": "Editar Item",
+      "sections": {
+        "basic": "Información Básica",
+        "itemType": "Tipo de Item",
+        "identifiers": "Identificadores Únicos",
+        "inventory": "Inventario",
+        "location": "Ubicación y Clasificación",
+        "commercial": "Información Comercial",
+        "assignment": "Asignación"
+      },
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "sku": "SKU",
+        "quantity": "Cantidad",
+        "minQuantity": "Cantidad Mínima",
+        "category": "Categoría",
+        "warehouse": "Bodega",
+        "supplier": "Proveedor",
+        "price": "Precio",
+        "currency": "Moneda",
+        "serviceTag": "Service Tag",
+        "serialNumber": "Número de Serie",
+        "assignedTo": "Asignado a",
+        "barcode": "Código de Barras"
+      },
+      "hints": {
+        "serviceTag": "Ej: DEL123456AB",
+        "serialNumber": "Ej: 1234-5678-9012",
+        "uniqueIdentifier": "Se requiere Service Tag O Número de Serie",
+        "uniqueQuantity": "Items únicos siempre tienen cantidad = 1",
+        "assignment": "Asignar este item a un usuario externo"
+      }
+    },
+    "status": {
+      "inStock": "En Stock",
+      "lowStock": "Stock Bajo",
+      "outOfStock": "Agotado"
+    },
+    "deleteConfirm": {
+      "title": "Confirmar Eliminación",
+      "message": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    }
+  },
+  "warehouse": {
+    "title": "Bodegas",
+    "add": "Agregar Bodega",
+    "edit": "Editar Bodega",
+    "name": "Nombre",
+    "location": "Ubicación",
+    "description": "Descripción"
+  },
+  "supplier": {
+    "title": "Proveedores",
+    "add": "Agregar Proveedor",
+    "edit": "Editar Proveedor",
+    "name": "Nombre",
+    "location": "Ubicación",
+    "phone": "Teléfono",
+    "email": "Email"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "stats": {
+      "totalValue": "Valor Total",
+      "totalItems": "Items Totales",
+      "totalUsers": "Usuarios",
+      "lowStock": "Stock Bajo"
+    },
+    "recentItems": "Items Recientes",
+    "viewAll": "Ver Todos"
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
         (click)="changeLang('es')"
         [class.active]="currentLang() === 'es'"
         class="lang-btn"
-        title="Español">
+        title="Spanish">
         🇭🇳
       </button>
       <button
@@ -47,10 +47,17 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class LanguageSelectorComponent {
+export class LanguageSelectorComponent implements OnInit {
   private translate = inject(TranslateService);
 
-  currentLang = signal<string>(this.translate.currentLang || 'en');
+  currentLang = signal<string>('en');
+
+  ngOnInit() {
+    // Load saved language or default to 'en'
+    const savedLang = localStorage.getItem('language') || 'en';
+    this.currentLang.set(savedLang);
+    this.translate.use(savedLang);
+  }
 
   changeLang(lang: string) {
     this.translate.use(lang);

@@ -18,13 +18,13 @@ export class App implements OnInit {
   title = 'ICN';
 
   ngOnInit() {
-    // Configurar idiomas disponibles
+    // Configure available languages
     this.translate.addLangs(['es', 'en']);
 
-    // Establecer idioma por defecto
+    // Set default language
     this.translate.setDefaultLang('en');
 
-    // Usar idioma guardado o detectar del navegador
+    // Use saved language or detect from browser
     const savedLang = localStorage.getItem('language');
     const browserLang = this.translate.getBrowserLang();
     const langToUse = savedLang || (browserLang?.match(/es|en/) ? browserLang : 'en');

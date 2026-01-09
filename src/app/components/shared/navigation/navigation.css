@@ -1,6 +1,116 @@
+/* Menu Toggle Wrapper */
+.menu-toggle-wrapper {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 50;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
+.menu-toggle-wrapper.is-open {
+  left: 270px;
+}
 
+/* Menu Toggle Button */
+.menu-toggle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #2a2a2a;
+  border: 1px solid #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
 
-@layer components{
+.menu-toggle-btn:hover {
+  background-color: #475569;
+}
 
+.menu-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.menu-toggle-icon {
+  color: white !important;
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+}
+
+.menu-toggle-btn.menu-toggle-open {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.menu-toggle-btn.menu-toggle-open:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Navigation Links */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  height: 3.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background-color: #242424;
+}
+
+.nav-link.active-link {
+  background-color: #242424;
+  border-right: 4px solid #4d7c6f;
+}
+
+/* Icon Container */
+.nav-icon-container {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: #242424;
+  transition: background-color 0.2s ease;
+}
+
+/* Mat Icon Overrides */
+.nav-icon {
+  color: #cbd5e1 !important;
+  font-size: 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  line-height: 22px !important;
+  transition: color 0.2s ease;
+}
+
+.active-link .nav-icon {
+  color: #5d8c7f !important;
+}
+
+/* Text */
+.nav-text {
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.active-link .nav-text {
+  color: #5d8c7f;
 }

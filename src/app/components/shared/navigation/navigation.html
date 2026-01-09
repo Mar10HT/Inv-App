@@ -1,15 +1,13 @@
 
-<div class="fixed top-6 z-50 transition-all duration-500 ease-in-out"
-     [class.left-6]="!sidenav.opened"
-     [class.left-[270px]]="sidenav.opened"
-     [class.rotate-90]="sidenav.opened">
+<div class="menu-toggle-wrapper"
+     [class.is-open]="sidenav.opened">
   <button
-    matIconButton
     (click)="sidenav.toggle()"
     aria-label="Toggle navigation menu"
-    class="hover:!scale-105 active:!scale-95 !bg-[#2a2a2a] !text-white hover:!bg-slate-600 transition-all duration-300 ease-in-out shadow-lg border border-slate-600"
+    class="menu-toggle-btn"
+    [class.menu-toggle-open]="sidenav.opened"
   >
-    <mat-icon class="!text-xl !text-white transition-transform duration-300 ease-in-out">{{ sidenav.opened ? 'close' : 'menu' }}</mat-icon>
+    <mat-icon class="menu-toggle-icon">{{ sidenav.opened ? 'close' : 'menu' }}</mat-icon>
   </button>
 </div>
 
@@ -24,103 +22,89 @@
       [style.transition]="'transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1)'"
     >
       <div class="p-6 border-b border-[#2a2a2a] bg-[#1a1a1a]">
-        <h2 class="text-2xl font-bold text-slate-300 tracking-tight">{{ menuTitle() }}</h2>
+        <h2 class="text-2xl font-bold text-slate-300 tracking-tight">{{ 'NAV.MENU' | translate }}</h2>
         <div class="w-12 h-1 bg-[#4d7c6f] rounded-full mt-2"></div>
       </div>
       <nav class="flex flex-col p-4 gap-2 mt-4">
 
         <a
-          mat-button
           routerLink="/dashboard"
-          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
+          routerLinkActive="active-link"
+          class="nav-link group"
         >
-          <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
-              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">dashboard</mat-icon>
-            </div>
-            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ dashboardLabel() }}</span>
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">dashboard</mat-icon>
           </div>
-        </a>
-        <a
-          mat-button
-          routerLink="/inventory"
-          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
-        >
-          <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
-              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">inventory</mat-icon>
-            </div>
-            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ inventoryLabel() }}</span>
-          </div>
-        </a>
-        <a
-          mat-button
-          routerLink="/categories"
-          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
-        >
-          <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
-              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">category</mat-icon>
-            </div>
-            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ warehousesLabel() }}</span>
-          </div>
-        </a>
-        <a
-          mat-button
-          routerLink="/users"
-          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
-        >
-          <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
-              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">people</mat-icon>
-            </div>
-            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ usersLabel() }}</span>
-          </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.DASHBOARD' | translate }}</span>
         </a>
 
         <a
-          mat-button
-          routerLink="/settings"
-          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
+          routerLink="/inventory"
+          routerLinkActive="active-link"
+          class="nav-link group"
         >
-          <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
-              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">settings</mat-icon>
-            </div>
-            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ settingsLabel() }}</span>
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">inventory_2</mat-icon>
           </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.INVENTORY' | translate }}</span>
+        </a>
+
+        <a
+          routerLink="/categories"
+          routerLinkActive="active-link"
+          class="nav-link group"
+        >
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">warehouse</mat-icon>
+          </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.WAREHOUSES' | translate }}</span>
+        </a>
+
+        <a
+          routerLink="/users"
+          routerLinkActive="active-link"
+          class="nav-link group"
+        >
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">people</mat-icon>
+          </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.USERS' | translate }}</span>
+        </a>
+
+        <a
+          routerLink="/settings"
+          routerLinkActive="active-link"
+          class="nav-link group"
+        >
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">settings</mat-icon>
+          </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.SETTINGS' | translate }}</span>
         </a>
 
         <div class="h-px bg-[#2a2a2a] my-4"></div>
+
         <a
-          mat-button
           routerLink="/profile"
-          routerLinkActive="!bg-[#242424] !border-r-4 !border-[#4d7c6f]"
-          class="!w-full !justify-start !rounded-xl !h-14 !text-left group hover:!bg-[#242424] !transition-all !duration-200 !border-0"
+          routerLinkActive="active-link"
+          class="nav-link group"
         >
-          <div class="flex items-center gap-4 w-full px-2">
-            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-[#242424] group-hover:bg-[#2a2a2a] transition-colors duration-200">
-              <mat-icon class="!text-slate-300 !text-xl group-hover:!text-[#5d8c7f] transition-colors duration-200">account_circle</mat-icon>
-            </div>
-            <span class="!text-slate-300 !font-medium !text-base group-hover:!text-[#5d8c7f] transition-colors duration-200">{{ profileLabel() }}</span>
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">account_circle</mat-icon>
           </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.PROFILE' | translate }}</span>
         </a>
 
       </nav>
 
       <div class="mt-auto p-4 border-t border-[#2a2a2a]">
         <div class="flex items-center gap-3 p-3 rounded-lg bg-[#242424] mb-4">
-          <div class="w-8 h-8 rounded-full bg-[#4d7c6f] flex items-center justify-center">
-            <mat-icon class="!text-white !text-sm">person</mat-icon>
+          <div class="w-8 h-8 rounded-full bg-[#4d7c6f] flex items-center justify-center shrink-0">
+            <mat-icon class="!text-white !text-[18px] !w-[18px] !h-[18px] !leading-[18px]">person</mat-icon>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-slate-300 truncate">User Name</p>
-            <p class="text-xs text-slate-400 truncate">user@example.com</p>
+            <p class="text-xs text-slate-400 truncate">user&#64;example.com</p>
           </div>
         </div>
 

@@ -3,10 +3,10 @@
     <!-- Welcome Section -->
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-slate-300 mb-2">
-        Welcome back, {{ userName }}! 👋
+        {{ 'DASHBOARD.WELCOME' | translate }}, {{ userName }}! 👋
       </h1>
       <p class="text-slate-500 text-lg">
-        Here's what's happening with your inventory today.
+        {{ 'DASHBOARD.SUBTITLE' | translate }}
       </p>
     </div>
 
@@ -16,9 +16,9 @@
       <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">Total Users</p>
+            <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">{{ totalUsers }}</p>
-            <p class="text-sm text-sky-500 mt-1">+12% from last month</p>
+            <p class="text-sm text-sky-500 mt-1">+12% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#242424] p-3 rounded-lg">
             <mat-icon class="!text-slate-500">people</mat-icon>
@@ -30,9 +30,9 @@
       <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">Total Items</p>
+            <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">{{ totalItems }}</p>
-            <p class="text-sm text-sky-500 mt-1">+8% from last month</p>
+            <p class="text-sm text-sky-500 mt-1">+8% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#242424] p-3 rounded-lg">
             <mat-icon class="!text-slate-500">inventory</mat-icon>
@@ -44,9 +44,9 @@
       <div class="bg-[#1a1a1a] rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">Total Value</p>
+            <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">${{ totalValue | number:'1.2-2' }}</p>
-            <p class="text-sm text-[#4d7c6f] mt-1">+15% from last month</p>
+            <p class="text-sm text-[#4d7c6f] mt-1">+15% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-3 rounded-lg">
             <mat-icon class="!text-emerald-700">trending_up</mat-icon>
@@ -58,8 +58,8 @@
     <!-- Items Table -->
     <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
       <div class="px-6 py-4 border-b border-[#2a2a2a]">
-        <h2 class="text-xl font-semibold text-slate-300">Recent Items</h2>
-        <p class="text-slate-500 text-sm mt-1">Manage your inventory items</p>
+        <h2 class="text-xl font-semibold text-slate-300">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
+        <p class="text-slate-500 text-sm mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
       </div>
 
       <!-- Desktop Table View -->
@@ -67,12 +67,12 @@
         <table class="w-full">
           <thead>
             <tr class="bg-[#141414]">
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Item</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Quantity</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Price</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#1e1e1e]">
@@ -117,7 +117,7 @@
                     'text-rose-400 bg-rose-950/50 border border-rose-900': item.status === 'out-of-stock'
                   }"
                   class="px-3 py-1 rounded-md text-xs font-medium inline-block">
-                  {{ item.status === 'in-stock' ? 'In Stock' : item.status === 'low-stock' ? 'Low Stock' : 'Out of Stock' }}
+                  {{ getStatusKey(item.status) | translate }}
                 </span>
               </td>
 
@@ -164,19 +164,19 @@
 
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Category</p>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</p>
               <p class="text-slate-400 text-sm">{{ item.category }}</p>
             </div>
             <div>
-              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Quantity</p>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</p>
               <p class="text-slate-300 font-semibold">{{ item.quantity }}</p>
             </div>
             <div>
-              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Price</p>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</p>
               <p class="text-slate-300 font-semibold">${{ item.price | number:'1.2-2' }}</p>
             </div>
             <div>
-              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Status</p>
+              <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</p>
               <span
                 [ngClass]="{
                   'text-emerald-400 bg-emerald-950/50 border border-emerald-900': item.status === 'in-stock',
@@ -184,7 +184,7 @@
                   'text-rose-400 bg-rose-950/50 border border-rose-900': item.status === 'out-of-stock'
                 }"
                 class="px-3 py-1 rounded-md text-xs font-medium inline-block mt-1">
-                {{ item.status === 'in-stock' ? 'In Stock' : item.status === 'low-stock' ? 'Low Stock' : 'Out of Stock' }}
+                {{ getStatusKey(item.status) | translate }}
               </span>
             </div>
           </div>
@@ -213,13 +213,13 @@
     <!-- Quick Actions -->
     <div class="mt-6 flex flex-wrap gap-4">
       <button class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
-        Add New Item
+        {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
       </button>
       <button class="bg-slate-800 text-slate-300 px-6 py-2 rounded-lg hover:bg-slate-700 transition-all font-medium">
-        Export Data
+        {{ 'DASHBOARD.EXPORT_DATA' | translate }}
       </button>
       <button class="border border-sky-800 text-sky-400 px-6 py-2 rounded-lg hover:bg-sky-950/20 transition-all font-medium">
-        View Reports
+        {{ 'DASHBOARD.VIEW_REPORTS' | translate }}
       </button>
     </div>
   </div>

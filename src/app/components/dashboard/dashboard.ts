@@ -3,6 +3,7 @@ import { SharedData } from '../../services/shared-data/shared-data.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface Item {
   id: number;
@@ -17,7 +18,7 @@ export interface Item {
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, TranslateModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -36,11 +37,9 @@ export class Dashboard {
     { id: 6, name: "Monitor 24\"", description: "Full HD 24-inch monitor with HDMI input", category: "Electronics", quantity: 12, price: 299.99, status: "in-stock" },
   ];
 
-  constructor(private sharedData: SharedData) {
-    console.log("Dashboard component created!");
-  }
+  constructor(private sharedData: SharedData) {}
 
-   viewItem(item: Item) {
+  viewItem(item: Item) {
     console.log('View item:', item);
   }
 
@@ -50,5 +49,14 @@ export class Dashboard {
 
   deleteItem(item: Item) {
     console.log('Delete item:', item);
+  }
+
+  getStatusKey(status: string): string {
+    switch (status) {
+      case 'in-stock': return 'INVENTORY.STATUS.IN_STOCK';
+      case 'low-stock': return 'INVENTORY.STATUS.LOW_STOCK';
+      case 'out-of-stock': return 'INVENTORY.STATUS.OUT_OF_STOCK';
+      default: return status;
+    }
   }
 }

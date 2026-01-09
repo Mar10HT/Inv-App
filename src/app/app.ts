@@ -22,12 +22,12 @@ export class App implements OnInit {
     this.translate.addLangs(['es', 'en']);
 
     // Establecer idioma por defecto
-    this.translate.setDefaultLang('es');
+    this.translate.setDefaultLang('en');
 
     // Usar idioma guardado o detectar del navegador
     const savedLang = localStorage.getItem('language');
     const browserLang = this.translate.getBrowserLang();
-    const langToUse = savedLang || (browserLang?.match(/es|en/) ? browserLang : 'es');
+    const langToUse = savedLang || (browserLang?.match(/es|en/) ? browserLang : 'en');
 
     this.translate.use(langToUse);
   }

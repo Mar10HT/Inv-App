@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
 export class LanguageSelectorComponent {
   private translate = inject(TranslateService);
 
-  currentLang = signal<string>(this.translate.currentLang || 'es');
+  currentLang = signal<string>(this.translate.currentLang || 'en');
 
   changeLang(lang: string) {
     this.translate.use(lang);

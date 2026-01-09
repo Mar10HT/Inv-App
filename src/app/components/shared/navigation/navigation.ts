@@ -66,15 +66,15 @@ export class Navigation implements OnInit {
   }
 
   private updateTranslations() {
-    this.translate.get(['nav.dashboard', 'nav.inventory', 'nav.warehouses', 'nav.users', 'nav.settings', 'nav.profile'])
+    this.translate.get(['NAV.DASHBOARD', 'NAV.INVENTORY', 'NAV.WAREHOUSES', 'NAV.USERS', 'NAV.SETTINGS', 'NAV.PROFILE'])
       .subscribe(translations => {
-        this.dashboardLabel.set(translations['nav.dashboard']);
-        this.inventoryLabel.set(translations['nav.inventory']);
-        this.warehousesLabel.set(translations['nav.warehouses']);
-        this.usersLabel.set(translations['nav.users']);
-        this.settingsLabel.set(translations['nav.settings']);
-        this.profileLabel.set(translations['nav.profile']);
-        this.menuTitle.set('MENU'); // Keep as is or translate if needed
+        this.dashboardLabel.set(translations['NAV.DASHBOARD']);
+        this.inventoryLabel.set(translations['NAV.INVENTORY']);
+        this.warehousesLabel.set(translations['NAV.WAREHOUSES']);
+        this.usersLabel.set(translations['NAV.USERS']);
+        this.settingsLabel.set(translations['NAV.SETTINGS']);
+        this.profileLabel.set(translations['NAV.PROFILE']);
+        this.menuTitle.set('MENU');
       });
   }
 

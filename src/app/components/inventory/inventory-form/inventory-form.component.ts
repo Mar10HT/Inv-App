@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,14 +13,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { InventoryService } from '../../services/inventory/inventory.service';
-import { WarehouseService } from '../../services/warehouse.service';
-import { SupplierService } from '../../services/supplier.service';
-import { UserService } from '../../services/user.service';
-import { ItemType, Currency, CreateInventoryItemDto } from '../../interfaces/inventory-item.interface';
-import { Warehouse } from '../../interfaces/warehouse.interface';
-import { Supplier } from '../../interfaces/supplier.interface';
-import { User, UserRole } from '../../interfaces/user.interface';
+import { InventoryService } from '../../../services/inventory/inventory.service';
+import { WarehouseService } from '../../../services/warehouse.service';
+import { SupplierService } from '../../../services/supplier.service';
+import { UserService } from '../../../services/user.service';
+import { ItemType, Currency, CreateInventoryItemDto, InventoryStatus } from '../../../interfaces/inventory-item.interface';
+import { Warehouse } from '../../../interfaces/warehouse.interface';
+import { Supplier } from '../../../interfaces/supplier.interface';
+import { User, UserRole } from '../../../interfaces/user.interface';
 
 @Component({
   selector: 'app-inventory-form',
@@ -45,6 +45,7 @@ import { User, UserRole } from '../../interfaces/user.interface';
 export class InventoryFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private inventoryService = inject(InventoryService);
   private warehouseService = inject(WarehouseService);
   private supplierService = inject(SupplierService);
@@ -55,6 +56,10 @@ export class InventoryFormComponent implements OnInit {
   ItemType = ItemType;
   Currency = Currency;
   UserRole = UserRole;
+
+  // Edit mode
+  isEditMode = signal<boolean>(false);
+  itemId = signal<string | null>(null);
 
   // Form
   inventoryForm!: FormGroup;
@@ -119,17 +124,17 @@ export class InventoryFormComponent implements OnInit {
           minQuantityControl?.setValue(1);
           minQuantityControl?.disable();
         } else {
-          // BULK items: require SKU AND barcode, enable quantity
+          // BULK items: SKU and barcode are optional, enable quantity
           serviceTagControl?.clearValidators();
           serialNumberControl?.clearValidators();
-          skuControl?.setValidators([Validators.required]);
-          barcodeControl?.setValidators([Validators.required]);
+          skuControl?.clearValidators();
+          barcodeControl?.clearValidators();
 
           // Enable quantity editing
           quantityControl?.enable();
           quantityControl?.setValidators([Validators.required, Validators.min(0)]);
           minQuantityControl?.enable();
-          minQuantityControl?.setValidators([Validators.required, Validators.min(0)]);
+          minQuantityControl?.setValidators([Validators.min(0)]);
         }
 
         // Update validity
@@ -146,6 +151,47 @@ export class InventoryFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadData();
+    this.checkEditMode();
+  }
+
+  private checkEditMode(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode.set(true);
+      this.itemId.set(id);
+      this.loadItemForEdit(id);
+    }
+  }
+
+  private loadItemForEdit(id: string): void {
+    this.loading.set(true);
+    this.inventoryService.getItemById(id).subscribe({
+      next: (item) => {
+        this.inventoryForm.patchValue({
+          name: item.name,
+          description: item.description,
+          category: item.category,
+          itemType: item.itemType,
+          serviceTag: item.serviceTag || '',
+          serialNumber: item.serialNumber || '',
+          sku: item.sku || '',
+          barcode: item.barcode || '',
+          quantity: item.quantity,
+          minQuantity: item.minQuantity,
+          price: item.price,
+          currency: item.currency,
+          warehouseId: item.warehouseId,
+          supplierId: item.supplierId || '',
+          assignedToUserId: item.assignedToUserId || ''
+        });
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading item:', error);
+        this.loading.set(false);
+        this.router.navigate(['/inventory']);
+      }
+    });
   }
 
   private initializeForm(): void {
@@ -154,7 +200,6 @@ export class InventoryFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       category: ['', Validators.required],
-      location: ['', Validators.required],
 
       // Item type (UNIQUE vs BULK)
       itemType: [ItemType.BULK, Validators.required],
@@ -162,8 +207,8 @@ export class InventoryFormComponent implements OnInit {
       // Identifiers (dynamic validation)
       serviceTag: [''],
       serialNumber: [''],
-      sku: ['', Validators.required],
-      barcode: ['', Validators.required],
+      sku: [''],
+      barcode: [''],
 
       // Quantity (dynamic based on type)
       quantity: [0, [Validators.required, Validators.min(0)]],
@@ -237,7 +282,6 @@ export class InventoryFormComponent implements OnInit {
       name: formValue.name,
       description: formValue.description,
       category: formValue.category,
-      location: formValue.location,
       itemType: formValue.itemType,
       quantity: formValue.itemType === ItemType.UNIQUE ? 1 : formValue.quantity,
       minQuantity: formValue.itemType === ItemType.UNIQUE ? 1 : formValue.minQuantity,
@@ -253,8 +297,9 @@ export class InventoryFormComponent implements OnInit {
       if (formValue.serialNumber) dto.serialNumber = formValue.serialNumber;
       if (formValue.assignedToUserId) dto.assignedToUserId = formValue.assignedToUserId;
     } else {
-      dto.sku = formValue.sku;
-      dto.barcode = formValue.barcode;
+      // BULK items: SKU and barcode are optional
+      if (formValue.sku) dto.sku = formValue.sku;
+      if (formValue.barcode) dto.barcode = formValue.barcode;
     }
 
     // Add supplier if selected
@@ -262,23 +307,36 @@ export class InventoryFormComponent implements OnInit {
       dto.supplierId = formValue.supplierId;
     }
 
-    // Create item
-    this.inventoryService.createItem(dto).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.router.navigate(['/inventory']);
-      },
-      error: (error) => {
-        console.error('Error creating item:', error);
-        this.loading.set(false);
-      }
-    });
+    // Create or Update item
+    if (this.isEditMode() && this.itemId()) {
+      this.inventoryService.updateItem(this.itemId()!, dto).subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.router.navigate(['/inventory']);
+        },
+        error: (error) => {
+          console.error('Error updating item:', error);
+          this.loading.set(false);
+        }
+      });
+    } else {
+      this.inventoryService.createItem(dto).subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.router.navigate(['/inventory']);
+        },
+        error: (error) => {
+          console.error('Error creating item:', error);
+          this.loading.set(false);
+        }
+      });
+    }
   }
 
-  private calculateStatus(quantity: number, minQuantity: number): 'in-stock' | 'low-stock' | 'out-of-stock' {
-    if (quantity === 0) return 'out-of-stock';
-    if (quantity <= minQuantity) return 'low-stock';
-    return 'in-stock';
+  private calculateStatus(quantity: number, minQuantity: number): InventoryStatus {
+    if (quantity === 0) return InventoryStatus.OUT_OF_STOCK;
+    if (quantity <= minQuantity) return InventoryStatus.LOW_STOCK;
+    return InventoryStatus.IN_STOCK;
   }
 
   onCancel(): void {
@@ -310,3 +368,6 @@ export class InventoryFormComponent implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 }
+
+
+

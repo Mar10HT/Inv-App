@@ -1,59 +1,42 @@
-# INV APP
+# Documentación - INV-APP
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.4.
+Este directorio contiene toda la documentación del proyecto INV-APP.
 
-## Development server
+## 📚 Índice de Documentos
 
-To start a local development server, run:
+### Documentación General
+- **[EXPLICACION_PROYECTO.md](./EXPLICACION_PROYECTO.md)** - Documentación completa del proyecto, arquitectura, tecnologías y estado actual
 
-```bash
-ng serve
+### Optimizaciones
+- **[OPTIMIZACIONES_PENDIENTES.md](./OPTIMIZACIONES_PENDIENTES.md)** - Análisis completo de optimizaciones (código + features)
+  - Parte 1: Optimizaciones de código y rendimiento (12 problemas identificados)
+  - Parte 2: Features faltantes (20 características pendientes)
+- **[QUICK_START_OPTIMIZACIONES.md](./QUICK_START_OPTIMIZACIONES.md)** - Guía rápida de las 5 optimizaciones más críticas
+
+### Diseño
+- **[PROPUESTAS_PALETAS.md](./PROPUESTAS_PALETAS.md)** - 5 propuestas de paletas de colores dark theme
+- **[CAMBIO_PALETA_SLATE_DUAL_ACCENT.md](./CAMBIO_PALETA_SLATE_DUAL_ACCENT.md)** - Documentación del cambio de paleta aplicado
+
+## 🗂️ Organización
+
+```
+docs/
+├── README.md                              # Este archivo
+├── EXPLICACION_PROYECTO.md               # Documentación del proyecto
+├── OPTIMIZACIONES_PENDIENTES.md          # Optimizaciones completas
+├── QUICK_START_OPTIMIZACIONES.md         # Guía rápida
+├── PROPUESTAS_PALETAS.md                 # Propuestas de diseño
+└── CAMBIO_PALETA_SLATE_DUAL_ACCENT.md   # Cambio aplicado
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 📊 Estado del Proyecto
 
-## Code scaffolding
+**Versión Actual**: 1.0.0
+**Completitud**: 30%
+**Última actualización**: 22 de Noviembre, 2025
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Navegación**:
+- [Volver al proyecto](../)
+- [Ver código fuente](../src/)

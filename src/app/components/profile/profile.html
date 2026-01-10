@@ -1,1 +1,205 @@
-<p>profile works!</p>
+<div class="min-h-screen bg-[#0a0a0a] p-6">
+  <div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-300">{{ 'NAV.PROFILE' | translate }}</h1>
+      <p class="text-slate-500 mt-1">{{ 'PROFILE.SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
+      <!-- Profile Header -->
+      <div class="bg-gradient-to-r from-[#2d4a3f] to-[#1a3a2f] p-6">
+        <div class="flex items-center gap-4">
+          <div class="w-20 h-20 rounded-full bg-[#4d7c6f] flex items-center justify-center">
+            <mat-icon class="!text-white !text-4xl !w-10 !h-10">person</mat-icon>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">{{ user().name }}</h2>
+            <p class="text-slate-300">{{ user().email }}</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-[#4d7c6f] rounded-full text-xs font-medium text-white">
+              {{ getRoleDisplay(user().role) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-slate-300">{{ 'PROFILE.INFO' | translate }}</h3>
+          <button
+            (click)="toggleEditMode()"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            [class]="editMode() ? 'bg-slate-700 text-slate-300' : 'bg-[#4d7c6f] text-white hover:bg-[#5d8c7f]'">
+            <mat-icon class="!text-lg">{{ editMode() ? 'close' : 'edit' }}</mat-icon>
+            {{ editMode() ? ('COMMON.CANCEL' | translate) : ('COMMON.EDIT' | translate) }}
+          </button>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Name -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'USER.NAME' | translate }} *
+              </label>
+              @if (editMode()) {
+                <input
+                  type="text"
+                  formControlName="name"
+                  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                  [class.!border-rose-500]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
+                />
+                @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+                  @if (profileForm.get('name')?.errors?.['required']) {
+                    <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                  } @else if (profileForm.get('name')?.errors?.['minlength']) {
+                    <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+                  }
+                }
+              } @else {
+                <p class="text-slate-300 py-3">{{ user().name }}</p>
+              }
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'USER.EMAIL' | translate }} *
+              </label>
+              @if (editMode()) {
+                <input
+                  type="email"
+                  formControlName="email"
+                  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                  [class.!border-rose-500]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+                />
+                @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+                  @if (profileForm.get('email')?.errors?.['required']) {
+                    <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                  } @else if (profileForm.get('email')?.errors?.['email']) {
+                    <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
+                  }
+                }
+              } @else {
+                <p class="text-slate-300 py-3">{{ user().email }}</p>
+              }
+            </div>
+
+            <!-- Role (read-only) -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'USER.ROLE' | translate }}
+              </label>
+              <p class="text-slate-300 py-3">{{ getRoleDisplay(user().role) }}</p>
+            </div>
+
+            <!-- Member Since -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'PROFILE.MEMBER_SINCE' | translate }}
+              </label>
+              <p class="text-slate-300 py-3">{{ formatDate(user().createdAt) }}</p>
+            </div>
+          </div>
+
+          @if (editMode()) {
+            <div class="flex justify-end mt-6 pt-4 border-t border-[#2a2a2a]">
+              <button
+                type="submit"
+                [disabled]="profileForm.invalid || saving()"
+                class="flex items-center gap-2 px-6 py-2.5 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
+                @if (saving()) {
+                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                }
+                {{ 'COMMON.SAVE' | translate }}
+              </button>
+            </div>
+          }
+        </form>
+      </div>
+    </div>
+
+    <!-- Change Password Card -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold text-slate-300 mb-4">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h3>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+          <div class="space-y-4">
+            <!-- Current Password -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'PROFILE.CURRENT_PASSWORD' | translate }} *
+              </label>
+              <input
+                type="password"
+                formControlName="currentPassword"
+                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                [class.!border-rose-500]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched"
+              />
+              @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
+                @if (passwordForm.get('currentPassword')?.errors?.['required']) {
+                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                } @else if (passwordForm.get('currentPassword')?.errors?.['minlength']) {
+                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+                }
+              }
+            </div>
+
+            <!-- New Password -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'PROFILE.NEW_PASSWORD' | translate }} *
+              </label>
+              <input
+                type="password"
+                formControlName="newPassword"
+                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                [class.!border-rose-500]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
+              />
+              @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+                @if (passwordForm.get('newPassword')?.errors?.['required']) {
+                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                } @else if (passwordForm.get('newPassword')?.errors?.['minlength']) {
+                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+                }
+              }
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">
+                {{ 'PROFILE.CONFIRM_PASSWORD' | translate }} *
+              </label>
+              <input
+                type="password"
+                formControlName="confirmPassword"
+                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                [class.!border-rose-500]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched"
+              />
+              @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
+                @if (passwordForm.get('confirmPassword')?.errors?.['required']) {
+                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                }
+              }
+            </div>
+          </div>
+
+          <div class="flex justify-end mt-6 pt-4 border-t border-[#2a2a2a]">
+            <button
+              type="submit"
+              [disabled]="passwordForm.invalid || savingPassword()"
+              class="flex items-center gap-2 px-6 py-2.5 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
+              @if (savingPassword()) {
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              }
+              {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

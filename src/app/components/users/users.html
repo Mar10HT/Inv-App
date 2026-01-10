@@ -1,1 +1,210 @@
-<p>users works!</p>
+<div class="min-h-screen bg-[#0a0a0a] p-6">
+  <div class="max-w-[1400px] mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-bold text-slate-300 mb-2">{{ 'USER.TITLE' | translate }}</h1>
+          <p class="text-slate-500 text-lg">{{ 'USER.SUBTITLE' | translate }}</p>
+        </div>
+        <button
+          (click)="addUser()"
+          class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
+          <mat-icon>add</mat-icon>
+          {{ 'USER.ADD' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">{{ 'USER.TOTAL' | translate }}</p>
+            <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
+          </div>
+          <div class="bg-[#2d4a3f] p-3 rounded-lg">
+            <mat-icon class="!text-[#4d7c6f]">people</mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">{{ 'USER.ROLES.ADMIN' | translate }}</p>
+            <p class="text-3xl font-bold text-rose-400">{{ stats().admins }}</p>
+          </div>
+          <div class="bg-rose-950/30 p-3 rounded-lg">
+            <mat-icon class="!text-rose-400">admin_panel_settings</mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">{{ 'USER.ROLES.USER' | translate }}</p>
+            <p class="text-3xl font-bold text-emerald-400">{{ stats().users }}</p>
+          </div>
+          <div class="bg-emerald-950/30 p-3 rounded-lg">
+            <mat-icon class="!text-emerald-400">person</mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">{{ 'USER.ROLES.VIEWER' | translate }}</p>
+            <p class="text-3xl font-bold text-blue-400">{{ stats().viewers }}</p>
+          </div>
+          <div class="bg-blue-950/30 p-3 rounded-lg">
+            <mat-icon class="!text-blue-400">visibility</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex items-center justify-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
+        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
+        <div class="flex items-center gap-3">
+          <mat-icon class="!text-rose-400">error</mat-icon>
+          <span class="text-rose-400">{{ error() }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Users Table -->
+    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#2a2a2a]">
+        <h2 class="text-xl font-semibold text-slate-300">{{ 'USER.LIST' | translate }}</h2>
+      </div>
+
+      @if (users().length === 0 && !loading()) {
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-16">
+          <mat-icon class="!text-6xl !text-slate-700 mb-4">people</mat-icon>
+          <p class="text-slate-500 text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
+          <p class="text-slate-600 text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
+          <button
+            (click)="addUser()"
+            class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
+            {{ 'USER.ADD' | translate }}
+          </button>
+        </div>
+      } @else {
+        <!-- Desktop Table View -->
+        <div class="hidden lg:block overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-[#141414]">
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[200px]">{{ 'USER.NAME' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[200px]">{{ 'USER.EMAIL' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'USER.ROLE' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#1e1e1e]">
+              @for (user of users(); track trackByFn($index, user)) {
+                <tr class="hover:bg-[#1e1e1e] transition-colors">
+                  <!-- Name Column -->
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 bg-[#2d4a3f] rounded-full flex items-center justify-center flex-shrink-0">
+                        <mat-icon class="!text-[#4d7c6f] !text-lg">person</mat-icon>
+                      </div>
+                      <div>
+                        <p class="font-medium text-slate-300">{{ user.name || 'No name' }}</p>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Email Column -->
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2 text-slate-400">
+                      <mat-icon class="!text-sm !text-slate-500">email</mat-icon>
+                      <span>{{ user.email }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Role Column -->
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-medium border" [class]="getRoleBadgeClass(user.role)">
+                      {{ 'USER.ROLES.' + user.role | translate }}
+                    </span>
+                  </td>
+
+                  <!-- Actions Column -->
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-1">
+                      <button
+                        type="button"
+                        (click)="editUser(user)"
+                        class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                        <mat-icon class="!text-xl">edit</mat-icon>
+                      </button>
+                      <button
+                        type="button"
+                        (click)="deleteUser(user)"
+                        class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                        <mat-icon class="!text-xl">delete</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="lg:hidden divide-y divide-[#1e1e1e]">
+          @for (user of users(); track trackByFn($index, user)) {
+            <div class="p-4">
+              <div class="flex items-start gap-3 mb-3">
+                <div class="w-12 h-12 bg-[#2d4a3f] rounded-full flex items-center justify-center flex-shrink-0">
+                  <mat-icon class="!text-[#4d7c6f] !text-xl">person</mat-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-slate-300">{{ user.name || 'No name' }}</h3>
+                  <div class="flex items-center gap-1 text-slate-500 text-sm mt-1">
+                    <mat-icon class="!text-sm">email</mat-icon>
+                    <span>{{ user.email }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-3 border-t border-[#2a2a2a]">
+                <span class="px-3 py-1 rounded-full text-xs font-medium border" [class]="getRoleBadgeClass(user.role)">
+                  {{ 'USER.ROLES.' + user.role | translate }}
+                </span>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="editUser(user)"
+                    class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                    <mat-icon class="!text-xl">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deleteUser(user)"
+                    class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <mat-icon class="!text-xl">delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -59,81 +59,175 @@ Inv-App/
 
 ```
 /                    → Redirects to /dashboard
-/dashboard           → Main control panel
-/inventory           → Inventory list
-  /inventory/add     → Add new item
-  /inventory/edit/:id → Edit existing item
-/warehouses          → Warehouse management (CRUD)
-/suppliers           → Supplier management (CRUD)
-/categories          → Category management
-/users               → User management
-/profile             → User profile
-/settings            → App settings
+/login               → User authentication (public)
+/dashboard           → Main control panel (protected)
+/inventory           → Inventory list (protected)
+  /inventory/add     → Add new item (protected)
+  /inventory/edit/:id → Edit existing item (protected)
+/warehouses          → Warehouse management CRUD (protected)
+/suppliers           → Supplier management CRUD (protected)
+/categories          → Category management CRUD (protected)
+/users               → User management CRUD (protected)
+/transactions        → Transaction history (protected)
+/profile             → User profile (protected)
+/settings            → App settings (protected)
 ```
 
 ## Implemented Features
 
-### 1. Inventory List (FULLY FUNCTIONAL)
+### 1. Authentication System (FULLY FUNCTIONAL)
+- JWT-based authentication with 7-day token expiration
+- Login page with email/password
+- User registration
+- Auth guard protecting all routes
+- HTTP interceptor automatically adding JWT to requests
+- Auto-redirect to login when not authenticated
+- Secure password hashing with bcrypt (10 rounds)
+- Admin user auto-created in seed script
+- **Credentials**: admin@example.com / password123
+
+### 2. Dashboard (FULLY FUNCTIONAL)
+- Connected to real backend data
+- Stats cards showing:
+  - Total items, in stock, low stock, out of stock
+  - Total value in USD and HNL
+  - Total users, warehouses, categories
+- Category distribution chart with progress bars
+- Warehouse distribution chart with progress bars
+- Low stock alerts table (limited to 10 items with pagination)
+- Recent transactions list (last 5)
+- Recent items table (last 5)
+- Quick action buttons (Add item, View all)
+
+### 3. Inventory Management (FULLY FUNCTIONAL)
 - Real-time multi-dimensional filter system
-- Search by name/description
-- Filters by category, location, status
+- Search by name/description/SKU/serial number
+- Filters by category, location, status, item type
 - Sortable and paginated table
 - Responsive view (table on desktop, cards on mobile)
 - CRUD operations (View, Edit, Delete)
 - CSV export
 - Real-time statistics
+- Support for UNIQUE (serialized) and BULK items
+- Service tag and serial number tracking
+- User assignment for UNIQUE items
+- Auto-status calculation based on quantity
+- Full backend integration with validation
 
-### 2. Dashboard (FUNCTIONAL)
-- Connected to real backend data
-- Stats cards (total items, in stock, low stock, out of stock)
-- Recent items table
-- Quick action buttons
-- Item detail modal
-
-### 3. Warehouse Management (FULLY FUNCTIONAL)
-- Responsive list with table/cards
+### 4. Warehouse Management (FULLY FUNCTIONAL)
+- Responsive list with table/cards view
 - Add/edit modal dialog
 - Delete with confirmation
-- Stats card showing total
+- Stats card showing total count
 - Full backend integration
+- Fields: name, location, description
+- Item count per warehouse
 
-### 4. Supplier Management (FULLY FUNCTIONAL)
-- Responsive list with table/cards
+### 5. Supplier Management (FULLY FUNCTIONAL)
+- Responsive list with table/cards view
 - Add/edit modal dialog
 - Fields: name, location, phone, email
 - Delete with confirmation
+- Stats card showing total count
 - Full backend integration
 
-### 5. Navigation
+### 6. Category Management (FULLY FUNCTIONAL)
+- Responsive list with table/cards view
+- Add/edit modal dialog
+- Delete with confirmation
+- Stats card showing total count
+- Full backend integration
+- Fields: name, description
+- Unique name validation
+
+### 7. User Management (FULLY FUNCTIONAL)
+- Responsive list with table/cards view
+- Add/edit modal dialog
+- Role-based access (ADMIN/EXTERNAL)
+- Password hashing with bcrypt
+- Delete with confirmation
+- Stats card showing total count
+- Full backend integration
+- Password excluded from API responses
+
+### 8. Transaction Management (FULLY FUNCTIONAL)
+- Transaction types: IN (incoming), OUT (outgoing), TRANSFER
+- Automatic inventory quantity updates based on transaction type
+- Recent transactions view (last 5)
+- Full transaction history
+- Fields: type, date, items, source/destination warehouses, user, notes
+- Transaction items with quantities
+- Full backend integration
+- Validation based on transaction type
+
+### 9. Navigation (FULLY FUNCTIONAL)
 - Sliding side menu (drawer)
 - Smooth animations
 - Active route highlighting
 - Language selector (ES/EN)
 - Fully responsive
+- Logout functionality
+- User info display
+
+### 10. Profile & Settings (IMPLEMENTED)
+- User profile view and edit
+- App settings management
+- Language preferences
+- Theme preferences
 
 ## API Endpoints
 
+### Authentication
+- `POST /api/auth/login` - User login (returns JWT)
+- `POST /api/auth/register` - User registration
+- `GET /api/auth/profile` - Get current user profile (requires JWT)
+
 ### Inventory
-- `GET /api/inventory` - List all items (with filters)
+- `GET /api/inventory` - List all items (with filters, pagination)
 - `GET /api/inventory/:id` - Get single item
 - `POST /api/inventory` - Create item
-- `PUT /api/inventory/:id` - Update item
+- `PATCH /api/inventory/:id` - Update item
 - `DELETE /api/inventory/:id` - Delete item
 - `GET /api/inventory/stats` - Get statistics
+- `GET /api/inventory/low-stock` - Get low stock items
+- `GET /api/inventory/categories` - Get unique categories
+- `GET /api/inventory/locations` - Get warehouse locations
 
 ### Warehouses
 - `GET /api/warehouses` - List all
 - `GET /api/warehouses/:id` - Get by ID
 - `POST /api/warehouses` - Create
-- `PUT /api/warehouses/:id` - Update
+- `PATCH /api/warehouses/:id` - Update
 - `DELETE /api/warehouses/:id` - Delete
 
 ### Suppliers
 - `GET /api/suppliers` - List all
 - `GET /api/suppliers/:id` - Get by ID
 - `POST /api/suppliers` - Create
-- `PUT /api/suppliers/:id` - Update
+- `PATCH /api/suppliers/:id` - Update
 - `DELETE /api/suppliers/:id` - Delete
+
+### Categories
+- `GET /api/categories` - List all
+- `GET /api/categories/:id` - Get by ID
+- `POST /api/categories` - Create
+- `PATCH /api/categories/:id` - Update
+- `DELETE /api/categories/:id` - Delete
+
+### Users
+- `GET /api/users` - List all users
+- `GET /api/users/:id` - Get by ID
+- `POST /api/users` - Create user
+- `PATCH /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+### Transactions
+- `GET /api/transactions` - List all transactions
+- `GET /api/transactions/recent` - Get recent transactions (limit query param)
+- `GET /api/transactions/:id` - Get by ID
+- `POST /api/transactions` - Create transaction (IN/OUT/TRANSFER)
+- `PATCH /api/transactions/:id` - Update transaction
+- `DELETE /api/transactions/:id` - Delete transaction
 
 ## Style System
 
@@ -159,34 +253,102 @@ text-slate-500  /* Tertiary/placeholders */
 
 ## Development Progress
 
-**Estimated Progress**: ~50% complete
+**Estimated Progress**: ~95% complete
 
 - **Core infrastructure**: 100% ✓
+- **Authentication & Security**: 100% ✓
+  - JWT authentication ✓
+  - Auth guards ✓
+  - HTTP interceptor ✓
+  - Password hashing ✓
 - **Inventory management**: 100% ✓
+  - CRUD operations ✓
+  - Advanced filtering ✓
+  - UNIQUE/BULK item types ✓
+  - User assignments ✓
 - **Warehouse management**: 100% ✓
 - **Supplier management**: 100% ✓
-- **Dashboard**: 80% ✓
-- **Backend API**: 100% ✓
+- **Category management**: 100% ✓
+- **User management**: 100% ✓
+- **Transaction management**: 100% ✓
+  - IN/OUT/TRANSFER types ✓
+  - Auto inventory updates ✓
+- **Dashboard**: 100% ✓
+  - Real-time stats ✓
+  - Charts and visualizations ✓
+  - Low stock alerts ✓
+  - Recent activity ✓
+- **Backend API (NestJS + Prisma)**: 100% ✓
+  - All CRUD endpoints ✓
+  - Authentication endpoints ✓
+  - Stats endpoints ✓
+  - Data validation ✓
+  - Error handling ✓
+- **Database (SQLite)**: 100% ✓
+  - Complete schema ✓
+  - Seed script with 200 items ✓
+  - Auto-create admin user ✓
 - **i18n (ES/EN)**: 100% ✓
-- **Pending**: Categories, Users, Profile, Settings, Auth
+- **Profile & Settings**: 100% ✓
+
+**Pending/Minor Issues**:
+- Dashboard data visualization issue (data loads but doesn't display in some cases)
+- Production deployment configuration
+- Additional reports and analytics
 
 ## Build & Run
 
 ### Development
 ```bash
-# Frontend
+# Frontend (Angular)
 cd Inv-App && npm start
+# Runs on http://localhost:4200
 
-# Backend
+# Backend (NestJS)
 cd Inv-App-API && npm run start:dev
+# Runs on http://localhost:3000
+# API available at http://localhost:3000/api
+
+# Database seeding (creates 200 items + admin user)
+cd Inv-App-API && npm run seed
+
+# Create admin user only
+cd Inv-App-API && npm run create-admin
+
+# Prisma Studio (database GUI)
+cd Inv-App-API && npx prisma studio
+# Opens on http://localhost:5555
 ```
 
 ### Production
 ```bash
-npm run build
+# Frontend
+cd Inv-App && npm run build
+
+# Backend
+cd Inv-App-API && npm run build
+cd Inv-App-API && npm run start:prod
 ```
+
+### Default Credentials
+```
+Email: admin@example.com
+Password: password123
+```
+
+## Database Schema
+
+### Models
+- **User**: Authentication and user management (ADMIN/EXTERNAL roles)
+- **InventoryItem**: Products with UNIQUE/BULK types, service tags, serial numbers
+- **Warehouse**: Storage locations
+- **Supplier**: Product suppliers
+- **Category**: Product categories
+- **Transaction**: Inventory movements (IN/OUT/TRANSFER)
+- **TransactionItem**: Items within transactions
+- **AuditLog**: Change history tracking
 
 ---
 
-**Last Updated**: January 9, 2026
-**Version**: 1.1.0
+**Last Updated**: January 10, 2026
+**Version**: 2.0.0

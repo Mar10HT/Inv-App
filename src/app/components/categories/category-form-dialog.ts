@@ -8,16 +8,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { SupplierService } from '../../services/supplier.service';
-import { Supplier } from '../../interfaces/supplier.interface';
+import { CategoryService } from '../../services/category.service';
+import { Category } from '../../interfaces/category.interface';
 
-export interface SupplierFormDialogData {
+export interface CategoryFormDialogData {
   mode: 'add' | 'edit';
-  supplier?: Supplier;
+  category?: Category;
 }
 
 @Component({
-  selector: 'app-supplier-form-dialog',
+  selector: 'app-category-form-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -36,7 +36,7 @@ export interface SupplierFormDialogData {
       <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
         <div>
           <h2 class="text-xl font-semibold text-slate-300">
-            {{ (data.mode === 'add' ? 'SUPPLIER.ADD' : 'SUPPLIER.EDIT') | translate }}
+            {{ (data.mode === 'add' ? 'CATEGORY.ADD' : 'CATEGORY.EDIT') | translate }}
           </h2>
         </div>
         <button
@@ -52,74 +52,78 @@ export interface SupplierFormDialogData {
         <!-- Name -->
         <div>
           <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'SUPPLIER.NAME' | translate }} *
+            {{ 'CATEGORY.NAME' | translate }} *
           </label>
           <input
             type="text"
             formControlName="name"
             class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
             [class.!border-rose-500]="form.get('name')?.invalid && form.get('name')?.touched"
-            [placeholder]="'SUPPLIER.NAME' | translate"
+            [placeholder]="'CATEGORY.NAME' | translate"
           />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
             @if (form.get('name')?.errors?.['required']) {
               <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
             } @else if (form.get('name')?.errors?.['minlength']) {
               <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+            } @else if (form.get('name')?.errors?.['maxlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MAX_LENGTH' | translate: {length: 50} }}</p>
             }
           }
         </div>
 
-        <!-- Location -->
+        <!-- Description -->
         <div>
           <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'SUPPLIER.LOCATION' | translate }} *
+            {{ 'CATEGORY.DESCRIPTION' | translate }}
           </label>
-          <input
-            type="text"
-            formControlName="location"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-            [class.!border-rose-500]="form.get('location')?.invalid && form.get('location')?.touched"
-            [placeholder]="'SUPPLIER.LOCATION' | translate"
-          />
-          @if (form.get('location')?.invalid && form.get('location')?.touched) {
-            @if (form.get('location')?.errors?.['required']) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
-            } @else if (form.get('location')?.errors?.['minlength']) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+          <textarea
+            formControlName="description"
+            rows="3"
+            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors resize-none"
+            [class.!border-rose-500]="form.get('description')?.invalid && form.get('description')?.touched"
+            [placeholder]="'CATEGORY.DESCRIPTION' | translate"
+          ></textarea>
+          @if (form.get('description')?.invalid && form.get('description')?.touched) {
+            @if (form.get('description')?.errors?.['maxlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MAX_LENGTH' | translate: {length: 200} }}</p>
             }
           }
         </div>
 
-        <!-- Phone -->
+        <!-- Color -->
         <div>
           <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'SUPPLIER.PHONE' | translate }}
+            {{ 'CATEGORY.COLOR' | translate }}
           </label>
-          <input
-            type="tel"
-            formControlName="phone"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-            [placeholder]="'SUPPLIER.PHONE' | translate"
-          />
-        </div>
-
-        <!-- Email -->
-        <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'SUPPLIER.EMAIL' | translate }}
-          </label>
-          <input
-            type="email"
-            formControlName="email"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-            [class.!border-rose-500]="form.get('email')?.invalid && form.get('email')?.touched"
-            [placeholder]="'SUPPLIER.EMAIL' | translate"
-          />
-          @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
+          <div class="flex items-center gap-3">
+            <input
+              type="color"
+              formControlName="color"
+              class="w-12 h-12 rounded-lg border border-[#2a2a2a] cursor-pointer bg-transparent"
+            />
+            <input
+              type="text"
+              formControlName="color"
+              class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors uppercase"
+              placeholder="#FF5733"
+            />
+          </div>
+          @if (form.get('color')?.invalid && form.get('color')?.touched) {
+            <p class="text-rose-400 text-sm mt-1">{{ 'CATEGORY.COLOR_INVALID' | translate }}</p>
           }
         </div>
+
+        <!-- Color Preview -->
+        @if (form.get('color')?.value) {
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-slate-400">{{ 'CATEGORY.PREVIEW' | translate }}:</span>
+            <div
+              class="w-24 h-8 rounded-lg border border-[#2a2a2a]"
+              [style.backgroundColor]="form.get('color')?.value">
+            </div>
+          </div>
+        }
 
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
@@ -143,28 +147,26 @@ export interface SupplierFormDialogData {
     </div>
   `
 })
-export class SupplierFormDialog implements OnInit {
-  dialogRef = inject(MatDialogRef<SupplierFormDialog>);
-  data = inject<SupplierFormDialogData>(MAT_DIALOG_DATA);
+export class CategoryFormDialog implements OnInit {
+  dialogRef = inject(MatDialogRef<CategoryFormDialog>);
+  data = inject<CategoryFormDialogData>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
-  private supplierService = inject(SupplierService);
+  private categoryService = inject(CategoryService);
 
   saving = signal(false);
 
   form: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    location: ['', [Validators.required, Validators.minLength(2)]],
-    phone: [''],
-    email: ['', [Validators.email]]
+    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+    description: ['', [Validators.maxLength(200)]],
+    color: ['#4d7c6f', [Validators.pattern(/^#[0-9A-Fa-f]{6}$/)]]
   });
 
   ngOnInit(): void {
-    if (this.data.mode === 'edit' && this.data.supplier) {
+    if (this.data.mode === 'edit' && this.data.category) {
       this.form.patchValue({
-        name: this.data.supplier.name,
-        location: this.data.supplier.location || '',
-        phone: this.data.supplier.phone || '',
-        email: this.data.supplier.email || ''
+        name: this.data.category.name,
+        description: this.data.category.description || '',
+        color: this.data.category.color || '#4d7c6f'
       });
     }
   }
@@ -175,16 +177,8 @@ export class SupplierFormDialog implements OnInit {
     this.saving.set(true);
     const formValue = this.form.value;
 
-    // Clean empty strings
-    const cleanedValue = {
-      name: formValue.name,
-      location: formValue.location,
-      phone: formValue.phone || undefined,
-      email: formValue.email || undefined
-    };
-
     if (this.data.mode === 'add') {
-      this.supplierService.create(cleanedValue).subscribe({
+      this.categoryService.create(formValue).subscribe({
         next: () => {
           this.dialogRef.close({ saved: true });
         },
@@ -192,8 +186,8 @@ export class SupplierFormDialog implements OnInit {
           this.saving.set(false);
         }
       });
-    } else if (this.data.supplier) {
-      this.supplierService.update(this.data.supplier.id, cleanedValue).subscribe({
+    } else if (this.data.category) {
+      this.categoryService.update(this.data.category.id, formValue).subscribe({
         next: () => {
           this.dialogRef.close({ saved: true });
         },

@@ -150,7 +150,7 @@
               <span class="text-white text-sm font-semibold">{{ (user.name || user.email || 'U').charAt(0).toUpperCase() }}</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs font-medium text-slate-300 truncate">{{ user.name || 'User' }}</p>
+              <p class="text-xs font-medium text-slate-300 truncate">{{ user.name || ('COMMON.USER' | translate) }}</p>
               <p class="text-[10px] text-slate-400 truncate">{{ user.email }}</p>
             </div>
           </div>

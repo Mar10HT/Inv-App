@@ -40,7 +40,7 @@ export class Users implements OnInit {
     const all = this.users();
     return {
       total: all.length,
-      admins: all.filter(u => u.role === UserRole.ADMIN).length,
+      admins: all.filter(u => u.role === UserRole.SYSTEM_ADMIN || u.role === UserRole.WAREHOUSE_MANAGER).length,
       users: all.filter(u => u.role === UserRole.USER).length,
       viewers: all.filter(u => u.role === UserRole.VIEWER).length
     };
@@ -124,8 +124,10 @@ export class Users implements OnInit {
 
   getRoleBadgeClass(role: UserRole): string {
     switch (role) {
-      case UserRole.ADMIN:
+      case UserRole.SYSTEM_ADMIN:
         return 'bg-rose-950/50 text-rose-400 border-rose-900';
+      case UserRole.WAREHOUSE_MANAGER:
+        return 'bg-purple-950/50 text-purple-400 border-purple-900';
       case UserRole.USER:
         return 'bg-emerald-950/50 text-emerald-400 border-emerald-900';
       case UserRole.VIEWER:

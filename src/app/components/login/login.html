@@ -5,8 +5,8 @@
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#4d7c6f]/20 mb-4">
         <mat-icon class="!text-4xl !w-10 !h-10 text-[#4d7c6f]">inventory_2</mat-icon>
       </div>
-      <h1 class="text-3xl font-bold text-white mb-2">INV-APP</h1>
-      <p class="text-slate-400">Sign in to your account</p>
+      <h1 class="text-3xl font-bold text-white mb-2">{{ 'LOGIN.TITLE' | translate }}</h1>
+      <p class="text-slate-400">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
     </div>
 
     <!-- Login Form -->
@@ -15,7 +15,7 @@
         <!-- Email Field -->
         <div>
           <label class="block text-sm font-medium text-slate-400 mb-2">
-            Email
+            {{ 'LOGIN.EMAIL' | translate }}
           </label>
           <div class="relative">
             <input
@@ -24,21 +24,21 @@
               class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11
                      text-slate-300 placeholder-slate-600
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
-              placeholder="Enter your email"
+              [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
             />
             <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5 !text-base">
               email
             </mat-icon>
           </div>
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">Please enter a valid email address</p>
+            <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
           }
         </div>
 
         <!-- Password Field -->
         <div>
           <label class="block text-sm font-medium text-slate-400 mb-2">
-            Password
+            {{ 'LOGIN.PASSWORD' | translate }}
           </label>
           <div class="relative">
             <input
@@ -47,7 +47,7 @@
               class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11 pr-11
                      text-slate-300 placeholder-slate-600
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
-              placeholder="Enter your password"
+              [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
             />
             <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5 !text-base">
               lock
@@ -63,7 +63,7 @@
             </button>
           </div>
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">Password must be at least 6 characters</p>
+            <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
           }
         </div>
 
@@ -77,10 +77,10 @@
         >
           @if (loading()) {
             <mat-spinner diameter="20" class="!w-5 !h-5"></mat-spinner>
-            <span>Signing in...</span>
+            <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
           } @else {
             <mat-icon class="!w-5 !h-5 !text-base">login</mat-icon>
-            <span>Sign In</span>
+            <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
           }
         </button>
       </form>
@@ -88,14 +88,14 @@
       <!-- Footer -->
       <div class="mt-6 text-center">
         <p class="text-sm text-slate-500">
-          Demo credentials: <span class="text-slate-400">admin@example.com</span> / <span class="text-slate-400">password123</span>
+          {{ 'LOGIN.DEMO_CREDENTIALS' | translate }} <span class="text-slate-400">admin@example.com</span> / <span class="text-slate-400">password123</span>
         </p>
       </div>
     </div>
 
     <!-- Additional Info -->
     <div class="mt-6 text-center text-sm text-slate-500">
-      <p>Inventory Management System v1.1.0</p>
+      <p>{{ 'LOGIN.VERSION' | translate }}</p>
     </div>
   </div>
 </div>

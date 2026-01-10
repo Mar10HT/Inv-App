@@ -178,7 +178,7 @@ export interface TransactionFormDialogData {
                       class="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-slate-300 text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
                       <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
                       @for (invItem of inventoryItems(); track invItem.id) {
-                        <option [value]="invItem.id">{{ invItem.name }} ({{ invItem.quantity }} disponibles)</option>
+                        <option [value]="invItem.id">{{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})</option>
                       }
                     </select>
                     <div class="flex gap-3">
@@ -187,13 +187,13 @@ export interface TransactionFormDialogData {
                         formControlName="quantity"
                         min="1"
                         class="w-24 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-slate-300 text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
-                        placeholder="Qty"
+                        [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                       />
                       <input
                         type="text"
                         formControlName="notes"
                         class="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-slate-300 text-sm placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-                        placeholder="Notes (optional)"
+                        [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                       />
                     </div>
                   </div>

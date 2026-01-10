@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { DashboardService, DashboardStats, CategoryStats, WarehouseStats, StatusStats } from '../../services/dashboard.service';
 import { TransactionService } from '../../services/transaction.service';
+import { AuthService } from '../../services/auth.service';
 import { InventoryItemInterface, InventoryStatus } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
@@ -33,11 +34,12 @@ export class Dashboard implements OnInit {
   private inventoryService = inject(InventoryService);
   private dashboardService = inject(DashboardService);
   private transactionService = inject(TransactionService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
 
-  userName = 'Admin';
+  userName = computed(() => this.authService.currentUser()?.name || 'User');
 
   // Stats from API
   stats = signal<DashboardStats | null>(null);

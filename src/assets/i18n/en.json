@@ -41,7 +41,10 @@
     "VIEW_REPORTS": "View Reports",
     "ADD_NEW": "Add New",
     "BACK": "Back",
-    "BACK_TO_INVENTORY": "Back to Inventory"
+    "BACK_TO_INVENTORY": "Back to Inventory",
+    "CLOSE": "Close",
+    "SKU": "SKU",
+    "USER": "User"
   },
   "DASHBOARD": {
     "TITLE": "Inventory Management",
@@ -82,6 +85,13 @@
     "ALL_STATUS": "All Status",
     "NO_ITEMS": "No items found",
     "NO_ITEMS_DESC": "Get started by adding your first inventory item",
+    "LIST": {
+      "NO_ITEMS_FOUND": "No items found",
+      "ADJUST_FILTERS": "Try adjusting your search or filter criteria",
+      "CLEAR_FILTERS": "Clear",
+      "UNITS": "units",
+      "ITEMS_COUNT": "Showing {{count}} items"
+    },
     "STATUS": {
       "IN_STOCK": "In Stock",
       "LOW_STOCK": "Low Stock",
@@ -277,6 +287,9 @@
     "ADD_ITEM": "Add Item",
     "SELECT_ITEM": "Select an item",
     "NO_ITEMS": "No items added. Click 'Add Item' to add items to this transaction.",
+    "AVAILABLE": "available",
+    "QTY_PLACEHOLDER": "Qty",
+    "NOTES_OPTIONAL": "Notes (optional)",
     "TYPES": {
       "IN": "Entry",
       "OUT": "Exit",
@@ -322,6 +335,28 @@
       "MIN_VALUE": "Minimum value: {{value}}",
       "MAX_VALUE": "Maximum value: {{value}}",
       "REQUIRE_EITHER": "At least one of these fields is required"
+    }
+  },
+  "LOGIN": {
+    "TITLE": "INV-APP",
+    "SIGN_IN_TO_ACCOUNT": "Sign in to your account",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "ENTER_EMAIL": "Enter your email",
+    "ENTER_PASSWORD": "Enter your password",
+    "SIGN_IN": "Sign In",
+    "SIGNING_IN": "Signing in...",
+    "DEMO_CREDENTIALS": "Demo credentials:",
+    "VERSION": "Inventory Management System v2.0.0",
+    "VALIDATION": {
+      "INVALID_EMAIL": "Please enter a valid email address",
+      "PASSWORD_MIN": "Password must be at least 6 characters"
+    },
+    "ERROR": {
+      "INVALID_CREDENTIALS": "Invalid credentials. Please try again."
+    },
+    "SUCCESS": {
+      "WELCOME_BACK": "Welcome back, {{name}}!"
     }
   }
 }

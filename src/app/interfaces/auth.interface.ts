@@ -1,3 +1,5 @@
+import { UserRole } from './user.interface';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -18,5 +20,5 @@ export interface AuthUser {
   id: string;
   email: string;
   name?: string;
-  role: string;
+  role: UserRole;
 }

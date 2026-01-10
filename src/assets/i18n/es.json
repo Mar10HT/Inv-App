@@ -41,7 +41,10 @@
     "VIEW_REPORTS": "Ver Reportes",
     "ADD_NEW": "Agregar Nuevo",
     "BACK": "Volver",
-    "BACK_TO_INVENTORY": "Volver al Inventario"
+    "BACK_TO_INVENTORY": "Volver al Inventario",
+    "CLOSE": "Cerrar",
+    "SKU": "SKU",
+    "USER": "Usuario"
   },
   "DASHBOARD": {
     "TITLE": "Gestión de Inventario",
@@ -82,6 +85,13 @@
     "ALL_STATUS": "Todos los Estados",
     "NO_ITEMS": "No se encontraron ítems",
     "NO_ITEMS_DESC": "Comienza agregando tu primer ítem de inventario",
+    "LIST": {
+      "NO_ITEMS_FOUND": "No se encontraron ítems",
+      "ADJUST_FILTERS": "Intenta ajustar tu búsqueda o criterios de filtro",
+      "CLEAR_FILTERS": "Limpiar",
+      "UNITS": "unidades",
+      "ITEMS_COUNT": "Mostrando {{count}} ítems"
+    },
     "STATUS": {
       "IN_STOCK": "En Stock",
       "LOW_STOCK": "Stock Bajo",
@@ -277,6 +287,9 @@
     "ADD_ITEM": "Agregar Ítem",
     "SELECT_ITEM": "Seleccionar un ítem",
     "NO_ITEMS": "No hay ítems agregados. Haz clic en 'Agregar Ítem' para añadir ítems a esta transacción.",
+    "AVAILABLE": "disponibles",
+    "QTY_PLACEHOLDER": "Cant.",
+    "NOTES_OPTIONAL": "Notas (opcional)",
     "TYPES": {
       "IN": "Entrada",
       "OUT": "Salida",
@@ -322,6 +335,28 @@
       "MIN_VALUE": "Valor mínimo: {{value}}",
       "MAX_VALUE": "Valor máximo: {{value}}",
       "REQUIRE_EITHER": "Se requiere al menos uno de estos campos"
+    }
+  },
+  "LOGIN": {
+    "TITLE": "INV-APP",
+    "SIGN_IN_TO_ACCOUNT": "Inicia sesión en tu cuenta",
+    "EMAIL": "Correo Electrónico",
+    "PASSWORD": "Contraseña",
+    "ENTER_EMAIL": "Ingresa tu correo electrónico",
+    "ENTER_PASSWORD": "Ingresa tu contraseña",
+    "SIGN_IN": "Iniciar Sesión",
+    "SIGNING_IN": "Iniciando sesión...",
+    "DEMO_CREDENTIALS": "Credenciales de demostración:",
+    "VERSION": "Sistema de Gestión de Inventario v2.0.0",
+    "VALIDATION": {
+      "INVALID_EMAIL": "Por favor ingresa un correo electrónico válido",
+      "PASSWORD_MIN": "La contraseña debe tener al menos 6 caracteres"
+    },
+    "ERROR": {
+      "INVALID_CREDENTIALS": "Credenciales inválidas. Por favor intenta de nuevo."
+    },
+    "SUCCESS": {
+      "WELCOME_BACK": "Bienvenido de nuevo, {{name}}!"
     }
   }
 }

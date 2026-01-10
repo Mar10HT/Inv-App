@@ -62,39 +62,102 @@ export class Dashboard implements OnInit {
 
   private loadDashboardData(): void {
     this.loading.set(true);
+    this.error.set(null);
 
-    // Load all dashboard data in parallel
+    // Load inventory stats (single call)
     this.dashboardService.getStats().subscribe({
-      next: (stats) => this.stats.set(stats),
-      error: (err) => this.error.set(err.message)
+      next: (data: any) => {
+        // Map backend response to DashboardStats format
+        const dashboardStats: DashboardStats = {
+          totalItems: data.total || 0,
+          totalUsers: 0, // Will be loaded separately
+          totalWarehouses: 0, // Will be loaded separately
+          totalSuppliers: 0, // Will be loaded separately
+          totalCategories: 0, // Will be loaded separately
+          inStockItems: data.inStock || 0,
+          lowStockItems: data.lowStock || 0,
+          outOfStockItems: data.outOfStock || 0,
+          totalValueUSD: data.totalValue || 0,
+          totalValueHNL: (data.totalValue || 0) * 25 // Approximate conversion
+        };
+
+        this.stats.set(dashboardStats);
+
+        // Set category and warehouse stats from the same response
+        this.categoryStats.set((data.categories || []).map((cat: any) => ({
+          category: cat.name,
+          count: cat.count,
+          totalQuantity: cat.count
+        })));
+        this.warehouseStats.set((data.locations || []).map((loc: any, index: number) => ({
+          id: `warehouse-${index}`,
+          name: loc.name,
+          itemCount: loc.count,
+          totalQuantity: loc.count
+        })));
+      },
+      error: (err) => {
+        console.error('Error loading stats:', err);
+        this.error.set('Error loading dashboard data: ' + (err.message || 'Unknown error'));
+        this.loading.set(false);
+      }
     });
 
-    this.dashboardService.getItemsByCategory().subscribe({
-      next: (data) => this.categoryStats.set(data),
-      error: () => {}
+    // Load additional counts
+    this.dashboardService.getUsersCount().subscribe({
+      next: (count) => {
+        const currentStats = this.stats();
+        if (currentStats) {
+          this.stats.set({ ...currentStats, totalUsers: count });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading users count:', err);
+      }
     });
 
-    this.dashboardService.getItemsByWarehouse().subscribe({
-      next: (data) => this.warehouseStats.set(data),
-      error: () => {}
+    this.dashboardService.getWarehousesCount().subscribe({
+      next: (count) => {
+        const currentStats = this.stats();
+        if (currentStats) {
+          this.stats.set({ ...currentStats, totalWarehouses: count });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading warehouses count:', err);
+      }
     });
 
-    this.dashboardService.getItemsByStatus().subscribe({
-      next: (data) => this.statusStats.set(data),
-      error: () => {}
+    this.dashboardService.getCategoriesCount().subscribe({
+      next: (count) => {
+        const currentStats = this.stats();
+        if (currentStats) {
+          this.stats.set({ ...currentStats, totalCategories: count });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading categories count:', err);
+      }
     });
 
-    this.dashboardService.getLowStockItems(5).subscribe({
+    // Load low stock items (limit to 10 for pagination)
+    this.dashboardService.getLowStockItems(10).subscribe({
       next: (data) => this.lowStockItems.set(data),
-      error: () => {}
+      error: (err) => {
+        console.error('Error loading low stock items:', err);
+      }
     });
 
+    // Load recent transactions
     this.transactionService.getRecent(5).subscribe({
       next: (data) => {
         this.recentTransactions.set(data);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: (err) => {
+        console.error('Error loading transactions:', err);
+        this.loading.set(false);
+      }
     });
 
     // Also load inventory items for the table
@@ -236,11 +299,11 @@ export class Dashboard implements OnInit {
   }
 
   trackByCategory(index: number, cat: CategoryStats): string {
-    return cat.category;
+    return cat.category || `category-${index}`;
   }
 
   trackByWarehouse(index: number, wh: WarehouseStats): string {
-    return wh.id;
+    return wh.id || wh.name;
   }
 
   // Get max count for percentage calculations

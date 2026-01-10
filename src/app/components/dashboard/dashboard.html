@@ -307,8 +307,8 @@
             <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
           </div>
         } @else {
-          <div class="divide-y divide-[#242424]">
-            @for (item of lowStockItems(); track item.id) {
+          <div class="divide-y divide-[#242424] max-h-[500px] overflow-y-auto">
+            @for (item of lowStockItems().slice(0, 10); track item.id) {
               <div
                 (click)="viewItem(item)"
                 class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
@@ -328,6 +328,13 @@
               </div>
             }
           </div>
+          @if (lowStockItems().length > 10) {
+            <div class="px-6 py-3 bg-[#141414] border-t border-[#2a2a2a] text-center">
+              <p class="text-xs text-slate-500">
+                Showing 10 of {{ lowStockItems().length }} low stock items
+              </p>
+            </div>
+          }
         }
       </div>
     </div>

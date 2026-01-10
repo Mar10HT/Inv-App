@@ -5,26 +5,20 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-// Angular Material imports
+// Angular Material imports - only what's actually used
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { InventoryService } from '.././../../services/inventory/inventory.service';
 import { InventoryItemInterface, InventoryStatus } from '../../../interfaces/inventory-item.interface';
+import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-inventory-list',
@@ -39,15 +33,8 @@ import { InventoryItemInterface, InventoryStatus } from '../../../interfaces/inv
     MatSortModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatBadgeModule,
-    MatCardModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatMenuModule,
     MatTooltipModule,
     TranslateModule
   ],
@@ -120,9 +107,25 @@ export class InventoryList implements OnInit {
     private snackBar: MatSnackBar,
     private router: Router
   ) {
-    // Auto-sync filtered items with table data source
+    // Auto-sync filtered items with table data source and handle pagination
     effect(() => {
-      this.dataSource.data = this.filteredItems();
+      const filteredData = this.filteredItems();
+      this.dataSource.data = filteredData;
+
+      // Adjust pagination if current page is out of bounds
+      if (this.paginator) {
+        const pageSize = this.paginator.pageSize;
+        const maxPage = Math.ceil(filteredData.length / pageSize) - 1;
+        const currentPage = this.paginator.pageIndex;
+
+        if (currentPage > maxPage && maxPage >= 0) {
+          // Go to last valid page
+          this.paginator.pageIndex = maxPage;
+        } else if (filteredData.length === 0) {
+          // Reset to first page if no results
+          this.paginator.pageIndex = 0;
+        }
+      }
     });
   }
 
@@ -195,23 +198,35 @@ export class InventoryList implements OnInit {
   }
 
   deleteItem(item: InventoryItemInterface): void {
-    const confirmed = confirm('Are you sure you want to delete "' + item.name + '"?');
-    if (confirmed) {
-      this.inventoryService.deleteItem(item.id).subscribe({
-        next: () => {
-          this.snackBar.open('"' + item.name + '" has been deleted', 'Close', {
-            duration: 3000,
-            panelClass: ['snackbar-success']
-          });
-        },
-        error: (err) => {
-          this.snackBar.open('Error deleting item: ' + err.message, 'Close', {
-            duration: 5000,
-            panelClass: ['snackbar-error']
-          });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: 'Delete Item',
+        message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.inventoryService.deleteItem(item.id).subscribe({
+          next: () => {
+            this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
+              duration: 3000,
+              panelClass: ['snackbar-success']
+            });
+          },
+          error: (err) => {
+            this.snackBar.open(`Error deleting item: ${err.message}`, 'Close', {
+              duration: 5000,
+              panelClass: ['snackbar-error']
+            });
+          }
+        });
+      }
+    });
   }
 
   // Utility methods
@@ -233,13 +248,16 @@ export class InventoryList implements OnInit {
     }
   }
 
+  // Memoized date formatter - created once, reused for all items
+  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
   formatDate(date: Date | string): string {
     const d = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(d);
+    return this.dateFormatter.format(d);
   }
 
   // Add new item

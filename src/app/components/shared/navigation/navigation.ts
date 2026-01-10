@@ -1,10 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDrawer, MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
@@ -13,14 +11,12 @@ import { LanguageSelectorComponent } from '../language-selector/language-selecto
   selector: 'app-navigation',
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
     RouterLinkActive,
-    MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatSidenavModule,
-    MatListModule,
-    CommonModule,
     TranslateModule,
     LanguageSelectorComponent,
   ],
@@ -28,14 +24,5 @@ import { LanguageSelectorComponent } from '../language-selector/language-selecto
   styleUrl: './navigation.css'
 })
 export class Navigation {
-  @ViewChild('drawer') drawer!: MatDrawer;
   @ViewChild('sidenav') sidenav!: MatSidenav;
-
-  isOpen = false;
-  sidenavOpen = false;
-
-  toggleMenu() {
-    this.drawer.toggle();
-    this.isOpen = !this.isOpen;
-  }
 }

@@ -36,17 +36,17 @@ export class InventoryService {
   private totalSignal = signal<number>(0);
   private warehousesSignal = signal<Warehouse[]>([]);
   private suppliersSignal = signal<Supplier[]>([]);
-  
+
+  // Categories as separate signal - only updated when new categories are added
+  private categoriesSet = new Set<string>();
+  private categoriesSignal = signal<string[]>([]);
+
   items = computed(() => this.itemsSignal());
   total = computed(() => this.totalSignal());
   warehouses = computed(() => this.warehousesSignal());
   suppliers = computed(() => this.suppliersSignal());
-  
-  categories = computed(() => {
-    const uniqueCategories = [...new Set(this.items().map(item => item.category))];
-    return uniqueCategories.sort();
-  });
-  
+  categories = computed(() => this.categoriesSignal());
+
   locations = computed(() => {
     return this.warehouses().map(w => w.name).sort();
   });
@@ -114,8 +114,31 @@ export class InventoryService {
     ).subscribe(({ items, total }) => {
       this.itemsSignal.set(items);
       this.totalSignal.set(total);
+      this.updateCategoriesFromItems(items);
       this.loading.set(false);
     });
+  }
+
+  // Extract categories from items - only adds new ones
+  private updateCategoriesFromItems(items: InventoryItemInterface[]): void {
+    let hasNewCategories = false;
+    for (const item of items) {
+      if (item.category && !this.categoriesSet.has(item.category)) {
+        this.categoriesSet.add(item.category);
+        hasNewCategories = true;
+      }
+    }
+    if (hasNewCategories) {
+      this.categoriesSignal.set([...this.categoriesSet].sort());
+    }
+  }
+
+  // Add a single category if new
+  private addCategoryIfNew(category: string): void {
+    if (category && !this.categoriesSet.has(category)) {
+      this.categoriesSet.add(category);
+      this.categoriesSignal.set([...this.categoriesSet].sort());
+    }
   }
 
   private transformItem(item: any): InventoryItemInterface {
@@ -145,6 +168,7 @@ export class InventoryService {
         next: (newItem) => {
           this.itemsSignal.update(items => [...items, newItem]);
           this.totalSignal.update(t => t + 1);
+          this.addCategoryIfNew(newItem.category);
           this.loading.set(false);
         },
         error: (error) => {
@@ -164,6 +188,7 @@ export class InventoryService {
           this.itemsSignal.update(items =>
             items.map(item => item.id === id ? updatedItem : item)
           );
+          this.addCategoryIfNew(updatedItem.category);
           this.loading.set(false);
         },
         error: (error) => {

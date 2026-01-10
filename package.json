@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "build:stats": "ng build --configuration production --stats-json",
+    "analyze": "ng build --configuration production --stats-json && npx webpack-bundle-analyzer dist/INV-ICN/browser/stats.json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:INV-ICN": "node dist/INV-ICN/server/server.mjs"

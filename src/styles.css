@@ -3,8 +3,30 @@
 
 
 html, body { height: 100%; }
-body { 
-    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+body {
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
     color-scheme: dark;
+}
+
+/* Material Dialog Overrides */
+.confirm-dialog-container .mat-mdc-dialog-container {
+    --mdc-dialog-container-color: transparent;
+    --mdc-dialog-container-shape: 12px;
+}
+
+.confirm-dialog-container .mat-mdc-dialog-surface {
+    background-color: transparent !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Snackbar Styles */
+.snackbar-success {
+    --mdc-snackbar-container-color: #166534;
+    --mdc-snackbar-supporting-text-color: white;
+}
+
+.snackbar-error {
+    --mdc-snackbar-container-color: #991b1b;
+    --mdc-snackbar-supporting-text-color: white;
 }
 

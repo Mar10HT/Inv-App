@@ -39,16 +39,16 @@ export class Dashboard {
 
   constructor(private sharedData: SharedData) {}
 
-  viewItem(item: Item) {
-    console.log('View item:', item);
+  viewItem(item: Item): void {
+    // TODO: Navigate to item detail view
   }
 
-  editItem(item: Item) {
-    console.log('Edit item:', item);
+  editItem(item: Item): void {
+    // TODO: Navigate to edit item
   }
 
-  deleteItem(item: Item) {
-    console.log('Delete item:', item);
+  deleteItem(item: Item): void {
+    // TODO: Show delete confirmation dialog
   }
 
   getStatusKey(status: string): string {

@@ -1,28 +1,28 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { User, CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
+import { Category, CreateCategoryDto, UpdateCategoryDto } from '../interfaces/category.interface';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class CategoryService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl = `${environment.apiUrl}/categories`;
 
-  users = signal<User[]>([]);
+  categories = signal<Category[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  getAll(): Observable<User[]> {
+  getAll(): Observable<Category[]> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<User[]>(this.apiUrl).pipe(
+    return this.http.get<Category[]>(this.apiUrl).pipe(
       tap({
-        next: (users) => {
-          this.users.set(users);
+        next: (categories) => {
+          this.categories.set(categories);
           this.loading.set(false);
         },
         error: (error) => {
@@ -33,11 +33,11 @@ export class UserService {
     );
   }
 
-  getById(id: string): Observable<User> {
+  getById(id: string): Observable<Category> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<User>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<Category>(`${this.apiUrl}/${id}`).pipe(
       tap({
         next: () => this.loading.set(false),
         error: (error) => {
@@ -48,14 +48,14 @@ export class UserService {
     );
   }
 
-  create(user: CreateUserDto): Observable<User> {
+  create(category: CreateCategoryDto): Observable<Category> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.post<User>(this.apiUrl, user).pipe(
+    return this.http.post<Category>(this.apiUrl, category).pipe(
       tap({
-        next: (newUser) => {
-          this.users.update(users => [...users, newUser]);
+        next: (newCategory) => {
+          this.categories.update(categories => [...categories, newCategory]);
           this.loading.set(false);
         },
         error: (error) => {
@@ -66,15 +66,15 @@ export class UserService {
     );
   }
 
-  update(id: string, user: UpdateUserDto): Observable<User> {
+  update(id: string, category: UpdateCategoryDto): Observable<Category> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.put<User>(`${this.apiUrl}/${id}`, user).pipe(
+    return this.http.put<Category>(`${this.apiUrl}/${id}`, category).pipe(
       tap({
-        next: (updatedUser) => {
-          this.users.update(users =>
-            users.map(u => u.id === id ? updatedUser : u)
+        next: (updatedCategory) => {
+          this.categories.update(categories =>
+            categories.map(c => c.id === id ? updatedCategory : c)
           );
           this.loading.set(false);
         },
@@ -93,8 +93,8 @@ export class UserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap({
         next: () => {
-          this.users.update(users =>
-            users.filter(u => u.id !== id)
+          this.categories.update(categories =>
+            categories.filter(c => c.id !== id)
           );
           this.loading.set(false);
         },
@@ -104,12 +104,5 @@ export class UserService {
         }
       })
     );
-  }
-
-  getUsersByRole(role?: string): User[] {
-    if (!role) {
-      return this.users();
-    }
-    return this.users().filter(user => user.role === role);
   }
 }

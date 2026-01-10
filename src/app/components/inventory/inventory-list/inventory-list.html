@@ -87,7 +87,7 @@
               type="text"
               [value]="searchQuery()"
               (input)="onSearchChange(searchInput.value)"
-              [placeholder]="'DASHBOARD.SEARCH_PLACEHOLDER' | translate"
+              [placeholder]="'INVENTORY.SEARCH_PLACEHOLDER' | translate"
               class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
             />
             <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl">search</mat-icon>
@@ -102,7 +102,7 @@
             class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
-            <option value="all">{{ 'DASHBOARD.ALL_CATEGORIES' | translate }}</option>
+            <option value="all">{{ 'INVENTORY.ALL_CATEGORIES' | translate }}</option>
             <option *ngFor="let category of categories()" [value]="category">{{category}}</option>
           </select>
         </div>
@@ -115,7 +115,7 @@
             class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
-            <option value="all">{{ 'DASHBOARD.ALL_LOCATIONS' | translate }}</option>
+            <option value="all">{{ 'INVENTORY.ALL_LOCATIONS' | translate }}</option>
             <option *ngFor="let location of locations()" [value]="location">{{location}}</option>
           </select>
         </div>
@@ -128,10 +128,10 @@
             class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
-            <option value="all">{{ 'DASHBOARD.ALL_STATUS' | translate }}</option>
-            <option [value]="InventoryStatus.IN_STOCK">{{ 'DASHBOARD.IN_STOCK' | translate }}</option>
-            <option [value]="InventoryStatus.LOW_STOCK">{{ 'DASHBOARD.LOW_STOCK' | translate }}</option>
-            <option [value]="InventoryStatus.OUT_OF_STOCK">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</option>
+            <option value="all">{{ 'INVENTORY.ALL_STATUS' | translate }}</option>
+            <option [value]="InventoryStatus.IN_STOCK">{{ 'INVENTORY.STATUS.IN_STOCK' | translate }}</option>
+            <option [value]="InventoryStatus.LOW_STOCK">{{ 'INVENTORY.STATUS.LOW_STOCK' | translate }}</option>
+            <option [value]="InventoryStatus.OUT_OF_STOCK">{{ 'INVENTORY.STATUS.OUT_OF_STOCK' | translate }}</option>
           </select>
         </div>
 

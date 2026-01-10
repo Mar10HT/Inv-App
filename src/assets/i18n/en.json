@@ -212,6 +212,42 @@
     "NO_SUPPLIERS": "No suppliers found",
     "NO_SUPPLIERS_DESC": "Get started by adding your first supplier"
   },
+  "CATEGORY": {
+    "TITLE": "Categories",
+    "SUBTITLE": "Manage your inventory categories",
+    "ADD": "Add Category",
+    "EDIT": "Edit Category",
+    "NAME": "Name",
+    "DESCRIPTION": "Description",
+    "COLOR": "Color",
+    "COLOR_INVALID": "Invalid hex color format (e.g., #FF5733)",
+    "PREVIEW": "Preview",
+    "TOTAL": "Total Categories",
+    "LIST": "Category List",
+    "NO_CATEGORIES": "No categories found",
+    "NO_CATEGORIES_DESC": "Get started by adding your first category"
+  },
+  "USER": {
+    "TITLE": "Users",
+    "SUBTITLE": "Manage user accounts and permissions",
+    "ADD": "Add User",
+    "EDIT": "Edit User",
+    "NAME": "Name",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "PASSWORD_HINT": "Leave empty to keep current password",
+    "ROLE": "Role",
+    "TOTAL": "Total Users",
+    "LIST": "User List",
+    "NO_USERS": "No users found",
+    "NO_USERS_DESC": "Get started by adding your first user",
+    "ROLES": {
+      "ADMIN": "Administrator",
+      "USER": "User",
+      "VIEWER": "Viewer",
+      "EXTERNAL": "External"
+    }
+  },
   "USERS": {
     "TITLE": "Users",
     "ADD": "Add User",

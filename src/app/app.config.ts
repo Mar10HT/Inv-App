@@ -1,13 +1,43 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+
+// Import translations directly (SSR-safe)
+import ES_TRANSLATIONS from '../assets/i18n/es.json';
+import EN_TRANSLATIONS from '../assets/i18n/en.json';
+
+const TRANSLATIONS: { [key: string]: any } = {
+  es: ES_TRANSLATIONS,
+  en: EN_TRANSLATIONS
+};
+
+// Static loader - SSR compatible
+class StaticTranslateLoader implements TranslateLoader {
+  getTranslation(lang: string): Observable<any> {
+    return of(TRANSLATIONS[lang] || TRANSLATIONS['en']);
+  }
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes), provideClientHydration(withEventReplay())
+    provideRouter(routes),
+    provideClientHydration(withEventReplay()),
+    provideHttpClient(withFetch()),
+    importProvidersFrom(
+      TranslateModule.forRoot({
+        defaultLanguage: 'en',
+        loader: {
+          provide: TranslateLoader,
+          useClass: StaticTranslateLoader
+        }
+      })
+    )
   ]
 };

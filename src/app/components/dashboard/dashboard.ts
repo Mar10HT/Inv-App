@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { SharedData } from '../../services/shared-data/shared-data.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips'; // For status chips
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface Item {
   id: number;
   name: string;
+  description: string;
   category: string;
   quantity: number;
   price: number;
@@ -17,7 +17,8 @@ export interface Item {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, MatIconModule, MatTableModule, MatButtonModule, MatChipsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatIconModule, MatButtonModule, TranslateModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -27,39 +28,35 @@ export class Dashboard {
   totalItems: number = 432;
   totalValue: number = 45230.50;
 
-  displayedColumns: string[] = ['name', 'category', 'quantity', 'price', 'status', 'actions'];
-
   items: Item[] = [
-    { id: 1, name: "Laptop Dell XPS", category: "Electronics", quantity: 25, price: 899.99, status: "In Stock" },
-    { id: 2, name: "Office Chair", category: "Furniture", quantity: 8, price: 245.50, status: "Low Stock" },
-    { id: 3, name: "Wireless Mouse", category: "Electronics", quantity: 0, price: 29.99, status: "Out of Stock" },
-    { id: 4, name: "Desk Lamp", category: "Furniture", quantity: 15, price: 45.00, status: "In Stock" },
-    { id: 5, name: "Keyboard Mechanical", category: "Electronics", quantity: 32, price: 125.00, status: "In Stock" },
-    { id: 6, name: "Monitor 24\"", category: "Electronics", quantity: 12, price: 299.99, status: "In Stock" },
+    { id: 1, name: "Laptop Dell XPS", description: "High-performance laptop for professional use", category: "Electronics", quantity: 25, price: 899.99, status: "in-stock" },
+    { id: 2, name: "Office Chair", description: "Ergonomic office chair with lumbar support", category: "Furniture", quantity: 8, price: 245.50, status: "low-stock" },
+    { id: 3, name: "Wireless Mouse", description: "Bluetooth wireless mouse with rechargeable battery", category: "Electronics", quantity: 0, price: 29.99, status: "out-of-stock" },
+    { id: 4, name: "Desk Lamp", description: "LED desk lamp with adjustable brightness", category: "Furniture", quantity: 15, price: 45.00, status: "in-stock" },
+    { id: 5, name: "Keyboard Mechanical", description: "Mechanical keyboard with RGB backlighting", category: "Electronics", quantity: 32, price: 125.00, status: "in-stock" },
+    { id: 6, name: "Monitor 24\"", description: "Full HD 24-inch monitor with HDMI input", category: "Electronics", quantity: 12, price: 299.99, status: "in-stock" },
   ];
 
-  constructor(private sharedData: SharedData) {
-    console.log("Dashboard component created!");
+  constructor(private sharedData: SharedData) {}
+
+  viewItem(item: Item): void {
+    // TODO: Navigate to item detail view
   }
 
-  getStatusColor(status: string): string {
+  editItem(item: Item): void {
+    // TODO: Navigate to edit item
+  }
+
+  deleteItem(item: Item): void {
+    // TODO: Show delete confirmation dialog
+  }
+
+  getStatusKey(status: string): string {
     switch (status) {
-      case 'In Stock': return 'bg-[color-mix(in_srgb,var(--secondary)_20%,transparent)] text-[var(--secondary)]';
-      case 'Low Stock': return 'bg-[color-mix(in_srgb,var(--tertiary)_20%,transparent)] text-[var(--tertiary)]';
-      case 'Out of Stock': return 'bg-[color-mix(in_srgb,var(--error)_20%,transparent)] text-[var(--error)]';
-      default: return 'bg-[color-mix(in_srgb,var(--primary)_20%,transparent)] text-[var(--primary)]';
+      case 'in-stock': return 'INVENTORY.STATUS.IN_STOCK';
+      case 'low-stock': return 'INVENTORY.STATUS.LOW_STOCK';
+      case 'out-of-stock': return 'INVENTORY.STATUS.OUT_OF_STOCK';
+      default: return status;
     }
-  }
-
-   viewItem(item: Item) {
-    console.log('View item:', item);
-  }
-
-  editItem(item: Item) {
-    console.log('Edit item:', item);
-  }
-
-  deleteItem(item: Item) {
-    console.log('Delete item:', item);
   }
 }

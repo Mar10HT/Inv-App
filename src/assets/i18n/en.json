@@ -1,0 +1,185 @@
+{
+  "NAV": {
+    "MENU": "MENU",
+    "DASHBOARD": "Dashboard",
+    "INVENTORY": "Inventory",
+    "WAREHOUSES": "Warehouses",
+    "CATEGORIES": "Categories",
+    "SUPPLIERS": "Suppliers",
+    "USERS": "Users",
+    "SETTINGS": "Settings",
+    "PROFILE": "Profile",
+    "LOGOUT": "Logout"
+  },
+  "COMMON": {
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "EDIT": "Edit",
+    "ADD": "Add",
+    "SEARCH": "Search",
+    "FILTER": "Filter",
+    "EXPORT": "Export",
+    "IMPORT": "Import",
+    "LOADING": "Loading...",
+    "NO_DATA": "No data",
+    "CONFIRM": "Confirm",
+    "YES": "Yes",
+    "NO": "No",
+    "CREATE": "Create",
+    "UPDATE": "Update",
+    "NONE": "None",
+    "UNASSIGNED": "Unassigned",
+    "ALL": "All",
+    "ACTIONS": "Actions",
+    "STATUS": "Status",
+    "TOTAL": "Total",
+    "VIEW": "View",
+    "VIEW_ALL": "View All",
+    "VIEW_REPORTS": "View Reports",
+    "ADD_NEW": "Add New"
+  },
+  "DASHBOARD": {
+    "TITLE": "Inventory Management",
+    "WELCOME": "Welcome back",
+    "SUBTITLE": "Here's what's happening with your inventory today.",
+    "TOTAL_ITEMS": "Total Items",
+    "TOTAL_USERS": "Total Users",
+    "TOTAL_VALUE": "Total Value",
+    "IN_STOCK": "In Stock",
+    "LOW_STOCK": "Low Stock",
+    "OUT_OF_STOCK": "Out of Stock",
+    "FROM_LAST_MONTH": "from last month",
+    "RECENT_ITEMS": "Recent Items",
+    "MANAGE_ITEMS": "Manage your inventory items",
+    "ADD_NEW_ITEM": "Add New Item",
+    "EXPORT_DATA": "Export Data",
+    "VIEW_REPORTS": "View Reports",
+    "TABLE": {
+      "ITEM": "Item",
+      "CATEGORY": "Category",
+      "QUANTITY": "Quantity",
+      "PRICE": "Price",
+      "LOCATION": "Location",
+      "WAREHOUSE": "Warehouse",
+      "LAST_UPDATED": "Last Updated",
+      "STATUS": "Status",
+      "ACTIONS": "Actions"
+    }
+  },
+  "INVENTORY": {
+    "TITLE": "Inventory",
+    "ADD_ITEM": "Add Item",
+    "EDIT_ITEM": "Edit Item",
+    "DELETE_ITEM": "Delete Item",
+    "SEARCH_PLACEHOLDER": "Search by name, category or description...",
+    "ALL_CATEGORIES": "All Categories",
+    "ALL_LOCATIONS": "All Locations",
+    "ALL_STATUS": "All Status",
+    "STATUS": {
+      "IN_STOCK": "In Stock",
+      "LOW_STOCK": "Low Stock",
+      "OUT_OF_STOCK": "Out of Stock"
+    },
+    "DELETE_CONFIRM": {
+      "TITLE": "Confirm Deletion",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "FORM": {
+      "ADD_TITLE": "Add New Item",
+      "EDIT_TITLE": "Edit Item",
+      "ADD_SUBTITLE": "Fill in the details to add a new item",
+      "EDIT_SUBTITLE": "Update the item details below",
+      "ITEM_TYPE": {
+        "TITLE": "Item Type",
+        "BULK": "Bulk Item (BULK)",
+        "BULK_HINT": "Items counted by units (e.g., screws, paper)",
+        "UNIQUE": "Unique Item (UNIQUE)",
+        "UNIQUE_HINT": "Individual items with unique identifier (e.g., laptops, servers)"
+      },
+      "BASIC_INFO": {
+        "TITLE": "Basic Information",
+        "NAME": "Item Name",
+        "NAME_PLACEHOLDER": "E.g., Dell Latitude 5420 Laptop",
+        "CATEGORY": "Category",
+        "CATEGORY_PLACEHOLDER": "E.g., Electronics, Office",
+        "DESCRIPTION": "Description",
+        "DESCRIPTION_PLACEHOLDER": "Describe the item...",
+        "LOCATION": "Physical Location",
+        "LOCATION_PLACEHOLDER": "E.g., Shelf A-5, Aisle 3"
+      },
+      "WAREHOUSE": {
+        "LABEL": "Warehouse",
+        "HINT": "Select the warehouse where this item is stored"
+      },
+      "IDENTIFIERS": {
+        "TITLE": "Identifiers",
+        "SERVICE_TAG": "Service Tag",
+        "SERVICE_TAG_PLACEHOLDER": "E.g., DEL123456AB",
+        "SERVICE_TAG_HINT": "Required for UNIQUE items",
+        "SERIAL_NUMBER": "Serial Number",
+        "SERIAL_NUMBER_PLACEHOLDER": "E.g., SN123456789",
+        "SERIAL_NUMBER_HINT": "Optional",
+        "SKU": "SKU",
+        "SKU_PLACEHOLDER": "E.g., LAP-DELL-5420",
+        "BARCODE": "Barcode",
+        "BARCODE_PLACEHOLDER": "E.g., 1234567890123"
+      },
+      "QUANTITY": {
+        "TITLE": "Quantity and Inventory",
+        "CURRENT": "Current Quantity",
+        "MINIMUM": "Minimum Quantity",
+        "UNIQUE_HINT": "UNIQUE items always have quantity = 1"
+      },
+      "PRICE": {
+        "TITLE": "Price and Supplier",
+        "AMOUNT": "Price",
+        "CURRENCY": "Currency"
+      },
+      "SUPPLIER": {
+        "LABEL": "Supplier",
+        "NONE": "No supplier",
+        "HINT": "Optional"
+      },
+      "ASSIGNMENT": {
+        "TITLE": "Item Assignment",
+        "USER": "Assign to User",
+        "UNASSIGNED": "Unassigned",
+        "HINT": "UNIQUE items only"
+      }
+    }
+  },
+  "WAREHOUSE": {
+    "TITLE": "Warehouses",
+    "ADD": "Add Warehouse",
+    "EDIT": "Edit Warehouse",
+    "NAME": "Name",
+    "LOCATION": "Location",
+    "DESCRIPTION": "Description"
+  },
+  "SUPPLIER": {
+    "TITLE": "Suppliers",
+    "ADD": "Add Supplier",
+    "EDIT": "Edit Supplier",
+    "NAME": "Name",
+    "LOCATION": "Location",
+    "PHONE": "Phone",
+    "EMAIL": "Email"
+  },
+  "USERS": {
+    "TITLE": "Users",
+    "ADD": "Add User",
+    "EDIT": "Edit User"
+  },
+  "FORM": {
+    "VALIDATION": {
+      "REQUIRED": "This field is required",
+      "MIN_LENGTH": "Minimum {{length}} characters",
+      "MAX_LENGTH": "Maximum {{length}} characters",
+      "EMAIL": "Invalid email",
+      "MIN_VALUE": "Minimum value: {{value}}",
+      "MAX_VALUE": "Maximum value: {{value}}",
+      "REQUIRE_EITHER": "At least one of these fields is required"
+    }
+  }
+}

@@ -1,31 +1,29 @@
-import { Component, computed, signal, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-// Angular Material imports
+// Angular Material imports - only what's actually used
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { InventoryService } from '.././../../services/inventory/inventory.service';
-import { InventoryItemInterface } from '../../../interfaces/inventory-item.interface';
+import { InventoryItemInterface, InventoryStatus } from '../../../interfaces/inventory-item.interface';
+import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterModule,
@@ -35,16 +33,10 @@ import { InventoryItemInterface } from '../../../interfaces/inventory-item.inter
     MatSortModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatBadgeModule,
-    MatCardModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './inventory-list.html',
   styleUrl: './inventory-list.css'
@@ -53,103 +45,140 @@ export class InventoryList implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  // Expose enum to template
+  InventoryStatus = InventoryStatus;
+
   // Data source for the table
   dataSource = new MatTableDataSource<InventoryItemInterface>([]);
-  
+
   // Table columns
-  displayedColumns: string[] = ['name', 'category', 'quantity', 'status', 'location', 'lastUpdated', 'actions'];
-  
+  displayedColumns: string[] = ['name', 'category', 'quantity', 'status', 'warehouse', 'updatedAt', 'actions'];
+
   // Filter signals
   searchQuery = signal('');
   selectedCategory = signal('all');
   selectedLocation = signal('all');
-  selectedStatus = signal('all');
-  
+  selectedStatus = signal<string>('all');
+
+  // Debounced search
+  private searchSubject = new Subject<string>();
+
   // Computed values
   categories = computed(() => this.inventoryService.categories());
   locations = computed(() => this.inventoryService.locations());
-  
-  // Stats
-  totalItems = computed(() => this.inventoryService.getTotalItems());
-  lowStockItems = computed(() => this.inventoryService.getLowStockItems().length);
-  outOfStockItems = computed(() => this.inventoryService.getItemsByStatus('out-of-stock').length);
-  inStockItems = computed(() => this.inventoryService.getItemsByStatus('in-stock').length);
+
+  // Reactive filtered items with computed signal
+  filteredItems = computed(() => {
+    const search = this.searchQuery().toLowerCase();
+    const category = this.selectedCategory();
+    const location = this.selectedLocation();
+    const status = this.selectedStatus();
+    const allItems = this.inventoryService.items();
+
+    return allItems.filter(item => {
+      const matchesSearch = !search ||
+        item.name.toLowerCase().includes(search) ||
+        (item.description?.toLowerCase().includes(search) ?? false);
+
+      const matchesCategory = category === 'all' || item.category === category;
+      const matchesLocation = location === 'all' || item.warehouse?.name === location;
+      const matchesStatus = status === 'all' || item.status === status;
+
+      return matchesSearch && matchesCategory && matchesLocation && matchesStatus;
+    });
+  });
+
+  // Single iteration for all stats
+  stats = computed(() => {
+    const items = this.filteredItems();
+
+    return items.reduce((acc, item) => {
+      acc.total++;
+      if (item.status === InventoryStatus.IN_STOCK) acc.inStock++;
+      else if (item.status === InventoryStatus.LOW_STOCK) acc.lowStock++;
+      else if (item.status === InventoryStatus.OUT_OF_STOCK) acc.outOfStock++;
+      return acc;
+    }, { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 });
+  });
 
   constructor(
     private inventoryService: InventoryService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {
+    // Auto-sync filtered items with table data source and handle pagination
+    effect(() => {
+      const filteredData = this.filteredItems();
+      this.dataSource.data = filteredData;
+
+      // Adjust pagination if current page is out of bounds
+      if (this.paginator) {
+        const pageSize = this.paginator.pageSize;
+        const maxPage = Math.ceil(filteredData.length / pageSize) - 1;
+        const currentPage = this.paginator.pageIndex;
+
+        if (currentPage > maxPage && maxPage >= 0) {
+          // Go to last valid page
+          this.paginator.pageIndex = maxPage;
+        } else if (filteredData.length === 0) {
+          // Reset to first page if no results
+          this.paginator.pageIndex = 0;
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.loadData();
-    this.setupFilters();
+    // Debounced search - waits 300ms after last keystroke
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(value => {
+      this.searchQuery.set(value);
+    });
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+
     // Custom sort for status
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case 'status':
-          const statusOrder = { 'out-of-stock': 0, 'low-stock': 1, 'in-stock': 2 };
-          return statusOrder[item.status];
-        case 'lastUpdated':
-          return item.lastUpdated.getTime();
+          const statusOrder: Record<string, number> = {
+            [InventoryStatus.OUT_OF_STOCK]: 0,
+            [InventoryStatus.LOW_STOCK]: 1,
+            [InventoryStatus.IN_STOCK]: 2
+          };
+          return statusOrder[item.status] ?? 0;
+        case 'updatedAt':
+          return new Date(item.updatedAt).getTime();
+        case 'warehouse':
+          return item.warehouse?.name ?? '';
         default:
           return (item as any)[property];
       }
     };
   }
 
-  private loadData(): void {
-    this.applyFilters();
-  }
-
-  private setupFilters(): void {
-    // Watch for filter changes and reapply filters
-    const updateFilters = () => {
-      this.applyFilters();
-    };
-
-    // Set up reactive filters
-    setInterval(() => {
-      updateFilters();
-    }, 100); // Simple polling for demo - in production use proper reactive patterns
-  }
-
-  applyFilters(): void {
-    const filters = {
-      search: this.searchQuery(),
-      category: this.selectedCategory(),
-      location: this.selectedLocation(),
-      status: this.selectedStatus()
-    };
-
-    const filteredItems = this.inventoryService.getFilteredItems(filters);
-    this.dataSource.data = filteredItems;
-  }
-
+  // Debounced search input
   onSearchChange(value: string): void {
-    this.searchQuery.set(value);
-    this.applyFilters();
+    this.searchSubject.next(value);
   }
 
+  // Filter change handlers
   onCategoryChange(category: string): void {
     this.selectedCategory.set(category);
-    this.applyFilters();
   }
 
   onLocationChange(location: string): void {
     this.selectedLocation.set(location);
-    this.applyFilters();
   }
 
   onStatusChange(status: string): void {
     this.selectedStatus.set(status);
-    this.applyFilters();
   }
 
   clearFilters(): void {
@@ -157,68 +186,86 @@ export class InventoryList implements OnInit {
     this.selectedCategory.set('all');
     this.selectedLocation.set('all');
     this.selectedStatus.set('all');
-    this.applyFilters();
   }
 
   // CRUD Operations
   viewItem(item: InventoryItemInterface): void {
     // Navigate to item detail view
-    // Implementation depends on routing setup
-    console.log('View item:', item);
   }
 
   editItem(item: InventoryItemInterface): void {
-    // Navigate to edit form
-    // Implementation depends on routing setup
-    console.log('Edit item:', item);
+    this.router.navigate(['/inventory/edit', item.id]);
   }
 
   deleteItem(item: InventoryItemInterface): void {
-    const confirmed = confirm(`Are you sure you want to delete "${item.name}"?`);
-    if (confirmed) {
-      this.inventoryService.deleteItem(item.id);
-      this.loadData();
-      this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
-        duration: 3000,
-        panelClass: ['snackbar-success']
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: 'Delete Item',
+        message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.inventoryService.deleteItem(item.id).subscribe({
+          next: () => {
+            this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
+              duration: 3000,
+              panelClass: ['snackbar-success']
+            });
+          },
+          error: (err) => {
+            this.snackBar.open(`Error deleting item: ${err.message}`, 'Close', {
+              duration: 5000,
+              panelClass: ['snackbar-error']
+            });
+          }
+        });
+      }
+    });
   }
 
   // Utility methods
-  getStatusColor(status: string): string {
+  getStatusColor(status: InventoryStatus): string {
     switch (status) {
-      case 'in-stock': return 'primary';
-      case 'low-stock': return 'accent';
-      case 'out-of-stock': return 'warn';
+      case InventoryStatus.IN_STOCK: return 'primary';
+      case InventoryStatus.LOW_STOCK: return 'accent';
+      case InventoryStatus.OUT_OF_STOCK: return 'warn';
       default: return 'primary';
     }
   }
 
-  getStatusIcon(status: string): string {
+  getStatusIcon(status: InventoryStatus): string {
     switch (status) {
-      case 'in-stock': return 'check_circle';
-      case 'low-stock': return 'warning';
-      case 'out-of-stock': return 'error';
+      case InventoryStatus.IN_STOCK: return 'check_circle';
+      case InventoryStatus.LOW_STOCK: return 'warning';
+      case InventoryStatus.OUT_OF_STOCK: return 'error';
       default: return 'help';
     }
   }
 
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(date);
+  // Memoized date formatter - created once, reused for all items
+  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  formatDate(date: Date | string): string {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return this.dateFormatter.format(d);
   }
 
   // Add new item
   addNewItem(): void {
-    // Navigate to add form
-    console.log('Add new item');
+    this.router.navigate(['/inventory/add']);
   }
 
-  // Export functionality (bonus)
+  // Export functionality
   exportData(): void {
     const data = this.dataSource.data;
     const csvContent = this.convertToCSV(data);
@@ -226,19 +273,19 @@ export class InventoryList implements OnInit {
   }
 
   private convertToCSV(data: InventoryItemInterface[]): string {
-    const headers = ['Name', 'Description', 'Quantity', 'Category', 'Location', 'Status', 'Last Updated'];
+    const headers = ['Name', 'Description', 'Quantity', 'Category', 'Warehouse', 'Status', 'Last Updated'];
     const csvData = data.map(item => [
       item.name,
-      item.description,
+      item.description ?? '',
       item.quantity.toString(),
       item.category,
-      item.location,
+      item.warehouse?.name ?? '',
       item.status,
-      this.formatDate(item.lastUpdated)
+      this.formatDate(item.updatedAt)
     ]);
 
     return [headers, ...csvData]
-      .map(row => row.map(field => `"${field}"`).join(','))
+      .map(row => row.map(field => '"' + field + '"').join(','))
       .join('\n');
   }
 
@@ -252,22 +299,8 @@ export class InventoryList implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  // Add this method to your InventoryList component class
-trackByFn(index: number, item: InventoryItemInterface): any {
-  return item.id; // or whatever unique identifier your items have
-}
-
-
-  // Reset data (for testing)
-  resetData(): void {
-    const confirmed = confirm('Are you sure you want to reset all data to default?');
-    if (confirmed) {
-      this.inventoryService.resetToMockData();
-      this.loadData();
-      this.snackBar.open('Data has been reset to default', 'Close', {
-        duration: 3000,
-        panelClass: ['snackbar-success']
-      });
-    }
+  trackByFn(index: number, item: InventoryItemInterface): any {
+    return item.id;
   }
+
 }

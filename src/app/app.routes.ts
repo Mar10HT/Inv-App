@@ -1,41 +1,52 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './components/dashboard/dashboard';
-import { InventoryList } from './components/inventory/inventory-list/inventory-list';
-import { InventoryForm } from './components/inventory/inventory-form/inventory-form';
-import { InventoryItem } from './components/inventory/inventory-item/inventory-item';
-import { Categories } from './components/categories/categories';
-import { Profile } from './components/profile/profile';
-import { Settings } from './components/settings/settings';
-import { Users } from './components/users/users';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { 
+
+  // Dashboard - loaded on first visit (most common entry point)
+  {
     path: 'dashboard',
-    component: Dashboard
+    loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard)
   },
+
+  // Inventory - lazy loaded
   {
     path: 'inventory',
     children: [
-      { path: '', component: InventoryList },
-      { path: 'add', component: InventoryForm },
-      { path: 'edit/:id', component: InventoryForm },
-      { path: ':id', component: InventoryItem}
+      {
+        path: '',
+        loadComponent: () => import('./components/inventory/inventory-list/inventory-list').then(m => m.InventoryList)
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./components/inventory/inventory-item/inventory-item').then(m => m.InventoryItem)
+      }
     ]
   },
-  { 
+
+  // Other pages - lazy loaded
+  {
     path: 'categories',
-    component: Categories
-  },{ 
+    loadComponent: () => import('./components/categories/categories').then(m => m.Categories)
+  },
+  {
     path: 'profile',
-    component: Profile
+    loadComponent: () => import('./components/profile/profile').then(m => m.Profile)
   },
-  { 
+  {
     path: 'settings',
-    component: Settings
+    loadComponent: () => import('./components/settings/settings').then(m => m.Settings)
   },
-  { 
+  {
     path: 'users',
-    component: Users
+    loadComponent: () => import('./components/users/users').then(m => m.Users)
   }
 ];

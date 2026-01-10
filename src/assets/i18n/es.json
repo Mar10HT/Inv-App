@@ -1,0 +1,185 @@
+{
+  "NAV": {
+    "MENU": "MENU",
+    "DASHBOARD": "Panel",
+    "INVENTORY": "Inventario",
+    "WAREHOUSES": "Bodegas",
+    "CATEGORIES": "Categorias",
+    "SUPPLIERS": "Proveedores",
+    "USERS": "Usuarios",
+    "SETTINGS": "Configuracion",
+    "PROFILE": "Perfil",
+    "LOGOUT": "Cerrar Sesion"
+  },
+  "COMMON": {
+    "SAVE": "Guardar",
+    "CANCEL": "Cancelar",
+    "DELETE": "Eliminar",
+    "EDIT": "Editar",
+    "ADD": "Agregar",
+    "SEARCH": "Buscar",
+    "FILTER": "Filtrar",
+    "EXPORT": "Exportar",
+    "IMPORT": "Importar",
+    "LOADING": "Cargando...",
+    "NO_DATA": "No hay datos",
+    "CONFIRM": "Confirmar",
+    "YES": "Si",
+    "NO": "No",
+    "CREATE": "Crear",
+    "UPDATE": "Actualizar",
+    "NONE": "Ninguno",
+    "UNASSIGNED": "Sin asignar",
+    "ALL": "Todos",
+    "ACTIONS": "Acciones",
+    "STATUS": "Estado",
+    "TOTAL": "Total",
+    "VIEW": "Ver",
+    "VIEW_ALL": "Ver Todos",
+    "VIEW_REPORTS": "Ver Reportes",
+    "ADD_NEW": "Agregar Nuevo"
+  },
+  "DASHBOARD": {
+    "TITLE": "Gestion de Inventario",
+    "WELCOME": "Bienvenido de nuevo",
+    "SUBTITLE": "Esto es lo que esta pasando con tu inventario hoy.",
+    "TOTAL_ITEMS": "Total de Items",
+    "TOTAL_USERS": "Total Usuarios",
+    "TOTAL_VALUE": "Valor Total",
+    "IN_STOCK": "En Stock",
+    "LOW_STOCK": "Stock Bajo",
+    "OUT_OF_STOCK": "Sin Stock",
+    "FROM_LAST_MONTH": "desde el mes pasado",
+    "RECENT_ITEMS": "Items Recientes",
+    "MANAGE_ITEMS": "Administra tus items de inventario",
+    "ADD_NEW_ITEM": "Agregar Nuevo Item",
+    "EXPORT_DATA": "Exportar Datos",
+    "VIEW_REPORTS": "Ver Reportes",
+    "TABLE": {
+      "ITEM": "Item",
+      "CATEGORY": "Categoria",
+      "QUANTITY": "Cantidad",
+      "PRICE": "Precio",
+      "LOCATION": "Ubicacion",
+      "WAREHOUSE": "Bodega",
+      "LAST_UPDATED": "Ultima Actualizacion",
+      "STATUS": "Estado",
+      "ACTIONS": "Acciones"
+    }
+  },
+  "INVENTORY": {
+    "TITLE": "Inventario",
+    "ADD_ITEM": "Agregar Item",
+    "EDIT_ITEM": "Editar Item",
+    "DELETE_ITEM": "Eliminar Item",
+    "SEARCH_PLACEHOLDER": "Buscar por nombre, categoria o descripcion...",
+    "ALL_CATEGORIES": "Todas las Categorias",
+    "ALL_LOCATIONS": "Todas las Ubicaciones",
+    "ALL_STATUS": "Todos los Estados",
+    "STATUS": {
+      "IN_STOCK": "En Stock",
+      "LOW_STOCK": "Stock Bajo",
+      "OUT_OF_STOCK": "Agotado"
+    },
+    "DELETE_CONFIRM": {
+      "TITLE": "Confirmar Eliminacion",
+      "MESSAGE": "Estas seguro de eliminar \"{{name}}\"? Esta accion no se puede deshacer."
+    },
+    "FORM": {
+      "ADD_TITLE": "Agregar Nuevo Item",
+      "EDIT_TITLE": "Editar Item",
+      "ADD_SUBTITLE": "Complete los detalles para agregar un nuevo item",
+      "EDIT_SUBTITLE": "Actualice los detalles del item",
+      "ITEM_TYPE": {
+        "TITLE": "Tipo de Item",
+        "BULK": "Item por Cantidad (BULK)",
+        "BULK_HINT": "Items contados por unidades (ej: tornillos, papel)",
+        "UNIQUE": "Item Unico (UNIQUE)",
+        "UNIQUE_HINT": "Items individuales con identificador (ej: laptops, servidores)"
+      },
+      "BASIC_INFO": {
+        "TITLE": "Informacion Basica",
+        "NAME": "Nombre del Item",
+        "NAME_PLACEHOLDER": "Ej: Laptop Dell Latitude 5420",
+        "CATEGORY": "Categoria",
+        "CATEGORY_PLACEHOLDER": "Ej: Electronica, Oficina",
+        "DESCRIPTION": "Descripcion",
+        "DESCRIPTION_PLACEHOLDER": "Describa el item...",
+        "LOCATION": "Ubicacion Fisica",
+        "LOCATION_PLACEHOLDER": "Ej: Estante A-5, Pasillo 3"
+      },
+      "WAREHOUSE": {
+        "LABEL": "Bodega",
+        "HINT": "Seleccione la bodega donde se almacena este item"
+      },
+      "IDENTIFIERS": {
+        "TITLE": "Identificadores",
+        "SERVICE_TAG": "Service Tag",
+        "SERVICE_TAG_PLACEHOLDER": "Ej: DEL123456AB",
+        "SERVICE_TAG_HINT": "Requerido para items UNIQUE",
+        "SERIAL_NUMBER": "Numero de Serie",
+        "SERIAL_NUMBER_PLACEHOLDER": "Ej: SN123456789",
+        "SERIAL_NUMBER_HINT": "Opcional",
+        "SKU": "SKU",
+        "SKU_PLACEHOLDER": "Ej: LAP-DELL-5420",
+        "BARCODE": "Codigo de Barras",
+        "BARCODE_PLACEHOLDER": "Ej: 1234567890123"
+      },
+      "QUANTITY": {
+        "TITLE": "Cantidad e Inventario",
+        "CURRENT": "Cantidad Actual",
+        "MINIMUM": "Cantidad Minima",
+        "UNIQUE_HINT": "Los items UNIQUE siempre tienen cantidad = 1"
+      },
+      "PRICE": {
+        "TITLE": "Precio y Proveedor",
+        "AMOUNT": "Precio",
+        "CURRENCY": "Moneda"
+      },
+      "SUPPLIER": {
+        "LABEL": "Proveedor",
+        "NONE": "Sin proveedor",
+        "HINT": "Opcional"
+      },
+      "ASSIGNMENT": {
+        "TITLE": "Asignacion de Item",
+        "USER": "Asignar a Usuario",
+        "UNASSIGNED": "Sin asignar",
+        "HINT": "Solo para items UNIQUE"
+      }
+    }
+  },
+  "WAREHOUSE": {
+    "TITLE": "Bodegas",
+    "ADD": "Agregar Bodega",
+    "EDIT": "Editar Bodega",
+    "NAME": "Nombre",
+    "LOCATION": "Ubicacion",
+    "DESCRIPTION": "Descripcion"
+  },
+  "SUPPLIER": {
+    "TITLE": "Proveedores",
+    "ADD": "Agregar Proveedor",
+    "EDIT": "Editar Proveedor",
+    "NAME": "Nombre",
+    "LOCATION": "Ubicacion",
+    "PHONE": "Telefono",
+    "EMAIL": "Email"
+  },
+  "USERS": {
+    "TITLE": "Usuarios",
+    "ADD": "Agregar Usuario",
+    "EDIT": "Editar Usuario"
+  },
+  "FORM": {
+    "VALIDATION": {
+      "REQUIRED": "Este campo es requerido",
+      "MIN_LENGTH": "Minimo {{length}} caracteres",
+      "MAX_LENGTH": "Maximo {{length}} caracteres",
+      "EMAIL": "Email invalido",
+      "MIN_VALUE": "Valor minimo: {{value}}",
+      "MAX_VALUE": "Valor maximo: {{value}}",
+      "REQUIRE_EITHER": "Se requiere al menos uno de estos campos"
+    }
+  }
+}

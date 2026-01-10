@@ -1,147 +1,225 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { InventoryItemInterface } from '../../interfaces/inventory-item.interface';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, tap, map, catchError, of } from 'rxjs';
+import { 
+  InventoryItemInterface, 
+  CreateInventoryItemDto, 
+  UpdateInventoryItemDto, 
+  InventoryStatus,
+  PaginatedResponse,
+  StatsResponse,
+  Warehouse,
+  Supplier
+} from '../../interfaces/inventory-item.interface';
+import { environment } from '../../../environments/environment';
+
+export interface FilterParams {
+  search?: string;
+  category?: string;
+  status?: InventoryStatus;
+  warehouseId?: string;
+  supplierId?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
-  private readonly STORAGE_KEY = 'inventory_items';
+  private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
+  
   private itemsSignal = signal<InventoryItemInterface[]>([]);
-  
-  // Public computed signals
+  private totalSignal = signal<number>(0);
+  private warehousesSignal = signal<Warehouse[]>([]);
+  private suppliersSignal = signal<Supplier[]>([]);
+
+  // Categories as separate signal - only updated when new categories are added
+  private categoriesSet = new Set<string>();
+  private categoriesSignal = signal<string[]>([]);
+
   items = computed(() => this.itemsSignal());
-  categories = computed(() => {
-    const uniqueCategories = [...new Set(this.items().map(item => item.category))];
-    return uniqueCategories.sort();
-  });
-  
+  total = computed(() => this.totalSignal());
+  warehouses = computed(() => this.warehousesSignal());
+  suppliers = computed(() => this.suppliersSignal());
+  categories = computed(() => this.categoriesSignal());
+
   locations = computed(() => {
-    const uniqueLocations = [...new Set(this.items().map(item => item.location))];
-    return uniqueLocations.sort();
+    return this.warehouses().map(w => w.name).sort();
   });
+
+  loading = signal<boolean>(false);
+  error = signal<string | null>(null);
 
   constructor() {
-    this.loadFromStorage();
+    this.loadInitialData();
   }
 
-  private loadFromStorage(): void {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsedItems = JSON.parse(stored).map((item: any) => ({
-          ...item,
-          lastUpdated: new Date(item.lastUpdated)
-        }));
-        this.itemsSignal.set(parsedItems);
-      } catch (error) {
-        console.error('Error loading from localStorage:', error);
-        this.initializeWithMockData();
-      }
+  private loadInitialData(): void {
+    this.loadWarehouses();
+    this.loadSuppliers();
+    this.loadItems();
+  }
+
+  loadWarehouses(): void {
+    this.http.get<Warehouse[]>(this.apiUrl + '/warehouses').pipe(
+      catchError(err => {
+        console.error('Error loading warehouses:', err);
+        return of([]);
+      })
+    ).subscribe(warehouses => {
+      this.warehousesSignal.set(warehouses);
+    });
+  }
+
+  loadSuppliers(): void {
+    this.http.get<Supplier[]>(this.apiUrl + '/suppliers').pipe(
+      catchError(err => {
+        console.error('Error loading suppliers:', err);
+        return of([]);
+      })
+    ).subscribe(suppliers => {
+      this.suppliersSignal.set(suppliers);
+    });
+  }
+
+  loadItems(filters?: FilterParams): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    let params = new HttpParams();
+    if (filters) {
+      if (filters.search) params = params.set('search', filters.search);
+      if (filters.category) params = params.set('category', filters.category);
+      if (filters.status) params = params.set('status', filters.status);
+      if (filters.warehouseId) params = params.set('warehouseId', filters.warehouseId);
+      if (filters.page) params = params.set('page', filters.page.toString());
+      if (filters.limit) params = params.set('limit', filters.limit.toString());
     } else {
-      this.initializeWithMockData();
+      params = params.set('limit', '1000');
+    }
+
+    this.http.get<PaginatedResponse<InventoryItemInterface>>(this.apiUrl + '/inventory', { params }).pipe(
+      map(response => ({
+        items: response.data.map(item => this.transformItem(item)),
+        total: response.meta.total
+      })),
+      catchError(err => {
+        this.error.set(err.message || 'Error loading items');
+        return of({ items: [], total: 0 });
+      })
+    ).subscribe(({ items, total }) => {
+      this.itemsSignal.set(items);
+      this.totalSignal.set(total);
+      this.updateCategoriesFromItems(items);
+      this.loading.set(false);
+    });
+  }
+
+  // Extract categories from items - only adds new ones
+  private updateCategoriesFromItems(items: InventoryItemInterface[]): void {
+    let hasNewCategories = false;
+    for (const item of items) {
+      if (item.category && !this.categoriesSet.has(item.category)) {
+        this.categoriesSet.add(item.category);
+        hasNewCategories = true;
+      }
+    }
+    if (hasNewCategories) {
+      this.categoriesSignal.set([...this.categoriesSet].sort());
     }
   }
 
-  private saveToStorage(): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.itemsSignal()));
+  // Add a single category if new
+  private addCategoryIfNew(category: string): void {
+    if (category && !this.categoriesSet.has(category)) {
+      this.categoriesSet.add(category);
+      this.categoriesSignal.set([...this.categoriesSet].sort());
+    }
   }
 
-  private initializeWithMockData(): void {
-    const mockData: InventoryItemInterface[] = [
-      // Fresh Produce
-      { id: '1', name: 'Organic Bananas', description: 'Fresh organic bananas, per bunch', quantity: 24, category: 'Fresh Produce', location: 'Aisle 1-A', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '2', name: 'Red Apples', description: 'Crisp red apples, per lb', quantity: 5, category: 'Fresh Produce', location: 'Aisle 1-A', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      { id: '3', name: 'Fresh Spinach', description: 'Baby spinach leaves, 5oz bag', quantity: 0, category: 'Fresh Produce', location: 'Aisle 1-B', lastUpdated: new Date(2024, 0, 13), status: 'out-of-stock' },
-      { id: '4', name: 'Organic Carrots', description: 'Fresh organic carrots, 2lb bag', quantity: 18, category: 'Fresh Produce', location: 'Aisle 1-A', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '5', name: 'Roma Tomatoes', description: 'Fresh roma tomatoes, per lb', quantity: 12, category: 'Fresh Produce', location: 'Aisle 1-B', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      
-      // Dairy
-      { id: '6', name: 'Whole Milk', description: 'Fresh whole milk, 1 gallon', quantity: 15, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '7', name: 'Greek Yogurt', description: 'Plain Greek yogurt, 32oz', quantity: 3, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      { id: '8', name: 'Cheddar Cheese', description: 'Sharp cheddar cheese, 8oz block', quantity: 22, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '9', name: 'Butter', description: 'Unsalted butter, 1lb', quantity: 8, category: 'Dairy', location: 'Dairy Section', lastUpdated: new Date(2024, 0, 16), status: 'low-stock' },
-      
-      // Bakery
-      { id: '10', name: 'Whole Wheat Bread', description: 'Fresh whole wheat bread loaf', quantity: 12, category: 'Bakery', location: 'Bakery Section', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '11', name: 'Croissants', description: 'Butter croissants, pack of 6', quantity: 0, category: 'Bakery', location: 'Bakery Section', lastUpdated: new Date(2024, 0, 13), status: 'out-of-stock' },
-      { id: '12', name: 'Bagels', description: 'Everything bagels, pack of 6', quantity: 16, category: 'Bakery', location: 'Bakery Section', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      
-      // Beverages
-      { id: '13', name: 'Orange Juice', description: 'Fresh squeezed orange juice, 64oz', quantity: 9, category: 'Beverages', location: 'Aisle 5', lastUpdated: new Date(2024, 0, 15), status: 'low-stock' },
-      { id: '14', name: 'Sparkling Water', description: 'Lemon sparkling water, 12-pack', quantity: 25, category: 'Beverages', location: 'Aisle 5', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '15', name: 'Coffee Beans', description: 'Medium roast coffee beans, 12oz bag', quantity: 14, category: 'Beverages', location: 'Aisle 6', lastUpdated: new Date(2024, 0, 14), status: 'in-stock' },
-      
-      // Meat & Seafood
-      { id: '16', name: 'Chicken Breast', description: 'Boneless chicken breast, per lb', quantity: 6, category: 'Meat & Seafood', location: 'Meat Counter', lastUpdated: new Date(2024, 0, 16), status: 'low-stock' },
-      { id: '17', name: 'Ground Beef', description: '85/15 ground beef, per lb', quantity: 18, category: 'Meat & Seafood', location: 'Meat Counter', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '18', name: 'Fresh Salmon', description: 'Atlantic salmon fillet, per lb', quantity: 8, category: 'Meat & Seafood', location: 'Seafood Counter', lastUpdated: new Date(2024, 0, 16), status: 'low-stock' },
-      
-      // Pantry & Dry Goods
-      { id: '19', name: 'Pasta', description: 'Spaghetti pasta, 1lb box', quantity: 30, category: 'Pantry & Dry Goods', location: 'Aisle 3', lastUpdated: new Date(2024, 0, 14), status: 'in-stock' },
-      { id: '20', name: 'Rice', description: 'Long grain white rice, 5lb bag', quantity: 12, category: 'Pantry & Dry Goods', location: 'Aisle 3', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '21', name: 'Olive Oil', description: 'Extra virgin olive oil, 500ml', quantity: 7, category: 'Pantry & Dry Goods', location: 'Aisle 4', lastUpdated: new Date(2024, 0, 13), status: 'low-stock' },
-      
-      // Frozen Foods
-      { id: '22', name: 'Frozen Peas', description: 'Frozen green peas, 16oz bag', quantity: 0, category: 'Frozen Foods', location: 'Frozen Aisle', lastUpdated: new Date(2024, 0, 12), status: 'out-of-stock' },
-      { id: '23', name: 'Ice Cream', description: 'Vanilla ice cream, 1.5qt', quantity: 11, category: 'Frozen Foods', location: 'Frozen Aisle', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '24', name: 'Frozen Pizza', description: 'Pepperoni pizza, 12 inch', quantity: 4, category: 'Frozen Foods', location: 'Frozen Aisle', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      
-      // Health & Beauty
-      { id: '25', name: 'Shampoo', description: 'Moisturizing shampoo, 16oz', quantity: 13, category: 'Health & Beauty', location: 'Aisle 8', lastUpdated: new Date(2024, 0, 15), status: 'in-stock' },
-      { id: '26', name: 'Toothpaste', description: 'Fluoride toothpaste, 4oz tube', quantity: 9, category: 'Health & Beauty', location: 'Aisle 8', lastUpdated: new Date(2024, 0, 14), status: 'low-stock' },
-      
-      // Household
-      { id: '27', name: 'Paper Towels', description: 'Absorbent paper towels, 8-pack', quantity: 16, category: 'Household', location: 'Aisle 9', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' },
-      { id: '28', name: 'Dish Soap', description: 'Liquid dish soap, 24oz', quantity: 2, category: 'Household', location: 'Aisle 9', lastUpdated: new Date(2024, 0, 13), status: 'low-stock' },
-      { id: '29', name: 'Laundry Detergent', description: 'Liquid laundry detergent, 64oz', quantity: 0, category: 'Household', location: 'Aisle 10', lastUpdated: new Date(2024, 0, 11), status: 'out-of-stock' },
-      { id: '30', name: 'Toilet Paper', description: 'Soft toilet paper, 12-pack', quantity: 21, category: 'Household', location: 'Aisle 9', lastUpdated: new Date(2024, 0, 16), status: 'in-stock' }
-    ];
-
-    this.itemsSignal.set(mockData);
-    this.saveToStorage();
-  }
-
-  // CRUD Operations
-  addItem(item: Omit<InventoryItemInterface, 'id' | 'lastUpdated'>): void {
-    const newItem: InventoryItemInterface = {
+  private transformItem(item: any): InventoryItemInterface {
+    return {
       ...item,
-      id: this.generateId(),
-      lastUpdated: new Date()
+      createdAt: new Date(item.createdAt),
+      updatedAt: new Date(item.updatedAt),
+      assignedAt: item.assignedAt ? new Date(item.assignedAt) : undefined
     };
-    
-    const currentItems = this.itemsSignal();
-    this.itemsSignal.set([...currentItems, newItem]);
-    this.saveToStorage();
   }
 
-  updateItem(id: string, updates: Partial<Omit<InventoryItemInterface, 'id'>>): void {
-    const currentItems = this.itemsSignal();
-    const updatedItems = currentItems.map(item => 
-      item.id === id 
-        ? { ...item, ...updates, lastUpdated: new Date() }
-        : item
+  getStats(): Observable<StatsResponse> {
+    return this.http.get<StatsResponse>(this.apiUrl + '/inventory/stats');
+  }
+
+  getItemById(id: string): Observable<InventoryItemInterface> {
+    return this.http.get<InventoryItemInterface>(this.apiUrl + '/inventory/' + id).pipe(
+      map(item => this.transformItem(item))
     );
-    
-    this.itemsSignal.set(updatedItems);
-    this.saveToStorage();
   }
 
-  deleteItem(id: string): void {
-    const currentItems = this.itemsSignal();
-    const filteredItems = currentItems.filter(item => item.id !== id);
-    this.itemsSignal.set(filteredItems);
-    this.saveToStorage();
+  createItem(item: CreateInventoryItemDto): Observable<InventoryItemInterface> {
+    this.loading.set(true);
+    return this.http.post<InventoryItemInterface>(this.apiUrl + '/inventory', item).pipe(
+      map(newItem => this.transformItem(newItem)),
+      tap({
+        next: (newItem) => {
+          this.itemsSignal.update(items => [...items, newItem]);
+          this.totalSignal.update(t => t + 1);
+          this.addCategoryIfNew(newItem.category);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+        }
+      })
+    );
   }
 
-  getItemById(id: string): InventoryItemInterface | undefined {
-    return this.items().find(item => item.id === id);
+  updateItem(id: string, updates: UpdateInventoryItemDto): Observable<InventoryItemInterface> {
+    this.loading.set(true);
+    return this.http.patch<InventoryItemInterface>(this.apiUrl + '/inventory/' + id, updates).pipe(
+      map(updatedItem => this.transformItem(updatedItem)),
+      tap({
+        next: (updatedItem) => {
+          this.itemsSignal.update(items =>
+            items.map(item => item.id === id ? updatedItem : item)
+          );
+          this.addCategoryIfNew(updatedItem.category);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+        }
+      })
+    );
   }
 
-  // Filter methods
+  deleteItem(id: string): Observable<void> {
+    this.loading.set(true);
+    return this.http.delete<void>(this.apiUrl + '/inventory/' + id).pipe(
+      tap({
+        next: () => {
+          this.itemsSignal.update(items => items.filter(item => item.id !== id));
+          this.totalSignal.update(t => t - 1);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+          this.loading.set(false);
+        }
+      })
+    );
+  }
+
   getFilteredItems(filters: {
     search?: string;
     category?: string;
-    location?: string;
+    warehouseId?: string;
     status?: string;
   }): InventoryItemInterface[] {
     let filtered = this.items();
@@ -150,7 +228,8 @@ export class InventoryService {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(item => 
         item.name.toLowerCase().includes(searchLower) ||
-        item.description.toLowerCase().includes(searchLower)
+        (item.description?.toLowerCase().includes(searchLower)) ||
+        (item.sku?.toLowerCase().includes(searchLower))
       );
     }
 
@@ -158,8 +237,8 @@ export class InventoryService {
       filtered = filtered.filter(item => item.category === filters.category);
     }
 
-    if (filters.location && filters.location !== 'all') {
-      filtered = filtered.filter(item => item.location === filters.location);
+    if (filters.warehouseId && filters.warehouseId !== 'all') {
+      filtered = filtered.filter(item => item.warehouseId === filters.warehouseId);
     }
 
     if (filters.status && filters.status !== 'all') {
@@ -169,32 +248,22 @@ export class InventoryService {
     return filtered;
   }
 
-  private generateId(): string {
-    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
-  }
-
-  // Utility methods
   getTotalItems(): number {
     return this.items().length;
   }
 
-  getItemsByStatus(status: 'in-stock' | 'low-stock' | 'out-of-stock'): InventoryItemInterface[] {
+  getItemsByStatus(status: InventoryStatus): InventoryItemInterface[] {
     return this.items().filter(item => item.status === status);
   }
 
   getLowStockItems(): InventoryItemInterface[] {
-    return this.items().filter(item => item.status === 'low-stock' || item.status === 'out-of-stock');
+    return this.items().filter(item => 
+      item.status === InventoryStatus.LOW_STOCK || 
+      item.status === InventoryStatus.OUT_OF_STOCK
+    );
   }
 
-  // Clear all data (for testing)
-  clearAllData(): void {
-    this.itemsSignal.set([]);
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  // Reset to mock data
-  resetToMockData(): void {
-    this.clearAllData();
-    this.initializeWithMockData();
+  refresh(): void {
+    this.loadInitialData();
   }
 }

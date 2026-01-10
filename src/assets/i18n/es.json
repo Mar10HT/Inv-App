@@ -7,9 +7,11 @@
     "CATEGORIES": "Categorías",
     "SUPPLIERS": "Proveedores",
     "USERS": "Usuarios",
+    "TRANSACTIONS": "Transacciones",
     "SETTINGS": "Configuración",
     "PROFILE": "Perfil",
-    "LOGOUT": "Cerrar Sesión"
+    "LOGOUT": "Cerrar Sesión",
+    "ADMIN": "Administración"
   },
   "COMMON": {
     "SAVE": "Guardar",
@@ -252,6 +254,64 @@
     "TITLE": "Usuarios",
     "ADD": "Agregar Usuario",
     "EDIT": "Editar Usuario"
+  },
+  "TRANSACTION": {
+    "TITLE": "Transacciones",
+    "SUBTITLE": "Rastrea movimientos y transferencias de inventario",
+    "ADD": "Nueva Transacción",
+    "TYPE": "Tipo",
+    "DATE": "Fecha",
+    "NOTES": "Notas",
+    "USER": "Usuario",
+    "ITEMS": "Ítems",
+    "ITEMS_COUNT": "ítem(s)",
+    "TOTAL": "Total de Transacciones",
+    "LIST": "Historial de Transacciones",
+    "NO_TRANSACTIONS": "No se encontraron transacciones",
+    "NO_TRANSACTIONS_DESC": "Comienza creando tu primera transacción",
+    "SOURCE_WAREHOUSE": "Bodega de Origen",
+    "DEST_WAREHOUSE": "Bodega de Destino",
+    "WAREHOUSES": "Bodegas",
+    "FROM": "Desde",
+    "TO": "Hacia",
+    "ADD_ITEM": "Agregar Ítem",
+    "SELECT_ITEM": "Seleccionar un ítem",
+    "NO_ITEMS": "No hay ítems agregados. Haz clic en 'Agregar Ítem' para añadir ítems a esta transacción.",
+    "TYPES": {
+      "IN": "Entrada",
+      "OUT": "Salida",
+      "TRANSFER": "Transferencia"
+    }
+  },
+  "PROFILE": {
+    "SUBTITLE": "Administra la configuración de tu cuenta",
+    "INFO": "Información Personal",
+    "MEMBER_SINCE": "Miembro Desde",
+    "CHANGE_PASSWORD": "Cambiar Contraseña",
+    "CURRENT_PASSWORD": "Contraseña Actual",
+    "NEW_PASSWORD": "Nueva Contraseña",
+    "CONFIRM_PASSWORD": "Confirmar Contraseña"
+  },
+  "SETTINGS": {
+    "SUBTITLE": "Personaliza las preferencias de tu aplicación",
+    "LANGUAGE": "Idioma",
+    "LANGUAGE_DESC": "Selecciona tu idioma preferido",
+    "APPEARANCE": "Apariencia",
+    "THEME": "Tema",
+    "THEME_DESC": "Elige entre modo claro y oscuro",
+    "DARK_MODE": "Modo Oscuro",
+    "LIGHT_MODE": "Modo Claro",
+    "NOTIFICATIONS": "Notificaciones",
+    "EMAIL_NOTIFICATIONS": "Notificaciones por Email",
+    "EMAIL_NOTIFICATIONS_DESC": "Recibe notificaciones por email para actualizaciones importantes",
+    "LOW_STOCK_ALERTS": "Alertas de Stock Bajo",
+    "LOW_STOCK_ALERTS_DESC": "Recibe notificaciones cuando los ítems estén por agotarse",
+    "DATA": "Gestión de Datos",
+    "EXPORT_DATA": "Exportar Datos",
+    "EXPORT_DATA_DESC": "Descarga todos tus datos de inventario",
+    "DANGER_ZONE": "Zona de Peligro",
+    "RESET_DATA": "Restablecer Todos los Datos",
+    "RESET_DATA_DESC": "Esto eliminará permanentemente todos tus datos"
   },
   "FORM": {
     "VALIDATION": {

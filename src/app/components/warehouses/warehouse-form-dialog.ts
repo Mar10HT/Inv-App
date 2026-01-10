@@ -58,10 +58,15 @@ export interface WarehouseFormDialogData {
             type="text"
             formControlName="name"
             class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            [class.!border-rose-500]="form.get('name')?.invalid && form.get('name')?.touched"
             [placeholder]="'WAREHOUSE.NAME' | translate"
           />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            @if (form.get('name')?.errors?.['required']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            } @else if (form.get('name')?.errors?.['minlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+            }
           }
         </div>
 
@@ -74,10 +79,15 @@ export interface WarehouseFormDialogData {
             type="text"
             formControlName="location"
             class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            [class.!border-rose-500]="form.get('location')?.invalid && form.get('location')?.touched"
             [placeholder]="'WAREHOUSE.LOCATION' | translate"
           />
           @if (form.get('location')?.invalid && form.get('location')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            @if (form.get('location')?.errors?.['required']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            } @else if (form.get('location')?.errors?.['minlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+            }
           }
         </div>
 

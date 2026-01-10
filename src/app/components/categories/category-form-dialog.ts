@@ -58,10 +58,17 @@ export interface CategoryFormDialogData {
             type="text"
             formControlName="name"
             class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            [class.!border-rose-500]="form.get('name')?.invalid && form.get('name')?.touched"
             [placeholder]="'CATEGORY.NAME' | translate"
           />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            @if (form.get('name')?.errors?.['required']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            } @else if (form.get('name')?.errors?.['minlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+            } @else if (form.get('name')?.errors?.['maxlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MAX_LENGTH' | translate: {length: 50} }}</p>
+            }
           }
         </div>
 
@@ -74,8 +81,14 @@ export interface CategoryFormDialogData {
             formControlName="description"
             rows="3"
             class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors resize-none"
+            [class.!border-rose-500]="form.get('description')?.invalid && form.get('description')?.touched"
             [placeholder]="'CATEGORY.DESCRIPTION' | translate"
           ></textarea>
+          @if (form.get('description')?.invalid && form.get('description')?.touched) {
+            @if (form.get('description')?.errors?.['maxlength']) {
+              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MAX_LENGTH' | translate: {length: 200} }}</p>
+            }
+          }
         </div>
 
         <!-- Color -->

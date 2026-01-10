@@ -35,7 +35,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
+            <p class="text-3xl font-bold text-slate-300">{{ stats()?.totalItems || 0 }}</p>
           </div>
           <div class="bg-[#242424] p-3 rounded-lg">
             <mat-icon class="!text-slate-500">inventory</mat-icon>
@@ -47,8 +47,8 @@
       <div class="bg-[#1a1a1a] rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'INVENTORY.STATUS.IN_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-emerald-400">{{ stats().inStock }}</p>
+            <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
+            <p class="text-3xl font-bold text-emerald-400">{{ stats()?.inStockItems || 0 }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-3 rounded-lg">
             <mat-icon class="!text-emerald-700">check_circle</mat-icon>
@@ -60,8 +60,8 @@
       <div class="bg-[#1a1a1a] rounded-xl border border-orange-900/50 p-6 hover:border-orange-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'INVENTORY.STATUS.LOW_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-orange-400">{{ stats().lowStock }}</p>
+            <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
+            <p class="text-3xl font-bold text-orange-400">{{ stats()?.lowStockItems || 0 }}</p>
           </div>
           <div class="bg-orange-950/50 p-3 rounded-lg">
             <mat-icon class="!text-orange-700">warning</mat-icon>
@@ -74,7 +74,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
-            <p class="text-3xl font-bold text-sky-400">${{ stats().totalValue | number:'1.2-2' }}</p>
+            <p class="text-3xl font-bold text-sky-400">{{ formatCurrency(stats()?.totalValueUSD || 0) }}</p>
           </div>
           <div class="bg-sky-950/50 p-3 rounded-lg">
             <mat-icon class="!text-sky-700">attach_money</mat-icon>
@@ -83,7 +83,256 @@
       </div>
     </div>
 
-    <!-- Items Table -->
+    <!-- Secondary Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-purple-950/50 p-2 rounded-lg">
+            <mat-icon class="!text-purple-500 !text-xl">people</mat-icon>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
+            <p class="text-xl font-bold text-slate-300">{{ stats()?.totalUsers || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-cyan-950/50 p-2 rounded-lg">
+            <mat-icon class="!text-cyan-500 !text-xl">warehouse</mat-icon>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500">{{ 'NAV.WAREHOUSES' | translate }}</p>
+            <p class="text-xl font-bold text-slate-300">{{ stats()?.totalWarehouses || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-amber-950/50 p-2 rounded-lg">
+            <mat-icon class="!text-amber-500 !text-xl">category</mat-icon>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500">{{ 'NAV.CATEGORIES' | translate }}</p>
+            <p class="text-xl font-bold text-slate-300">{{ stats()?.totalCategories || 0 }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-rose-950/50 p-2 rounded-lg">
+            <mat-icon class="!text-rose-500 !text-xl">block</mat-icon>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
+            <p class="text-xl font-bold text-rose-400">{{ stats()?.outOfStockItems || 0 }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Distribution Bar -->
+    @if (stats()?.totalItems) {
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 mb-8">
+        <h3 class="text-sm font-medium text-slate-400 mb-4">{{ 'COMMON.STATUS' | translate }}</h3>
+        <div class="h-4 bg-[#242424] rounded-full overflow-hidden flex">
+          <div
+            class="bg-emerald-500 transition-all"
+            [style.width.%]="getStatusPercentage('IN_STOCK')">
+          </div>
+          <div
+            class="bg-orange-500 transition-all"
+            [style.width.%]="getStatusPercentage('LOW_STOCK')">
+          </div>
+          <div
+            class="bg-rose-500 transition-all"
+            [style.width.%]="getStatusPercentage('OUT_OF_STOCK')">
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-6 mt-4">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+            <span class="text-sm text-slate-400">{{ 'DASHBOARD.IN_STOCK' | translate }} ({{ getStatusPercentage('IN_STOCK') }}%)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+            <span class="text-sm text-slate-400">{{ 'DASHBOARD.LOW_STOCK' | translate }} ({{ getStatusPercentage('LOW_STOCK') }}%)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+            <span class="text-sm text-slate-400">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }} ({{ getStatusPercentage('OUT_OF_STOCK') }}%)</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Category Distribution -->
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.CATEGORIES' | translate }}</h3>
+          <mat-icon class="!text-slate-600">category</mat-icon>
+        </div>
+        @if (categoryStats().length === 0) {
+          <div class="flex flex-col items-center justify-center py-8">
+            <mat-icon class="!text-3xl !text-slate-700 mb-2">pie_chart</mat-icon>
+            <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (cat of categoryStats(); track trackByCategory($index, cat); let i = $index) {
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-slate-400 truncate max-w-[60%]">{{ cat.category || 'Sin Categoria' }}</span>
+                  <span class="text-sm font-medium text-slate-300">{{ cat.count }}</span>
+                </div>
+                <div class="h-2 bg-[#242424] rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-500"
+                    [style.width.%]="getCategoryPercentage(cat.count)"
+                    [style.background-color]="getCategoryColor(i)">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Warehouse Distribution -->
+      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.WAREHOUSES' | translate }}</h3>
+          <mat-icon class="!text-slate-600">warehouse</mat-icon>
+        </div>
+        @if (warehouseStats().length === 0) {
+          <div class="flex flex-col items-center justify-center py-8">
+            <mat-icon class="!text-3xl !text-slate-700 mb-2">bar_chart</mat-icon>
+            <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (wh of warehouseStats(); track trackByWarehouse($index, wh); let i = $index) {
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-slate-400 truncate max-w-[60%]">{{ wh.name || 'Sin Bodega' }}</span>
+                  <span class="text-sm font-medium text-slate-300">{{ wh.itemCount }}</span>
+                </div>
+                <div class="h-2 bg-[#242424] rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                    [style.width.%]="getWarehousePercentage(wh.itemCount)">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Two Column Layout for Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Recent Transactions -->
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-300">{{ 'TRANSACTION.TITLE' | translate }}</h2>
+            <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
+          </div>
+          <button
+            (click)="viewAllTransactions()"
+            class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+            {{ 'COMMON.VIEW_ALL' | translate }}
+          </button>
+        </div>
+
+        @if (recentTransactions().length === 0) {
+          <div class="flex flex-col items-center justify-center py-12">
+            <mat-icon class="!text-4xl !text-slate-700 mb-3">receipt_long</mat-icon>
+            <p class="text-slate-500 text-sm">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
+          </div>
+        } @else {
+          <div class="divide-y divide-[#242424]">
+            @for (tx of recentTransactions(); track trackByTransaction($index, tx)) {
+              <div class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors">
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center"
+                    [ngClass]="{
+                      'bg-emerald-950/50': tx.type === TransactionType.IN,
+                      'bg-rose-950/50': tx.type === TransactionType.OUT,
+                      'bg-blue-950/50': tx.type === TransactionType.TRANSFER
+                    }">
+                    <mat-icon [class]="getTransactionTypeClass(tx.type)">
+                      {{ getTransactionTypeIcon(tx.type) }}
+                    </mat-icon>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-300">
+                      {{ 'TRANSACTION.TYPES.' + tx.type | translate }}
+                    </p>
+                    <p class="text-xs text-slate-500">
+                      {{ tx.items.length }} {{ 'TRANSACTION.ITEMS_COUNT' | translate }}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs text-slate-500">{{ formatDateTime(tx.date) }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Low Stock Alerts -->
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
+            <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
+          </div>
+          <button
+            (click)="viewAllInventory()"
+            class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+            {{ 'COMMON.VIEW_ALL' | translate }}
+          </button>
+        </div>
+
+        @if (lowStockItems().length === 0) {
+          <div class="flex flex-col items-center justify-center py-12">
+            <mat-icon class="!text-4xl !text-emerald-700 mb-3">check_circle</mat-icon>
+            <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+          </div>
+        } @else {
+          <div class="divide-y divide-[#242424]">
+            @for (item of lowStockItems(); track item.id) {
+              <div
+                (click)="viewItem(item)"
+                class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 bg-orange-950/50 rounded-lg flex items-center justify-center">
+                    <mat-icon class="!text-orange-500">warning</mat-icon>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-300 truncate">{{ item.name }}</p>
+                    <p class="text-xs text-slate-500">{{ item.category?.name || '-' }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-lg font-bold text-orange-400">{{ item.quantity }}</p>
+                    <p class="text-xs text-slate-500">min: {{ item.minQuantity }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Recent Items Table -->
     <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
       <div class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
         <div>
@@ -154,7 +403,7 @@
                   <!-- Price Column -->
                   <td class="px-6 py-4">
                     @if (item.price) {
-                      <span class="text-slate-300 font-medium">${{ item.price | number:'1.2-2' }}</span>
+                      <span class="text-slate-300 font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
                     } @else {
                       <span class="text-slate-600">-</span>
                     }
@@ -228,7 +477,7 @@
                 <div>
                   <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</p>
                   @if (item.price) {
-                    <p class="text-slate-300 font-semibold">${{ item.price | number:'1.2-2' }}</p>
+                    <p class="text-slate-300 font-semibold">{{ formatCurrency(item.price, item.currency) }}</p>
                   } @else {
                     <p class="text-slate-600">-</p>
                   }

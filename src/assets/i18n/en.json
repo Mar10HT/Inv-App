@@ -7,9 +7,11 @@
     "CATEGORIES": "Categories",
     "SUPPLIERS": "Suppliers",
     "USERS": "Users",
+    "TRANSACTIONS": "Transactions",
     "SETTINGS": "Settings",
     "PROFILE": "Profile",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "ADMIN": "Administration"
   },
   "COMMON": {
     "SAVE": "Save",
@@ -252,6 +254,64 @@
     "TITLE": "Users",
     "ADD": "Add User",
     "EDIT": "Edit User"
+  },
+  "TRANSACTION": {
+    "TITLE": "Transactions",
+    "SUBTITLE": "Track inventory movements and transfers",
+    "ADD": "New Transaction",
+    "TYPE": "Type",
+    "DATE": "Date",
+    "NOTES": "Notes",
+    "USER": "User",
+    "ITEMS": "Items",
+    "ITEMS_COUNT": "item(s)",
+    "TOTAL": "Total Transactions",
+    "LIST": "Transaction History",
+    "NO_TRANSACTIONS": "No transactions found",
+    "NO_TRANSACTIONS_DESC": "Get started by creating your first transaction",
+    "SOURCE_WAREHOUSE": "Source Warehouse",
+    "DEST_WAREHOUSE": "Destination Warehouse",
+    "WAREHOUSES": "Warehouses",
+    "FROM": "From",
+    "TO": "To",
+    "ADD_ITEM": "Add Item",
+    "SELECT_ITEM": "Select an item",
+    "NO_ITEMS": "No items added. Click 'Add Item' to add items to this transaction.",
+    "TYPES": {
+      "IN": "Entry",
+      "OUT": "Exit",
+      "TRANSFER": "Transfer"
+    }
+  },
+  "PROFILE": {
+    "SUBTITLE": "Manage your account settings",
+    "INFO": "Personal Information",
+    "MEMBER_SINCE": "Member Since",
+    "CHANGE_PASSWORD": "Change Password",
+    "CURRENT_PASSWORD": "Current Password",
+    "NEW_PASSWORD": "New Password",
+    "CONFIRM_PASSWORD": "Confirm Password"
+  },
+  "SETTINGS": {
+    "SUBTITLE": "Customize your application preferences",
+    "LANGUAGE": "Language",
+    "LANGUAGE_DESC": "Select your preferred language",
+    "APPEARANCE": "Appearance",
+    "THEME": "Theme",
+    "THEME_DESC": "Choose between light and dark mode",
+    "DARK_MODE": "Dark Mode",
+    "LIGHT_MODE": "Light Mode",
+    "NOTIFICATIONS": "Notifications",
+    "EMAIL_NOTIFICATIONS": "Email Notifications",
+    "EMAIL_NOTIFICATIONS_DESC": "Receive email notifications for important updates",
+    "LOW_STOCK_ALERTS": "Low Stock Alerts",
+    "LOW_STOCK_ALERTS_DESC": "Get notified when items are running low",
+    "DATA": "Data Management",
+    "EXPORT_DATA": "Export Data",
+    "EXPORT_DATA_DESC": "Download all your inventory data",
+    "DANGER_ZONE": "Danger Zone",
+    "RESET_DATA": "Reset All Data",
+    "RESET_DATA_DESC": "This will permanently delete all your data"
   },
   "FORM": {
     "VALIDATION": {

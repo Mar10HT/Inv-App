@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginRequest, RegisterRequest, AuthResponse, AuthUser } from '../interfaces/auth.interface';
+import { PermissionsService } from './permissions.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { LoginRequest, RegisterRequest, AuthResponse, AuthUser } from '../interf
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private permissionsService = inject(PermissionsService);
 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
@@ -43,6 +45,10 @@ export class AuthService {
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+
+    // Clear all permissions
+    this.permissionsService.clearPermissions();
+
     this.router.navigate(['/login']);
   }
 
@@ -55,6 +61,9 @@ export class AuthService {
     localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
     this.currentUser.set(response.user);
     this.isAuthenticated.set(true);
+
+    // Load permissions based on user role
+    this.permissionsService.loadPermissions(response.user.role);
   }
 
   private loadUserFromStorage(): AuthUser | null {
@@ -76,6 +85,9 @@ export class AuthService {
     if (token && user) {
       this.currentUser.set(user);
       this.isAuthenticated.set(true);
+
+      // Load permissions on app init if user is logged in
+      this.permissionsService.loadPermissions(user.role);
     } else {
       this.currentUser.set(null);
       this.isAuthenticated.set(false);

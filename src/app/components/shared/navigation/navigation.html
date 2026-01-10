@@ -144,15 +144,17 @@
       </nav>
 
       <div class="mt-auto px-3 py-2 border-t border-[#2a2a2a]">
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-[#242424] mb-2">
-          <div class="w-6 h-6 rounded-full bg-[#4d7c6f] flex items-center justify-center shrink-0">
-            <mat-icon class="!text-white !text-[14px] !w-[14px] !h-[14px] !leading-[14px]">person</mat-icon>
+        @if (currentUser(); as user) {
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-[#242424] mb-2">
+            <div class="w-8 h-8 rounded-full bg-[#4d7c6f] flex items-center justify-center shrink-0">
+              <span class="text-white text-sm font-semibold">{{ (user.name || user.email || 'U').charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-medium text-slate-300 truncate">{{ user.name || 'User' }}</p>
+              <p class="text-[10px] text-slate-400 truncate">{{ user.email }}</p>
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-medium text-slate-300 truncate">User Name</p>
-            <p class="text-[10px] text-slate-400 truncate">user&#64;example.com</p>
-          </div>
-        </div>
+        }
 
         <!-- Language Selector -->
         <div class="flex items-center justify-center p-1.5 rounded-lg bg-[#242424]">

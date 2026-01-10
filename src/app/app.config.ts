@@ -2,6 +2,7 @@ import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListen
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
@@ -41,7 +42,8 @@ export const appConfig: ApplicationConfig = {
           provide: TranslateLoader,
           useClass: StaticTranslateLoader
         }
-      })
+      }),
+      NgxPermissionsModule.forRoot()
     )
   ]
 };

@@ -187,20 +187,30 @@
   },
   "WAREHOUSE": {
     "TITLE": "Bodegas",
+    "SUBTITLE": "Administra las ubicaciones de tus bodegas",
     "ADD": "Agregar Bodega",
     "EDIT": "Editar Bodega",
     "NAME": "Nombre",
     "LOCATION": "Ubicacion",
-    "DESCRIPTION": "Descripcion"
+    "DESCRIPTION": "Descripcion",
+    "TOTAL": "Total de Bodegas",
+    "LIST": "Lista de Bodegas",
+    "NO_WAREHOUSES": "No se encontraron bodegas",
+    "NO_WAREHOUSES_DESC": "Comienza agregando tu primera bodega"
   },
   "SUPPLIER": {
     "TITLE": "Proveedores",
+    "SUBTITLE": "Administra tus contactos de proveedores",
     "ADD": "Agregar Proveedor",
     "EDIT": "Editar Proveedor",
     "NAME": "Nombre",
     "LOCATION": "Ubicacion",
     "PHONE": "Telefono",
-    "EMAIL": "Email"
+    "EMAIL": "Email",
+    "TOTAL": "Total de Proveedores",
+    "LIST": "Lista de Proveedores",
+    "NO_SUPPLIERS": "No se encontraron proveedores",
+    "NO_SUPPLIERS_DESC": "Comienza agregando tu primer proveedor"
   },
   "USERS": {
     "TITLE": "Usuarios",

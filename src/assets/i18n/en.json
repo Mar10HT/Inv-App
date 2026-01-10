@@ -187,20 +187,30 @@
   },
   "WAREHOUSE": {
     "TITLE": "Warehouses",
+    "SUBTITLE": "Manage your warehouse locations",
     "ADD": "Add Warehouse",
     "EDIT": "Edit Warehouse",
     "NAME": "Name",
     "LOCATION": "Location",
-    "DESCRIPTION": "Description"
+    "DESCRIPTION": "Description",
+    "TOTAL": "Total Warehouses",
+    "LIST": "Warehouse List",
+    "NO_WAREHOUSES": "No warehouses found",
+    "NO_WAREHOUSES_DESC": "Get started by adding your first warehouse"
   },
   "SUPPLIER": {
     "TITLE": "Suppliers",
+    "SUBTITLE": "Manage your supplier contacts",
     "ADD": "Add Supplier",
     "EDIT": "Edit Supplier",
     "NAME": "Name",
     "LOCATION": "Location",
     "PHONE": "Phone",
-    "EMAIL": "Email"
+    "EMAIL": "Email",
+    "TOTAL": "Total Suppliers",
+    "LIST": "Supplier List",
+    "NO_SUPPLIERS": "No suppliers found",
+    "NO_SUPPLIERS_DESC": "Get started by adding your first supplier"
   },
   "USERS": {
     "TITLE": "Users",

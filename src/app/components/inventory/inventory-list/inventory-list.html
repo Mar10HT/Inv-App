@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#0a0a0a] p-6">
-  <div class="max-w-7xl mx-auto">
+  <div class="max-w-[1600px] mx-auto">
     <!-- Header Section -->
     <div class="mb-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -238,24 +238,24 @@
 
               <!-- Actions Column -->
               <td class="px-6 py-4">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1">
                   <button
-                    mat-icon-button
-                    (click)="viewItem(item); $event.stopPropagation()"
-                    class="!text-slate-600 hover:!text-sky-400 hover:!bg-sky-950/20 !flex !items-center !justify-center">
-                    <mat-icon class="!text-base">visibility</mat-icon>
+                    type="button"
+                    (click)="$event.stopPropagation(); viewItem(item)"
+                    class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
+                    <mat-icon class="!text-xl">visibility</mat-icon>
                   </button>
                   <button
-                    mat-icon-button
-                    (click)="editItem(item); $event.stopPropagation()"
-                    class="!text-slate-600 hover:!text-slate-300 hover:!bg-[#242424] !flex !items-center !justify-center">
-                    <mat-icon class="!text-base">edit</mat-icon>
+                    type="button"
+                    (click)="$event.stopPropagation(); editItem(item)"
+                    class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                    <mat-icon class="!text-xl">edit</mat-icon>
                   </button>
                   <button
-                    mat-icon-button
-                    (click)="deleteItem(item); $event.stopPropagation()"
-                    class="!text-slate-600 hover:!text-rose-400 hover:!bg-rose-950/20 !flex !items-center !justify-center">
-                    <mat-icon class="!text-base">delete</mat-icon>
+                    type="button"
+                    (click)="$event.stopPropagation(); deleteItem(item)"
+                    class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <mat-icon class="!text-xl">delete</mat-icon>
                   </button>
                 </div>
               </td>
@@ -335,22 +335,22 @@
           <!-- Actions -->
           <div class="flex justify-end gap-2 pt-3 border-t border-[#1e1e1e]">
             <button
-              mat-icon-button
-              (click)="viewItem(item); $event.stopPropagation()"
-              class="!text-slate-600 hover:!text-sky-400 hover:!bg-sky-950/20 !w-9 !h-9 !flex !items-center !justify-center">
-              <mat-icon class="!text-lg">visibility</mat-icon>
+              type="button"
+              (click)="$event.stopPropagation(); viewItem(item)"
+              class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
+              <mat-icon class="!text-xl">visibility</mat-icon>
             </button>
             <button
-              mat-icon-button
-              (click)="editItem(item); $event.stopPropagation()"
-              class="!text-slate-600 hover:!text-slate-300 hover:!bg-[#242424] !w-9 !h-9 !flex !items-center !justify-center">
-              <mat-icon class="!text-lg">edit</mat-icon>
+              type="button"
+              (click)="$event.stopPropagation(); editItem(item)"
+              class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+              <mat-icon class="!text-xl">edit</mat-icon>
             </button>
             <button
-              mat-icon-button
-              (click)="deleteItem(item); $event.stopPropagation()"
-              class="!text-slate-600 hover:!text-rose-400 hover:!bg-rose-950/20 !w-9 !h-9 !flex !items-center !justify-center">
-              <mat-icon class="!text-lg">delete</mat-icon>
+              type="button"
+              (click)="$event.stopPropagation(); deleteItem(item)"
+              class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+              <mat-icon class="!text-xl">delete</mat-icon>
             </button>
           </div>
         </div>

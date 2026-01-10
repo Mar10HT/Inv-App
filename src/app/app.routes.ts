@@ -24,10 +24,6 @@ export const routes: Routes = [
       {
         path: 'edit/:id',
         loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent)
-      },
-      {
-        path: ':id',
-        loadComponent: () => import('./components/inventory/inventory-item/inventory-item').then(m => m.InventoryItem)
       }
     ]
   },

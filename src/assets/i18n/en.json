@@ -21,7 +21,7 @@
     "FILTER": "Filter",
     "EXPORT": "Export",
     "IMPORT": "Import",
-    "LOADING": "Loading...",
+    "LOADING": "Loading",
     "NO_DATA": "No data",
     "CONFIRM": "Confirm",
     "YES": "Yes",
@@ -37,7 +37,9 @@
     "VIEW": "View",
     "VIEW_ALL": "View All",
     "VIEW_REPORTS": "View Reports",
-    "ADD_NEW": "Add New"
+    "ADD_NEW": "Add New",
+    "BACK": "Back",
+    "BACK_TO_INVENTORY": "Back to Inventory"
   },
   "DASHBOARD": {
     "TITLE": "Inventory Management",
@@ -76,6 +78,8 @@
     "ALL_CATEGORIES": "All Categories",
     "ALL_LOCATIONS": "All Locations",
     "ALL_STATUS": "All Status",
+    "NO_ITEMS": "No items found",
+    "NO_ITEMS_DESC": "Get started by adding your first inventory item",
     "STATUS": {
       "IN_STOCK": "In Stock",
       "LOW_STOCK": "Low Stock",
@@ -148,6 +152,38 @@
         "HINT": "UNIQUE items only"
       }
     }
+  },
+  "ITEM_DETAIL": {
+    "BASIC_INFO": "Basic Information",
+    "STOCK_PRICE": "Stock & Pricing",
+    "CATEGORY": "Category",
+    "TYPE": {
+      "LABEL": "Item Type",
+      "UNIQUE": "Unique Item",
+      "BULK": "Bulk Item"
+    },
+    "BARCODE": "Barcode",
+    "SERIAL_NUMBER": "Serial Number",
+    "SERVICE_TAG": "Service Tag",
+    "QUANTITY": "Quantity",
+    "MIN_QUANTITY": "Min. Qty",
+    "UNIT_PRICE": "Unit Price",
+    "TOTAL_VALUE": "Total Value",
+    "WAREHOUSE": "Warehouse",
+    "SUPPLIER": "Supplier",
+    "NAME": "Name",
+    "LOCATION": "Location",
+    "DESCRIPTION": "Description",
+    "EMAIL": "Email",
+    "PHONE": "Phone",
+    "ASSIGNMENT": "Assignment",
+    "ASSIGNED_ON": "Assigned on",
+    "CREATED": "Created",
+    "UPDATED": "Last Updated",
+    "CREATED_BY": "Created by",
+    "NO_DESCRIPTION": "No description available",
+    "NO_WAREHOUSE": "No warehouse assigned",
+    "NO_SUPPLIER": "No supplier assigned"
   },
   "WAREHOUSE": {
     "TITLE": "Warehouses",

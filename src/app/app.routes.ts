@@ -24,15 +24,19 @@ export const routes: Routes = [
       {
         path: 'edit/:id',
         loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent)
-      },
-      {
-        path: ':id',
-        loadComponent: () => import('./components/inventory/inventory-item/inventory-item').then(m => m.InventoryItem)
       }
     ]
   },
 
   // Other pages - lazy loaded
+  {
+    path: 'warehouses',
+    loadComponent: () => import('./components/warehouses/warehouses').then(m => m.Warehouses)
+  },
+  {
+    path: 'suppliers',
+    loadComponent: () => import('./components/suppliers/suppliers').then(m => m.Suppliers)
+  },
   {
     path: 'categories',
     loadComponent: () => import('./components/categories/categories').then(m => m.Categories)

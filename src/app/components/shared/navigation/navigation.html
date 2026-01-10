@@ -50,7 +50,7 @@
         </a>
 
         <a
-          routerLink="/categories"
+          routerLink="/warehouses"
           routerLinkActive="active-link"
           class="nav-link group"
         >
@@ -58,6 +58,28 @@
             <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">warehouse</mat-icon>
           </div>
           <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.WAREHOUSES' | translate }}</span>
+        </a>
+
+        <a
+          routerLink="/categories"
+          routerLinkActive="active-link"
+          class="nav-link group"
+        >
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">category</mat-icon>
+          </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.CATEGORIES' | translate }}</span>
+        </a>
+
+        <a
+          routerLink="/suppliers"
+          routerLinkActive="active-link"
+          class="nav-link group"
+        >
+          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
+            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">local_shipping</mat-icon>
+          </div>
+          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.SUPPLIERS' | translate }}</span>
         </a>
 
         <a

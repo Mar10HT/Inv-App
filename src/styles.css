@@ -9,12 +9,14 @@ body {
 }
 
 /* Material Dialog Overrides */
-.confirm-dialog-container .mat-mdc-dialog-container {
+.confirm-dialog-container .mat-mdc-dialog-container,
+.item-detail-dialog .mat-mdc-dialog-container {
     --mdc-dialog-container-color: transparent;
     --mdc-dialog-container-shape: 12px;
 }
 
-.confirm-dialog-container .mat-mdc-dialog-surface {
+.confirm-dialog-container .mat-mdc-dialog-surface,
+.item-detail-dialog .mat-mdc-dialog-surface {
     background-color: transparent !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }

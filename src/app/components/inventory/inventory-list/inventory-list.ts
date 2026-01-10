@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { InventoryService } from '.././../../services/inventory/inventory.service';
 import { InventoryItemInterface, InventoryStatus } from '../../../interfaces/inventory-item.interface';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { InventoryItem } from '../inventory-item/inventory-item';
 
 @Component({
   selector: 'app-inventory-list',
@@ -190,7 +191,12 @@ export class InventoryList implements OnInit {
 
   // CRUD Operations
   viewItem(item: InventoryItemInterface): void {
-    // Navigate to item detail view
+    this.dialog.open(InventoryItem, {
+      data: { itemId: item.id },
+      width: '800px',
+      maxWidth: '95vw',
+      panelClass: 'item-detail-dialog'
+    });
   }
 
   editItem(item: InventoryItemInterface): void {

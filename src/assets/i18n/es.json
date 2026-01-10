@@ -21,7 +21,7 @@
     "FILTER": "Filtrar",
     "EXPORT": "Exportar",
     "IMPORT": "Importar",
-    "LOADING": "Cargando...",
+    "LOADING": "Cargando",
     "NO_DATA": "No hay datos",
     "CONFIRM": "Confirmar",
     "YES": "Si",
@@ -37,7 +37,9 @@
     "VIEW": "Ver",
     "VIEW_ALL": "Ver Todos",
     "VIEW_REPORTS": "Ver Reportes",
-    "ADD_NEW": "Agregar Nuevo"
+    "ADD_NEW": "Agregar Nuevo",
+    "BACK": "Volver",
+    "BACK_TO_INVENTORY": "Volver al Inventario"
   },
   "DASHBOARD": {
     "TITLE": "Gestion de Inventario",
@@ -76,6 +78,8 @@
     "ALL_CATEGORIES": "Todas las Categorias",
     "ALL_LOCATIONS": "Todas las Ubicaciones",
     "ALL_STATUS": "Todos los Estados",
+    "NO_ITEMS": "No se encontraron items",
+    "NO_ITEMS_DESC": "Comienza agregando tu primer item de inventario",
     "STATUS": {
       "IN_STOCK": "En Stock",
       "LOW_STOCK": "Stock Bajo",
@@ -149,22 +153,64 @@
       }
     }
   },
+  "ITEM_DETAIL": {
+    "BASIC_INFO": "Informacion Basica",
+    "STOCK_PRICE": "Stock y Precios",
+    "CATEGORY": "Categoria",
+    "TYPE": {
+      "LABEL": "Tipo de Item",
+      "UNIQUE": "Item Unico",
+      "BULK": "Item por Cantidad"
+    },
+    "BARCODE": "Codigo de Barras",
+    "SERIAL_NUMBER": "Numero de Serie",
+    "SERVICE_TAG": "Service Tag",
+    "QUANTITY": "Cantidad",
+    "MIN_QUANTITY": "Cant. Min",
+    "UNIT_PRICE": "Precio Unitario",
+    "TOTAL_VALUE": "Valor Total",
+    "WAREHOUSE": "Bodega",
+    "SUPPLIER": "Proveedor",
+    "NAME": "Nombre",
+    "LOCATION": "Ubicacion",
+    "DESCRIPTION": "Descripcion",
+    "EMAIL": "Email",
+    "PHONE": "Telefono",
+    "ASSIGNMENT": "Asignacion",
+    "ASSIGNED_ON": "Asignado el",
+    "CREATED": "Creado",
+    "UPDATED": "Ultima Actualizacion",
+    "CREATED_BY": "Creado por",
+    "NO_DESCRIPTION": "Sin descripcion disponible",
+    "NO_WAREHOUSE": "Sin bodega asignada",
+    "NO_SUPPLIER": "Sin proveedor asignado"
+  },
   "WAREHOUSE": {
     "TITLE": "Bodegas",
+    "SUBTITLE": "Administra las ubicaciones de tus bodegas",
     "ADD": "Agregar Bodega",
     "EDIT": "Editar Bodega",
     "NAME": "Nombre",
     "LOCATION": "Ubicacion",
-    "DESCRIPTION": "Descripcion"
+    "DESCRIPTION": "Descripcion",
+    "TOTAL": "Total de Bodegas",
+    "LIST": "Lista de Bodegas",
+    "NO_WAREHOUSES": "No se encontraron bodegas",
+    "NO_WAREHOUSES_DESC": "Comienza agregando tu primera bodega"
   },
   "SUPPLIER": {
     "TITLE": "Proveedores",
+    "SUBTITLE": "Administra tus contactos de proveedores",
     "ADD": "Agregar Proveedor",
     "EDIT": "Editar Proveedor",
     "NAME": "Nombre",
     "LOCATION": "Ubicacion",
     "PHONE": "Telefono",
-    "EMAIL": "Email"
+    "EMAIL": "Email",
+    "TOTAL": "Total de Proveedores",
+    "LIST": "Lista de Proveedores",
+    "NO_SUPPLIERS": "No se encontraron proveedores",
+    "NO_SUPPLIERS_DESC": "Comienza agregando tu primer proveedor"
   },
   "USERS": {
     "TITLE": "Usuarios",

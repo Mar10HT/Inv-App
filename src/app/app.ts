@@ -2,11 +2,14 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navigation } from './components/shared/navigation/navigation';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from './services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
+    CommonModule,
     RouterOutlet,
     Navigation,
   ],
@@ -15,6 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class App implements OnInit {
   private translate = inject(TranslateService);
+  authService = inject(AuthService);
   title = 'ICN';
 
   ngOnInit() {

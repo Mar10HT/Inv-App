@@ -68,7 +68,7 @@ export const environment = {
    - **Framework Preset:** Angular
    - **Root Directory:** `./` (leave as default)
    - **Build Command:** `npm run build` (auto-detected)
-   - **Output Directory:** `dist/inv-app` (verify this matches your build output)
+   - **Output Directory:** `dist/inv-app/browser` (verify this matches your build output)
    - **Install Command:** `npm install`
 
 5. **No Environment Variables needed** (we hardcoded the API URL in environment.prod.ts)
@@ -128,7 +128,7 @@ git push origin main
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/inv-app",
+  "outputDirectory": "dist/inv-app/browser",
   "framework": "angular",
   "rewrites": [
     {

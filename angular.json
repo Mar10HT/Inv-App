@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "INV-ICN": {
+    "inv-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -54,10 +54,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "INV-ICN:build:production"
+              "buildTarget": "inv-app:build:production"
             },
             "development": {
-              "buildTarget": "INV-ICN:build:development"
+              "buildTarget": "inv-app:build:development"
             }
           },
           "defaultConfiguration": "development"

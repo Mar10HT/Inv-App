@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/inv-app/browser",
+  "outputDirectory": "dist/inv-app",
   "framework": "angular",
   "rewrites": [
     {

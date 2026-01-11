@@ -58,6 +58,7 @@ export interface InventoryItemInterface {
   quantity: number;
   minQuantity: number;
   category: string;
+  model?: string;
   status: InventoryStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -98,6 +99,7 @@ export interface CreateInventoryItemDto {
   quantity: number;
   minQuantity?: number;
   category: string;
+  model?: string;
   itemType: ItemType;
   serviceTag?: string;
   serialNumber?: string;
@@ -117,6 +119,7 @@ export interface UpdateInventoryItemDto {
   quantity?: number;
   minQuantity?: number;
   category?: string;
+  model?: string;
   itemType?: ItemType;
   serviceTag?: string;
   serialNumber?: string;

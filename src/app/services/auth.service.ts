@@ -26,18 +26,11 @@ export class AuthService {
   constructor() {
     // Initialize authentication state from localStorage
     this.checkAuth();
-    console.log('🔧 Environment:', environment);
-    console.log('🌐 API URL:', this.apiUrl);
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    console.log('🔑 Login attempt with URL:', `${this.apiUrl}/login`);
-    console.log('📝 Credentials:', { email: credentials.email });
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => {
-        console.log('✅ Login successful:', response);
-        this.handleAuthResponse(response);
-      })
+      tap(response => this.handleAuthResponse(response))
     );
   }
 

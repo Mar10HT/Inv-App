@@ -17,7 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { InventoryService } from '.././../../services/inventory/inventory.service';
-import { InventoryItemInterface, InventoryStatus } from '../../../interfaces/inventory-item.interface';
+import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory-item/inventory-item';
 
@@ -46,8 +46,9 @@ export class InventoryList implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  // Expose enum to template
+  // Expose enums to template
   InventoryStatus = InventoryStatus;
+  ItemType = ItemType;
 
   // Data source for the table
   dataSource = new MatTableDataSource<InventoryItemInterface>([]);
@@ -79,7 +80,8 @@ export class InventoryList implements OnInit {
     return allItems.filter(item => {
       const matchesSearch = !search ||
         item.name.toLowerCase().includes(search) ||
-        (item.description?.toLowerCase().includes(search) ?? false);
+        (item.description?.toLowerCase().includes(search) ?? false) ||
+        (item.model?.toLowerCase().includes(search) ?? false);
 
       const matchesCategory = category === 'all' || item.category === category;
       const matchesLocation = location === 'all' || item.warehouse?.name === location;
@@ -236,6 +238,15 @@ export class InventoryList implements OnInit {
   }
 
   // Utility methods
+  getStatusText(item: InventoryItemInterface): string {
+    // For UNIQUE items, show "Disponible" or "No Disponible"
+    if (item.itemType === ItemType.UNIQUE) {
+      return item.status === InventoryStatus.IN_STOCK ? 'Disponible' : 'No Disponible';
+    }
+    // For BULK items, show standard status
+    return item.status;
+  }
+
   getStatusColor(status: InventoryStatus): string {
     switch (status) {
       case InventoryStatus.IN_STOCK: return 'primary';

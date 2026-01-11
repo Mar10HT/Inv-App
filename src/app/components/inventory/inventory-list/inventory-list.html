@@ -11,7 +11,7 @@
           mat-raised-button
           (click)="addNewItem()"
           class="!bg-[#4d7c6f] hover:!bg-[#5d8c7f] !text-white flex items-center gap-2 w-fit !shadow-none !rounded-lg !px-6 !py-3 !transition-all">
-          <mat-icon>add</mat-icon>
+          <mat-icon class="!leading-none !block">add</mat-icon>
           {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
         </button>
       </div>
@@ -27,8 +27,8 @@
             <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
             <p class="text-sm text-sky-500 mt-1">+8% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
-          <div class="bg-[#242424] p-3 rounded-lg">
-            <mat-icon class="!text-slate-500">inventory</mat-icon>
+          <div class="bg-[#242424] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-slate-500 !text-2xl !leading-none !block">inventory</mat-icon>
           </div>
         </div>
       </div>
@@ -41,8 +41,8 @@
             <p class="text-3xl font-bold text-slate-300">{{ stats().inStock }}</p>
             <p class="text-sm text-[#4d7c6f] mt-1">+12% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg">
-            <mat-icon class="!text-[#4d7c6f]">check_circle</mat-icon>
+          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">check_circle</mat-icon>
           </div>
         </div>
       </div>
@@ -55,8 +55,8 @@
             <p class="text-3xl font-bold text-slate-300">{{ stats().lowStock }}</p>
             <p class="text-sm text-orange-600 mt-1">+5% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
-          <div class="bg-orange-950/50 p-3 rounded-lg">
-            <mat-icon class="!text-orange-600">warning</mat-icon>
+          <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-orange-600 !text-2xl !leading-none !block">warning</mat-icon>
           </div>
         </div>
       </div>
@@ -69,8 +69,8 @@
             <p class="text-3xl font-bold text-slate-300">{{ stats().outOfStock }}</p>
             <p class="text-sm text-red-600 mt-1">-3% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
-          <div class="bg-red-950/50 p-3 rounded-lg">
-            <mat-icon class="!text-red-600">error</mat-icon>
+          <div class="bg-red-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-red-600 !text-2xl !leading-none !block">error</mat-icon>
           </div>
         </div>
       </div>
@@ -90,7 +90,7 @@
               [placeholder]="'INVENTORY.SEARCH_PLACEHOLDER' | translate"
               class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
             />
-            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl">search</mat-icon>
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl !leading-none !block">search</mat-icon>
           </div>
         </div>
 
@@ -140,7 +140,7 @@
           *ngIf="searchQuery() !== '' || selectedCategory() !== 'all' || selectedLocation() !== 'all' || selectedStatus() !== 'all'"
           (click)="clearFilters()"
           class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-300 px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
-          <mat-icon class="!text-lg">clear</mat-icon>
+          <mat-icon class="!text-lg !leading-none !block">clear</mat-icon>
           {{ 'INVENTORY.LIST.CLEAR_FILTERS' | translate }}
         </button>
       </div>
@@ -158,7 +158,7 @@
           <button
             (click)="exportData()"
             class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
-            <mat-icon class="!text-lg">download</mat-icon>
+            <mat-icon class="!text-lg !leading-none !block">download</mat-icon>
             {{ 'COMMON.EXPORT' | translate }}
           </button>
         </div>
@@ -171,6 +171,7 @@
             <tr class="bg-[#141414]">
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Modelo</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.LOCATION' | translate }}</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.LAST_UPDATED' | translate }}</th>
@@ -187,7 +188,7 @@
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <mat-icon class="!text-[#4d7c6f] !text-lg">inventory_2</mat-icon>
+                    <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
                   </div>
                   <div class="min-w-0">
                     <p class="font-medium text-slate-300 truncate">{{ item.name }}</p>
@@ -203,6 +204,11 @@
                 <span class="text-slate-400 text-sm">{{ item.category }}</span>
               </td>
 
+              <!-- Model Column -->
+              <td class="px-6 py-4">
+                <span class="text-slate-400 text-sm">{{ item.model || '-' }}</span>
+              </td>
+
               <!-- Quantity Column -->
               <td class="px-6 py-4">
                 <span class="text-slate-300 font-medium">{{ item.quantity }}</span>
@@ -211,7 +217,7 @@
               <!-- Location Column -->
               <td class="px-6 py-4">
                 <div class="flex items-center gap-2 text-slate-400 text-sm">
-                  <mat-icon class="!text-sm !text-slate-500">place</mat-icon>
+                  <mat-icon class="!text-sm !text-slate-500 !leading-none !block">place</mat-icon>
                   <span>{{ item.warehouse?.name }}</span>
                 </div>
               </td>
@@ -230,9 +236,7 @@
                     'bg-red-950/50 text-red-400 border border-red-900': item.status === InventoryStatus.OUT_OF_STOCK
                   }"
                   class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
-                  @if (item.status === InventoryStatus.IN_STOCK) { {{ 'DASHBOARD.IN_STOCK' | translate }} }
-                  @else if (item.status === InventoryStatus.LOW_STOCK) { {{ 'DASHBOARD.LOW_STOCK' | translate }} }
-                  @else { {{ 'DASHBOARD.OUT_OF_STOCK' | translate }} }
+                  {{ getStatusText(item) }}
                 </span>
               </td>
 
@@ -242,20 +246,20 @@
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); viewItem(item)"
-                    class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
-                    <mat-icon class="!text-xl">visibility</mat-icon>
+                    class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors flex items-center justify-center">
+                    <mat-icon class="!text-xl !leading-none !block">visibility</mat-icon>
                   </button>
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); editItem(item)"
-                    class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
-                    <mat-icon class="!text-xl">edit</mat-icon>
+                    class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+                    <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                   </button>
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); deleteItem(item)"
-                    class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                    <mat-icon class="!text-xl">delete</mat-icon>
+                    class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                    <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
                   </button>
                 </div>
               </td>
@@ -264,7 +268,7 @@
             <!-- Empty State -->
             <tr *ngIf="dataSource.data.length === 0">
               <td colspan="7" class="px-6 py-16 text-center">
-                <mat-icon class="!text-6xl !text-slate-700 mb-4">inventory_2</mat-icon>
+                <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">inventory_2</mat-icon>
                 <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'INVENTORY.LIST.NO_ITEMS_FOUND' | translate }}</h3>
                 <p class="text-slate-600">{{ 'INVENTORY.LIST.ADJUST_FILTERS' | translate }}</p>
               </td>
@@ -276,7 +280,7 @@
       <!-- Mobile Card View - REDESIGNED -->
       <div class="lg:hidden divide-y divide-[#1e1e1e]">
         <div *ngIf="dataSource.data.length === 0" class="p-8 text-center">
-          <mat-icon class="!text-6xl !text-slate-700 mb-4">inventory_2</mat-icon>
+          <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">inventory_2</mat-icon>
           <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'INVENTORY.LIST.NO_ITEMS_FOUND' | translate }}</h3>
           <p class="text-slate-600">{{ 'INVENTORY.LIST.ADJUST_FILTERS' | translate }}</p>
         </div>
@@ -288,12 +292,13 @@
           <!-- Item Header -->
           <div class="flex justify-between items-start mb-4">
             <div class="flex items-start gap-3 flex-1 min-w-0">
-              <div class="w-12 h-12 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                <mat-icon class="!text-[#4d7c6f] !text-xl">inventory_2</mat-icon>
+              <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+                <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
               </div>
               <div class="min-w-0 flex-1">
                 <h3 class="font-semibold text-slate-300 text-base mb-1 truncate">{{ item.name }}</h3>
                 <p class="text-slate-500 text-sm">{{ item.category }}</p>
+                <p class="text-slate-600 text-xs" *ngIf="item.model">Modelo: {{ item.model }}</p>
                 <p class="text-slate-600 text-xs mt-1 line-clamp-2" *ngIf="item.description">
                   {{ item.description }}
                 </p>
@@ -306,9 +311,7 @@
                 'bg-red-950/50 text-red-400 border border-red-900': item.status === InventoryStatus.OUT_OF_STOCK
               }"
               class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap ml-3 flex-shrink-0">
-              @if (item.status === InventoryStatus.IN_STOCK) { {{ 'DASHBOARD.IN_STOCK' | translate }} }
-              @else if (item.status === InventoryStatus.LOW_STOCK) { {{ 'DASHBOARD.LOW_STOCK' | translate }} }
-              @else { {{ 'DASHBOARD.OUT_OF_STOCK' | translate }} }
+              {{ getStatusText(item) }}
             </span>
           </div>
 
@@ -321,7 +324,7 @@
             <div>
               <p class="text-xs text-slate-600 font-medium uppercase tracking-wide mb-1">{{ 'DASHBOARD.TABLE.LOCATION' | translate }}</p>
               <div class="flex items-center gap-1">
-                <mat-icon class="!text-sm !text-slate-500">place</mat-icon>
+                <mat-icon class="!text-sm !text-slate-500 !leading-none !block">place</mat-icon>
                 <p class="text-slate-300 font-semibold text-sm truncate">{{ item.warehouse?.name }}</p>
               </div>
             </div>
@@ -337,20 +340,20 @@
             <button
               type="button"
               (click)="$event.stopPropagation(); viewItem(item)"
-              class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
-              <mat-icon class="!text-xl">visibility</mat-icon>
+              class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors flex items-center justify-center">
+              <mat-icon class="!text-xl !leading-none !block">visibility</mat-icon>
             </button>
             <button
               type="button"
               (click)="$event.stopPropagation(); editItem(item)"
-              class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
-              <mat-icon class="!text-xl">edit</mat-icon>
+              class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+              <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
             </button>
             <button
               type="button"
               (click)="$event.stopPropagation(); deleteItem(item)"
-              class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-              <mat-icon class="!text-xl">delete</mat-icon>
+              class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+              <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
             </button>
           </div>
         </div>

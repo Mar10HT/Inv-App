@@ -91,40 +91,6 @@ export interface CategoryFormDialogData {
           }
         </div>
 
-        <!-- Color -->
-        <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'CATEGORY.COLOR' | translate }}
-          </label>
-          <div class="flex items-center gap-3">
-            <input
-              type="color"
-              formControlName="color"
-              class="w-12 h-12 rounded-lg border border-[#2a2a2a] cursor-pointer bg-transparent"
-            />
-            <input
-              type="text"
-              formControlName="color"
-              class="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors uppercase"
-              placeholder="#FF5733"
-            />
-          </div>
-          @if (form.get('color')?.invalid && form.get('color')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'CATEGORY.COLOR_INVALID' | translate }}</p>
-          }
-        </div>
-
-        <!-- Color Preview -->
-        @if (form.get('color')?.value) {
-          <div class="flex items-center gap-3">
-            <span class="text-sm text-slate-400">{{ 'CATEGORY.PREVIEW' | translate }}:</span>
-            <div
-              class="w-24 h-8 rounded-lg border border-[#2a2a2a]"
-              [style.backgroundColor]="form.get('color')?.value">
-            </div>
-          </div>
-        }
-
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
           <button
@@ -157,16 +123,14 @@ export class CategoryFormDialog implements OnInit {
 
   form: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-    description: ['', [Validators.maxLength(200)]],
-    color: ['#4d7c6f', [Validators.pattern(/^#[0-9A-Fa-f]{6}$/)]]
+    description: ['', [Validators.maxLength(200)]]
   });
 
   ngOnInit(): void {
     if (this.data.mode === 'edit' && this.data.category) {
       this.form.patchValue({
         name: this.data.category.name,
-        description: this.data.category.description || '',
-        color: this.data.category.color || '#4d7c6f'
+        description: this.data.category.description || ''
       });
     }
   }

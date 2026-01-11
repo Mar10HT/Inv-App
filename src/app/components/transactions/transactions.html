@@ -10,7 +10,7 @@
         <button
           (click)="addTransaction()"
           class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-          <mat-icon>add</mat-icon>
+          <mat-icon class="!leading-none !block">add</mat-icon>
           {{ 'TRANSACTION.ADD' | translate }}
         </button>
       </div>
@@ -24,8 +24,8 @@
             <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TOTAL' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg">
-            <mat-icon class="!text-[#4d7c6f]">receipt_long</mat-icon>
+          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">receipt_long</mat-icon>
           </div>
         </div>
       </div>
@@ -35,8 +35,8 @@
             <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TYPES.IN' | translate }}</p>
             <p class="text-3xl font-bold text-emerald-400">{{ stats().inCount }}</p>
           </div>
-          <div class="bg-emerald-950/30 p-3 rounded-lg">
-            <mat-icon class="!text-emerald-400">arrow_downward</mat-icon>
+          <div class="bg-emerald-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-emerald-400 !text-2xl !leading-none !block">arrow_downward</mat-icon>
           </div>
         </div>
       </div>
@@ -46,8 +46,8 @@
             <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TYPES.OUT' | translate }}</p>
             <p class="text-3xl font-bold text-rose-400">{{ stats().outCount }}</p>
           </div>
-          <div class="bg-rose-950/30 p-3 rounded-lg">
-            <mat-icon class="!text-rose-400">arrow_upward</mat-icon>
+          <div class="bg-rose-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-rose-400 !text-2xl !leading-none !block">arrow_upward</mat-icon>
           </div>
         </div>
       </div>
@@ -57,8 +57,8 @@
             <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TYPES.TRANSFER' | translate }}</p>
             <p class="text-3xl font-bold text-blue-400">{{ stats().transferCount }}</p>
           </div>
-          <div class="bg-blue-950/30 p-3 rounded-lg">
-            <mat-icon class="!text-blue-400">swap_horiz</mat-icon>
+          <div class="bg-blue-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-blue-400 !text-2xl !leading-none !block">swap_horiz</mat-icon>
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@
     @if (error()) {
       <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
-          <mat-icon class="!text-rose-400">error</mat-icon>
+          <mat-icon class="!text-rose-400 !leading-none !block">error</mat-icon>
           <span class="text-rose-400">{{ error() }}</span>
         </div>
       </div>
@@ -91,7 +91,7 @@
       @if (transactions().length === 0 && !loading()) {
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-16">
-          <mat-icon class="!text-6xl !text-slate-700 mb-4">receipt_long</mat-icon>
+          <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">receipt_long</mat-icon>
           <p class="text-slate-500 text-lg mb-2">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
           <p class="text-slate-600 text-sm mb-6">{{ 'TRANSACTION.NO_TRANSACTIONS_DESC' | translate }}</p>
           <button
@@ -120,7 +120,7 @@
                   <!-- Type Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-2">
-                      <mat-icon class="!text-lg" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'">
+                      <mat-icon class="!text-lg !leading-none !block" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'">
                         {{ getTypeIcon(transaction.type) }}
                       </mat-icon>
                       <span class="px-3 py-1 rounded-full text-xs font-medium border" [class]="getTypeBadgeClass(transaction.type)">
@@ -165,8 +165,8 @@
                     <button
                       type="button"
                       (click)="deleteTransaction(transaction)"
-                      class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                      <mat-icon class="!text-xl">delete</mat-icon>
+                      class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                      <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
                     </button>
                   </td>
                 </tr>
@@ -181,7 +181,7 @@
             <div class="p-4">
               <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-2">
-                  <mat-icon class="!text-lg" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'">
+                  <mat-icon class="!text-lg !leading-none !block" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'">
                     {{ getTypeIcon(transaction.type) }}
                   </mat-icon>
                   <span class="px-3 py-1 rounded-full text-xs font-medium border" [class]="getTypeBadgeClass(transaction.type)">
@@ -214,8 +214,8 @@
                 <button
                   type="button"
                   (click)="deleteTransaction(transaction)"
-                  class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                  <mat-icon class="!text-xl">delete</mat-icon>
+                  class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                  <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
                 </button>
               </div>
             </div>

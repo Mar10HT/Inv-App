@@ -76,6 +76,15 @@
             }
           </div>
 
+          <!-- Model -->
+          <div class="flex flex-col gap-1 md:col-span-2">
+            <label class="text-sm text-slate-400">Modelo / SKU <span class="text-slate-600">(opcional)</span></label>
+            <input type="text" formControlName="model"
+              placeholder="Ej: Dell Latitude 5430, iPhone 13 Pro Max"
+              class="w-full px-4 py-3 bg-[#0a0a0a] border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+            <span class="text-xs text-slate-500">Útil para agrupar productos similares (ej: todas las laptops Dell Latitude 5430)</span>
+          </div>
+
           <!-- Description -->
           <div class="flex flex-col gap-1 md:col-span-2">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.BASIC_INFO.DESCRIPTION' | translate }}</label>

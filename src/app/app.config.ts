@@ -1,11 +1,13 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 // Import translations directly (SSR-safe)
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
@@ -29,7 +31,10 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([authInterceptor])
+    ),
     importProvidersFrom(
       TranslateModule.forRoot({
         defaultLanguage: 'en',
@@ -37,7 +42,8 @@ export const appConfig: ApplicationConfig = {
           provide: TranslateLoader,
           useClass: StaticTranslateLoader
         }
-      })
+      }),
+      NgxPermissionsModule.forRoot()
     )
   ]
 };

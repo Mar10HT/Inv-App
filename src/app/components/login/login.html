@@ -1,0 +1,101 @@
+<div class="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <!-- Logo/Title -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#4d7c6f]/20 mb-4">
+        <mat-icon class="!text-4xl !w-10 !h-10 text-[#4d7c6f]">inventory_2</mat-icon>
+      </div>
+      <h1 class="text-3xl font-bold text-white mb-2">{{ 'LOGIN.TITLE' | translate }}</h1>
+      <p class="text-slate-400">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-8">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Email Field -->
+        <div>
+          <label class="block text-sm font-medium text-slate-400 mb-2">
+            {{ 'LOGIN.EMAIL' | translate }}
+          </label>
+          <div class="relative">
+            <input
+              type="email"
+              formControlName="email"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11
+                     text-slate-300 placeholder-slate-600
+                     focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
+            />
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5 !text-base">
+              email
+            </mat-icon>
+          </div>
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label class="block text-sm font-medium text-slate-400 mb-2">
+            {{ 'LOGIN.PASSWORD' | translate }}
+          </label>
+          <div class="relative">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11 pr-11
+                     text-slate-300 placeholder-slate-600
+                     focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
+            />
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5 !text-base">
+              lock
+            </mat-icon>
+            <button
+              type="button"
+              (click)="togglePasswordVisibility()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              <mat-icon class="!w-5 !h-5 !text-base">
+                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || loading()"
+          class="w-full px-6 py-3 rounded-lg bg-[#4d7c6f] text-white
+                 hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed
+                 transition-colors font-medium flex items-center justify-center gap-2"
+        >
+          @if (loading()) {
+            <mat-spinner diameter="20" class="!w-5 !h-5"></mat-spinner>
+            <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
+          } @else {
+            <mat-icon class="!w-5 !h-5 !text-base">login</mat-icon>
+            <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
+          }
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-slate-500">
+          {{ 'LOGIN.DEMO_CREDENTIALS' | translate }} <span class="text-slate-400">admin@example.com</span> / <span class="text-slate-400">password123</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Additional Info -->
+    <div class="mt-6 text-center text-sm text-slate-500">
+      <p>{{ 'LOGIN.VERSION' | translate }}</p>
+    </div>
+  </div>
+</div>

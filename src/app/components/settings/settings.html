@@ -1,1 +1,187 @@
-<p>settings works!</p>
+<div class="min-h-screen bg-[#0a0a0a] p-6">
+  <div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-300">{{ 'NAV.SETTINGS' | translate }}</h1>
+      <p class="text-slate-500 mt-1">{{ 'SETTINGS.SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- Language Section -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
+            <mat-icon class="!text-[#5d8c7f]">language</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
+            <p class="text-sm text-slate-500">{{ 'SETTINGS.LANGUAGE_DESC' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 ml-13">
+          <button
+            (click)="changeLang('es')"
+            [class]="currentLang() === 'es'
+              ? 'bg-[#4d7c6f] text-white border-[#5d8c7f]'
+              : 'bg-[#242424] text-slate-400 border-[#2a2a2a] hover:border-[#3a3a3a]'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all">
+            <span class="text-xl">&#127469;&#127475;</span>
+            <span class="font-medium">Español</span>
+          </button>
+          <button
+            (click)="changeLang('en')"
+            [class]="currentLang() === 'en'
+              ? 'bg-[#4d7c6f] text-white border-[#5d8c7f]'
+              : 'bg-[#242424] text-slate-400 border-[#2a2a2a] hover:border-[#3a3a3a]'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all">
+            <span class="text-xl">&#127482;&#127480;</span>
+            <span class="font-medium">English</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance Section -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
+            <mat-icon class="!text-[#5d8c7f]">palette</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.APPEARANCE' | translate }}</h3>
+            <p class="text-sm text-slate-500">{{ 'SETTINGS.THEME_DESC' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between ml-13 p-4 bg-[#242424] rounded-lg">
+          <div class="flex items-center gap-3">
+            <mat-icon class="!text-slate-400">{{ darkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+            <span class="text-slate-300 font-medium">
+              {{ darkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate) }}
+            </span>
+          </div>
+          <button
+            (click)="toggleDarkMode()"
+            class="relative w-12 h-6 rounded-full transition-colors"
+            [class]="darkMode() ? 'bg-[#4d7c6f]' : 'bg-[#3a3a3a]'">
+            <span
+              class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform"
+              [class]="darkMode() ? 'left-7' : 'left-1'">
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
+            <mat-icon class="!text-[#5d8c7f]">notifications</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.NOTIFICATIONS' | translate }}</h3>
+          </div>
+        </div>
+
+        <div class="space-y-3 ml-13">
+          <!-- Email Notifications -->
+          <div class="flex items-center justify-between p-4 bg-[#242424] rounded-lg">
+            <div>
+              <p class="text-slate-300 font-medium">{{ 'SETTINGS.EMAIL_NOTIFICATIONS' | translate }}</p>
+              <p class="text-sm text-slate-500">{{ 'SETTINGS.EMAIL_NOTIFICATIONS_DESC' | translate }}</p>
+            </div>
+            <button
+              (click)="toggleEmailNotifications()"
+              class="relative w-12 h-6 rounded-full transition-colors"
+              [class]="emailNotifications() ? 'bg-[#4d7c6f]' : 'bg-[#3a3a3a]'">
+              <span
+                class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform"
+                [class]="emailNotifications() ? 'left-7' : 'left-1'">
+              </span>
+            </button>
+          </div>
+
+          <!-- Low Stock Alerts -->
+          <div class="flex items-center justify-between p-4 bg-[#242424] rounded-lg">
+            <div>
+              <p class="text-slate-300 font-medium">{{ 'SETTINGS.LOW_STOCK_ALERTS' | translate }}</p>
+              <p class="text-sm text-slate-500">{{ 'SETTINGS.LOW_STOCK_ALERTS_DESC' | translate }}</p>
+            </div>
+            <button
+              (click)="toggleLowStockAlerts()"
+              class="relative w-12 h-6 rounded-full transition-colors"
+              [class]="lowStockAlerts() ? 'bg-[#4d7c6f]' : 'bg-[#3a3a3a]'">
+              <span
+                class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform"
+                [class]="lowStockAlerts() ? 'left-7' : 'left-1'">
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Management Section -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
+            <mat-icon class="!text-[#5d8c7f]">storage</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.DATA' | translate }}</h3>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between ml-13 p-4 bg-[#242424] rounded-lg">
+          <div>
+            <p class="text-slate-300 font-medium">{{ 'SETTINGS.EXPORT_DATA' | translate }}</p>
+            <p class="text-sm text-slate-500">{{ 'SETTINGS.EXPORT_DATA_DESC' | translate }}</p>
+          </div>
+          <button
+            (click)="exportData()"
+            [disabled]="exporting()"
+            class="flex items-center gap-2 px-4 py-2 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 transition-colors">
+            @if (exporting()) {
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            } @else {
+              <mat-icon class="!text-lg">download</mat-icon>
+            }
+            <span>{{ 'COMMON.EXPORT' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone Section -->
+    <div class="bg-[#1a1a1a] rounded-xl border border-red-900/50 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-red-900/30 flex items-center justify-center">
+            <mat-icon class="!text-red-400">warning</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-red-400">{{ 'SETTINGS.DANGER_ZONE' | translate }}</h3>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between ml-13 p-4 bg-red-900/10 border border-red-900/30 rounded-lg">
+          <div>
+            <p class="text-slate-300 font-medium">{{ 'SETTINGS.RESET_DATA' | translate }}</p>
+            <p class="text-sm text-slate-500">{{ 'SETTINGS.RESET_DATA_DESC' | translate }}</p>
+          </div>
+          <button
+            (click)="resetData()"
+            class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            <mat-icon class="!text-lg">delete_forever</mat-icon>
+            <span>{{ 'SETTINGS.RESET_DATA' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

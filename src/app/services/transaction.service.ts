@@ -1,28 +1,28 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { User, CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
+import { Transaction, CreateTransactionDto } from '../interfaces/transaction.interface';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class TransactionService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl = `${environment.apiUrl}/transactions`;
 
-  users = signal<User[]>([]);
+  transactions = signal<Transaction[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  getAll(): Observable<User[]> {
+  getAll(): Observable<Transaction[]> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<User[]>(this.apiUrl).pipe(
+    return this.http.get<Transaction[]>(this.apiUrl).pipe(
       tap({
-        next: (users) => {
-          this.users.set(users);
+        next: (transactions) => {
+          this.transactions.set(transactions);
           this.loading.set(false);
         },
         error: (error) => {
@@ -33,11 +33,15 @@ export class UserService {
     );
   }
 
-  getById(id: string): Observable<User> {
+  getRecent(limit: number = 10): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/recent?limit=${limit}`);
+  }
+
+  getById(id: string): Observable<Transaction> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<User>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<Transaction>(`${this.apiUrl}/${id}`).pipe(
       tap({
         next: () => this.loading.set(false),
         error: (error) => {
@@ -48,34 +52,14 @@ export class UserService {
     );
   }
 
-  create(user: CreateUserDto): Observable<User> {
+  create(transaction: CreateTransactionDto): Observable<Transaction> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.post<User>(this.apiUrl, user).pipe(
+    return this.http.post<Transaction>(this.apiUrl, transaction).pipe(
       tap({
-        next: (newUser) => {
-          this.users.update(users => [...users, newUser]);
-          this.loading.set(false);
-        },
-        error: (error) => {
-          this.error.set(error.message);
-          this.loading.set(false);
-        }
-      })
-    );
-  }
-
-  update(id: string, user: UpdateUserDto): Observable<User> {
-    this.loading.set(true);
-    this.error.set(null);
-
-    return this.http.put<User>(`${this.apiUrl}/${id}`, user).pipe(
-      tap({
-        next: (updatedUser) => {
-          this.users.update(users =>
-            users.map(u => u.id === id ? updatedUser : u)
-          );
+        next: (newTransaction) => {
+          this.transactions.update(transactions => [newTransaction, ...transactions]);
           this.loading.set(false);
         },
         error: (error) => {
@@ -93,8 +77,8 @@ export class UserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap({
         next: () => {
-          this.users.update(users =>
-            users.filter(u => u.id !== id)
+          this.transactions.update(transactions =>
+            transactions.filter(t => t.id !== id)
           );
           this.loading.set(false);
         },
@@ -106,10 +90,7 @@ export class UserService {
     );
   }
 
-  getUsersByRole(role?: string): User[] {
-    if (!role) {
-      return this.users();
-    }
-    return this.users().filter(user => user.role === role);
+  getStats(): Observable<{ totalIn: number; totalOut: number; totalTransfer: number; total: number }> {
+    return this.http.get<{ totalIn: number; totalOut: number; totalTransfer: number; total: number }>(`${this.apiUrl}/stats`);
   }
 }

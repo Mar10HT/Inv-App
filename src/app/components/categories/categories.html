@@ -1,1 +1,119 @@
-<p>categories works!</p>
+<div class="min-h-screen bg-[#0a0a0a] p-6">
+  <div class="max-w-[1400px] mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-bold text-slate-300 mb-2">{{ 'CATEGORY.TITLE' | translate }}</h1>
+          <p class="text-slate-500 text-lg">{{ 'CATEGORY.SUBTITLE' | translate }}</p>
+        </div>
+        <button
+          (click)="addCategory()"
+          class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
+          <mat-icon>add</mat-icon>
+          {{ 'CATEGORY.ADD' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">{{ 'CATEGORY.TOTAL' | translate }}</p>
+            <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
+          </div>
+          <div class="bg-[#2d4a3f] p-3 rounded-lg">
+            <mat-icon class="!text-[#4d7c6f]">category</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex items-center justify-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
+        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
+        <div class="flex items-center gap-3">
+          <mat-icon class="!text-rose-400">error</mat-icon>
+          <span class="text-rose-400">{{ error() }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Categories Grid -->
+    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#2a2a2a]">
+        <h2 class="text-xl font-semibold text-slate-300">{{ 'CATEGORY.LIST' | translate }}</h2>
+      </div>
+
+      @if (categories().length === 0 && !loading()) {
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-16">
+          <mat-icon class="!text-6xl !text-slate-700 mb-4">category</mat-icon>
+          <p class="text-slate-500 text-lg mb-2">{{ 'CATEGORY.NO_CATEGORIES' | translate }}</p>
+          <p class="text-slate-600 text-sm mb-6">{{ 'CATEGORY.NO_CATEGORIES_DESC' | translate }}</p>
+          <button
+            (click)="addCategory()"
+            class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
+            {{ 'CATEGORY.ADD' | translate }}
+          </button>
+        </div>
+      } @else {
+        <!-- Categories Grid View -->
+        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          @for (category of categories(); track trackByFn($index, category)) {
+            <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 hover:border-slate-700 transition-all group">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    [style.backgroundColor]="category.color || '#4d7c6f'">
+                    <mat-icon class="!text-white !text-lg">category</mat-icon>
+                  </div>
+                  <div>
+                    <h3 class="font-medium text-slate-300">{{ category.name }}</h3>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    (click)="editCategory(category)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                    <mat-icon class="!text-lg">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deleteCategory(category)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <mat-icon class="!text-lg">delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+              @if (category.description) {
+                <p class="text-slate-500 text-sm line-clamp-2">{{ category.description }}</p>
+              }
+              @if (category.color) {
+                <div class="mt-3 flex items-center gap-2">
+                  <div
+                    class="w-4 h-4 rounded border border-[#2a2a2a]"
+                    [style.backgroundColor]="category.color">
+                  </div>
+                  <span class="text-xs text-slate-500 uppercase">{{ category.color }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

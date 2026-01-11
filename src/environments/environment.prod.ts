@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: import.meta.env.NG_APP_API_URL || 'http://localhost:3000/api'
+  apiUrl: 'https://inv-app-api-production.up.railway.app/api'
 };

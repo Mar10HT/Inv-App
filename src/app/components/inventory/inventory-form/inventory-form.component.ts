@@ -112,15 +112,16 @@ export class InventoryFormComponent implements OnInit {
         const minQuantityControl = this.inventoryForm.get('minQuantity');
 
         if (isUnique) {
-          // UNIQUE items: require serviceTag OR serialNumber, make quantity read-only (1)
+          // UNIQUE items: require serviceTag OR serialNumber, quantity can be 0 or 1
           serviceTagControl?.setValidators([Validators.required]);
           serialNumberControl?.clearValidators();
           skuControl?.clearValidators();
           barcodeControl?.clearValidators();
 
-          // Set quantity to 1 and make it read-only
-          quantityControl?.setValue(1);
-          quantityControl?.disable();
+          // UNIQUE items can only have quantity 0 or 1
+          quantityControl?.enable();
+          quantityControl?.setValidators([Validators.required, Validators.min(0), Validators.max(1)]);
+          // Don't force quantity to 1, let user choose 0 or 1
           minQuantityControl?.setValue(1);
           minQuantityControl?.disable();
         } else {
@@ -171,6 +172,7 @@ export class InventoryFormComponent implements OnInit {
           name: item.name,
           description: item.description,
           category: item.category,
+          model: item.model || '',
           itemType: item.itemType,
           serviceTag: item.serviceTag || '',
           serialNumber: item.serialNumber || '',
@@ -200,6 +202,7 @@ export class InventoryFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       category: ['', Validators.required],
+      model: [''],
 
       // Item type (UNIQUE vs BULK)
       itemType: [ItemType.BULK, Validators.required],

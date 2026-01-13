@@ -1,8 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navigation } from './components/shared/navigation/navigation';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from './services/auth.service';
+import { SidebarService } from './services/sidebar.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,7 +20,10 @@ import { CommonModule } from '@angular/common';
 export class App implements OnInit {
   private translate = inject(TranslateService);
   authService = inject(AuthService);
+  sidebarService = inject(SidebarService);
   title = 'ICN';
+
+  isCollapsed = computed(() => this.sidebarService.isCollapsed());
 
   ngOnInit() {
     // Configure available languages

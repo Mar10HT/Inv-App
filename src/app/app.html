@@ -3,7 +3,10 @@
     <app-navigation></app-navigation>
   }
 
-  <main [class.p-6]="authService.isAuthenticated()" [class.ml-0]="true">
+  <main
+    class="main-content"
+    [class.with-sidebar]="authService.isAuthenticated()"
+    [class.sidebar-collapsed]="isCollapsed()">
     <router-outlet></router-outlet>
   </main>
 </div>

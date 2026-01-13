@@ -1,167 +1,196 @@
+<aside
+  class="sidebar"
+  [class.collapsed]="isCollapsed()">
 
-<div class="menu-toggle-wrapper"
-     [class.is-open]="sidenav.opened">
-  <button
-    (click)="sidenav.toggle()"
-    aria-label="Toggle navigation menu"
-    class="menu-toggle-btn"
-    [class.menu-toggle-open]="sidenav.opened"
-  >
-    <mat-icon class="menu-toggle-icon">menu</mat-icon>
-  </button>
-</div>
-
-<div class="fixed inset-0 z-30" [class.pointer-events-none]="!sidenav.opened">
-  <mat-sidenav-container class="h-full w-full">
-    <mat-sidenav
-      #sidenav
-      mode="over"
-      hasBackdrop="true"
-      (backdropClick)="sidenav.close()"
-      class="!w-[280px] !bg-[#0a0a0a] border-r border-[#2a2a2a]"
-      [style.transition]="'transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1)'"
-    >
-      <div class="px-4 py-3 border-b border-[#2a2a2a] bg-[#1a1a1a]">
-        <h2 class="text-lg font-bold text-slate-300 tracking-tight">{{ 'NAV.MENU' | translate }}</h2>
-        <div class="w-10 h-0.5 bg-[#4d7c6f] rounded-full mt-1.5"></div>
+  <!-- Header with Logo and Toggle -->
+  <div class="sidebar-header">
+    @if (!isCollapsed()) {
+      <div class="logo-section">
+        <div class="logo-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <span class="logo-text">InvApp</span>
       </div>
-      <nav class="flex flex-col px-3 py-2 gap-0.5 overflow-y-auto">
+    }
+    <button
+      class="toggle-btn"
+      (click)="toggleSidebar()"
+      [matTooltip]="isCollapsed() ? 'Expandir' : 'Colapsar'"
+      matTooltipPosition="right">
+      <mat-icon>{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
 
-        <!-- Dashboard -->
-        <a
-          routerLink="/dashboard"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">dashboard</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.DASHBOARD' | translate }}</span>
-        </a>
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <!-- Dashboard -->
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.DASHBOARD' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">dashboard</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
+      }
+    </a>
 
-        <!-- Inventario Group -->
-        <div class="mt-3 mb-1">
-          <span class="px-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-            {{ 'NAV.INVENTORY' | translate }}
-          </span>
+    <!-- Inventario Group -->
+    @if (!isCollapsed()) {
+      <div class="nav-group-label">
+        {{ 'NAV.INVENTORY' | translate }}
+      </div>
+    } @else {
+      <div class="nav-divider"></div>
+    }
+
+    <a
+      routerLink="/inventory"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.INVENTORY' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">inventory_2</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.INVENTORY' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/warehouses"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.WAREHOUSES' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">warehouse</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.WAREHOUSES' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/categories"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.CATEGORIES' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">category</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.CATEGORIES' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/suppliers"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.SUPPLIERS' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">local_shipping</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.SUPPLIERS' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/transactions"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.TRANSACTIONS' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">receipt_long</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
+      }
+    </a>
+
+    <!-- Administración Group -->
+    @if (!isCollapsed()) {
+      <div class="nav-group-label">
+        {{ 'NAV.ADMIN' | translate }}
+      </div>
+    } @else {
+      <div class="nav-divider"></div>
+    }
+
+    <a
+      routerLink="/users"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.USERS' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">people</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/settings"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.SETTINGS' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">settings</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.SETTINGS' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/profile"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.PROFILE' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">account_circle</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.PROFILE' | translate }}</span>
+      }
+    </a>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    @if (currentUser(); as user) {
+      <div class="user-info" [class.collapsed]="isCollapsed()">
+        <div class="user-avatar"
+             [matTooltip]="isCollapsed() ? user.name || user.email : ''"
+             matTooltipPosition="right">
+          <span>{{ (user.name || user.email || 'U').charAt(0).toUpperCase() }}</span>
         </div>
-
-        <a
-          routerLink="/inventory"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">inventory_2</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.INVENTORY' | translate }}</span>
-        </a>
-
-        <a
-          routerLink="/warehouses"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">warehouse</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.WAREHOUSES' | translate }}</span>
-        </a>
-
-        <a
-          routerLink="/categories"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">category</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.CATEGORIES' | translate }}</span>
-        </a>
-
-        <a
-          routerLink="/suppliers"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">local_shipping</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.SUPPLIERS' | translate }}</span>
-        </a>
-
-        <a
-          routerLink="/transactions"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">receipt_long</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.TRANSACTIONS' | translate }}</span>
-        </a>
-
-        <!-- Administración Group -->
-        <div class="mt-3 mb-1">
-          <span class="px-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-            {{ 'NAV.ADMIN' | translate }}
-          </span>
-        </div>
-
-        <a
-          routerLink="/users"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">people</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.USERS' | translate }}</span>
-        </a>
-
-        <a
-          routerLink="/settings"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">settings</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.SETTINGS' | translate }}</span>
-        </a>
-
-        <a
-          routerLink="/profile"
-          routerLinkActive="active-link"
-          class="nav-link group"
-        >
-          <div class="nav-icon-container group-hover:bg-[#2a2a2a]">
-            <mat-icon class="nav-icon group-hover:!text-[#5d8c7f]">account_circle</mat-icon>
-          </div>
-          <span class="nav-text group-hover:!text-[#5d8c7f]">{{ 'NAV.PROFILE' | translate }}</span>
-        </a>
-
-      </nav>
-
-      <div class="mt-auto px-3 py-2 border-t border-[#2a2a2a]">
-        @if (currentUser(); as user) {
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-[#242424] mb-2">
-            <div class="w-8 h-8 rounded-full bg-[#4d7c6f] flex items-center justify-center shrink-0">
-              <span class="text-white text-sm font-semibold">{{ (user.name || user.email || 'U').charAt(0).toUpperCase() }}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-medium text-slate-300 truncate">{{ user.name || ('COMMON.USER' | translate) }}</p>
-              <p class="text-[10px] text-slate-400 truncate">{{ user.email }}</p>
-            </div>
+        @if (!isCollapsed()) {
+          <div class="user-details">
+            <p class="user-name">{{ user.name || ('COMMON.USER' | translate) }}</p>
+            <p class="user-email">{{ user.email }}</p>
           </div>
         }
-
-        <!-- Language Selector -->
-        <div class="flex items-center justify-center p-1.5 rounded-lg bg-[#242424]">
-          <app-language-selector></app-language-selector>
-        </div>
       </div>
+    }
 
-    </mat-sidenav>
-  </mat-sidenav-container>
-</div>
+    @if (!isCollapsed()) {
+      <div class="language-selector-wrapper">
+        <app-language-selector></app-language-selector>
+      </div>
+    }
+  </div>
+</aside>

@@ -255,8 +255,20 @@ export class Dashboard implements OnInit {
   getStatusPercentage(status: string): number {
     const total = this.stats()?.totalItems || 0;
     if (total === 0) return 0;
-    const stat = this.statusStats().find(s => s.status === status);
-    return stat ? Math.round((stat.count / total) * 100) : 0;
+
+    let count = 0;
+    switch (status) {
+      case 'IN_STOCK':
+        count = this.stats()?.inStockItems || 0;
+        break;
+      case 'LOW_STOCK':
+        count = this.stats()?.lowStockItems || 0;
+        break;
+      case 'OUT_OF_STOCK':
+        count = this.stats()?.outOfStockItems || 0;
+        break;
+    }
+    return Math.round((count / total) * 100);
   }
 
   // Memoized date formatter

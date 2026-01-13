@@ -10,7 +10,7 @@
         <button
           (click)="addWarehouse()"
           class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-          <mat-icon>add</mat-icon>
+          <mat-icon class="!leading-none !block">add</mat-icon>
           {{ 'WAREHOUSE.ADD' | translate }}
         </button>
       </div>
@@ -24,8 +24,8 @@
             <p class="text-sm font-medium text-slate-500">{{ 'WAREHOUSE.TOTAL' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg">
-            <mat-icon class="!text-[#4d7c6f]">warehouse</mat-icon>
+          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">warehouse</mat-icon>
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@
     @if (error()) {
       <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
-          <mat-icon class="!text-rose-400">error</mat-icon>
+          <mat-icon class="!text-rose-400 !leading-none !block">error</mat-icon>
           <span class="text-rose-400">{{ error() }}</span>
         </div>
       </div>
@@ -58,7 +58,7 @@
       @if (warehouses().length === 0 && !loading()) {
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-16">
-          <mat-icon class="!text-6xl !text-slate-700 mb-4">warehouse</mat-icon>
+          <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">warehouse</mat-icon>
           <p class="text-slate-500 text-lg mb-2">{{ 'WAREHOUSE.NO_WAREHOUSES' | translate }}</p>
           <p class="text-slate-600 text-sm mb-6">{{ 'WAREHOUSE.NO_WAREHOUSES_DESC' | translate }}</p>
           <button
@@ -86,7 +86,7 @@
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                        <mat-icon class="!text-[#4d7c6f] !text-lg">warehouse</mat-icon>
+                        <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">warehouse</mat-icon>
                       </div>
                       <div>
                         <p class="font-medium text-slate-300">{{ warehouse.name }}</p>
@@ -97,7 +97,7 @@
                   <!-- Location Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-2 text-slate-400">
-                      <mat-icon class="!text-sm !text-slate-500">place</mat-icon>
+                      <mat-icon class="!text-sm !text-slate-500 !leading-none !block">place</mat-icon>
                       <span>{{ warehouse.location }}</span>
                     </div>
                   </td>
@@ -113,14 +113,14 @@
                       <button
                         type="button"
                         (click)="editWarehouse(warehouse)"
-                        class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
-                        <mat-icon class="!text-xl">edit</mat-icon>
+                        class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+                        <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                       </button>
                       <button
                         type="button"
                         (click)="deleteWarehouse(warehouse)"
-                        class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                        <mat-icon class="!text-xl">delete</mat-icon>
+                        class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                        <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
                       </button>
                     </div>
                   </td>
@@ -135,13 +135,13 @@
           @for (warehouse of warehouses(); track trackByFn($index, warehouse)) {
             <div class="p-4">
               <div class="flex items-start gap-3 mb-3">
-                <div class="w-12 h-12 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <mat-icon class="!text-[#4d7c6f] !text-xl">warehouse</mat-icon>
+                <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">warehouse</mat-icon>
                 </div>
                 <div class="flex-1 min-w-0">
                   <h3 class="font-semibold text-slate-300">{{ warehouse.name }}</h3>
                   <div class="flex items-center gap-1 text-slate-500 text-sm mt-1">
-                    <mat-icon class="!text-sm">place</mat-icon>
+                    <mat-icon class="!text-sm !leading-none !block">place</mat-icon>
                     <span>{{ warehouse.location }}</span>
                   </div>
                 </div>
@@ -155,14 +155,14 @@
                 <button
                   type="button"
                   (click)="editWarehouse(warehouse)"
-                  class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
-                  <mat-icon class="!text-xl">edit</mat-icon>
+                  class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+                  <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                 </button>
                 <button
                   type="button"
                   (click)="deleteWarehouse(warehouse)"
-                  class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                  <mat-icon class="!text-xl">delete</mat-icon>
+                  class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                  <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
                 </button>
               </div>
             </div>

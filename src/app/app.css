@@ -1,0 +1,12 @@
+.main-content {
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content.with-sidebar {
+  margin-left: 260px;
+}
+
+.main-content.with-sidebar.sidebar-collapsed {
+  margin-left: 68px;
+}

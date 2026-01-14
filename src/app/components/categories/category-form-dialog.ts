@@ -144,7 +144,7 @@ export class CategoryFormDialog implements OnInit {
     if (this.data.mode === 'add') {
       this.categoryService.create(formValue).subscribe({
         next: () => {
-          this.dialogRef.close({ saved: true });
+          this.dialogRef.close({ saved: true, name: formValue.name });
         },
         error: () => {
           this.saving.set(false);
@@ -153,7 +153,7 @@ export class CategoryFormDialog implements OnInit {
     } else if (this.data.category) {
       this.categoryService.update(this.data.category.id, formValue).subscribe({
         next: () => {
-          this.dialogRef.close({ saved: true });
+          this.dialogRef.close({ saved: true, name: formValue.name });
         },
         error: () => {
           this.saving.set(false);

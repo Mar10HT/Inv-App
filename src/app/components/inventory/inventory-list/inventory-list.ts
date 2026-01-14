@@ -1,4 +1,4 @@
-import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -12,11 +12,12 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { InventoryService } from '.././../../services/inventory/inventory.service';
+import { NotificationService } from '../../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory-item/inventory-item';
@@ -62,6 +63,10 @@ export class InventoryList implements OnInit {
   selectedLocation = signal('all');
   selectedStatus = signal<string>('all');
 
+  // Pagination signals
+  pageIndex = signal(0);
+  pageSize = signal(10);
+
   // Debounced search
   private searchSubject = new Subject<string>();
 
@@ -91,6 +96,17 @@ export class InventoryList implements OnInit {
     });
   });
 
+  // Paginated items for display
+  paginatedItems = computed(() => {
+    const items = this.filteredItems();
+    const start = this.pageIndex() * this.pageSize();
+    const end = start + this.pageSize();
+    return items.slice(start, end);
+  });
+
+  // Total count for paginator
+  totalItems = computed(() => this.filteredItems().length);
+
   // Single iteration for all stats
   stats = computed(() => {
     const items = this.filteredItems();
@@ -104,12 +120,13 @@ export class InventoryList implements OnInit {
     }, { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 });
   });
 
-  constructor(
-    private inventoryService: InventoryService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private router: Router
-  ) {
+  private inventoryService = inject(InventoryService);
+  private dialog = inject(MatDialog);
+  private notifications = inject(NotificationService);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
+
+  constructor() {
     // Auto-sync filtered items with table data source and handle pagination
     effect(() => {
       const filteredData = this.filteredItems();
@@ -139,6 +156,7 @@ export class InventoryList implements OnInit {
       distinctUntilChanged()
     ).subscribe(value => {
       this.searchQuery.set(value);
+      this.pageIndex.set(0);
     });
   }
 
@@ -174,14 +192,17 @@ export class InventoryList implements OnInit {
   // Filter change handlers
   onCategoryChange(category: string): void {
     this.selectedCategory.set(category);
+    this.pageIndex.set(0);
   }
 
   onLocationChange(location: string): void {
     this.selectedLocation.set(location);
+    this.pageIndex.set(0);
   }
 
   onStatusChange(status: string): void {
     this.selectedStatus.set(status);
+    this.pageIndex.set(0);
   }
 
   clearFilters(): void {
@@ -189,6 +210,12 @@ export class InventoryList implements OnInit {
     this.selectedCategory.set('all');
     this.selectedLocation.set('all');
     this.selectedStatus.set('all');
+    this.pageIndex.set(0);
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   // CRUD Operations
@@ -221,16 +248,10 @@ export class InventoryList implements OnInit {
       if (confirmed) {
         this.inventoryService.deleteItem(item.id).subscribe({
           next: () => {
-            this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.ITEM', item.name);
           },
           error: (err) => {
-            this.snackBar.open(`Error deleting item: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.ITEM');
           }
         });
       }
@@ -239,12 +260,15 @@ export class InventoryList implements OnInit {
 
   // Utility methods
   getStatusText(item: InventoryItemInterface): string {
-    // For UNIQUE items, show "Disponible" or "No Disponible"
+    // For UNIQUE items, show "Available" or "Not Available"
     if (item.itemType === ItemType.UNIQUE) {
-      return item.status === InventoryStatus.IN_STOCK ? 'Disponible' : 'No Disponible';
+      return item.status === InventoryStatus.IN_STOCK
+        ? this.translate.instant('INVENTORY.STATUS.AVAILABLE')
+        : this.translate.instant('INVENTORY.STATUS.NOT_AVAILABLE');
     }
-    // For BULK items, show standard status
-    return item.status;
+    // For BULK items, show translated status
+    const statusKey = `INVENTORY.STATUS.${item.status.replace('_', '_')}`;
+    return this.translate.instant(statusKey);
   }
 
   getStatusColor(status: InventoryStatus): string {

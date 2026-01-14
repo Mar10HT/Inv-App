@@ -8,6 +8,8 @@
     "SUPPLIERS": "Suppliers",
     "USERS": "Users",
     "TRANSACTIONS": "Transactions",
+    "TRANSACTIONS_LIST": "Transaction List",
+    "REPORTS": "Reports",
     "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
@@ -72,6 +74,31 @@
       "LAST_UPDATED": "Last Updated",
       "STATUS": "Status",
       "ACTIONS": "Actions"
+    },
+    "CUSTOM_CHART": {
+      "SECTION_TITLE": "Custom Charts",
+      "ADD": "Add Chart",
+      "CREATE": "Create Chart",
+      "EDIT": "Edit Chart",
+      "EMPTY": "No custom charts yet",
+      "CREATE_FIRST": "Create your first custom chart",
+      "DELETE_CONFIRM": "Are you sure you want to delete \"{{name}}\"?",
+      "TITLE": "Chart Title",
+      "TITLE_PLACEHOLDER": "E.g., Items by Category",
+      "DATA_SOURCE": "Data Source",
+      "CHART_TYPE": "Chart Type",
+      "COLOR": "Color",
+      "PREVIEW": "Preview",
+      "CREATED": "Chart \"{{name}}\" created successfully",
+      "UPDATED": "Chart \"{{name}}\" updated successfully",
+      "DELETED": "Chart \"{{name}}\" deleted successfully",
+      "BY_QUANTITY": "By Quantity (Items)",
+      "BY_VALUE": "By Value ($)",
+      "TOP_ITEMS": "Top Items",
+      "CURRENCY": "Currency",
+      "USD_ONLY": "USD Only",
+      "HNL_ONLY": "HNL Only",
+      "ALL_CURRENCIES": "All"
     }
   },
   "INVENTORY": {
@@ -95,7 +122,9 @@
     "STATUS": {
       "IN_STOCK": "In Stock",
       "LOW_STOCK": "Low Stock",
-      "OUT_OF_STOCK": "Out of Stock"
+      "OUT_OF_STOCK": "Out of Stock",
+      "AVAILABLE": "Available",
+      "NOT_AVAILABLE": "Not Available"
     },
     "DELETE_CONFIRM": {
       "TITLE": "Confirm Deletion",
@@ -121,6 +150,10 @@
         "CATEGORY_PLACEHOLDER": "E.g., Electronics, Office",
         "DESCRIPTION": "Description",
         "DESCRIPTION_PLACEHOLDER": "Describe the item...",
+        "MODEL": "Model / SKU",
+        "MODEL_OPTIONAL": "optional",
+        "MODEL_PLACEHOLDER": "E.g., Dell Latitude 5430, iPhone 13 Pro Max",
+        "MODEL_HINT": "Useful for grouping similar products (e.g., all Dell Latitude 5430 laptops)",
         "LOCATION": "Physical Location",
         "LOCATION_PLACEHOLDER": "E.g., Shelf A-5, Aisle 3"
       },
@@ -255,6 +288,8 @@
     "NO_USERS_DESC": "Get started by adding your first user",
     "ROLES": {
       "ADMIN": "Administrator",
+      "SYSTEM_ADMIN": "Administrator",
+      "WAREHOUSE_MANAGER": "Warehouse Manager",
       "USER": "User",
       "VIEWER": "Viewer",
       "EXTERNAL": "External"
@@ -300,10 +335,15 @@
     "SUBTITLE": "Manage your account settings",
     "INFO": "Personal Information",
     "MEMBER_SINCE": "Member Since",
+    "SECURITY": "Security",
     "CHANGE_PASSWORD": "Change Password",
+    "CHANGE_PASSWORD_DESC": "Update your password to keep your account secure",
     "CURRENT_PASSWORD": "Current Password",
     "NEW_PASSWORD": "New Password",
-    "CONFIRM_PASSWORD": "Confirm Password"
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "UPDATED": "Profile updated successfully",
+    "PASSWORD_CHANGED": "Password changed successfully",
+    "PASSWORD_MISMATCH": "Passwords do not match"
   },
   "SETTINGS": {
     "SUBTITLE": "Customize your application preferences",
@@ -337,6 +377,38 @@
       "REQUIRE_EITHER": "At least one of these fields is required"
     }
   },
+  "NOTIFICATIONS": {
+    "CREATED": "{{entity}} created successfully",
+    "CREATED_WITH_NAME": "{{entity}} \"{{name}}\" created successfully",
+    "UPDATED": "{{entity}} updated successfully",
+    "UPDATED_WITH_NAME": "{{entity}} \"{{name}}\" updated successfully",
+    "DELETED": "{{entity}} deleted successfully",
+    "DELETED_WITH_NAME": "\"{{name}}\" has been deleted",
+    "OPERATION_FAILED": "Failed to {{operation}} {{entity}}",
+    "OPERATIONS": {
+      "CREATE": "create",
+      "UPDATE": "update",
+      "DELETE": "delete",
+      "LOAD": "load"
+    },
+    "ERRORS": {
+      "CONNECTION": "Connection error. Please check your internet connection.",
+      "UNAUTHORIZED": "Session expired. Please log in again.",
+      "FORBIDDEN": "You don't have permission to perform this action.",
+      "NOT_FOUND": "{{entity}} not found.",
+      "CONFLICT": "This record already exists or conflicts with existing data.",
+      "SERVER": "Server error. Please try again later.",
+      "UNKNOWN": "An unexpected error occurred. Please try again."
+    },
+    "ENTITIES": {
+      "ITEM": "Item",
+      "CATEGORY": "Category",
+      "WAREHOUSE": "Warehouse",
+      "SUPPLIER": "Supplier",
+      "USER": "User",
+      "TRANSACTION": "Transaction"
+    }
+  },
   "LOGIN": {
     "TITLE": "INV-APP",
     "SIGN_IN_TO_ACCOUNT": "Sign in to your account",
@@ -357,6 +429,31 @@
     },
     "SUCCESS": {
       "WELCOME_BACK": "Welcome back, {{name}}!"
+    }
+  },
+  "REPORTS": {
+    "TITLE": "Reports",
+    "SUBTITLE": "Inventory value reports and analytics",
+    "CURRENCY": "Currency",
+    "ALL_CURRENCIES": "All Currencies",
+    "EXPORT": "Export CSV",
+    "TOTAL_VALUE": "Total Value",
+    "TOTAL_ITEMS": "Total Items",
+    "CATEGORIES": "Categories",
+    "WAREHOUSES": "Warehouses",
+    "BY_CATEGORY": "Value by Category",
+    "BY_WAREHOUSE": "Value by Warehouse",
+    "BY_SUPPLIER": "Value by Supplier",
+    "TOP_ITEMS": "Top 10 Items by Value",
+    "TABLE": {
+      "NAME": "Name",
+      "ITEMS": "Items",
+      "VALUE": "Value",
+      "ITEM": "Item",
+      "CATEGORY": "Category",
+      "QTY": "Qty",
+      "UNIT_PRICE": "Unit Price",
+      "TOTAL": "Total Value"
     }
   }
 }

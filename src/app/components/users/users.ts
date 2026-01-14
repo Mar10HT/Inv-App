@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { UserService } from '../../services/user.service';
+import { NotificationService } from '../../services/notification.service';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { UserFormDialog } from './user-form-dialog';
@@ -29,7 +30,7 @@ import { UserFormDialog } from './user-form-dialog';
 export class Users implements OnInit {
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notifications = inject(NotificationService);
 
   users = computed(() => this.userService.users());
   loading = computed(() => this.userService.loading());
@@ -64,10 +65,7 @@ export class Users implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('User created successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.created('NOTIFICATIONS.ENTITIES.USER', result.name || result.email);
       }
     });
   }
@@ -82,10 +80,7 @@ export class Users implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('User updated successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.updated('NOTIFICATIONS.ENTITIES.USER', result.name || result.email);
       }
     });
   }
@@ -106,16 +101,10 @@ export class Users implements OnInit {
       if (confirmed) {
         this.userService.delete(user.id).subscribe({
           next: () => {
-            this.snackBar.open(`"${user.name || user.email}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.USER', user.name || user.email);
           },
           error: (err) => {
-            this.snackBar.open(`Error deleting user: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.USER');
           }
         });
       }

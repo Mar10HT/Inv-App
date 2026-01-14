@@ -8,6 +8,8 @@
     "SUPPLIERS": "Proveedores",
     "USERS": "Usuarios",
     "TRANSACTIONS": "Transacciones",
+    "TRANSACTIONS_LIST": "Lista de Transacciones",
+    "REPORTS": "Reportes",
     "SETTINGS": "Configuración",
     "PROFILE": "Perfil",
     "LOGOUT": "Cerrar Sesión",
@@ -72,6 +74,31 @@
       "LAST_UPDATED": "Última Actualización",
       "STATUS": "Estado",
       "ACTIONS": "Acciones"
+    },
+    "CUSTOM_CHART": {
+      "SECTION_TITLE": "Gráficos Personalizados",
+      "ADD": "Agregar Gráfico",
+      "CREATE": "Crear Gráfico",
+      "EDIT": "Editar Gráfico",
+      "EMPTY": "No hay gráficos personalizados",
+      "CREATE_FIRST": "Crea tu primer gráfico personalizado",
+      "DELETE_CONFIRM": "¿Estás seguro de eliminar \"{{name}}\"?",
+      "TITLE": "Título del Gráfico",
+      "TITLE_PLACEHOLDER": "Ej: Ítems por Categoría",
+      "DATA_SOURCE": "Fuente de Datos",
+      "CHART_TYPE": "Tipo de Gráfico",
+      "COLOR": "Color",
+      "PREVIEW": "Vista Previa",
+      "CREATED": "Gráfico \"{{name}}\" creado con éxito",
+      "UPDATED": "Gráfico \"{{name}}\" actualizado con éxito",
+      "DELETED": "Gráfico \"{{name}}\" eliminado con éxito",
+      "BY_QUANTITY": "Por Cantidad (Ítems)",
+      "BY_VALUE": "Por Valor ($)",
+      "TOP_ITEMS": "Top Ítems",
+      "CURRENCY": "Moneda",
+      "USD_ONLY": "Solo USD",
+      "HNL_ONLY": "Solo HNL",
+      "ALL_CURRENCIES": "Todas"
     }
   },
   "INVENTORY": {
@@ -95,7 +122,9 @@
     "STATUS": {
       "IN_STOCK": "En Stock",
       "LOW_STOCK": "Stock Bajo",
-      "OUT_OF_STOCK": "Agotado"
+      "OUT_OF_STOCK": "Agotado",
+      "AVAILABLE": "Disponible",
+      "NOT_AVAILABLE": "No Disponible"
     },
     "DELETE_CONFIRM": {
       "TITLE": "Confirmar Eliminación",
@@ -121,6 +150,10 @@
         "CATEGORY_PLACEHOLDER": "Ej: Electrónica, Oficina",
         "DESCRIPTION": "Descripción",
         "DESCRIPTION_PLACEHOLDER": "Describa el ítem...",
+        "MODEL": "Modelo / SKU",
+        "MODEL_OPTIONAL": "opcional",
+        "MODEL_PLACEHOLDER": "Ej: Dell Latitude 5430, iPhone 13 Pro Max",
+        "MODEL_HINT": "Útil para agrupar productos similares (ej: todas las laptops Dell Latitude 5430)",
         "LOCATION": "Ubicación Física",
         "LOCATION_PLACEHOLDER": "Ej: Estante A-5, Pasillo 3"
       },
@@ -255,6 +288,8 @@
     "NO_USERS_DESC": "Comienza agregando tu primer usuario",
     "ROLES": {
       "ADMIN": "Administrador",
+      "SYSTEM_ADMIN": "Administrador",
+      "WAREHOUSE_MANAGER": "Jefe de Bodega",
       "USER": "Usuario",
       "VIEWER": "Visor",
       "EXTERNAL": "Externo"
@@ -300,10 +335,15 @@
     "SUBTITLE": "Administra la configuración de tu cuenta",
     "INFO": "Información Personal",
     "MEMBER_SINCE": "Miembro Desde",
+    "SECURITY": "Seguridad",
     "CHANGE_PASSWORD": "Cambiar Contraseña",
+    "CHANGE_PASSWORD_DESC": "Actualiza tu contraseña para mantener tu cuenta segura",
     "CURRENT_PASSWORD": "Contraseña Actual",
     "NEW_PASSWORD": "Nueva Contraseña",
-    "CONFIRM_PASSWORD": "Confirmar Contraseña"
+    "CONFIRM_PASSWORD": "Confirmar Contraseña",
+    "UPDATED": "Perfil actualizado correctamente",
+    "PASSWORD_CHANGED": "Contraseña cambiada correctamente",
+    "PASSWORD_MISMATCH": "Las contraseñas no coinciden"
   },
   "SETTINGS": {
     "SUBTITLE": "Personaliza las preferencias de tu aplicación",
@@ -337,6 +377,38 @@
       "REQUIRE_EITHER": "Se requiere al menos uno de estos campos"
     }
   },
+  "NOTIFICATIONS": {
+    "CREATED": "Se guardó con éxito",
+    "CREATED_WITH_NAME": "\"{{name}}\" se guardó con éxito",
+    "UPDATED": "Se actualizó con éxito",
+    "UPDATED_WITH_NAME": "\"{{name}}\" se actualizó con éxito",
+    "DELETED": "Se eliminó con éxito",
+    "DELETED_WITH_NAME": "\"{{name}}\" se eliminó con éxito",
+    "OPERATION_FAILED": "Error al {{operation}}",
+    "OPERATIONS": {
+      "CREATE": "crear",
+      "UPDATE": "actualizar",
+      "DELETE": "eliminar",
+      "LOAD": "cargar"
+    },
+    "ERRORS": {
+      "CONNECTION": "Error de conexión. Por favor verifica tu conexión a internet.",
+      "UNAUTHORIZED": "Sesión expirada. Por favor inicia sesión nuevamente.",
+      "FORBIDDEN": "No tienes permiso para realizar esta acción.",
+      "NOT_FOUND": "{{entity}} no encontrado.",
+      "CONFLICT": "Este registro ya existe o hay un conflicto con datos existentes.",
+      "SERVER": "Error del servidor. Por favor intenta más tarde.",
+      "UNKNOWN": "Ocurrió un error inesperado. Por favor intenta de nuevo."
+    },
+    "ENTITIES": {
+      "ITEM": "Ítem",
+      "CATEGORY": "Categoría",
+      "WAREHOUSE": "Bodega",
+      "SUPPLIER": "Proveedor",
+      "USER": "Usuario",
+      "TRANSACTION": "Transacción"
+    }
+  },
   "LOGIN": {
     "TITLE": "INV-APP",
     "SIGN_IN_TO_ACCOUNT": "Inicia sesión en tu cuenta",
@@ -357,6 +429,31 @@
     },
     "SUCCESS": {
       "WELCOME_BACK": "Bienvenido de nuevo, {{name}}!"
+    }
+  },
+  "REPORTS": {
+    "TITLE": "Reportes",
+    "SUBTITLE": "Reportes de valor de inventario y análisis",
+    "CURRENCY": "Moneda",
+    "ALL_CURRENCIES": "Todas las Monedas",
+    "EXPORT": "Exportar CSV",
+    "TOTAL_VALUE": "Valor Total",
+    "TOTAL_ITEMS": "Total de Ítems",
+    "CATEGORIES": "Categorías",
+    "WAREHOUSES": "Bodegas",
+    "BY_CATEGORY": "Valor por Categoría",
+    "BY_WAREHOUSE": "Valor por Bodega",
+    "BY_SUPPLIER": "Valor por Proveedor",
+    "TOP_ITEMS": "Top 10 Ítems por Valor",
+    "TABLE": {
+      "NAME": "Nombre",
+      "ITEMS": "Ítems",
+      "VALUE": "Valor",
+      "ITEM": "Ítem",
+      "CATEGORY": "Categoría",
+      "QTY": "Cant",
+      "UNIT_PRICE": "Precio Unit.",
+      "TOTAL": "Valor Total"
     }
   }
 }

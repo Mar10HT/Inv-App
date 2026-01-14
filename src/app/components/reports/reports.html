@@ -1,0 +1,188 @@
+<div class="reports-container">
+  <!-- Header -->
+  <div class="reports-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="title-icon">assessment</mat-icon>
+        <div>
+          <h1>{{ 'REPORTS.TITLE' | translate }}</h1>
+          <p class="subtitle">{{ 'REPORTS.SUBTITLE' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <mat-form-field appearance="outline" class="currency-select">
+          <mat-label>{{ 'REPORTS.CURRENCY' | translate }}</mat-label>
+          <mat-select [value]="selectedCurrency()" (selectionChange)="onCurrencyChange($event.value)">
+            @for (option of currencyOptions; track option.value) {
+              <mat-option [value]="option.value">
+                {{ option.label.includes('.') ? (option.label | translate) : option.label }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-flat-button class="export-btn" (click)="exportReport()">
+          <mat-icon>download</mat-icon>
+          {{ 'REPORTS.EXPORT' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+  } @else {
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card total-value">
+        <div class="card-icon">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="card-content">
+          <span class="card-label">{{ 'REPORTS.TOTAL_VALUE' | translate }}</span>
+          <span class="card-value">{{ formatCurrency(totalValue()) }}</span>
+        </div>
+      </div>
+
+      <div class="summary-card total-items">
+        <div class="card-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="card-content">
+          <span class="card-label">{{ 'REPORTS.TOTAL_ITEMS' | translate }}</span>
+          <span class="card-value">{{ totalItemsCount() }}</span>
+        </div>
+      </div>
+
+      <div class="summary-card categories-count">
+        <div class="card-icon">
+          <mat-icon>category</mat-icon>
+        </div>
+        <div class="card-content">
+          <span class="card-label">{{ 'REPORTS.CATEGORIES' | translate }}</span>
+          <span class="card-value">{{ valueByCategory().length }}</span>
+        </div>
+      </div>
+
+      <div class="summary-card warehouses-count">
+        <div class="card-icon">
+          <mat-icon>warehouse</mat-icon>
+        </div>
+        <div class="card-content">
+          <span class="card-label">{{ 'REPORTS.WAREHOUSES' | translate }}</span>
+          <span class="card-value">{{ valueByWarehouse().length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="reports-grid">
+      <!-- Value by Category -->
+      <div class="report-section">
+        <div class="section-header">
+          <mat-icon>category</mat-icon>
+          <h2>{{ 'REPORTS.BY_CATEGORY' | translate }}</h2>
+        </div>
+        <div class="report-table">
+          <div class="table-header">
+            <span class="col-name">{{ 'REPORTS.TABLE.NAME' | translate }}</span>
+            <span class="col-items">{{ 'REPORTS.TABLE.ITEMS' | translate }}</span>
+            <span class="col-value">{{ 'REPORTS.TABLE.VALUE' | translate }}</span>
+          </div>
+          @for (item of valueByCategory(); track item.label) {
+            <div class="table-row">
+              <span class="col-name">{{ item.label }}</span>
+              <span class="col-items">{{ item.count }}</span>
+              <span class="col-value">{{ formatCurrency(item.value) }}</span>
+            </div>
+          } @empty {
+            <div class="empty-row">{{ 'COMMON.NO_DATA' | translate }}</div>
+          }
+        </div>
+      </div>
+
+      <!-- Value by Warehouse -->
+      <div class="report-section">
+        <div class="section-header">
+          <mat-icon>warehouse</mat-icon>
+          <h2>{{ 'REPORTS.BY_WAREHOUSE' | translate }}</h2>
+        </div>
+        <div class="report-table">
+          <div class="table-header">
+            <span class="col-name">{{ 'REPORTS.TABLE.NAME' | translate }}</span>
+            <span class="col-items">{{ 'REPORTS.TABLE.ITEMS' | translate }}</span>
+            <span class="col-value">{{ 'REPORTS.TABLE.VALUE' | translate }}</span>
+          </div>
+          @for (item of valueByWarehouse(); track item.label) {
+            <div class="table-row">
+              <span class="col-name">{{ item.label }}</span>
+              <span class="col-items">{{ item.count }}</span>
+              <span class="col-value">{{ formatCurrency(item.value) }}</span>
+            </div>
+          } @empty {
+            <div class="empty-row">{{ 'COMMON.NO_DATA' | translate }}</div>
+          }
+        </div>
+      </div>
+
+      <!-- Value by Supplier -->
+      <div class="report-section">
+        <div class="section-header">
+          <mat-icon>local_shipping</mat-icon>
+          <h2>{{ 'REPORTS.BY_SUPPLIER' | translate }}</h2>
+        </div>
+        <div class="report-table">
+          <div class="table-header">
+            <span class="col-name">{{ 'REPORTS.TABLE.NAME' | translate }}</span>
+            <span class="col-items">{{ 'REPORTS.TABLE.ITEMS' | translate }}</span>
+            <span class="col-value">{{ 'REPORTS.TABLE.VALUE' | translate }}</span>
+          </div>
+          @for (item of valueBySupplier(); track item.label) {
+            <div class="table-row">
+              <span class="col-name">{{ item.label }}</span>
+              <span class="col-items">{{ item.count }}</span>
+              <span class="col-value">{{ formatCurrency(item.value) }}</span>
+            </div>
+          } @empty {
+            <div class="empty-row">{{ 'COMMON.NO_DATA' | translate }}</div>
+          }
+        </div>
+      </div>
+
+      <!-- Top Items by Value -->
+      <div class="report-section full-width">
+        <div class="section-header">
+          <mat-icon>trending_up</mat-icon>
+          <h2>{{ 'REPORTS.TOP_ITEMS' | translate }}</h2>
+        </div>
+        <div class="report-table top-items-table">
+          <div class="table-header">
+            <span class="col-name">{{ 'REPORTS.TABLE.ITEM' | translate }}</span>
+            <span class="col-category">{{ 'REPORTS.TABLE.CATEGORY' | translate }}</span>
+            <span class="col-qty">{{ 'REPORTS.TABLE.QTY' | translate }}</span>
+            <span class="col-price">{{ 'REPORTS.TABLE.UNIT_PRICE' | translate }}</span>
+            <span class="col-value">{{ 'REPORTS.TABLE.TOTAL' | translate }}</span>
+          </div>
+          @for (item of topItems(); track item.id; let i = $index) {
+            <div class="table-row">
+              <span class="col-name">
+                <span class="rank">{{ i + 1 }}</span>
+                {{ item.name }}
+              </span>
+              <span class="col-category">{{ item.category }}</span>
+              <span class="col-qty">{{ item.quantity }}</span>
+              <span class="col-price">{{ formatCurrency(item.price || 0) }}</span>
+              <span class="col-value highlight">{{ formatCurrency(item.totalValue) }}</span>
+            </div>
+          } @empty {
+            <div class="empty-row">{{ 'COMMON.NO_DATA' | translate }}</div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

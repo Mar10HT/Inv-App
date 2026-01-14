@@ -161,13 +161,14 @@ Inv-App/
 - Validation based on transaction type
 
 ### 9. Navigation (FULLY FUNCTIONAL)
-- Sliding side menu (drawer)
-- Smooth animations
+- Fixed collapsible sidebar (not overlay)
+- Toggle between expanded (260px) and collapsed (68px) modes
+- Tooltips on icons when collapsed
+- Smooth CSS transitions
 - Active route highlighting
 - Language selector (ES/EN)
-- Fully responsive
-- Logout functionality
-- User info display
+- User info display with avatar
+- SidebarService for state management
 
 ### 10. Profile & Settings (IMPLEMENTED)
 - User profile view and edit
@@ -292,7 +293,6 @@ text-slate-500  /* Tertiary/placeholders */
 - **Profile & Settings**: 100% ✓
 
 **Pending/Minor Issues**:
-- Dashboard data visualization issue (data loads but doesn't display in some cases)
 - Production deployment configuration
 - Additional reports and analytics
 
@@ -350,5 +350,5 @@ Password: password123
 
 ---
 
-**Last Updated**: January 10, 2026
-**Version**: 2.0.0
+**Last Updated**: January 12, 2026
+**Version**: 1.2.0

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SupplierService } from '../../services/supplier.service';
+import { NotificationService } from '../../services/notification.service';
 import { Supplier } from '../../interfaces/supplier.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { SupplierFormDialog } from './supplier-form-dialog';
@@ -29,7 +30,7 @@ import { SupplierFormDialog } from './supplier-form-dialog';
 export class Suppliers implements OnInit {
   private supplierService = inject(SupplierService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notifications = inject(NotificationService);
 
   suppliers = computed(() => this.supplierService.suppliers());
   loading = computed(() => this.supplierService.loading());
@@ -60,10 +61,7 @@ export class Suppliers implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Supplier created successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.created('NOTIFICATIONS.ENTITIES.SUPPLIER', result.name);
       }
     });
   }
@@ -78,10 +76,7 @@ export class Suppliers implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Supplier updated successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.updated('NOTIFICATIONS.ENTITIES.SUPPLIER', result.name);
       }
     });
   }
@@ -102,16 +97,10 @@ export class Suppliers implements OnInit {
       if (confirmed) {
         this.supplierService.delete(supplier.id).subscribe({
           next: () => {
-            this.snackBar.open(`"${supplier.name}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.SUPPLIER', supplier.name);
           },
           error: (err) => {
-            this.snackBar.open(`Error deleting supplier: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.SUPPLIER');
           }
         });
       }

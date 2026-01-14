@@ -4,8 +4,10 @@
 
 html, body { height: 100%; }
 body {
-    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
     color-scheme: dark;
+    zoom: 0.85;
 }
 
 /* Material Dialog Overrides */
@@ -21,15 +23,37 @@ body {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* Snackbar Styles */
-.snackbar-success {
-    --mdc-snackbar-container-color: #166534;
-    --mdc-snackbar-supporting-text-color: white;
+/* Custom Snackbar Container */
+.custom-snackbar-container {
+    margin: 24px !important;
 }
 
-.snackbar-error {
-    --mdc-snackbar-container-color: #991b1b;
-    --mdc-snackbar-supporting-text-color: white;
+.custom-snackbar-container .mdc-snackbar__surface {
+    background: transparent !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+.custom-snackbar-container .mdc-snackbar__label {
+    padding: 0 !important;
+}
+
+/* Paginator Styles */
+.mat-mdc-paginator {
+    --mat-paginator-container-background-color: transparent;
+    --mat-paginator-container-text-color: #94a3b8;
+    --mat-paginator-enabled-icon-color: #94a3b8;
+    --mat-paginator-disabled-icon-color: #475569;
+}
+
+.mat-mdc-paginator .mat-mdc-select-value {
+    color: #94a3b8;
+}
+
+.mat-mdc-paginator .mat-mdc-select-arrow {
+    color: #94a3b8;
 }
 
 /* Material Icons - Force Perfect Centering */

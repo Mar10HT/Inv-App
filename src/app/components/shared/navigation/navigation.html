@@ -14,9 +14,7 @@
     }
     <button
       class="toggle-btn"
-      (click)="toggleSidebar()"
-      [matTooltip]="isCollapsed() ? 'Expandir' : 'Colapsar'"
-      matTooltipPosition="right">
+      (click)="toggleSidebar($event)">
       <mat-icon>{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
     </button>
   </div>
@@ -103,19 +101,44 @@
       }
     </a>
 
-    <a
-      routerLink="/transactions"
-      routerLinkActive="active-link"
-      class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.TRANSACTIONS' | translate) : ''"
-      matTooltipPosition="right">
-      <div class="nav-icon-container">
-        <mat-icon class="nav-icon">receipt_long</mat-icon>
-      </div>
-      @if (!isCollapsed()) {
-        <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
+    <!-- Transactions with Submenu -->
+    <div class="nav-item-with-submenu">
+      <button
+        class="nav-link nav-parent"
+        [class.expanded]="isTransactionsExpanded()"
+        [class.active-parent]="isTransactionsActive()"
+        (click)="toggleTransactions()"
+        [matTooltip]="isCollapsed() ? ('NAV.TRANSACTIONS' | translate) : ''"
+        matTooltipPosition="right">
+        <div class="nav-icon-container">
+          <mat-icon class="nav-icon">receipt_long</mat-icon>
+        </div>
+        @if (!isCollapsed()) {
+          <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
+          <mat-icon class="expand-icon">{{ isTransactionsExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+        }
+      </button>
+
+      @if (!isCollapsed() && isTransactionsExpanded()) {
+        <div class="submenu">
+          <a
+            routerLink="/transactions"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-link submenu-link">
+            <mat-icon class="submenu-icon">list</mat-icon>
+            <span class="nav-text">{{ 'NAV.TRANSACTIONS_LIST' | translate }}</span>
+          </a>
+          <a
+            routerLink="/reports"
+            routerLinkActive="active-link"
+            class="nav-link submenu-link">
+            <mat-icon class="submenu-icon">assessment</mat-icon>
+            <span class="nav-text">{{ 'NAV.REPORTS' | translate }}</span>
+          </a>
+        </div>
       }
-    </a>
+    </div>
 
     <!-- Administración Group -->
     @if (!isCollapsed()) {

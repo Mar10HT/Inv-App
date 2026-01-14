@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { WarehouseService } from '../../services/warehouse.service';
+import { NotificationService } from '../../services/notification.service';
 import { Warehouse } from '../../interfaces/warehouse.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { WarehouseFormDialog } from './warehouse-form-dialog';
@@ -29,7 +30,7 @@ import { WarehouseFormDialog } from './warehouse-form-dialog';
 export class Warehouses implements OnInit {
   private warehouseService = inject(WarehouseService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notifications = inject(NotificationService);
 
   warehouses = computed(() => this.warehouseService.warehouses());
   loading = computed(() => this.warehouseService.loading());
@@ -61,10 +62,7 @@ export class Warehouses implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Warehouse created successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.created('NOTIFICATIONS.ENTITIES.WAREHOUSE', result.name);
       }
     });
   }
@@ -79,10 +77,7 @@ export class Warehouses implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Warehouse updated successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.updated('NOTIFICATIONS.ENTITIES.WAREHOUSE', result.name);
       }
     });
   }
@@ -103,16 +98,10 @@ export class Warehouses implements OnInit {
       if (confirmed) {
         this.warehouseService.delete(warehouse.id).subscribe({
           next: () => {
-            this.snackBar.open(`"${warehouse.name}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.WAREHOUSE', warehouse.name);
           },
           error: (err) => {
-            this.snackBar.open(`Error deleting warehouse: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.WAREHOUSE');
           }
         });
       }

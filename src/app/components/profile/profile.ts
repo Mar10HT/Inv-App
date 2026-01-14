@@ -1,9 +1,13 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
+import { UserRole } from '../../interfaces/user.interface';
+import { ChangePasswordDialog } from './change-password-dialog/change-password-dialog';
 
 @Component({
   selector: 'app-profile',
@@ -13,7 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     ReactiveFormsModule,
     MatIconModule,
-    MatSnackBarModule,
+    MatDialogModule,
     TranslateModule
   ],
   templateUrl: './profile.html',
@@ -21,30 +25,20 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class Profile implements OnInit {
   private fb = inject(FormBuilder);
-  private snackBar = inject(MatSnackBar);
+  private authService = inject(AuthService);
+  private notifications = inject(NotificationService);
+  private translate = inject(TranslateService);
+  private dialog = inject(MatDialog);
 
-  // Mock user data (replace with actual user service when auth is implemented)
-  user = signal({
-    id: '1',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    role: 'ADMIN',
-    createdAt: new Date('2024-01-01')
-  });
+  // Get user from auth service
+  user = computed(() => this.authService.currentUser());
 
   profileForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]]
   });
 
-  passwordForm: FormGroup = this.fb.group({
-    currentPassword: ['', [Validators.required, Validators.minLength(6)]],
-    newPassword: ['', [Validators.required, Validators.minLength(6)]],
-    confirmPassword: ['', [Validators.required]]
-  });
-
   saving = signal(false);
-  savingPassword = signal(false);
   editMode = signal(false);
 
   ngOnInit(): void {
@@ -53,10 +47,12 @@ export class Profile implements OnInit {
 
   private loadUserData(): void {
     const userData = this.user();
-    this.profileForm.patchValue({
-      name: userData.name,
-      email: userData.email
-    });
+    if (userData) {
+      this.profileForm.patchValue({
+        name: userData.name || '',
+        email: userData.email || ''
+      });
+    }
   }
 
   toggleEditMode(): void {
@@ -71,62 +67,45 @@ export class Profile implements OnInit {
 
     this.saving.set(true);
 
-    // Simulate API call
+    // TODO: Implement actual API call to update profile
     setTimeout(() => {
-      this.user.update(u => ({
-        ...u,
-        name: this.profileForm.value.name,
-        email: this.profileForm.value.email
-      }));
       this.saving.set(false);
       this.editMode.set(false);
-      this.snackBar.open('Profile updated successfully', 'Close', {
-        duration: 3000,
-        panelClass: ['snackbar-success']
-      });
+      this.notifications.success('PROFILE.UPDATED');
     }, 500);
   }
 
-  changePassword(): void {
-    if (this.passwordForm.invalid) return;
-
-    const { newPassword, confirmPassword } = this.passwordForm.value;
-    if (newPassword !== confirmPassword) {
-      this.snackBar.open('Passwords do not match', 'Close', {
-        duration: 3000,
-        panelClass: ['snackbar-error']
-      });
-      return;
-    }
-
-    this.savingPassword.set(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      this.savingPassword.set(false);
-      this.passwordForm.reset();
-      this.snackBar.open('Password changed successfully', 'Close', {
-        duration: 3000,
-        panelClass: ['snackbar-success']
-      });
-    }, 500);
+  openChangePasswordDialog(): void {
+    this.dialog.open(ChangePasswordDialog, {
+      panelClass: 'custom-dialog-container',
+      width: '100%',
+      maxWidth: '450px'
+    });
   }
 
-  getRoleDisplay(role: string): string {
-    const roles: Record<string, string> = {
-      'ADMIN': 'Administrator',
-      'USER': 'User',
-      'VIEWER': 'Viewer',
-      'EXTERNAL': 'External'
-    };
-    return roles[role] || role;
+  getRoleDisplay(role: UserRole | string | undefined): string {
+    if (!role) return '';
+    return this.translate.instant(`USER.ROLES.${role}`);
   }
 
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
+  formatDate(date: Date | string | undefined): string {
+    if (!date) return '';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    }).format(date);
+    }).format(d);
+  }
+
+  getUserInitials(): string {
+    const userData = this.user();
+    if (!userData?.name) return '?';
+    return userData.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
   }
 }

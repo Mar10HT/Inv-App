@@ -4,7 +4,7 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class SidebarService {
-  isCollapsed = signal(false);
+  isCollapsed = signal(true);
 
   toggle(): void {
     this.isCollapsed.update(v => !v);

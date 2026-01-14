@@ -7,18 +7,19 @@
     </div>
 
     <!-- Profile Card -->
+    @if (user()) {
     <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
       <!-- Profile Header -->
       <div class="bg-gradient-to-r from-[#2d4a3f] to-[#1a3a2f] p-6">
         <div class="flex items-center gap-4">
           <div class="w-20 h-20 rounded-full bg-[#4d7c6f] flex items-center justify-center">
-            <mat-icon class="!text-white !text-4xl !w-10 !h-10">person</mat-icon>
+            <span class="text-white text-2xl font-bold">{{ getUserInitials() }}</span>
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-white">{{ user().name }}</h2>
-            <p class="text-slate-300">{{ user().email }}</p>
+            <h2 class="text-2xl font-bold text-white">{{ user()?.name || 'Usuario' }}</h2>
+            <p class="text-slate-300">{{ user()?.email }}</p>
             <span class="inline-block mt-2 px-3 py-1 bg-[#4d7c6f] rounded-full text-xs font-medium text-white">
-              {{ getRoleDisplay(user().role) }}
+              {{ getRoleDisplay(user()?.role) }}
             </span>
           </div>
         </div>
@@ -59,7 +60,7 @@
                   }
                 }
               } @else {
-                <p class="text-slate-300 py-3">{{ user().name }}</p>
+                <p class="text-slate-300 py-3">{{ user()?.name }}</p>
               }
             </div>
 
@@ -83,7 +84,7 @@
                   }
                 }
               } @else {
-                <p class="text-slate-300 py-3">{{ user().email }}</p>
+                <p class="text-slate-300 py-3">{{ user()?.email }}</p>
               }
             </div>
 
@@ -92,7 +93,7 @@
               <label class="block text-sm font-medium text-slate-400 mb-2">
                 {{ 'USER.ROLE' | translate }}
               </label>
-              <p class="text-slate-300 py-3">{{ getRoleDisplay(user().role) }}</p>
+              <p class="text-slate-300 py-3">{{ getRoleDisplay(user()?.role) }}</p>
             </div>
 
             <!-- Member Since -->
@@ -100,7 +101,7 @@
               <label class="block text-sm font-medium text-slate-400 mb-2">
                 {{ 'PROFILE.MEMBER_SINCE' | translate }}
               </label>
-              <p class="text-slate-300 py-3">{{ formatDate(user().createdAt) }}</p>
+              <p class="text-slate-300 py-3">{{ formatDate(user()?.createdAt) }}</p>
             </div>
           </div>
 
@@ -121,85 +122,24 @@
       </div>
     </div>
 
-    <!-- Change Password Card -->
+    <!-- Security Section -->
     <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden">
       <div class="p-6">
-        <h3 class="text-lg font-semibold text-slate-300 mb-4">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h3>
-
-        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-          <div class="space-y-4">
-            <!-- Current Password -->
-            <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">
-                {{ 'PROFILE.CURRENT_PASSWORD' | translate }} *
-              </label>
-              <input
-                type="password"
-                formControlName="currentPassword"
-                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-                [class.!border-rose-500]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched"
-              />
-              @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
-                @if (passwordForm.get('currentPassword')?.errors?.['required']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
-                } @else if (passwordForm.get('currentPassword')?.errors?.['minlength']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
-                }
-              }
-            </div>
-
-            <!-- New Password -->
-            <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">
-                {{ 'PROFILE.NEW_PASSWORD' | translate }} *
-              </label>
-              <input
-                type="password"
-                formControlName="newPassword"
-                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-                [class.!border-rose-500]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
-              />
-              @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
-                @if (passwordForm.get('newPassword')?.errors?.['required']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
-                } @else if (passwordForm.get('newPassword')?.errors?.['minlength']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
-                }
-              }
-            </div>
-
-            <!-- Confirm Password -->
-            <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">
-                {{ 'PROFILE.CONFIRM_PASSWORD' | translate }} *
-              </label>
-              <input
-                type="password"
-                formControlName="confirmPassword"
-                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-                [class.!border-rose-500]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched"
-              />
-              @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
-                @if (passwordForm.get('confirmPassword')?.errors?.['required']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
-                }
-              }
-            </div>
+        <h3 class="text-lg font-semibold text-slate-300 mb-4">{{ 'PROFILE.SECURITY' | translate }}</h3>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-slate-300">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</p>
+            <p class="text-sm text-slate-500">{{ 'PROFILE.CHANGE_PASSWORD_DESC' | translate }}</p>
           </div>
-
-          <div class="flex justify-end mt-6 pt-4 border-t border-[#2a2a2a]">
-            <button
-              type="submit"
-              [disabled]="passwordForm.invalid || savingPassword()"
-              class="flex items-center gap-2 px-6 py-2.5 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
-              @if (savingPassword()) {
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              }
-              {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
-            </button>
-          </div>
-        </form>
+          <button
+            (click)="openChangePasswordDialog()"
+            class="flex items-center gap-2 px-4 py-2.5 bg-[#2a2a2a] text-slate-300 rounded-lg hover:bg-[#3a3a3a] transition-colors font-medium">
+            <mat-icon class="!text-lg">lock</mat-icon>
+            {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
+          </button>
+        </div>
       </div>
     </div>
+    }
   </div>
 </div>

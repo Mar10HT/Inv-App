@@ -1,5 +1,29 @@
 # Changelog - INV-APP
 
+## [1.2.0] - January 12, 2026
+
+### Added
+- **Collapsible Sidebar**: New fixed sidebar with collapse/expand functionality
+  - Toggle button to switch between expanded (260px) and collapsed (68px) modes
+  - Tooltips on icons when collapsed
+  - Smooth CSS transitions
+  - SidebarService for state management across components
+  - Main content adjusts margin automatically
+
+### Fixed
+- **Dashboard Status Distribution Chart**: Fixed `getStatusPercentage()` function that was returning 0% for all statuses
+  - Now correctly uses `stats().inStockItems`, `stats().lowStockItems`, `stats().outOfStockItems`
+- **Dashboard Counters (Users, Warehouses, Categories)**: Fixed timing issue where counters showed 0
+  - Replaced parallel subscriptions with `forkJoin` to load all data together
+  - Added `catchError` handlers for graceful error handling
+
+### Changed
+- Navigation component now uses `SidebarService` instead of local signal
+- App layout adjusted to work with fixed sidebar
+- Removed old hamburger menu overlay navigation
+
+---
+
 ## [1.1.0] - January 9, 2026
 
 ### Added

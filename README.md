@@ -20,6 +20,19 @@ A modern inventory management system built with Angular 20 and NestJS.
 - **Warehouse Management** - Track multiple storage locations
 - **Supplier Management** - Manage vendor contacts and information
 - **Dashboard** - Real-time statistics and quick actions
+  - **Custom Charts** - Create custom charts with ng-apexcharts
+    - Multiple chart types: Bar, Line, Area, Pie, Donut, Radial
+    - Data sources by quantity or value
+    - Currency filtering (USD, HNL, All)
+  - **Drag & Drop** - Reorder dashboard widgets with drag and drop
+  - **Complementary Colors** - Pie/Donut/Radial charts use harmonious color palettes
+- **Reports Module** - Comprehensive inventory value reports
+  - Value by Category, Warehouse, and Supplier
+  - Top 10 items by value
+  - Currency filter (USD, HNL, All)
+  - Export to CSV
+  - Number formatting with thousands separators
+- **Transaction Management** - Track inventory movements and transfers
 - **Responsive Design** - Works on desktop, tablet, and mobile
 - **Dark Theme** - Easy on the eyes with desaturated colors
 - **i18n Support** - Available in English and Spanish
@@ -33,8 +46,10 @@ A modern inventory management system built with Angular 20 and NestJS.
 |------------|---------|---------|
 | Angular | 20.1.0 | Main framework (standalone components) |
 | Angular Material | 20.1.4 | UI components (dialogs, icons, tables) |
+| Angular CDK | 20.1.4 | Drag & Drop functionality |
 | Tailwind CSS | 4.1.11 | Utility-first styling |
 | ngx-translate | 16.0 | Internationalization |
+| ng-apexcharts | 1.13 | Interactive charts |
 | RxJS | 7.8.0 | Reactive programming |
 
 ### Backend
@@ -98,17 +113,26 @@ Inv-App/                          # Frontend (Angular)
 │   ├── app/
 │   │   ├── components/
 │   │   │   ├── dashboard/        # Main dashboard
+│   │   │   │   └── custom-chart-dialog/  # Custom chart creator
 │   │   │   ├── inventory/        # Inventory module
 │   │   │   │   ├── inventory-list/
 │   │   │   │   ├── inventory-form/
 │   │   │   │   └── inventory-item/
 │   │   │   ├── warehouses/       # Warehouse CRUD
 │   │   │   ├── suppliers/        # Supplier CRUD
+│   │   │   ├── categories/       # Category CRUD
+│   │   │   ├── transactions/     # Transaction management
+│   │   │   ├── reports/          # Value reports & analytics
+│   │   │   ├── users/            # User management
+│   │   │   ├── profile/          # User profile
+│   │   │   ├── settings/         # App settings
+│   │   │   ├── login/            # Authentication
 │   │   │   └── shared/           # Shared components
+│   │   │       └── navigation/   # Sidebar with submenus
 │   │   ├── services/             # API services
 │   │   ├── interfaces/           # TypeScript interfaces
 │   │   └── app.routes.ts         # Route definitions
-│   ├── assets/i18n/              # Translation files
+│   ├── assets/i18n/              # Translation files (en, es)
 │   └── styles.css                # Global styles
 
 Inv-App-API/                      # Backend (NestJS)
@@ -116,6 +140,7 @@ Inv-App-API/                      # Backend (NestJS)
 │   ├── inventory/                # Inventory module
 │   ├── warehouse/                # Warehouse module
 │   ├── supplier/                 # Supplier module
+│   ├── transaction/              # Transaction module
 │   └── prisma/                   # Database service
 └── prisma/
     └── schema.prisma             # Database schema
@@ -152,6 +177,57 @@ Inv-App-API/                      # Backend (NestJS)
 | POST | `/api/suppliers` | Create supplier |
 | PUT | `/api/suppliers/:id` | Update supplier |
 | DELETE | `/api/suppliers/:id` | Delete supplier |
+
+### Transactions
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/transactions` | List all transactions |
+| GET | `/api/transactions/:id` | Get transaction by ID |
+| POST | `/api/transactions` | Create transaction (IN, OUT, TRANSFER) |
+| DELETE | `/api/transactions/:id` | Delete transaction |
+
+---
+
+## Dashboard Features
+
+### Custom Charts
+Create personalized charts to visualize your inventory data:
+
+**Chart Types:**
+- Bar, Line, Area (for trends)
+- Pie, Donut, Radial (for distributions)
+
+**Data Sources:**
+| Source | Description |
+|--------|-------------|
+| By Category | Items grouped by category |
+| By Warehouse | Items grouped by warehouse |
+| By Supplier | Items grouped by supplier |
+| By Status | Items grouped by stock status |
+| Value by Category | Total value ($) by category |
+| Value by Warehouse | Total value ($) by warehouse |
+| Value by Supplier | Total value ($) by supplier |
+| Top Items by Value | Top 10 highest-value items |
+
+**Currency Filter:** For value-based charts, filter by USD, HNL, or All currencies.
+
+### Drag & Drop
+Reorder dashboard widgets by dragging them to your preferred position. The layout is saved automatically.
+
+---
+
+## Reports Module
+
+Access via **Transactions > Reports** in the sidebar.
+
+**Features:**
+- **Summary Cards** - Total value, items count, categories, warehouses
+- **Value by Category** - Breakdown of inventory value per category
+- **Value by Warehouse** - Breakdown of inventory value per location
+- **Value by Supplier** - Breakdown of inventory value per vendor
+- **Top 10 Items** - Highest-value items with details
+- **Currency Filter** - View USD only, HNL only, or all currencies
+- **CSV Export** - Download reports for external analysis
 
 ---
 

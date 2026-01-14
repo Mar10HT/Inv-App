@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,7 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private snackBar = inject(MatSnackBar);
+  private notifications = inject(NotificationService);
 
   loading = signal(false);
   showPassword = signal(false);
@@ -50,21 +51,15 @@ export class Login {
         // Get return URL from query params or default to dashboard
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
 
-        this.snackBar.open(`Welcome back, ${response.user.name || response.user.email}!`, 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
+        this.notifications.success('LOGIN.SUCCESS.WELCOME_BACK', {
+          interpolateParams: { name: response.user.name || response.user.email }
         });
 
         this.router.navigateByUrl(returnUrl);
       },
       error: (error) => {
         this.loading.set(false);
-
-        const message = error.error?.message || 'Invalid credentials. Please try again.';
-        this.snackBar.open(message, 'Close', {
-          duration: 5000,
-          panelClass: ['snackbar-error']
-        });
+        this.notifications.handleError(error);
       }
     });
   }

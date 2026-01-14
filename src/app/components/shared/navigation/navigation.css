@@ -64,8 +64,10 @@
 
 /* Toggle Button */
 .toggle-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   border-radius: 8px;
   background-color: #1a1a1a;
   border: 1px solid #2a2a2a;
@@ -73,20 +75,39 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .toggle-btn:hover {
   background-color: #2a2a2a;
-  border-color: #3a3a3a;
+  border-color: #4d7c6f;
+}
+
+.toggle-btn:active {
+  transform: scale(0.95);
+  background-color: #3a3a3a;
+}
+
+.toggle-btn:focus {
+  outline: none;
+  border-color: #4d7c6f;
+  box-shadow: 0 0 0 2px rgba(77, 124, 111, 0.3);
 }
 
 .toggle-btn mat-icon {
   color: #94a3b8 !important;
-  font-size: 18px !important;
-  width: 18px !important;
-  height: 18px !important;
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  transition: color 0.2s ease;
+  pointer-events: none;
+}
+
+.toggle-btn:hover mat-icon {
+  color: #4d7c6f !important;
 }
 
 /* Navigation */
@@ -208,6 +229,91 @@
 .nav-link.active-link .nav-text {
   color: #4d7c6f;
   font-weight: 600;
+}
+
+/* Submenu Styles */
+.nav-item-with-submenu {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-parent {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  position: relative;
+}
+
+.nav-parent.active-parent .nav-icon-container {
+  background-color: rgba(77, 124, 111, 0.2);
+}
+
+.nav-parent.active-parent .nav-icon {
+  color: #4d7c6f !important;
+}
+
+.expand-icon {
+  position: absolute;
+  right: 12px;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #64748b !important;
+  transition: transform 0.2s ease;
+}
+
+.nav-parent.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  margin-top: 2px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.submenu-link {
+  padding: 8px 12px !important;
+  gap: 10px !important;
+}
+
+.submenu-link .nav-icon-container {
+  display: none;
+}
+
+.submenu-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: #64748b !important;
+  transition: color 0.2s ease;
+}
+
+.submenu-link:hover .submenu-icon {
+  color: #94a3b8 !important;
+}
+
+.submenu-link.active-link .submenu-icon {
+  color: #4d7c6f !important;
+}
+
+.submenu-link .nav-text {
+  font-size: 13px;
 }
 
 /* Footer */

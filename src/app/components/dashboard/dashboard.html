@@ -131,212 +131,278 @@
       </div>
     </div>
 
-    <!-- Status Distribution Bar -->
-    @if (stats()?.totalItems) {
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 mb-8">
-        <h3 class="text-sm font-medium text-slate-400 mb-4">{{ 'COMMON.STATUS' | translate }}</h3>
-        <div class="h-4 bg-[#242424] rounded-full overflow-hidden flex">
-          <div
-            class="bg-emerald-500 transition-all"
-            [style.width.%]="getStatusPercentage('IN_STOCK')">
-          </div>
-          <div
-            class="bg-orange-500 transition-all"
-            [style.width.%]="getStatusPercentage('LOW_STOCK')">
-          </div>
-          <div
-            class="bg-rose-500 transition-all"
-            [style.width.%]="getStatusPercentage('OUT_OF_STOCK')">
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-6 mt-4">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-            <span class="text-sm text-slate-400">{{ 'DASHBOARD.IN_STOCK' | translate }} ({{ getStatusPercentage('IN_STOCK') }}%)</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-orange-500"></div>
-            <span class="text-sm text-slate-400">{{ 'DASHBOARD.LOW_STOCK' | translate }} ({{ getStatusPercentage('LOW_STOCK') }}%)</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-rose-500"></div>
-            <span class="text-sm text-slate-400">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }} ({{ getStatusPercentage('OUT_OF_STOCK') }}%)</span>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <!-- Category Distribution -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.CATEGORIES' | translate }}</h3>
-          <mat-icon class="!text-slate-600 !leading-none !block">category</mat-icon>
-        </div>
-        @if (categoryStats().length === 0) {
-          <div class="flex flex-col items-center justify-center py-8">
-            <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">pie_chart</mat-icon>
-            <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-          </div>
-        } @else {
-          <div class="space-y-4">
-            @for (cat of categoryStats(); track trackByCategory($index, cat); let i = $index) {
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-sm text-slate-400 truncate max-w-[60%]">{{ cat.category || 'Sin Categoria' }}</span>
-                  <span class="text-sm font-medium text-slate-300">{{ cat.count }}</span>
-                </div>
-                <div class="h-2 bg-[#242424] rounded-full overflow-hidden">
-                  <div
-                    class="h-full rounded-full transition-all duration-500"
-                    [style.width.%]="getCategoryPercentage(cat.count)"
-                    [style.background-color]="getCategoryColor(i)">
-                  </div>
-                </div>
-              </div>
+    <!-- Charts Section (Drag & Drop) -->
+    <div
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="onChartWidgetDrop($event)"
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      @for (widget of chartWidgets(); track widget) {
+        <div cdkDrag class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 cursor-move hover:border-[#3a3a3a] transition-colors">
+          <!-- Drag Handle -->
+          <div cdkDragHandle class="flex items-center justify-between mb-4">
+            @if (widget === 'status') {
+              <h3 class="text-lg font-semibold text-slate-300">{{ 'COMMON.STATUS' | translate }}</h3>
+              <mat-icon class="!text-slate-600 !leading-none !block">donut_large</mat-icon>
+            } @else if (widget === 'categories') {
+              <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.CATEGORIES' | translate }}</h3>
+              <mat-icon class="!text-slate-600 !leading-none !block">category</mat-icon>
+            } @else if (widget === 'warehouses') {
+              <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.WAREHOUSES' | translate }}</h3>
+              <mat-icon class="!text-slate-600 !leading-none !block">warehouse</mat-icon>
             }
           </div>
-        }
-      </div>
 
-      <!-- Warehouse Distribution -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.WAREHOUSES' | translate }}</h3>
-          <mat-icon class="!text-slate-600 !leading-none !block">warehouse</mat-icon>
-        </div>
-        @if (warehouseStats().length === 0) {
-          <div class="flex flex-col items-center justify-center py-8">
-            <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
-            <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-          </div>
-        } @else {
-          <div class="space-y-4">
-            @for (wh of warehouseStats(); track trackByWarehouse($index, wh); let i = $index) {
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-sm text-slate-400 truncate max-w-[60%]">{{ wh.name || 'Sin Bodega' }}</span>
-                  <span class="text-sm font-medium text-slate-300">{{ wh.itemCount }}</span>
-                </div>
-                <div class="h-2 bg-[#242424] rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-cyan-500 rounded-full transition-all duration-500"
-                    [style.width.%]="getWarehousePercentage(wh.itemCount)">
-                  </div>
-                </div>
+          <!-- Widget Content -->
+          @if (widget === 'status') {
+            @if (stats()?.totalItems && statusChartOptions()) {
+              <apx-chart
+                [series]="statusChartSeries()"
+                [chart]="statusChartOptions()!.chart"
+                [labels]="statusChartOptions()!.labels"
+                [colors]="statusChartOptions()!.colors"
+                [legend]="statusChartOptions()!.legend"
+                [dataLabels]="statusChartOptions()!.dataLabels"
+                [plotOptions]="statusChartOptions()!.plotOptions"
+                [responsive]="statusChartOptions()!.responsive">
+              </apx-chart>
+            } @else {
+              <div class="flex flex-col items-center justify-center py-12">
+                <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">donut_large</mat-icon>
+                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
-          </div>
-        }
-      </div>
+          } @else if (widget === 'categories') {
+            @if (categoryStats().length > 0 && categoryChartOptions()) {
+              <apx-chart
+                [series]="categoryChartSeries()"
+                [chart]="categoryChartOptions()!.chart"
+                [xaxis]="categoryChartOptions()!.xaxis"
+                [yaxis]="categoryChartOptions()!.yaxis"
+                [colors]="categoryChartOptions()!.colors"
+                [grid]="categoryChartOptions()!.grid"
+                [plotOptions]="categoryChartOptions()!.plotOptions"
+                [dataLabels]="categoryChartOptions()!.dataLabels"
+                [tooltip]="categoryChartOptions()!.tooltip">
+              </apx-chart>
+            } @else {
+              <div class="flex flex-col items-center justify-center py-12">
+                <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
+                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+              </div>
+            }
+          } @else if (widget === 'warehouses') {
+            @if (warehouseStats().length > 0 && warehouseChartOptions()) {
+              <apx-chart
+                [series]="warehouseChartSeries()"
+                [chart]="warehouseChartOptions()!.chart"
+                [xaxis]="warehouseChartOptions()!.xaxis"
+                [yaxis]="warehouseChartOptions()!.yaxis"
+                [colors]="warehouseChartOptions()!.colors"
+                [grid]="warehouseChartOptions()!.grid"
+                [plotOptions]="warehouseChartOptions()!.plotOptions"
+                [dataLabels]="warehouseChartOptions()!.dataLabels"
+                [tooltip]="warehouseChartOptions()!.tooltip"
+                [fill]="warehouseChartOptions()!.fill">
+              </apx-chart>
+            } @else {
+              <div class="flex flex-col items-center justify-center py-12">
+                <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
+                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+              </div>
+            }
+          }
+
+          <!-- Drag Placeholder -->
+          <div *cdkDragPlaceholder class="bg-[#2a2a2a] rounded-xl border-2 border-dashed border-[#4d7c6f] h-full min-h-[320px]"></div>
+        </div>
+      }
     </div>
 
-    <!-- Two Column Layout for Tables -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <!-- Recent Transactions -->
-      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
-        <div class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
-          <div>
-            <h2 class="text-lg font-semibold text-slate-300">{{ 'TRANSACTION.TITLE' | translate }}</h2>
-            <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
-          </div>
-          <button
-            (click)="viewAllTransactions()"
-            class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
-            {{ 'COMMON.VIEW_ALL' | translate }}
-          </button>
-        </div>
-
-        @if (recentTransactions().length === 0) {
-          <div class="flex flex-col items-center justify-center py-12">
-            <mat-icon class="!text-4xl !text-slate-700 mb-3 !leading-none !block">receipt_long</mat-icon>
-            <p class="text-slate-500 text-sm">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
-          </div>
-        } @else {
-          <div class="divide-y divide-[#242424]">
-            @for (tx of recentTransactions(); track trackByTransaction($index, tx)) {
-              <div class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors">
-                <div class="flex items-center gap-4">
-                  <div
-                    class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    [ngClass]="{
-                      'bg-emerald-950/50': tx.type === TransactionType.IN,
-                      'bg-rose-950/50': tx.type === TransactionType.OUT,
-                      'bg-blue-950/50': tx.type === TransactionType.TRANSFER
-                    }">
-                    <mat-icon [class]="getTransactionTypeClass(tx.type) + ' !leading-none !block'">
-                      {{ getTransactionTypeIcon(tx.type) }}
-                    </mat-icon>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-slate-300">
-                      {{ 'TRANSACTION.TYPES.' + tx.type | translate }}
-                    </p>
-                    <p class="text-xs text-slate-500">
-                      {{ tx.items.length }} {{ 'TRANSACTION.ITEMS_COUNT' | translate }}
-                    </p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-xs text-slate-500">{{ formatDateTime(tx.date) }}</p>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        }
+    <!-- Custom Charts Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.CUSTOM_CHART.SECTION_TITLE' | translate }}</h3>
+        <button
+          (click)="openCustomChartDialog()"
+          class="flex items-center gap-2 px-4 py-2 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] transition-colors text-sm font-medium">
+          <mat-icon class="!text-lg">add</mat-icon>
+          {{ 'DASHBOARD.CUSTOM_CHART.ADD' | translate }}
+        </button>
       </div>
 
-      <!-- Low Stock Alerts -->
-      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
-        <div class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
-          <div>
-            <h2 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
-            <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
-          </div>
+      @if (customCharts().length === 0) {
+        <div class="bg-[#1a1a1a] rounded-xl border border-dashed border-[#3a3a3a] p-8 text-center">
+          <mat-icon class="!text-4xl !text-slate-700 mb-3 !leading-none !block mx-auto">add_chart</mat-icon>
+          <p class="text-slate-500 text-sm mb-4">{{ 'DASHBOARD.CUSTOM_CHART.EMPTY' | translate }}</p>
           <button
-            (click)="viewAllInventory()"
-            class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
-            {{ 'COMMON.VIEW_ALL' | translate }}
+            (click)="openCustomChartDialog()"
+            class="text-[#4d7c6f] hover:text-[#5d8c7f] text-sm font-medium transition-colors">
+            {{ 'DASHBOARD.CUSTOM_CHART.CREATE_FIRST' | translate }}
           </button>
         </div>
-
-        @if (lowStockItems().length === 0) {
-          <div class="flex flex-col items-center justify-center py-12">
-            <mat-icon class="!text-4xl !text-emerald-700 mb-3 !leading-none !block">check_circle</mat-icon>
-            <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-          </div>
-        } @else {
-          <div class="divide-y divide-[#242424] max-h-[500px] overflow-y-auto">
-            @for (item of lowStockItems().slice(0, 10); track item.id) {
-              <div
-                (click)="viewItem(item)"
-                class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
-                <div class="flex items-center gap-4">
-                  <div class="w-10 h-10 bg-orange-950/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <mat-icon class="!text-orange-500 !leading-none !block">warning</mat-icon>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-slate-300 truncate">{{ item.name }}</p>
-                    <p class="text-xs text-slate-500">{{ item.category?.name || '-' }}</p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-lg font-bold text-orange-400">{{ item.quantity }}</p>
-                    <p class="text-xs text-slate-500">min: {{ item.minQuantity }}</p>
-                  </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (chart of customCharts(); track chart.id) {
+            <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-[#3a3a3a] transition-colors">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-md font-semibold text-slate-300 truncate">{{ chart.title }}</h4>
+                <div class="flex items-center gap-1">
+                  <button
+                    (click)="openCustomChartDialog(chart)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                    <mat-icon class="!text-lg">edit</mat-icon>
+                  </button>
+                  <button
+                    (click)="deleteCustomChart(chart)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <mat-icon class="!text-lg">delete</mat-icon>
+                  </button>
                 </div>
               </div>
-            }
-          </div>
-          @if (lowStockItems().length > 10) {
-            <div class="px-6 py-3 bg-[#141414] border-t border-[#2a2a2a] text-center">
-              <p class="text-xs text-slate-500">
-                Showing 10 of {{ lowStockItems().length }} low stock items
-              </p>
+
+              @if (getCustomChartData(chart).series.length > 0 || (getCustomChartData(chart).series[0]?.data?.length > 0)) {
+                <apx-chart
+                  [series]="getCustomChartData(chart).series"
+                  [chart]="getCustomChartOptions(chart).chart"
+                  [xaxis]="getCustomChartOptions(chart).xaxis"
+                  [yaxis]="getCustomChartOptions(chart).yaxis"
+                  [colors]="getCustomChartOptions(chart).colors"
+                  [grid]="getCustomChartOptions(chart).grid"
+                  [plotOptions]="getCustomChartOptions(chart).plotOptions"
+                  [dataLabels]="getCustomChartOptions(chart).dataLabels"
+                  [legend]="getCustomChartOptions(chart).legend"
+                  [labels]="getCustomChartData(chart).labels"
+                  [tooltip]="getCustomChartOptions(chart).tooltip">
+                </apx-chart>
+              } @else {
+                <div class="flex flex-col items-center justify-center py-8">
+                  <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
+                  <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+                </div>
+              }
             </div>
           }
-        }
-      </div>
+        </div>
+      }
+    </div>
+
+    <!-- Two Column Layout for Tables (Drag & Drop) -->
+    <div
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="onTableWidgetDrop($event)"
+      class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      @for (widget of tableWidgets(); track widget) {
+        <div cdkDrag class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden cursor-move hover:border-[#3a3a3a] transition-colors">
+          <!-- Transactions Widget -->
+          @if (widget === 'transactions') {
+            <div cdkDragHandle class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+              <div>
+                <h2 class="text-lg font-semibold text-slate-300">{{ 'TRANSACTION.TITLE' | translate }}</h2>
+                <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
+              </div>
+              <button
+                (click)="$event.stopPropagation(); viewAllTransactions()"
+                class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+                {{ 'COMMON.VIEW_ALL' | translate }}
+              </button>
+            </div>
+
+            @if (recentTransactions().length === 0) {
+              <div class="flex flex-col items-center justify-center py-12">
+                <mat-icon class="!text-4xl !text-slate-700 mb-3 !leading-none !block">receipt_long</mat-icon>
+                <p class="text-slate-500 text-sm">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
+              </div>
+            } @else {
+              <div class="divide-y divide-[#242424]">
+                @for (tx of recentTransactions(); track trackByTransaction($index, tx)) {
+                  <div class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors">
+                    <div class="flex items-center gap-4">
+                      <div
+                        class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        [ngClass]="{
+                          'bg-emerald-950/50': tx.type === TransactionType.IN,
+                          'bg-rose-950/50': tx.type === TransactionType.OUT,
+                          'bg-blue-950/50': tx.type === TransactionType.TRANSFER
+                        }">
+                        <mat-icon [class]="getTransactionTypeClass(tx.type) + ' !leading-none !block'">
+                          {{ getTransactionTypeIcon(tx.type) }}
+                        </mat-icon>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-slate-300">
+                          {{ 'TRANSACTION.TYPES.' + tx.type | translate }}
+                        </p>
+                        <p class="text-xs text-slate-500">
+                          {{ tx.items.length }} {{ 'TRANSACTION.ITEMS_COUNT' | translate }}
+                        </p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-xs text-slate-500">{{ formatDateTime(tx.date) }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
+
+          <!-- Low Stock Widget -->
+          @if (widget === 'lowStock') {
+            <div cdkDragHandle class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+              <div>
+                <h2 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
+                <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
+              </div>
+              <button
+                (click)="$event.stopPropagation(); viewAllInventory()"
+                class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+                {{ 'COMMON.VIEW_ALL' | translate }}
+              </button>
+            </div>
+
+            @if (lowStockItems().length === 0) {
+              <div class="flex flex-col items-center justify-center py-12">
+                <mat-icon class="!text-4xl !text-emerald-700 mb-3 !leading-none !block">check_circle</mat-icon>
+                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+              </div>
+            } @else {
+              <div class="divide-y divide-[#242424] max-h-[500px] overflow-y-auto">
+                @for (item of lowStockItems().slice(0, 10); track item.id) {
+                  <div
+                    (click)="viewItem(item)"
+                    class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 bg-orange-950/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <mat-icon class="!text-orange-500 !leading-none !block">warning</mat-icon>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-slate-300 truncate">{{ item.name }}</p>
+                        <p class="text-xs text-slate-500">{{ item.category?.name || '-' }}</p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-lg font-bold text-orange-400">{{ item.quantity }}</p>
+                        <p class="text-xs text-slate-500">min: {{ item.minQuantity }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+              @if (lowStockItems().length > 10) {
+                <div class="px-6 py-3 bg-[#141414] border-t border-[#2a2a2a] text-center">
+                  <p class="text-xs text-slate-500">
+                    Showing 10 of {{ lowStockItems().length }} low stock items
+                  </p>
+                </div>
+              }
+            }
+          }
+
+          <!-- Drag Placeholder -->
+          <div *cdkDragPlaceholder class="bg-[#2a2a2a] rounded-xl border-2 border-dashed border-[#4d7c6f] h-full min-h-[300px]"></div>
+        </div>
+      }
     </div>
 
     <!-- Recent Items Table -->

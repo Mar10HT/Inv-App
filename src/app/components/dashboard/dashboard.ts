@@ -1,31 +1,53 @@
-import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { forkJoin, catchError, of } from 'rxjs';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import {
+  ApexChart,
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  ApexLegend,
+  ApexDataLabels,
+  ApexPlotOptions,
+  ApexAxisChartSeries,
+  ApexXAxis,
+  ApexYAxis,
+  ApexGrid,
+  ApexTooltip,
+  ApexFill
+} from 'ng-apexcharts';
 
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { DashboardService, DashboardStats, CategoryStats, WarehouseStats, StatusStats } from '../../services/dashboard.service';
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
-import { InventoryItemInterface, InventoryStatus } from '../../interfaces/inventory-item.interface';
+import { InventoryItemInterface, InventoryStatus, Currency } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory/inventory-item/inventory-item';
+import { CustomChartDialog, CustomChart, CustomChartDialogData, InventoryItemData, ChartCurrency } from './custom-chart-dialog/custom-chart-dialog';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    CdkDrag,
+    CdkDropList,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    TranslateModule
+    TranslateModule,
+    NgApexchartsModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -38,6 +60,8 @@ export class Dashboard implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
 
   userName = computed(() => this.authService.currentUser()?.name || 'User');
 
@@ -58,29 +82,772 @@ export class Dashboard implements OnInit {
 
   TransactionType = TransactionType;
 
+  // Dashboard widgets configuration
+  private readonly STORAGE_KEY = 'dashboard_layout';
+  private readonly CUSTOM_CHARTS_KEY = 'dashboard_custom_charts';
+
+  chartWidgets = signal<string[]>(['status', 'categories', 'warehouses']);
+  tableWidgets = signal<string[]>(['transactions', 'lowStock']);
+  customCharts = signal<CustomChart[]>([]);
+
+  // Value calculations from inventory items
+  allItems = signal<InventoryItemInterface[]>([]);
+
+  // Exchange rate: 1 USD = 25 HNL
+  private readonly HNL_TO_USD_RATE = 25;
+
+  // Convert item value to USD
+  private getItemValueInUSD(item: InventoryItemInterface): number {
+    const rawValue = (item.price || 0) * item.quantity;
+    if (item.currency === Currency.HNL) {
+      return rawValue / this.HNL_TO_USD_RATE;
+    }
+    return rawValue; // Already in USD
+  }
+
+  valueByCategory = computed(() => {
+    const items = this.allItems();
+    const grouped = new Map<string, number>();
+    items.forEach(item => {
+      const category = item.category || 'Sin Categoría';
+      const value = this.getItemValueInUSD(item);
+      grouped.set(category, (grouped.get(category) || 0) + value);
+    });
+    return Array.from(grouped.entries())
+      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
+      .sort((a, b) => b.value - a.value);
+  });
+
+  valueByWarehouse = computed(() => {
+    const items = this.allItems();
+    const grouped = new Map<string, number>();
+    items.forEach(item => {
+      const warehouse = item.warehouse?.name || 'Sin Bodega';
+      const value = this.getItemValueInUSD(item);
+      grouped.set(warehouse, (grouped.get(warehouse) || 0) + value);
+    });
+    return Array.from(grouped.entries())
+      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
+      .sort((a, b) => b.value - a.value);
+  });
+
+  valueBySupplier = computed(() => {
+    const items = this.allItems();
+    const grouped = new Map<string, number>();
+    items.forEach(item => {
+      const supplier = item.supplier?.name || 'Sin Proveedor';
+      const value = this.getItemValueInUSD(item);
+      grouped.set(supplier, (grouped.get(supplier) || 0) + value);
+    });
+    return Array.from(grouped.entries())
+      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
+      .sort((a, b) => b.value - a.value);
+  });
+
+  valueByStatus = computed(() => {
+    const items = this.allItems();
+    const grouped = new Map<string, number>();
+    items.forEach(item => {
+      let statusLabel: string;
+      switch (item.status) {
+        case InventoryStatus.IN_STOCK:
+          statusLabel = this.translate.instant('DASHBOARD.IN_STOCK');
+          break;
+        case InventoryStatus.LOW_STOCK:
+          statusLabel = this.translate.instant('DASHBOARD.LOW_STOCK');
+          break;
+        case InventoryStatus.OUT_OF_STOCK:
+          statusLabel = this.translate.instant('DASHBOARD.OUT_OF_STOCK');
+          break;
+        default:
+          statusLabel = 'Unknown';
+      }
+      const value = this.getItemValueInUSD(item);
+      grouped.set(statusLabel, (grouped.get(statusLabel) || 0) + value);
+    });
+    return Array.from(grouped.entries())
+      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }));
+  });
+
+  topItemsByValue = computed(() => {
+    const items = this.allItems();
+    return items
+      .map(item => ({
+        name: item.name,
+        value: Math.round(this.getItemValueInUSD(item) * 100) / 100
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+  });
+
+  // Chart configurations
+  statusChartSeries = signal<ApexNonAxisChartSeries>([]);
+  statusChartOptions = signal<{
+    chart: ApexChart;
+    labels: string[];
+    colors: string[];
+    legend: ApexLegend;
+    dataLabels: ApexDataLabels;
+    plotOptions: ApexPlotOptions;
+    responsive: ApexResponsive[];
+  } | null>(null);
+
+  categoryChartSeries = signal<ApexAxisChartSeries>([]);
+  categoryChartOptions = signal<{
+    chart: ApexChart;
+    xaxis: ApexXAxis;
+    yaxis: ApexYAxis;
+    colors: string[];
+    grid: ApexGrid;
+    plotOptions: ApexPlotOptions;
+    dataLabels: ApexDataLabels;
+    tooltip: ApexTooltip;
+  } | null>(null);
+
+  warehouseChartSeries = signal<ApexAxisChartSeries>([]);
+  warehouseChartOptions = signal<{
+    chart: ApexChart;
+    xaxis: ApexXAxis;
+    yaxis: ApexYAxis;
+    colors: string[];
+    grid: ApexGrid;
+    plotOptions: ApexPlotOptions;
+    dataLabels: ApexDataLabels;
+    tooltip: ApexTooltip;
+    fill: ApexFill;
+  } | null>(null);
+
+  constructor() {
+    // Initialize chart options
+    this.initChartOptions();
+    // Load saved layout
+    this.loadSavedLayout();
+    // Load custom charts
+    this.loadCustomCharts();
+  }
+
+  private loadSavedLayout(): void {
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (saved) {
+        const layout = JSON.parse(saved);
+        if (layout.chartWidgets?.length === 3) {
+          this.chartWidgets.set(layout.chartWidgets);
+        }
+        if (layout.tableWidgets?.length === 2) {
+          this.tableWidgets.set(layout.tableWidgets);
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load dashboard layout', e);
+    }
+  }
+
+  private saveLayout(): void {
+    const layout = {
+      chartWidgets: this.chartWidgets(),
+      tableWidgets: this.tableWidgets()
+    };
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(layout));
+  }
+
+  onChartWidgetDrop(event: CdkDragDrop<string[]>): void {
+    const widgets = [...this.chartWidgets()];
+    moveItemInArray(widgets, event.previousIndex, event.currentIndex);
+    this.chartWidgets.set(widgets);
+    this.saveLayout();
+  }
+
+  onTableWidgetDrop(event: CdkDragDrop<string[]>): void {
+    const widgets = [...this.tableWidgets()];
+    moveItemInArray(widgets, event.previousIndex, event.currentIndex);
+    this.tableWidgets.set(widgets);
+    this.saveLayout();
+  }
+
+  // Custom Charts Methods
+  private loadCustomCharts(): void {
+    try {
+      const saved = localStorage.getItem(this.CUSTOM_CHARTS_KEY);
+      if (saved) {
+        this.customCharts.set(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.warn('Could not load custom charts', e);
+    }
+  }
+
+  private saveCustomCharts(): void {
+    localStorage.setItem(this.CUSTOM_CHARTS_KEY, JSON.stringify(this.customCharts()));
+  }
+
+  // Convert inventory items to simplified format for chart dialog
+  private getItemsForDialog(): InventoryItemData[] {
+    return this.allItems().map(item => ({
+      name: item.name,
+      category: item.category || 'Sin Categoría',
+      warehouse: item.warehouse?.name || 'Sin Bodega',
+      supplier: item.supplier?.name || 'Sin Proveedor',
+      status: this.getStatusLabel(item.status),
+      price: item.price || 0,
+      quantity: item.quantity,
+      currency: item.currency as 'USD' | 'HNL'
+    }));
+  }
+
+  private getStatusLabel(status: InventoryStatus): string {
+    switch (status) {
+      case InventoryStatus.IN_STOCK:
+        return this.translate.instant('DASHBOARD.IN_STOCK');
+      case InventoryStatus.LOW_STOCK:
+        return this.translate.instant('DASHBOARD.LOW_STOCK');
+      case InventoryStatus.OUT_OF_STOCK:
+        return this.translate.instant('DASHBOARD.OUT_OF_STOCK');
+      default:
+        return 'Unknown';
+    }
+  }
+
+  openCustomChartDialog(chart?: CustomChart): void {
+    const dialogData: CustomChartDialogData = {
+      chart,
+      items: this.getItemsForDialog(),
+      availableData: {
+        categories: this.categoryStats().map(c => ({ name: c.category || 'Sin Categoría', count: c.count })),
+        warehouses: this.warehouseStats().map(w => ({ name: w.name || 'Sin Bodega', count: w.itemCount })),
+        status: [
+          { name: this.translate.instant('DASHBOARD.IN_STOCK'), count: this.stats()?.inStockItems || 0 },
+          { name: this.translate.instant('DASHBOARD.LOW_STOCK'), count: this.stats()?.lowStockItems || 0 },
+          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 }
+        ]
+      }
+    };
+
+    const dialogRef = this.dialog.open(CustomChartDialog, {
+      data: dialogData,
+      panelClass: 'custom-dialog-container',
+      width: '100%',
+      maxWidth: '700px'
+    });
+
+    dialogRef.afterClosed().subscribe((result: CustomChart | undefined) => {
+      if (result) {
+        const charts = [...this.customCharts()];
+        const existingIndex = charts.findIndex(c => c.id === result.id);
+        const isEditing = existingIndex >= 0;
+
+        if (isEditing) {
+          charts[existingIndex] = result;
+        } else {
+          charts.push(result);
+        }
+
+        this.customCharts.set(charts);
+        this.saveCustomCharts();
+
+        // Show notification
+        if (isEditing) {
+          this.notifications.success('DASHBOARD.CUSTOM_CHART.UPDATED', { interpolateParams: { name: result.title } });
+        } else {
+          this.notifications.success('DASHBOARD.CUSTOM_CHART.CREATED', { interpolateParams: { name: result.title } });
+        }
+      }
+    });
+  }
+
+  deleteCustomChart(chart: CustomChart): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('COMMON.DELETE'),
+        message: this.translate.instant('DASHBOARD.CUSTOM_CHART.DELETE_CONFIRM', { name: chart.title }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'danger'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        const chartTitle = chart.title;
+        const charts = this.customCharts().filter(c => c.id !== chart.id);
+        this.customCharts.set(charts);
+        this.saveCustomCharts();
+        this.notifications.success('DASHBOARD.CUSTOM_CHART.DELETED', { interpolateParams: { name: chartTitle } });
+      }
+    });
+  }
+
+  private isValueSource(source: string): boolean {
+    return ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue'].includes(source);
+  }
+
+  // Filter items by currency for value charts
+  private getFilteredItemsByCurrency(currency: ChartCurrency = 'USD'): InventoryItemInterface[] {
+    const items = this.allItems();
+    if (currency === 'ALL') {
+      return items;
+    }
+    return items.filter(item => item.currency === currency);
+  }
+
+  // Calculate value data grouped by a field
+  private calculateValueDataForChart(
+    groupBy: 'category' | 'warehouse' | 'supplier' | 'status',
+    currency: ChartCurrency = 'USD'
+  ): { name: string; count: number }[] {
+    const items = this.getFilteredItemsByCurrency(currency);
+    const grouped = new Map<string, number>();
+
+    items.forEach(item => {
+      let key: string;
+      switch (groupBy) {
+        case 'category':
+          key = item.category || 'Sin Categoría';
+          break;
+        case 'warehouse':
+          key = item.warehouse?.name || 'Sin Bodega';
+          break;
+        case 'supplier':
+          key = item.supplier?.name || 'Sin Proveedor';
+          break;
+        case 'status':
+          key = this.getStatusLabel(item.status);
+          break;
+      }
+      const value = (item.price || 0) * item.quantity;
+      grouped.set(key, (grouped.get(key) || 0) + value);
+    });
+
+    return Array.from(grouped.entries())
+      .map(([name, count]) => ({ name, count: Math.round(count * 100) / 100 }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  // Calculate top items by value
+  private calculateTopItemsForChart(currency: ChartCurrency = 'USD'): { name: string; count: number }[] {
+    const items = this.getFilteredItemsByCurrency(currency);
+    return items
+      .map(item => ({
+        name: item.name,
+        count: Math.round((item.price || 0) * item.quantity * 100) / 100
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }
+
+  getCustomChartData(chart: CustomChart): { labels: string[]; series: any } {
+    let data: { name: string; count: number }[] = [];
+    const currency = chart.currency || 'USD';
+
+    switch (chart.dataSource) {
+      case 'categories':
+        data = this.categoryStats().map(c => ({ name: c.category || 'Sin Categoría', count: c.count }));
+        break;
+      case 'warehouses':
+        data = this.warehouseStats().map(w => ({ name: w.name || 'Sin Bodega', count: w.itemCount }));
+        break;
+      case 'status':
+        data = [
+          { name: this.translate.instant('DASHBOARD.IN_STOCK'), count: this.stats()?.inStockItems || 0 },
+          { name: this.translate.instant('DASHBOARD.LOW_STOCK'), count: this.stats()?.lowStockItems || 0 },
+          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 }
+        ];
+        break;
+      case 'lowStock':
+        data = this.lowStockItems().slice(0, 5).map(item => ({ name: item.name, count: item.quantity }));
+        break;
+      case 'valueByCategory':
+        data = this.calculateValueDataForChart('category', currency);
+        break;
+      case 'valueByWarehouse':
+        data = this.calculateValueDataForChart('warehouse', currency);
+        break;
+      case 'valueBySupplier':
+        data = this.calculateValueDataForChart('supplier', currency);
+        break;
+      case 'valueByStatus':
+        data = this.calculateValueDataForChart('status', currency);
+        break;
+      case 'topItemsByValue':
+        data = this.calculateTopItemsForChart(currency);
+        break;
+    }
+
+    const labels = data.map(d => d.name);
+    const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
+    let seriesName = 'Items';
+    if (this.isValueSource(chart.dataSource)) {
+      const currencySymbol = currency === 'HNL' ? 'L' : '$';
+      seriesName = `Value (${currencySymbol})`;
+    }
+    const series = isPieType ? data.map(d => d.count) : [{ name: seriesName, data: data.map(d => d.count) }];
+
+    return { labels, series };
+  }
+
+  // Complementary color palettes for pie/donut/radial charts
+  private readonly customChartPalettes: Record<string, string[]> = {
+    '#4d7c6f': ['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308'],
+    '#10b981': ['#10b981', '#ef4444', '#8b5cf6', '#f97316', '#3b82f6', '#ec4899'],
+    '#06b6d4': ['#06b6d4', '#f97316', '#10b981', '#ec4899', '#eab308', '#8b5cf6'],
+    '#3b82f6': ['#3b82f6', '#f97316', '#10b981', '#ec4899', '#eab308', '#06b6d4'],
+    '#8b5cf6': ['#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ef4444', '#eab308'],
+    '#ec4899': ['#ec4899', '#10b981', '#3b82f6', '#f97316', '#06b6d4', '#8b5cf6'],
+    '#f97316': ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#ec4899'],
+    '#eab308': ['#eab308', '#8b5cf6', '#3b82f6', '#ec4899', '#06b6d4', '#10b981'],
+    '#ef4444': ['#ef4444', '#10b981', '#3b82f6', '#eab308', '#8b5cf6', '#06b6d4'],
+    '#64748b': ['#64748b', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#3b82f6']
+  };
+
+  // Format number with thousands separator and 2 decimals
+  private formatNumber(value: number): string {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  getCustomChartOptions(chart: CustomChart): any {
+    const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
+    const isValueChart = this.isValueSource(chart.dataSource);
+    const currency = chart.currency || 'USD';
+    const currencySymbol = currency === 'HNL' ? 'L' : '$';
+    const colors = isPieType
+      ? (this.customChartPalettes[chart.color] || [chart.color])
+      : [chart.color];
+
+    const formatValue = (val: number) => {
+      if (isValueChart) {
+        return `${currencySymbol}${this.formatNumber(val)}`;
+      }
+      return val.toLocaleString('en-US');
+    };
+
+    return {
+      chart: {
+        type: chart.chartType,
+        height: 250,
+        background: 'transparent',
+        foreColor: '#94a3b8',
+        toolbar: { show: false }
+      },
+      colors: colors,
+      grid: { borderColor: '#2a2a2a', strokeDashArray: 4 },
+      dataLabels: { enabled: false },
+      legend: { show: true, position: 'bottom', labels: { colors: '#94a3b8' } },
+      plotOptions: isPieType ? {
+        pie: { donut: { size: chart.chartType === 'donut' ? '60%' : '0%' } },
+        radialBar: { hollow: { size: '50%' } }
+      } : {
+        bar: { borderRadius: 4, columnWidth: '60%' }
+      },
+      xaxis: isPieType ? {} : {
+        labels: { style: { colors: '#94a3b8', fontSize: '10px' }, rotate: -45 }
+      },
+      yaxis: {
+        labels: {
+          style: { colors: '#94a3b8' },
+          formatter: (val: number) => formatValue(val)
+        }
+      },
+      tooltip: {
+        theme: 'dark',
+        y: {
+          formatter: (val: number) => formatValue(val)
+        }
+      }
+    };
+  }
+
   ngOnInit(): void {
     this.loadDashboardData();
+  }
+
+  private initChartOptions(): void {
+    // Status Donut Chart Options
+    this.statusChartOptions.set({
+      chart: {
+        type: 'donut',
+        height: 280,
+        background: 'transparent',
+        foreColor: '#94a3b8'
+      },
+      labels: [
+        this.translate.instant('DASHBOARD.IN_STOCK'),
+        this.translate.instant('DASHBOARD.LOW_STOCK'),
+        this.translate.instant('DASHBOARD.OUT_OF_STOCK')
+      ],
+      colors: ['#10b981', '#f97316', '#ef4444'],
+      legend: {
+        position: 'bottom',
+        labels: {
+          colors: '#94a3b8'
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        style: {
+          fontSize: '12px',
+          fontWeight: 600
+        },
+        dropShadow: {
+          enabled: false
+        }
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '65%',
+            labels: {
+              show: true,
+              name: {
+                show: true,
+                fontSize: '14px',
+                color: '#94a3b8'
+              },
+              value: {
+                show: true,
+                fontSize: '20px',
+                fontWeight: 700,
+                color: '#e2e8f0'
+              },
+              total: {
+                show: true,
+                label: this.translate.instant('DASHBOARD.TOTAL_ITEMS'),
+                fontSize: '12px',
+                color: '#94a3b8',
+                formatter: (w: any) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0)
+              }
+            }
+          }
+        }
+      },
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          chart: {
+            height: 250
+          },
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }]
+    });
+
+    // Category Bar Chart Options
+    this.categoryChartOptions.set({
+      chart: {
+        type: 'bar',
+        height: 280,
+        background: 'transparent',
+        foreColor: '#94a3b8',
+        toolbar: {
+          show: false
+        }
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            colors: '#94a3b8',
+            fontSize: '11px'
+          },
+          rotate: -45,
+          rotateAlways: false,
+          trim: true,
+          maxHeight: 80
+        },
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: '#94a3b8'
+          }
+        }
+      },
+      colors: this.chartColors,
+      grid: {
+        borderColor: '#2a2a2a',
+        strokeDashArray: 4
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          horizontal: false,
+          columnWidth: '60%',
+          distributed: true
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      tooltip: {
+        theme: 'dark',
+        y: {
+          formatter: (val: number) => `${val} items`
+        }
+      }
+    });
+
+    // Warehouse Bar Chart Options
+    this.warehouseChartOptions.set({
+      chart: {
+        type: 'bar',
+        height: 280,
+        background: 'transparent',
+        foreColor: '#94a3b8',
+        toolbar: {
+          show: false
+        }
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            colors: '#94a3b8',
+            fontSize: '11px'
+          },
+          rotate: -45,
+          rotateAlways: false,
+          trim: true,
+          maxHeight: 80
+        },
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: '#94a3b8'
+          }
+        }
+      },
+      colors: ['#06b6d4'],
+      grid: {
+        borderColor: '#2a2a2a',
+        strokeDashArray: 4
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          horizontal: false,
+          columnWidth: '60%'
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      tooltip: {
+        theme: 'dark',
+        y: {
+          formatter: (val: number) => `${val} items`
+        }
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          type: 'vertical',
+          shadeIntensity: 0.3,
+          opacityFrom: 1,
+          opacityTo: 0.8
+        }
+      }
+    });
+  }
+
+  private updateCharts(): void {
+    const currentStats = this.stats();
+    const categories = this.categoryStats();
+    const warehouses = this.warehouseStats();
+
+    // Update Status Donut Chart
+    if (currentStats) {
+      this.statusChartSeries.set([
+        currentStats.inStockItems || 0,
+        currentStats.lowStockItems || 0,
+        currentStats.outOfStockItems || 0
+      ]);
+    }
+
+    // Update Category Bar Chart
+    if (categories.length > 0) {
+      const categoryOptions = this.categoryChartOptions();
+      if (categoryOptions) {
+        this.categoryChartOptions.set({
+          ...categoryOptions,
+          xaxis: {
+            ...categoryOptions.xaxis,
+            categories: categories.map(c => c.category || 'Sin Categoría')
+          }
+        });
+        this.categoryChartSeries.set([{
+          name: 'Items',
+          data: categories.map(c => c.count)
+        }]);
+      }
+    }
+
+    // Update Warehouse Bar Chart
+    if (warehouses.length > 0) {
+      const warehouseOptions = this.warehouseChartOptions();
+      if (warehouseOptions) {
+        this.warehouseChartOptions.set({
+          ...warehouseOptions,
+          xaxis: {
+            ...warehouseOptions.xaxis,
+            categories: warehouses.map(w => w.name || 'Sin Bodega')
+          }
+        });
+        this.warehouseChartSeries.set([{
+          name: 'Items',
+          data: warehouses.map(w => w.itemCount)
+        }]);
+      }
+    }
   }
 
   private loadDashboardData(): void {
     this.loading.set(true);
     this.error.set(null);
 
-    // Load inventory stats (single call)
-    this.dashboardService.getStats().subscribe({
-      next: (data: any) => {
-        // Map backend response to DashboardStats format
+    // Load all data in parallel using forkJoin
+    forkJoin({
+      stats: this.dashboardService.getStats().pipe(catchError(() => of(null))),
+      usersCount: this.dashboardService.getUsersCount().pipe(catchError(() => of(0))),
+      warehousesCount: this.dashboardService.getWarehousesCount().pipe(catchError(() => of(0))),
+      categoriesCount: this.dashboardService.getCategoriesCount().pipe(catchError(() => of(0))),
+      lowStockItems: this.dashboardService.getLowStockItems(10).pipe(catchError(() => of([]))),
+      recentTransactions: this.transactionService.getRecent(5).pipe(catchError(() => of([]))),
+      allItems: this.inventoryService.getItemsObservable().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: (results) => {
+        const data = results.stats || {};
+
+        // Map backend response to DashboardStats format with all counts
         const dashboardStats: DashboardStats = {
           totalItems: data.total || 0,
-          totalUsers: 0, // Will be loaded separately
-          totalWarehouses: 0, // Will be loaded separately
-          totalSuppliers: 0, // Will be loaded separately
-          totalCategories: 0, // Will be loaded separately
+          totalUsers: results.usersCount,
+          totalWarehouses: results.warehousesCount,
+          totalSuppliers: 0,
+          totalCategories: results.categoriesCount,
           inStockItems: data.inStock || 0,
           lowStockItems: data.lowStock || 0,
           outOfStockItems: data.outOfStock || 0,
           totalValueUSD: data.totalValue || 0,
-          totalValueHNL: (data.totalValue || 0) * 25 // Approximate conversion
+          totalValueHNL: (data.totalValue || 0) * 25
         };
 
         this.stats.set(dashboardStats);
@@ -97,67 +864,18 @@ export class Dashboard implements OnInit {
           itemCount: loc.count,
           totalQuantity: loc.count
         })));
+
+        this.lowStockItems.set(results.lowStockItems);
+        this.recentTransactions.set(results.recentTransactions);
+        this.allItems.set(results.allItems);
+        this.loading.set(false);
+
+        // Update charts with new data
+        this.updateCharts();
       },
       error: (err) => {
-        console.error('Error loading stats:', err);
+        console.error('Error loading dashboard data:', err);
         this.error.set('Error loading dashboard data: ' + (err.message || 'Unknown error'));
-        this.loading.set(false);
-      }
-    });
-
-    // Load additional counts
-    this.dashboardService.getUsersCount().subscribe({
-      next: (count) => {
-        const currentStats = this.stats();
-        if (currentStats) {
-          this.stats.set({ ...currentStats, totalUsers: count });
-        }
-      },
-      error: (err) => {
-        console.error('Error loading users count:', err);
-      }
-    });
-
-    this.dashboardService.getWarehousesCount().subscribe({
-      next: (count) => {
-        const currentStats = this.stats();
-        if (currentStats) {
-          this.stats.set({ ...currentStats, totalWarehouses: count });
-        }
-      },
-      error: (err) => {
-        console.error('Error loading warehouses count:', err);
-      }
-    });
-
-    this.dashboardService.getCategoriesCount().subscribe({
-      next: (count) => {
-        const currentStats = this.stats();
-        if (currentStats) {
-          this.stats.set({ ...currentStats, totalCategories: count });
-        }
-      },
-      error: (err) => {
-        console.error('Error loading categories count:', err);
-      }
-    });
-
-    // Load low stock items (limit to 10 for pagination)
-    this.dashboardService.getLowStockItems(10).subscribe({
-      next: (data) => this.lowStockItems.set(data),
-      error: (err) => {
-        console.error('Error loading low stock items:', err);
-      }
-    });
-
-    // Load recent transactions
-    this.transactionService.getRecent(5).subscribe({
-      next: (data) => {
-        this.recentTransactions.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading transactions:', err);
         this.loading.set(false);
       }
     });

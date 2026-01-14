@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CategoryService } from '../../services/category.service';
+import { NotificationService } from '../../services/notification.service';
 import { Category } from '../../interfaces/category.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { CategoryFormDialog } from './category-form-dialog';
@@ -29,7 +30,7 @@ import { CategoryFormDialog } from './category-form-dialog';
 export class Categories implements OnInit {
   private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private notifications = inject(NotificationService);
 
   categories = computed(() => this.categoryService.categories());
   loading = computed(() => this.categoryService.loading());
@@ -61,10 +62,7 @@ export class Categories implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Category created successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.created('NOTIFICATIONS.ENTITIES.CATEGORY', result.name);
       }
     });
   }
@@ -79,10 +77,7 @@ export class Categories implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Category updated successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.updated('NOTIFICATIONS.ENTITIES.CATEGORY', result.name);
       }
     });
   }
@@ -103,16 +98,10 @@ export class Categories implements OnInit {
       if (confirmed) {
         this.categoryService.delete(category.id).subscribe({
           next: () => {
-            this.snackBar.open(`"${category.name}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.CATEGORY', category.name);
           },
           error: (err) => {
-            this.snackBar.open(`Error deleting category: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.CATEGORY');
           }
         });
       }

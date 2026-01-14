@@ -154,6 +154,14 @@ export class InventoryService {
     return this.http.get<StatsResponse>(this.apiUrl + '/inventory/stats');
   }
 
+  // Get all items as Observable for dashboard calculations
+  getItemsObservable(): Observable<InventoryItemInterface[]> {
+    const params = new HttpParams().set('limit', '1000');
+    return this.http.get<PaginatedResponse<InventoryItemInterface>>(this.apiUrl + '/inventory', { params }).pipe(
+      map(response => response.data.map(item => this.transformItem(item)))
+    );
+  }
+
   getItemById(id: string): Observable<InventoryItemInterface> {
     return this.http.get<InventoryItemInterface>(this.apiUrl + '/inventory/' + id).pipe(
       map(item => this.transformItem(item))

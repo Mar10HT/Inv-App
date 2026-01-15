@@ -34,7 +34,10 @@ A modern inventory management system built with Angular 20 and NestJS.
   - Number formatting with thousands separators
 - **Transaction Management** - Track inventory movements and transfers
 - **Responsive Design** - Works on desktop, tablet, and mobile
-- **Dark Theme** - Easy on the eyes with desaturated colors
+- **Dark/Light Theme** - Toggle between themes with navbar button
+  - Theme preference saved in localStorage
+  - WCAG AA compliant contrast ratios
+  - Design System with semantic color tokens
 - **i18n Support** - Available in English and Spanish
 
 ---
@@ -133,6 +136,12 @@ Inv-App/                          # Frontend (Angular)
 │   │   ├── interfaces/           # TypeScript interfaces
 │   │   └── app.routes.ts         # Route definitions
 │   ├── assets/i18n/              # Translation files (en, es)
+│   ├── styles/
+│   │   └── design-system/        # Design system tokens & components
+│   │       ├── colors.css        # Semantic color tokens (dark/light)
+│   │       ├── tokens.css        # Spacing, typography, shadows
+│   │       ├── components.css    # Reusable component classes
+│   │       └── utilities.css     # Helper classes
 │   └── styles.css                # Global styles
 
 Inv-App-API/                      # Backend (NestJS)

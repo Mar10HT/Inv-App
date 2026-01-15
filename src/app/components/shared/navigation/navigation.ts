@@ -33,6 +33,11 @@ export class Navigation {
   currentUser = computed(() => this.authService.currentUser());
   isCollapsed = computed(() => this.sidebarService.isCollapsed());
 
+  // Theme state - initialize from localStorage or default to dark
+  isDarkMode = signal<boolean>(
+    (typeof localStorage !== 'undefined' ? localStorage.getItem('theme') : 'dark') !== 'light'
+  );
+
   // Transactions submenu state
   private transactionsExpanded = signal<boolean>(false);
 
@@ -58,5 +63,14 @@ export class Navigation {
     } else {
       this.transactionsExpanded.update(v => !v);
     }
+  }
+
+  // Toggle between dark and light theme
+  toggleTheme(): void {
+    const newIsDark = !this.isDarkMode();
+    this.isDarkMode.set(newIsDark);
+    const theme = newIsDark ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
   }
 }

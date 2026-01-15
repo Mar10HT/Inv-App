@@ -90,6 +90,9 @@ export class Dashboard implements OnInit {
   tableWidgets = signal<string[]>(['transactions', 'lowStock']);
   customCharts = signal<CustomChart[]>([]);
 
+  // Signal to track when dashboard data is ready for custom charts
+  dataReady = signal<boolean>(false);
+
   // Value calculations from inventory items
   allItems = signal<InventoryItemInterface[]>([]);
 
@@ -872,6 +875,11 @@ export class Dashboard implements OnInit {
 
         // Update charts with new data
         this.updateCharts();
+
+        // Mark data as ready for custom charts (with a small delay to ensure DOM is updated)
+        setTimeout(() => {
+          this.dataReady.set(true);
+        }, 100);
       },
       error: (err) => {
         console.error('Error loading dashboard data:', err);

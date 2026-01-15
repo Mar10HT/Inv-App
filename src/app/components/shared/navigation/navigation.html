@@ -210,6 +210,21 @@
       </div>
     }
 
+    <!-- Theme Toggle Button -->
+    <button
+      class="theme-toggle-btn"
+      [class.collapsed]="isCollapsed()"
+      (click)="toggleTheme()"
+      [matTooltip]="isCollapsed() ? (isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate)) : ''"
+      matTooltipPosition="right">
+      <div class="theme-icon-container">
+        <mat-icon class="theme-icon">{{ isDarkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="theme-text">{{ isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate) }}</span>
+      }
+    </button>
+
     @if (!isCollapsed()) {
       <div class="language-selector-wrapper">
         <app-language-selector></app-language-selector>

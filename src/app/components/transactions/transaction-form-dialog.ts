@@ -11,6 +11,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { UserService } from '../../services/user.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
+import { NotificationService } from '../../services/notification.service';
 import { TransactionType } from '../../interfaces/transaction.interface';
 
 export interface TransactionFormDialogData {
@@ -243,6 +244,7 @@ export class TransactionFormDialog implements OnInit {
   private warehouseService = inject(WarehouseService);
   private userService = inject(UserService);
   private inventoryService = inject(InventoryService);
+  private notifications = inject(NotificationService);
 
   saving = signal(false);
   warehouses = this.warehouseService.warehouses;
@@ -307,9 +309,13 @@ export class TransactionFormDialog implements OnInit {
 
     this.transactionService.create(formValue).subscribe({
       next: () => {
+        this.notifications.success('TRANSACTION.CREATED');
         this.dialogRef.close({ saved: true });
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error creating transaction:', err);
+        const message = err.error?.message || err.message || 'Unknown error';
+        this.notifications.error(message);
         this.saving.set(false);
       }
     });

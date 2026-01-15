@@ -1,26 +1,57 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles */
 @import "tailwindcss";
+@import "./styles/design-system/index.css";
 
+/* ============================================
+   Tailwind v4 Theme - Semantic colors
+   Maps Tailwind to Design System tokens
+   ============================================ */
+@theme {
+    /* Semantic colors from Design System */
+    --color-foreground: var(--color-on-surface);
+    --color-foreground-muted: var(--color-on-surface-variant);
+    --color-background: var(--color-surface);
+    --color-card: var(--color-surface-variant);
+    --color-card-hover: var(--color-surface-elevated);
+    --color-border: var(--color-border);
+    --color-border-muted: var(--color-border-subtle);
+    --color-accent: var(--color-primary);
+    --color-accent-foreground: var(--color-primary-on);
+}
+
+
+html {
+    font-size: 13px;
+}
 
 html, body { height: 100%; }
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Theme color-scheme */
+[data-theme="dark"] body,
+:root:not([data-theme="light"]) body {
     color-scheme: dark;
-    zoom: 0.85;
+}
+
+[data-theme="light"] body {
+    color-scheme: light;
 }
 
 /* Material Dialog Overrides */
 .confirm-dialog-container .mat-mdc-dialog-container,
 .item-detail-dialog .mat-mdc-dialog-container {
-    --mdc-dialog-container-color: transparent;
+    --mdc-dialog-container-color: var(--surface-variant);
     --mdc-dialog-container-shape: 12px;
 }
 
 .confirm-dialog-container .mat-mdc-dialog-surface,
 .item-detail-dialog .mat-mdc-dialog-surface {
-    background-color: transparent !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    background-color: var(--surface-variant) !important;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25) !important;
+    border: 1px solid var(--border) !important;
 }
 
 /* Custom Snackbar Container */
@@ -29,11 +60,12 @@ body {
 }
 
 .custom-snackbar-container .mdc-snackbar__surface {
-    background: transparent !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+    background: var(--surface-variant) !important;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 0.15) !important;
     padding: 0 !important;
     border-radius: 12px !important;
     overflow: hidden !important;
+    border: 1px solid var(--border) !important;
 }
 
 .custom-snackbar-container .mdc-snackbar__label {
@@ -43,17 +75,17 @@ body {
 /* Paginator Styles */
 .mat-mdc-paginator {
     --mat-paginator-container-background-color: transparent;
-    --mat-paginator-container-text-color: #94a3b8;
-    --mat-paginator-enabled-icon-color: #94a3b8;
-    --mat-paginator-disabled-icon-color: #475569;
+    --mat-paginator-container-text-color: var(--on-surface-variant);
+    --mat-paginator-enabled-icon-color: var(--on-surface-variant);
+    --mat-paginator-disabled-icon-color: var(--border);
 }
 
 .mat-mdc-paginator .mat-mdc-select-value {
-    color: #94a3b8;
+    color: var(--on-surface-variant);
 }
 
 .mat-mdc-paginator .mat-mdc-select-arrow {
-    color: #94a3b8;
+    color: var(--on-surface-variant);
 }
 
 /* Material Icons - Force Perfect Centering */
@@ -67,3 +99,564 @@ mat-icon {
     height: 1em !important;
 }
 
+/* ============================================
+   Theme-aware utility classes
+   ============================================ */
+
+/* Background colors */
+.bg-surface { background-color: var(--surface) !important; }
+.bg-surface-variant { background-color: var(--surface-variant) !important; }
+.bg-surface-elevated { background-color: var(--surface-elevated) !important; }
+.bg-surface-container { background-color: var(--surface-container) !important; }
+.bg-primary { background-color: var(--primary) !important; }
+.bg-primary-container { background-color: var(--primary-container) !important; }
+
+/* Text colors */
+.text-on-surface { color: var(--on-surface) !important; }
+.text-on-surface-variant { color: var(--on-surface-variant) !important; }
+.text-primary { color: var(--primary) !important; }
+.text-error { color: var(--error) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-success { color: var(--success) !important; }
+
+/* Border colors */
+.border-theme { border-color: var(--border) !important; }
+.border-subtle { border-color: var(--border-subtle) !important; }
+
+/* Hover states */
+.hover\:bg-surface-variant:hover { background-color: var(--surface-variant) !important; }
+.hover\:bg-surface-elevated:hover { background-color: var(--surface-elevated) !important; }
+
+/* Theme transitions */
+.theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Card shadows for better visual separation */
+[data-theme="light"] .bg-surface-variant,
+[data-theme="light"] .rounded-xl {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+/* Force icon backgrounds in light mode - global overrides */
+html[data-theme="light"] [class*="bg-rose-950"],
+html[data-theme="light"] [class*="rose-950/"] {
+    background: #fef2f2 !important;
+}
+
+html[data-theme="light"] [class*="bg-emerald-950"],
+html[data-theme="light"] [class*="emerald-950/"] {
+    background: #d1fae5 !important;
+}
+
+html[data-theme="light"] [class*="bg-blue-950"],
+html[data-theme="light"] [class*="blue-950/"] {
+    background: #dbeafe !important;
+}
+
+html[data-theme="light"] [class*="bg-purple-950"],
+html[data-theme="light"] [class*="purple-950/"] {
+    background: #f3e8ff !important;
+}
+
+html[data-theme="light"] [class*="bg-cyan-950"],
+html[data-theme="light"] [class*="cyan-950/"] {
+    background: #cffafe !important;
+}
+
+html[data-theme="light"] [class*="bg-orange-950"],
+html[data-theme="light"] [class*="orange-950/"] {
+    background: #fff7ed !important;
+}
+
+html[data-theme="light"] [class*="bg-amber-950"],
+html[data-theme="light"] [class*="amber-950/"] {
+    background: #fef3c7 !important;
+}
+
+html[data-theme="light"] [class*="bg-sky-950"],
+html[data-theme="light"] [class*="sky-950/"] {
+    background: #e0f2fe !important;
+}
+
+/* ============================================
+   Light theme overrides
+   ============================================ */
+[data-theme="light"] {
+    /* ----------------------------------------
+       Text colors - light to dark
+       ---------------------------------------- */
+    .text-slate-200 { color: #1e293b !important; }
+    .text-slate-300 { color: #1e293b !important; }
+    .text-slate-400 { color: #334155 !important; }
+    .text-slate-500 { color: #475569 !important; }
+    .text-slate-600 { color: #64748b !important; }
+
+    /* Note: text-white is NOT inverted to preserve button text */
+
+    /* Material icons - invert colors */
+    .\!text-slate-200 { color: #1e293b !important; }
+    .\!text-slate-300 { color: #1e293b !important; }
+    .\!text-slate-400 { color: #334155 !important; }
+    .\!text-slate-500 { color: #475569 !important; }
+    .\!text-slate-600 { color: #64748b !important; }
+    .\!text-slate-700 { color: #475569 !important; }
+
+    /* ----------------------------------------
+       Background colors - dark to light
+       ---------------------------------------- */
+    .bg-slate-800 { background-color: #e2e8f0 !important; }
+    .bg-slate-700 { background-color: #cbd5e1 !important; }
+    .bg-\[\#141414\] { background-color: #f8fafc !important; }
+    .bg-\[\#1a1a1a\] { background-color: #ffffff !important; }
+    .bg-\[\#1e1e1e\] { background-color: #f1f5f9 !important; }
+    .bg-\[\#242424\] { background-color: #e2e8f0 !important; }
+    .bg-\[\#2a2a2a\] { background-color: #e2e8f0 !important; }
+    .bg-\[\#2d4a3f\] { background-color: #d1e7dd !important; }
+
+    /* ----------------------------------------
+       Hover backgrounds
+       ---------------------------------------- */
+    .hover\:bg-slate-800:hover { background-color: #cbd5e1 !important; }
+    .hover\:bg-slate-700:hover { background-color: #94a3b8 !important; }
+    .hover\:bg-\[\#1e1e1e\]:hover { background-color: #e2e8f0 !important; }
+    .hover\:bg-\[\#2a2a2a\]:hover { background-color: #cbd5e1 !important; }
+    .hover\:bg-\[\#3a3a3a\]:hover { background-color: #cbd5e1 !important; }
+    .hover\:bg-\[\#5d8c7f\]:hover { background-color: #3d6a5d !important; }
+    .hover\:border-slate-700:hover { border-color: #94a3b8 !important; }
+    .hover\:border-slate-600:hover { border-color: #94a3b8 !important; }
+
+    /* ----------------------------------------
+       Border colors
+       ---------------------------------------- */
+    .border-slate-700 { border-color: #cbd5e1 !important; }
+    .border-slate-800 { border-color: #cbd5e1 !important; }
+    .border-slate-600 { border-color: #cbd5e1 !important; }
+    .border-\[\#1e1e1e\] { border-color: #e2e8f0 !important; }
+    .border-\[\#2a2a2a\] { border-color: #cbd5e1 !important; }
+    .border-\[\#3a3a3a\] { border-color: #cbd5e1 !important; }
+
+    /* Dividers */
+    .divide-\[\#1e1e1e\] > :not([hidden]) ~ :not([hidden]) {
+        border-color: #e2e8f0 !important;
+    }
+    .divide-\[\#242424\] > :not([hidden]) ~ :not([hidden]) {
+        border-color: #e2e8f0 !important;
+    }
+
+    /* ----------------------------------------
+       Focus states
+       ---------------------------------------- */
+    .focus\:border-\[\#4d7c6f\]:focus { border-color: #2d5a4e !important; }
+    .focus\:border-blue-500:focus { border-color: #3b82f6 !important; }
+    .focus\:ring-\[\#4d7c6f\]:focus { --tw-ring-color: var(--primary-container) !important; }
+
+    /* Placeholder text */
+    .placeholder-slate-500::placeholder { color: #94a3b8 !important; }
+    .placeholder-slate-600::placeholder { color: #94a3b8 !important; }
+
+    /* ----------------------------------------
+       Icon colors - dark to vibrant
+       ---------------------------------------- */
+    .\!text-emerald-700 { color: #059669 !important; }
+    .\!text-orange-700 { color: #ea580c !important; }
+    .\!text-sky-700 { color: #0284c7 !important; }
+    .\!text-purple-700 { color: #7c3aed !important; }
+    .\!text-cyan-700 { color: #0891b2 !important; }
+    .\!text-amber-700 { color: #d97706 !important; }
+    .\!text-rose-700 { color: #e11d48 !important; }
+
+    /* Icons -500 vibrant */
+    .\!text-purple-500 { color: #8b5cf6 !important; }
+    .\!text-cyan-500 { color: #06b6d4 !important; }
+    .\!text-amber-500 { color: #f59e0b !important; }
+    .\!text-rose-500 { color: #f43f5e !important; }
+    .\!text-orange-500 { color: #f97316 !important; }
+    .\!text-emerald-500 { color: #10b981 !important; }
+    .\!text-sky-500 { color: #0ea5e9 !important; }
+
+    /* ----------------------------------------
+       Icon backgrounds - pastel colors
+       Using multiple selector formats for Tailwind v4 compatibility
+       ---------------------------------------- */
+    .bg-emerald-950\/50,
+    [class*="bg-emerald-950"] { background-color: #d1fae5 !important; }
+
+    .bg-orange-950\/50,
+    [class*="bg-orange-950"] { background-color: #fff7ed !important; }
+
+    .bg-sky-950\/50,
+    [class*="bg-sky-950"] { background-color: #e0f2fe !important; }
+
+    .bg-purple-950\/50,
+    [class*="bg-purple-950"] { background-color: #f3e8ff !important; }
+
+    .bg-cyan-950\/50,
+    [class*="bg-cyan-950"] { background-color: #cffafe !important; }
+
+    .bg-amber-950\/50,
+    [class*="bg-amber-950"] { background-color: #fef3c7 !important; }
+
+    .bg-rose-950\/50,
+    .bg-rose-950\/30,
+    [class*="bg-rose-950"],
+    [class*="rose-950"],
+    div[class*="rose-950"] {
+        background: #fef2f2 !important;
+        background-color: #fef2f2 !important;
+    }
+
+    .bg-blue-950\/50,
+    .bg-blue-950\/30,
+    [class*="bg-blue-950"] { background-color: #dbeafe !important; }
+
+    /* Primary icon container */
+    .bg-\[\#2d4a3f\],
+    [class*="bg-[#2d4a3f]"] { background-color: #d1e7dd !important; }
+
+    /* ----------------------------------------
+       Colored text - vibrant for contrast
+       ---------------------------------------- */
+    .text-emerald-400 { color: #059669 !important; }
+    .text-orange-400 { color: #ea580c !important; }
+    .text-sky-400 { color: #0284c7 !important; }
+    .text-rose-400 { color: #e11d48 !important; }
+    .text-purple-400 { color: #9333ea !important; }
+    .text-blue-400 { color: #2563eb !important; }
+    .text-cyan-400 { color: #0891b2 !important; }
+    .text-amber-400 { color: #d97706 !important; }
+
+    /* ========================================
+       COLOR THEORY - Light Theme Palette
+       ========================================
+       Base: Teal green (#4d7c6f)
+       Using muted, professional colors that
+       work well on light backgrounds.
+
+       Primary: Teal (main actions)
+       Secondary: Slate gray (secondary actions)
+       Success: Soft green
+       Warning: Soft amber
+       Danger: Soft rose
+       Info: Soft blue
+       ======================================== */
+
+    /* ----------------------------------------
+       PRIMARY - Teal Green (main actions)
+       Softer, more professional on light bg
+       ---------------------------------------- */
+    .bg-\[\#4d7c6f\] {
+        background-color: #0d9488 !important; /* teal-600 */
+    }
+    .bg-\[\#4d7c6f\]:hover,
+    .hover\:bg-\[\#5d8c7f\]:hover {
+        background-color: #0f766e !important; /* teal-700 */
+    }
+    .text-\[\#4d7c6f\] { color: #0d9488 !important; }
+    .hover\:text-\[\#5d8c7f\]:hover { color: #0f766e !important; }
+    .\!text-\[\#4d7c6f\] { color: #0d9488 !important; }
+
+    /* ----------------------------------------
+       SECONDARY - Slate (secondary actions)
+       ---------------------------------------- */
+    .bg-slate-800.text-slate-300 {
+        background-color: #f1f5f9 !important; /* slate-100 */
+        color: #334155 !important; /* slate-700 */
+        border: 1px solid #cbd5e1 !important;
+    }
+    .bg-slate-800.text-slate-300:hover {
+        background-color: #e2e8f0 !important; /* slate-200 */
+    }
+
+    /* ----------------------------------------
+       SUCCESS - Green (confirmations)
+       ---------------------------------------- */
+    .text-emerald-400 { color: #059669 !important; } /* emerald-600 */
+    .bg-emerald-950\/50 { background-color: #ecfdf5 !important; } /* emerald-50 */
+    .border-emerald-900 { border-color: #a7f3d0 !important; } /* emerald-200 */
+    .border-emerald-900\/50 { border-color: #d1fae5 !important; } /* emerald-100 */
+    .\!text-emerald-400 { color: #059669 !important; }
+
+    /* ----------------------------------------
+       WARNING - Orange (alerts) - muted for light theme
+       ---------------------------------------- */
+    .text-orange-400 { color: #c2410c !important; } /* orange-700 */
+    .text-amber-400 { color: #c2410c !important; }
+    .bg-orange-950\/50 { background-color: #fff7ed !important; } /* orange-50 */
+    .bg-amber-950\/50 { background-color: #fff7ed !important; }
+    .border-orange-900 { border-color: #fed7aa !important; } /* orange-200 */
+    .border-orange-900\/50 { border-color: #fed7aa !important; }
+    .hover\:border-orange-800\/50:hover { border-color: #fdba74 !important; } /* orange-300 */
+    .\!text-orange-400 { color: #c2410c !important; }
+    .\!text-orange-500 { color: #c2410c !important; }
+    .\!text-orange-700 { color: #c2410c !important; }
+    .\!text-amber-400 { color: #c2410c !important; }
+    .\!text-amber-500 { color: #c2410c !important; }
+
+    /* ----------------------------------------
+       DANGER - Rose (destructive actions)
+       Using darker red for better readability
+       ---------------------------------------- */
+    .text-rose-400 { color: #be123c !important; } /* rose-700 - good contrast */
+    .text-rose-500 { color: #be123c !important; }
+    .border-rose-900 { border-color: #fecdd3 !important; } /* rose-200 */
+    .hover\:bg-rose-950\/30:hover { background-color: #ffe4e6 !important; } /* rose-100 */
+    .hover\:text-rose-400:hover { color: #9f1239 !important; } /* rose-800 */
+    .\!text-rose-400 { color: #be123c !important; }
+    .\!text-rose-500 { color: #be123c !important; }
+
+    /* Danger buttons with solid red background - make text white */
+    .bg-rose-600,
+    .bg-rose-500,
+    .bg-red-600,
+    .bg-red-500 {
+        background-color: #e11d48 !important;
+        color: #ffffff !important;
+    }
+    .bg-rose-600:hover,
+    .bg-rose-500:hover,
+    .bg-red-600:hover,
+    .bg-red-500:hover {
+        background-color: #be123c !important;
+    }
+
+    /* Danger buttons - ensure white text on red bg */
+    [class*="bg-rose-"][class*="text-white"],
+    [class*="bg-red-"][class*="text-white"] {
+        color: #ffffff !important;
+    }
+
+    /* ----------------------------------------
+       INFO - Sky Blue (information)
+       ---------------------------------------- */
+    .text-sky-400 { color: #0284c7 !important; } /* sky-600 */
+    .text-blue-400 { color: #1d4ed8 !important; } /* blue-700 - darker for contrast */
+    .bg-sky-950\/50 { background-color: #f0f9ff !important; } /* sky-50 */
+    .bg-blue-950\/50 { background-color: #dbeafe !important; } /* blue-100 */
+    .border-sky-900 { border-color: #7dd3fc !important; } /* sky-300 */
+    .border-sky-900\/50 { border-color: #bae6fd !important; } /* sky-200 */
+    .hover\:text-sky-300:hover { color: #0369a1 !important; } /* sky-700 */
+    .\!text-sky-400 { color: #0284c7 !important; }
+    .\!text-blue-400 { color: #1d4ed8 !important; }
+    .\!text-blue-500 { color: #1d4ed8 !important; }
+
+    /* ----------------------------------------
+       PURPLE - Accent
+       ---------------------------------------- */
+    .text-purple-400 { color: #9333ea !important; } /* purple-600 */
+    .bg-purple-950\/50 { background-color: #faf5ff !important; } /* purple-50 */
+    .\!text-purple-400 { color: #9333ea !important; }
+    .\!text-purple-500 { color: #9333ea !important; }
+
+    /* ----------------------------------------
+       CYAN - Accent
+       ---------------------------------------- */
+    .text-cyan-400 { color: #0891b2 !important; } /* cyan-600 */
+    .bg-cyan-950\/50 { background-color: #ecfeff !important; } /* cyan-50 */
+    .\!text-cyan-400 { color: #0891b2 !important; }
+    .\!text-cyan-500 { color: #0891b2 !important; }
+
+    /* ----------------------------------------
+       Material Form Fields - Light backgrounds
+       ---------------------------------------- */
+    .mat-mdc-form-field .mdc-text-field--filled {
+        background-color: #f1f5f9 !important; /* slate-100 */
+    }
+
+    .mat-mdc-form-field .mdc-text-field--filled:hover {
+        background-color: #e2e8f0 !important; /* slate-200 */
+    }
+
+    .mat-mdc-form-field .mdc-text-field--filled .mdc-text-field__input {
+        color: #1e293b !important; /* slate-800 */
+    }
+
+    .mat-mdc-form-field .mdc-text-field--filled .mdc-floating-label {
+        color: #475569 !important; /* slate-600 */
+    }
+
+    .mat-mdc-form-field .mdc-line-ripple::before {
+        border-bottom-color: #cbd5e1 !important; /* slate-300 */
+    }
+
+    .mat-mdc-form-field .mdc-line-ripple::after {
+        border-bottom-color: #0d9488 !important; /* teal-600 */
+    }
+
+    /* Textarea */
+    .mat-mdc-form-field textarea.mdc-text-field__input {
+        color: #1e293b !important;
+    }
+
+    /* Select */
+    .mat-mdc-select-value-text {
+        color: #1e293b !important;
+    }
+
+    .mat-mdc-select-arrow {
+        color: #475569 !important;
+    }
+
+    /* Select panel dropdown */
+    .mat-mdc-select-panel {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    .mat-mdc-option {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+    }
+
+    .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+        background-color: #f1f5f9 !important;
+    }
+
+    .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        background-color: #d1e7dd !important;
+    }
+
+    /* Dialog inputs - override dark backgrounds */
+    .mat-mdc-dialog-surface .mat-mdc-form-field .mdc-text-field--filled {
+        background-color: #f1f5f9 !important;
+    }
+
+    /* Input placeholders */
+    .mdc-text-field__input::placeholder {
+        color: #94a3b8 !important; /* slate-400 */
+    }
+
+    /* ----------------------------------------
+       Tables - Light theme
+       ---------------------------------------- */
+    table thead tr {
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    table tbody tr {
+        border-bottom-color: #e2e8f0 !important;
+    }
+
+    table thead + tbody tr:first-child {
+        border-top: none !important;
+    }
+
+    /* ----------------------------------------
+       Custom inputs in dialogs (Tailwind styled)
+       Override dark backgrounds using Tailwind escape syntax
+       ---------------------------------------- */
+    .bg-\[\#0a0a0a\] {
+        background-color: #f1f5f9 !important;
+    }
+
+    input.bg-\[\#0a0a0a\],
+    textarea.bg-\[\#0a0a0a\] {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #1e293b !important;
+    }
+
+    input.bg-\[\#0a0a0a\]:focus,
+    textarea.bg-\[\#0a0a0a\]:focus {
+        border-color: #0d9488 !important;
+    }
+
+    /* Override text color classes for inputs */
+    input.text-slate-300,
+    textarea.text-slate-300 {
+        color: #1e293b !important;
+    }
+
+    /* All form inputs and textareas in dialogs */
+    .mat-mdc-dialog-container input,
+    .mat-mdc-dialog-container textarea,
+    .cdk-overlay-pane input,
+    .cdk-overlay-pane textarea {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #1e293b !important;
+    }
+
+    .mat-mdc-dialog-container input:focus,
+    .mat-mdc-dialog-container textarea:focus,
+    .cdk-overlay-pane input:focus,
+    .cdk-overlay-pane textarea:focus {
+        border-color: #0d9488 !important;
+    }
+
+    .mat-mdc-dialog-container input::placeholder,
+    .mat-mdc-dialog-container textarea::placeholder,
+    .cdk-overlay-pane input::placeholder,
+    .cdk-overlay-pane textarea::placeholder {
+        color: #94a3b8 !important;
+    }
+
+    /* Dialog container backgrounds */
+    .bg-\[\#1a1a1a\] {
+        background-color: #ffffff !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    .border-\[\#2a2a2a\] {
+        border-color: #cbd5e1 !important;
+    }
+
+    /* ----------------------------------------
+       Material Select Dropdown - Light theme
+       ---------------------------------------- */
+    .mat-mdc-select-panel {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+    }
+
+    .mat-mdc-option {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+    }
+
+    .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+        background-color: #f1f5f9 !important;
+    }
+
+    .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        background-color: #f1f5f9 !important;
+    }
+
+    .mat-mdc-option .mdc-list-item__primary-text {
+        color: #1e293b !important;
+    }
+
+    /* Checkbox in select */
+    .mat-pseudo-checkbox-checked {
+        background-color: #0d9488 !important;
+    }
+
+    .mat-pseudo-checkbox {
+        border-color: #cbd5e1 !important;
+    }
+
+    /* Select arrow */
+    .mat-mdc-select-arrow {
+        color: #64748b !important;
+    }
+
+    /* Outline select field */
+    .mat-mdc-form-field-type-mat-select .mdc-notched-outline__leading,
+    .mat-mdc-form-field-type-mat-select .mdc-notched-outline__notch,
+    .mat-mdc-form-field-type-mat-select .mdc-notched-outline__trailing {
+        border-color: #cbd5e1 !important;
+    }
+
+    .mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
+        background-color: #ffffff !important;
+    }
+
+    .mat-mdc-form-field-type-mat-select .mat-mdc-floating-label {
+        color: #64748b !important;
+    }
+
+    .mat-mdc-form-field-type-mat-select .mat-mdc-select-value-text {
+        color: #1e293b !important;
+    }
+}

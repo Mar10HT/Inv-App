@@ -51,8 +51,9 @@ export class Settings implements OnInit {
   toggleDarkMode(): void {
     const newValue = !this.darkMode();
     this.darkMode.set(newValue);
-    localStorage.setItem('theme', newValue ? 'dark' : 'light');
-    // Theme implementation would go here
+    const theme = newValue ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
   }
 
   toggleEmailNotifications(): void {

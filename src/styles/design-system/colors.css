@@ -1,0 +1,145 @@
+/* ============================================
+   DESIGN SYSTEM - COLORS & THEMES
+   Semantic color system with WCAG AA compliance
+   ============================================ */
+
+/* ----------------------------------------
+   DARK THEME (Default)
+   ---------------------------------------- */
+:root,
+[data-theme="dark"] {
+  /* Primary - Teal Green */
+  --color-primary: #4d7c6f;
+  --color-primary-hover: #5d8c7f;
+  --color-primary-on: #ffffff;
+  --color-primary-container: #2d4a3f;
+  --color-primary-on-container: #b8d4ca;
+
+  /* Secondary - Slate */
+  --color-secondary: #475569;
+  --color-secondary-hover: #64748b;
+  --color-secondary-on: #ffffff;
+
+  /* Surfaces */
+  --color-surface: #0a0a0a;
+  --color-surface-variant: #1a1a1a;
+  --color-surface-elevated: #242424;
+  --color-surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Text */
+  --color-on-surface: #cbd5e1;
+  --color-on-surface-variant: #94a3b8;  /* WCAG AA: 5.4:1 contrast */
+  --color-on-surface-muted: #64748b;
+
+  /* Borders */
+  --color-border: #3a3a3a;
+  --color-border-subtle: #2a2a2a;
+  --color-border-strong: #4a4a4a;
+
+  /* Semantic - Success */
+  --color-success: #4d7c6f;
+  --color-success-on: #ffffff;
+  --color-success-bg: rgba(77, 124, 111, 0.15);
+  --color-success-border: rgba(77, 124, 111, 0.3);
+
+  /* Semantic - Warning */
+  --color-warning: #c8884d;
+  --color-warning-on: #ffffff;
+  --color-warning-bg: rgba(200, 136, 77, 0.15);
+  --color-warning-border: rgba(200, 136, 77, 0.3);
+
+  /* Semantic - Error */
+  --color-error: #b85c5c;
+  --color-error-on: #ffffff;
+  --color-error-bg: rgba(184, 92, 92, 0.15);
+  --color-error-border: rgba(184, 92, 92, 0.3);
+
+  /* Semantic - Info */
+  --color-info: #6b7bb5;
+  --color-info-on: #ffffff;
+  --color-info-bg: rgba(107, 123, 181, 0.15);
+  --color-info-border: rgba(107, 123, 181, 0.3);
+
+  /* Status Colors (for badges/indicators) */
+  --color-status-success: #10b981;
+  --color-status-success-bg: rgba(16, 185, 129, 0.15);
+  --color-status-warning: #f59e0b;
+  --color-status-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-status-error: #ef4444;
+  --color-status-error-bg: rgba(239, 68, 68, 0.15);
+  --color-status-info: #3b82f6;
+  --color-status-info-bg: rgba(59, 130, 246, 0.15);
+
+  /* Focus ring */
+  --color-focus-ring: rgba(77, 124, 111, 0.5);
+}
+
+/* ----------------------------------------
+   LIGHT THEME
+   ---------------------------------------- */
+[data-theme="light"] {
+  /* Primary - Teal Green (darker for light bg) */
+  --color-primary: #2d5a4e;
+  --color-primary-hover: #1f4a3f;
+  --color-primary-on: #ffffff;
+  --color-primary-container: #d1e7dd;
+  --color-primary-on-container: #0f3d2e;
+
+  /* Secondary - Slate */
+  --color-secondary: #334155;
+  --color-secondary-hover: #1e293b;
+  --color-secondary-on: #ffffff;
+
+  /* Surfaces */
+  --color-surface: #f8fafc;
+  --color-surface-variant: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-overlay: rgba(0, 0, 0, 0.3);
+
+  /* Text */
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #334155;  /* WCAG AA: 7.1:1 contrast */
+  --color-on-surface-muted: #64748b;
+
+  /* Borders */
+  --color-border: #b6c2d1;
+  --color-border-subtle: #cbd5e1;
+  --color-border-strong: #94a3b8;
+
+  /* Semantic - Success */
+  --color-success: #059669;
+  --color-success-on: #ffffff;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+
+  /* Semantic - Warning */
+  --color-warning: #d97706;
+  --color-warning-on: #ffffff;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+
+  /* Semantic - Error */
+  --color-error: #dc2626;
+  --color-error-on: #ffffff;
+  --color-error-bg: #fecaca;  /* rose-200 - more visible */
+  --color-error-border: #fda4af;
+
+  /* Semantic - Info */
+  --color-info: #2563eb;
+  --color-info-on: #ffffff;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
+
+  /* Status Colors (for badges/indicators) */
+  --color-status-success: #059669;
+  --color-status-success-bg: #d1fae5;
+  --color-status-warning: #c2410c;
+  --color-status-warning-bg: #fff7ed;
+  --color-status-error: #be123c;
+  --color-status-error-bg: #ffe4e6;
+  --color-status-info: #1d4ed8;
+  --color-status-info-bg: #dbeafe;
+
+  /* Focus ring */
+  --color-focus-ring: rgba(45, 90, 78, 0.4);
+}

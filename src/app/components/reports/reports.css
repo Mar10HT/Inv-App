@@ -92,7 +92,7 @@
 }
 
 ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background-color: rgba(77, 124, 111, 0.2) !important;
+  background-color: var(--primary-container) !important;
 }
 
 ::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
@@ -172,35 +172,35 @@
 }
 
 .total-value .card-icon {
-  background-color: rgba(77, 124, 111, 0.2);
+  background-color: var(--primary-container);
 }
 
 .total-value .card-icon mat-icon {
-  color: #4d7c6f !important;
+  color: var(--primary) !important;
 }
 
 .total-items .card-icon {
-  background-color: rgba(59, 130, 246, 0.2);
+  background-color: #dbeafe; /* blue-100 */
 }
 
 .total-items .card-icon mat-icon {
-  color: #3b82f6 !important;
+  color: #2563eb !important; /* blue-600 */
 }
 
 .categories-count .card-icon {
-  background-color: rgba(168, 85, 247, 0.2);
+  background-color: #f3e8ff; /* purple-100 */
 }
 
 .categories-count .card-icon mat-icon {
-  color: #a855f7 !important;
+  color: #9333ea !important; /* purple-600 */
 }
 
 .warehouses-count .card-icon {
-  background-color: rgba(249, 115, 22, 0.2);
+  background-color: #ffedd5; /* orange-100 */
 }
 
 .warehouses-count .card-icon mat-icon {
-  color: #f97316 !important;
+  color: #ea580c !important; /* orange-600 */
 }
 
 .card-content {
@@ -413,3 +413,109 @@
     display: none;
   }
 }
+
+/* ============================================
+   Light Theme Overrides
+   ============================================ */
+:host-context([data-theme="light"]) {
+  /* Header */
+  .header-title h1 {
+    color: #1e293b;
+  }
+
+  .subtitle {
+    color: #64748b;
+  }
+
+  /* Currency select */
+  .currency-select ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: #f1f5f9 !important;
+  }
+
+  .currency-select ::ng-deep .mdc-notched-outline__leading,
+  .currency-select ::ng-deep .mdc-notched-outline__notch,
+  .currency-select ::ng-deep .mdc-notched-outline__trailing {
+    border-color: #cbd5e1 !important;
+  }
+
+  .currency-select ::ng-deep .mat-mdc-select-value-text {
+    color: #1e293b;
+  }
+
+  .currency-select ::ng-deep .mat-mdc-floating-label {
+    color: #64748b;
+  }
+
+  /* Summary Cards */
+  .summary-card {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  .card-label {
+    color: #64748b;
+  }
+
+  .card-value {
+    color: #1e293b;
+  }
+
+  /* Report Sections */
+  .report-section {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  .section-header {
+    background-color: #f8fafc;
+    border-bottom-color: #e2e8f0;
+  }
+
+  .section-header h2 {
+    color: #1e293b;
+  }
+
+  /* Table */
+  .table-header {
+    color: #64748b;
+    border-bottom-color: #e2e8f0;
+  }
+
+  .table-row {
+    color: #1e293b;
+  }
+
+  .table-row:hover {
+    background-color: #f1f5f9;
+  }
+
+  .col-items {
+    color: #64748b;
+  }
+
+  .col-value {
+    color: #0d9488;
+  }
+
+  .col-category {
+    color: #64748b;
+  }
+
+  .col-price {
+    color: #64748b;
+  }
+
+  .rank {
+    background-color: #f1f5f9;
+    color: #0d9488;
+  }
+
+  .highlight {
+    color: #0d9488 !important;
+  }
+
+  .empty-row {
+    color: #64748b;
+  }
+}
+

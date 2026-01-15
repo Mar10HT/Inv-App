@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#0a0a0a] p-6">
+<div class="min-h-screen bg-surface p-6">
   <div class="max-w-[1600px] mx-auto">
     <!-- Welcome Section -->
     <div class="mb-8">
@@ -31,20 +31,20 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Total Items Card -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">{{ stats()?.totalItems || 0 }}</p>
           </div>
-          <div class="bg-[#242424] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-surface-elevated p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <mat-icon class="!text-slate-500 !text-2xl !leading-none !block">inventory</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- In Stock Card -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
@@ -57,7 +57,7 @@
       </div>
 
       <!-- Low Stock Card -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-orange-900/50 p-6 hover:border-orange-800/50 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-orange-900/50 p-6 hover:border-orange-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
@@ -70,7 +70,7 @@
       </div>
 
       <!-- Total Value Card -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-sky-900/50 p-6 hover:border-sky-800/50 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-sky-900/50 p-6 hover:border-sky-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
@@ -84,48 +84,48 @@
     </div>
 
     <!-- Secondary Stats Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4 h-20">
-        <div class="flex items-center gap-3 h-full">
-          <div class="bg-purple-950/50 p-2 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-purple-500 !text-xl !leading-none !block">people</mat-icon>
-          </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6">
+        <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-xs text-slate-500 truncate">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
-            <p class="text-xl font-bold text-slate-300">{{ stats()?.totalUsers || 0 }}</p>
+            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
+            <p class="text-3xl font-bold text-purple-400">{{ stats()?.totalUsers || 0 }}</p>
+          </div>
+          <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-purple-500 !text-2xl !leading-none !block">people</mat-icon>
           </div>
         </div>
       </div>
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4 h-20">
-        <div class="flex items-center gap-3 h-full">
-          <div class="bg-cyan-950/50 p-2 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-cyan-500 !text-xl !leading-none !block">warehouse</mat-icon>
-          </div>
+      <div class="bg-surface-variant rounded-xl border border-theme p-6">
+        <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-xs text-slate-500 truncate">{{ 'NAV.WAREHOUSES' | translate }}</p>
-            <p class="text-xl font-bold text-slate-300">{{ stats()?.totalWarehouses || 0 }}</p>
+            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'NAV.WAREHOUSES' | translate }}</p>
+            <p class="text-3xl font-bold text-cyan-400">{{ stats()?.totalWarehouses || 0 }}</p>
+          </div>
+          <div class="bg-cyan-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-cyan-500 !text-2xl !leading-none !block">warehouse</mat-icon>
           </div>
         </div>
       </div>
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4 h-20">
-        <div class="flex items-center gap-3 h-full">
-          <div class="bg-amber-950/50 p-2 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-amber-500 !text-xl !leading-none !block">category</mat-icon>
-          </div>
+      <div class="bg-surface-variant rounded-xl border border-theme p-6">
+        <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-xs text-slate-500 truncate">{{ 'NAV.CATEGORIES' | translate }}</p>
-            <p class="text-xl font-bold text-slate-300">{{ stats()?.totalCategories || 0 }}</p>
+            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'NAV.CATEGORIES' | translate }}</p>
+            <p class="text-3xl font-bold text-amber-400">{{ stats()?.totalCategories || 0 }}</p>
+          </div>
+          <div class="bg-amber-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-amber-500 !text-2xl !leading-none !block">category</mat-icon>
           </div>
         </div>
       </div>
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4 h-20">
-        <div class="flex items-center gap-3 h-full">
-          <div class="bg-rose-950/50 p-2 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-rose-500 !text-xl !leading-none !block">block</mat-icon>
-          </div>
+      <div class="bg-surface-variant rounded-xl border border-theme p-6">
+        <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-xs text-slate-500 truncate">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
-            <p class="text-xl font-bold text-rose-400">{{ stats()?.outOfStockItems || 0 }}</p>
+            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
+            <p class="text-3xl font-bold" style="color: var(--color-status-error)">{{ stats()?.outOfStockItems || 0 }}</p>
+          </div>
+          <div class="ds-icon-container--error p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <mat-icon class="!text-2xl !leading-none !block" style="color: var(--color-status-error)">block</mat-icon>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@
       (cdkDropListDropped)="onChartWidgetDrop($event)"
       class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       @for (widget of chartWidgets(); track widget) {
-        <div cdkDrag class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 cursor-move hover:border-[#3a3a3a] transition-colors">
+        <div cdkDrag class="bg-surface-variant rounded-xl border border-theme p-6 cursor-move hover:border-[#3a3a3a] transition-colors">
           <!-- Drag Handle -->
           <div cdkDragHandle class="flex items-center justify-between mb-4">
             @if (widget === 'status') {
@@ -232,7 +232,7 @@
       </div>
 
       @if (customCharts().length === 0) {
-        <div class="bg-[#1a1a1a] rounded-xl border border-dashed border-[#3a3a3a] p-8 text-center">
+        <div class="bg-surface-variant rounded-xl border border-dashed border-[#3a3a3a] p-8 text-center">
           <mat-icon class="!text-4xl !text-slate-700 mb-3 !leading-none !block mx-auto">add_chart</mat-icon>
           <p class="text-slate-500 text-sm mb-4">{{ 'DASHBOARD.CUSTOM_CHART.EMPTY' | translate }}</p>
           <button
@@ -244,7 +244,7 @@
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           @for (chart of customCharts(); track chart.id) {
-            <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 hover:border-[#3a3a3a] transition-colors">
+            <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-[#3a3a3a] transition-colors">
               <div class="flex items-center justify-between mb-4">
                 <h4 class="text-md font-semibold text-slate-300 truncate">{{ chart.title }}</h4>
                 <div class="flex items-center gap-1">
@@ -261,7 +261,12 @@
                 </div>
               </div>
 
-              @if (getCustomChartData(chart).series.length > 0 || (getCustomChartData(chart).series[0]?.data?.length > 0)) {
+              @if (!dataReady()) {
+                <div class="flex flex-col items-center justify-center py-8">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4d7c6f] mb-2"></div>
+                  <p class="text-slate-500 text-sm">{{ 'COMMON.LOADING' | translate }}...</p>
+                </div>
+              } @else if (getCustomChartData(chart).series.length > 0 || (getCustomChartData(chart).series[0]?.data?.length > 0)) {
                 <apx-chart
                   [series]="getCustomChartData(chart).series"
                   [chart]="getCustomChartOptions(chart).chart"
@@ -294,10 +299,10 @@
       (cdkDropListDropped)="onTableWidgetDrop($event)"
       class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       @for (widget of tableWidgets(); track widget) {
-        <div cdkDrag class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden cursor-move hover:border-[#3a3a3a] transition-colors">
+        <div cdkDrag class="bg-surface-variant border border-theme rounded-xl overflow-hidden cursor-move hover:border-[#3a3a3a] transition-colors">
           <!-- Transactions Widget -->
           @if (widget === 'transactions') {
-            <div cdkDragHandle class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+            <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
               <div>
                 <h2 class="text-lg font-semibold text-slate-300">{{ 'TRANSACTION.TITLE' | translate }}</h2>
                 <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
@@ -350,7 +355,7 @@
 
           <!-- Low Stock Widget -->
           @if (widget === 'lowStock') {
-            <div cdkDragHandle class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+            <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
               <div>
                 <h2 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
                 <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
@@ -390,7 +395,7 @@
                 }
               </div>
               @if (lowStockItems().length > 10) {
-                <div class="px-6 py-3 bg-[#141414] border-t border-[#2a2a2a] text-center">
+                <div class="px-6 py-3 bg-surface-container border-t border-theme text-center">
                   <p class="text-xs text-slate-500">
                     Showing 10 of {{ lowStockItems().length }} low stock items
                   </p>
@@ -406,8 +411,8 @@
     </div>
 
     <!-- Recent Items Table -->
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-[#2a2a2a] flex items-center justify-between">
+    <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
         <div>
           <h2 class="text-xl font-semibold text-slate-300">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
           <p class="text-slate-500 text-sm mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
@@ -436,7 +441,7 @@
         <div class="hidden lg:block overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="bg-[#141414]">
+              <tr class="bg-surface-container">
                 <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[300px]">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[120px]">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
@@ -569,7 +574,7 @@
                 </div>
               </div>
 
-              <div class="flex justify-end gap-2 pt-3 border-t border-[#2a2a2a]">
+              <div class="flex justify-end gap-2 pt-3 border-t border-theme">
                 <button
                   (click)="viewItem(item)"
                   class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">

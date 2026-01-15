@@ -1,0 +1,58 @@
+/* ============================================
+   INVAPP DESIGN SYSTEM
+   Version: 1.0.0
+
+   A comprehensive design system for consistent,
+   accessible, and scalable UI development.
+   ============================================ */
+
+/*
+   IMPORT ORDER:
+   1. Tokens - Base values (spacing, typography, etc.)
+   2. Colors - Theme colors (light/dark)
+   3. Components - UI component styles
+   4. Utilities - Helper classes
+*/
+
+@import './tokens.css';
+@import './colors.css';
+@import './components.css';
+@import './utilities.css';
+
+/* ============================================
+   DESIGN SYSTEM DOCUMENTATION
+   ============================================
+
+   USAGE GUIDELINES:
+
+   1. NEVER hardcode colors
+      ❌ color: #64748b;
+      ✅ color: var(--color-on-surface-variant);
+
+   2. Use semantic color names
+      ❌ .text-red { color: red; }
+      ✅ .text-error { color: var(--color-error); }
+
+   3. Always pair background + foreground
+      ❌ background: var(--color-error);
+      ✅ background: var(--color-error);
+         color: var(--color-error-on);
+
+   4. Use spacing tokens
+      ❌ padding: 16px;
+      ✅ padding: var(--space-4);
+
+   5. Use component classes when available
+      ❌ Custom button styles
+      ✅ class="ds-btn ds-btn--primary"
+
+   WCAG AA COMPLIANCE:
+   - Text contrast: minimum 4.5:1
+   - Large text contrast: minimum 3:1
+   - All interactive elements have visible focus
+
+   THEME SWITCHING:
+   - Add data-theme="light" or data-theme="dark" to <html>
+   - All colors automatically update
+
+   ============================================ */

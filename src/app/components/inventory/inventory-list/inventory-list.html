@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#0a0a0a] p-6">
+<div class="min-h-screen bg-surface p-6">
   <div class="max-w-[1600px] mx-auto">
     <!-- Header Section -->
     <div class="mb-8">
@@ -20,7 +20,7 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Total Items -->
-      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
@@ -34,7 +34,7 @@
       </div>
 
       <!-- In Stock -->
-      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
@@ -48,7 +48,7 @@
       </div>
 
       <!-- Low Stock -->
-      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
@@ -62,22 +62,22 @@
       </div>
 
       <!-- Out of Stock -->
-      <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
             <p class="text-3xl font-bold text-slate-300">{{ stats().outOfStock }}</p>
-            <p class="text-sm text-red-600 mt-1">-3% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
+            <p class="text-sm mt-1" style="color: var(--color-status-error)">-3% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
-          <div class="bg-red-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-red-600 !text-2xl !leading-none !block">error</mat-icon>
+          <div class="p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0" style="background-color: var(--color-error-bg)">
+            <mat-icon class="!text-2xl !leading-none !block" style="color: var(--color-status-error)">error</mat-icon>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Filters Section - REDESIGNED -->
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 mb-8">
+    <div class="bg-surface-variant border border-theme rounded-xl p-6 mb-8">
       <div class="flex flex-col lg:flex-row gap-4">
         <!-- Search Input -->
         <div class="flex-1">
@@ -88,7 +88,7 @@
               [value]="searchQuery()"
               (input)="onSearchChange(searchInput.value)"
               [placeholder]="'INVENTORY.SEARCH_PLACEHOLDER' | translate"
-              class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+              class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
             />
             <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl !leading-none !block">search</mat-icon>
           </div>
@@ -99,7 +99,7 @@
           <select
             [value]="selectedCategory()"
             (change)="onCategoryChange($any($event.target).value)"
-            class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
+            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
             <option value="all">{{ 'INVENTORY.ALL_CATEGORIES' | translate }}</option>
@@ -112,7 +112,7 @@
           <select
             [value]="selectedLocation()"
             (change)="onLocationChange($any($event.target).value)"
-            class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
+            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
             <option value="all">{{ 'INVENTORY.ALL_LOCATIONS' | translate }}</option>
@@ -125,7 +125,7 @@
           <select
             [value]="selectedStatus()"
             (change)="onStatusChange($any($event.target).value)"
-            class="w-full bg-[#242424] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
+            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
             <option value="all">{{ 'INVENTORY.ALL_STATUS' | translate }}</option>
@@ -147,9 +147,9 @@
     </div>
 
     <!-- Data Table -->
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+    <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
       <!-- Table Header -->
-      <div class="px-6 py-4 border-b border-[#2a2a2a] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="px-6 py-4 border-b border-theme flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 class="text-xl font-semibold text-slate-300">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
           <p class="text-slate-500 text-sm mt-1">{{ 'INVENTORY.LIST.ITEMS_COUNT' | translate:{ count: totalItems() } }}</p>
@@ -360,7 +360,7 @@
       </div>
 
       <!-- Paginator -->
-      <div class="border-t border-[#2a2a2a] px-4 py-2">
+      <div class="border-t border-theme px-4 py-2">
         <mat-paginator
           [length]="totalItems()"
           [pageIndex]="pageIndex()"

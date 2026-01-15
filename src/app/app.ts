@@ -38,5 +38,9 @@ export class App implements OnInit {
     const langToUse = savedLang || (browserLang?.match(/es|en/) ? browserLang : 'en');
 
     this.translate.use(langToUse);
+
+    // Initialize theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }
 }

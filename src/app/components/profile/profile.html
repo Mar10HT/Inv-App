@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#0a0a0a] p-6">
+<div class="min-h-screen bg-surface p-6">
   <div class="max-w-3xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
@@ -8,7 +8,7 @@
 
     <!-- Profile Card -->
     @if (user()) {
-    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden mb-6">
+    <div class="bg-surface-variant rounded-xl border border-theme overflow-hidden mb-6">
       <!-- Profile Header -->
       <div class="bg-gradient-to-r from-[#2d4a3f] to-[#1a3a2f] p-6">
         <div class="flex items-center gap-4">
@@ -49,7 +49,7 @@
                 <input
                   type="text"
                   formControlName="name"
-                  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
                   [class.!border-rose-500]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
                 />
                 @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
@@ -73,7 +73,7 @@
                 <input
                   type="email"
                   formControlName="email"
-                  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
                   [class.!border-rose-500]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
                 />
                 @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
@@ -106,7 +106,7 @@
           </div>
 
           @if (editMode()) {
-            <div class="flex justify-end mt-6 pt-4 border-t border-[#2a2a2a]">
+            <div class="flex justify-end mt-6 pt-4 border-t border-theme">
               <button
                 type="submit"
                 [disabled]="profileForm.invalid || saving()"
@@ -123,7 +123,7 @@
     </div>
 
     <!-- Security Section -->
-    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden">
+    <div class="bg-surface-variant rounded-xl border border-theme overflow-hidden">
       <div class="p-6">
         <h3 class="text-lg font-semibold text-slate-300 mb-4">{{ 'PROFILE.SECURITY' | translate }}</h3>
         <div class="flex items-center justify-between">

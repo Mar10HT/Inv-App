@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+<div class="min-h-screen bg-surface flex items-center justify-center p-4">
   <div class="w-full max-w-md">
     <!-- Logo/Title -->
     <div class="text-center mb-8">
@@ -10,7 +10,7 @@
     </div>
 
     <!-- Login Form -->
-    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-8">
+    <div class="bg-surface-variant rounded-xl border border-theme p-8">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Email Field -->
         <div>
@@ -21,7 +21,7 @@
             <input
               type="email"
               formControlName="email"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11
+              class="w-full bg-surface border border-theme rounded-lg px-4 py-3 pl-11
                      text-slate-300 placeholder-slate-600
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
@@ -44,7 +44,7 @@
             <input
               [type]="showPassword() ? 'text' : 'password'"
               formControlName="password"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-11 pr-11
+              class="w-full bg-surface border border-theme rounded-lg px-4 py-3 pl-11 pr-11
                      text-slate-300 placeholder-slate-600
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"

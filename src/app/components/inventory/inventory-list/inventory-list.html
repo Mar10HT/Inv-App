@@ -8,9 +8,8 @@
           <p class="text-slate-500 text-lg">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
         </div>
         <button
-          mat-raised-button
           (click)="addNewItem()"
-          class="!bg-[#4d7c6f] hover:!bg-[#5d8c7f] !text-white flex items-center gap-2 w-fit !shadow-none !rounded-lg !px-6 !py-3 !transition-all">
+          class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
           <mat-icon class="!leading-none !block">add</mat-icon>
           {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
         </button>
@@ -155,6 +154,12 @@
           <p class="text-slate-500 text-sm mt-1">{{ 'INVENTORY.LIST.ITEMS_COUNT' | translate:{ count: totalItems() } }}</p>
         </div>
         <div class="flex items-center gap-2">
+          <button
+            (click)="openImportDialog()"
+            class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-300 px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
+            <mat-icon class="!text-lg !leading-none !block">upload</mat-icon>
+            {{ 'COMMON.IMPORT' | translate }}
+          </button>
           <button
             (click)="exportData()"
             class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
@@ -42,6 +42,7 @@ import { NotificationService } from '../../services/notification.service';
     CommonModule,
     CdkDrag,
     CdkDropList,
+    CdkDragPlaceholder,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,

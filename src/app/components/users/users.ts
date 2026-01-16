@@ -43,7 +43,8 @@ export class Users implements OnInit {
       total: all.length,
       admins: all.filter(u => u.role === UserRole.SYSTEM_ADMIN || u.role === UserRole.WAREHOUSE_MANAGER).length,
       users: all.filter(u => u.role === UserRole.USER).length,
-      viewers: all.filter(u => u.role === UserRole.VIEWER).length
+      viewers: all.filter(u => u.role === UserRole.VIEWER).length,
+      external: all.filter(u => u.role === UserRole.EXTERNAL).length
     };
   });
 
@@ -122,7 +123,7 @@ export class Users implements OnInit {
       case UserRole.VIEWER:
         return 'bg-blue-950/50 text-blue-400 border-blue-900';
       case UserRole.EXTERNAL:
-        return 'bg-slate-800/50 text-slate-400 border-slate-700';
+        return 'bg-orange-950/50 text-orange-400 border-orange-900';
       default:
         return 'bg-slate-800/50 text-slate-400 border-slate-700';
     }

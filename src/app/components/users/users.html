@@ -17,48 +17,59 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'USER.TOTAL' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
+            <p class="text-xs font-medium text-slate-500">{{ 'USER.TOTAL' | translate }}</p>
+            <p class="text-2xl font-bold text-slate-300">{{ stats().total }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">people</mat-icon>
+          <div class="bg-[#2d4a3f] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">people</mat-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'USER.ROLES.ADMIN' | translate }}</p>
-            <p class="text-3xl font-bold text-rose-400">{{ stats().admins }}</p>
+            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.ADMIN' | translate }}</p>
+            <p class="text-2xl font-bold text-rose-400">{{ stats().admins }}</p>
           </div>
-          <div class="bg-rose-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-rose-400 !text-2xl !leading-none !block">admin_panel_settings</mat-icon>
+          <div class="bg-rose-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <mat-icon class="!text-rose-400 !text-xl !leading-none !block">admin_panel_settings</mat-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'USER.ROLES.USER' | translate }}</p>
-            <p class="text-3xl font-bold text-emerald-400">{{ stats().users }}</p>
+            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.USER' | translate }}</p>
+            <p class="text-2xl font-bold text-emerald-400">{{ stats().users }}</p>
           </div>
-          <div class="bg-emerald-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-emerald-400 !text-2xl !leading-none !block">person</mat-icon>
+          <div class="bg-emerald-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <mat-icon class="!text-emerald-400 !text-xl !leading-none !block">person</mat-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'USER.ROLES.VIEWER' | translate }}</p>
-            <p class="text-3xl font-bold text-blue-400">{{ stats().viewers }}</p>
+            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.VIEWER' | translate }}</p>
+            <p class="text-2xl font-bold text-blue-400">{{ stats().viewers }}</p>
           </div>
-          <div class="bg-blue-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-blue-400 !text-2xl !leading-none !block">visibility</mat-icon>
+          <div class="bg-blue-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <mat-icon class="!text-blue-400 !text-xl !leading-none !block">visibility</mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.EXTERNAL' | translate }}</p>
+            <p class="text-2xl font-bold text-orange-400">{{ stats().external }}</p>
+          </div>
+          <div class="bg-orange-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <mat-icon class="!text-orange-400 !text-xl !leading-none !block">badge</mat-icon>
           </div>
         </div>
       </div>

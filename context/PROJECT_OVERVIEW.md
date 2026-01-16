@@ -41,6 +41,8 @@ Inv-App/
 │   │   │   │   └── supplier-form-dialog.ts
 │   │   │   ├── categories/       # Categories management
 │   │   │   ├── users/            # Users management
+│   │   │   ├── transactions/     # Transaction management
+│   │   │   ├── loans/            # Warehouse-to-warehouse loans
 │   │   │   ├── profile/          # User profile
 │   │   │   ├── settings/         # App settings
 │   │   │   └── shared/           # Shared components
@@ -69,6 +71,7 @@ Inv-App/
 /categories          → Category management CRUD (protected)
 /users               → User management CRUD (protected)
 /transactions        → Transaction history (protected)
+/loans               → Loan management (protected)
 /profile             → User profile (protected)
 /settings            → App settings (protected)
 ```
@@ -160,7 +163,21 @@ Inv-App/
 - Full backend integration
 - Validation based on transaction type
 
-### 9. Navigation (FULLY FUNCTIONAL)
+### 9. Loan Management (FULLY FUNCTIONAL)
+- Warehouse-to-warehouse loan system
+- Create loans with multiple items (same UI as transactions)
+- Each item row has: item selector (with available qty), quantity input, notes input
+- Due date tracking with automatic overdue detection
+- Loan statuses: ACTIVE, OVERDUE, RETURNED
+- Return loan with confirmation dialog
+- Statistics dashboard: Active, Overdue, Due Soon, Returned
+- Filter by status and search by item/warehouse
+- Pagination and CSV export
+- Responsive design (table/cards)
+- Full i18n support (ES/EN)
+- localStorage persistence
+
+### 10. Navigation (FULLY FUNCTIONAL)
 - Fixed collapsible sidebar (not overlay)
 - Toggle between expanded (260px) and collapsed (68px) modes
 - Tooltips on icons when collapsed
@@ -170,7 +187,7 @@ Inv-App/
 - User info display with avatar
 - SidebarService for state management
 
-### 10. Profile & Settings (IMPLEMENTED)
+### 11. Profile & Settings (IMPLEMENTED)
 - User profile view and edit
 - App settings management
 - Language preferences
@@ -346,9 +363,10 @@ Password: password123
 - **Category**: Product categories
 - **Transaction**: Inventory movements (IN/OUT/TRANSFER)
 - **TransactionItem**: Items within transactions
+- **Loan**: Warehouse-to-warehouse loans with quantity, due date, status (localStorage)
 - **AuditLog**: Change history tracking
 
 ---
 
-**Last Updated**: January 12, 2026
-**Version**: 1.2.0
+**Last Updated**: January 15, 2026
+**Version**: 1.4.0

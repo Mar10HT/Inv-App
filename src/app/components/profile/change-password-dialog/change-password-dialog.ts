@@ -20,10 +20,10 @@ import { NotificationService } from '../../../services/notification.service';
     <div class="bg-[#1a1a1a] rounded-xl w-full max-w-md">
       <!-- Header -->
       <div class="flex items-center justify-between p-6 border-b border-[#2a2a2a]">
-        <h2 class="text-xl font-semibold text-slate-300">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h2>
+        <h2 class="text-xl font-semibold text-foreground">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h2>
         <button
           (click)="close()"
-          class="text-slate-500 hover:text-slate-300 transition-colors">
+          class="text-slate-500 hover:text-foreground transition-colors">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -39,7 +39,7 @@ import { NotificationService } from '../../../services/notification.service';
             <input
               type="password"
               formControlName="currentPassword"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [class.!border-rose-500]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched"
             />
             @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
@@ -59,7 +59,7 @@ import { NotificationService } from '../../../services/notification.service';
             <input
               type="password"
               formControlName="newPassword"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [class.!border-rose-500]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
             />
             @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
@@ -79,7 +79,7 @@ import { NotificationService } from '../../../services/notification.service';
             <input
               type="password"
               formControlName="confirmPassword"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [class.!border-rose-500]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched"
             />
             @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
@@ -95,7 +95,7 @@ import { NotificationService } from '../../../services/notification.service';
           <button
             type="button"
             (click)="close()"
-            class="px-4 py-2.5 text-slate-400 hover:text-slate-300 transition-colors font-medium">
+            class="px-4 py-2.5 text-slate-400 hover:text-foreground transition-colors font-medium">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button

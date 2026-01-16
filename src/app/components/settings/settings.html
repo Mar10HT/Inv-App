@@ -2,7 +2,7 @@
   <div class="max-w-3xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-slate-300">{{ 'NAV.SETTINGS' | translate }}</h1>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'NAV.SETTINGS' | translate }}</h1>
       <p class="text-slate-500 mt-1">{{ 'SETTINGS.SUBTITLE' | translate }}</p>
     </div>
 
@@ -14,7 +14,7 @@
             <mat-icon class="!text-[#5d8c7f]">language</mat-icon>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
+            <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
             <p class="text-sm text-slate-500">{{ 'SETTINGS.LANGUAGE_DESC' | translate }}</p>
           </div>
         </div>
@@ -50,7 +50,7 @@
             <mat-icon class="!text-[#5d8c7f]">palette</mat-icon>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.APPEARANCE' | translate }}</h3>
+            <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.APPEARANCE' | translate }}</h3>
             <p class="text-sm text-slate-500">{{ 'SETTINGS.THEME_DESC' | translate }}</p>
           </div>
         </div>
@@ -58,7 +58,7 @@
         <div class="flex items-center justify-between ml-13 p-4 bg-surface-elevated rounded-lg">
           <div class="flex items-center gap-3">
             <mat-icon class="!text-slate-400">{{ darkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon>
-            <span class="text-slate-300 font-medium">
+            <span class="text-foreground font-medium">
               {{ darkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate) }}
             </span>
           </div>
@@ -83,7 +83,7 @@
             <mat-icon class="!text-[#5d8c7f]">notifications</mat-icon>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.NOTIFICATIONS' | translate }}</h3>
+            <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.NOTIFICATIONS' | translate }}</h3>
           </div>
         </div>
 
@@ -91,7 +91,7 @@
           <!-- Email Notifications -->
           <div class="flex items-center justify-between p-4 bg-surface-elevated rounded-lg">
             <div>
-              <p class="text-slate-300 font-medium">{{ 'SETTINGS.EMAIL_NOTIFICATIONS' | translate }}</p>
+              <p class="text-foreground font-medium">{{ 'SETTINGS.EMAIL_NOTIFICATIONS' | translate }}</p>
               <p class="text-sm text-slate-500">{{ 'SETTINGS.EMAIL_NOTIFICATIONS_DESC' | translate }}</p>
             </div>
             <button
@@ -108,7 +108,7 @@
           <!-- Low Stock Alerts -->
           <div class="flex items-center justify-between p-4 bg-surface-elevated rounded-lg">
             <div>
-              <p class="text-slate-300 font-medium">{{ 'SETTINGS.LOW_STOCK_ALERTS' | translate }}</p>
+              <p class="text-foreground font-medium">{{ 'SETTINGS.LOW_STOCK_ALERTS' | translate }}</p>
               <p class="text-sm text-slate-500">{{ 'SETTINGS.LOW_STOCK_ALERTS_DESC' | translate }}</p>
             </div>
             <button
@@ -133,13 +133,13 @@
             <mat-icon class="!text-[#5d8c7f]">storage</mat-icon>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-slate-300">{{ 'SETTINGS.DATA' | translate }}</h3>
+            <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.DATA' | translate }}</h3>
           </div>
         </div>
 
         <div class="flex items-center justify-between ml-13 p-4 bg-surface-elevated rounded-lg">
           <div>
-            <p class="text-slate-300 font-medium">{{ 'SETTINGS.EXPORT_DATA' | translate }}</p>
+            <p class="text-foreground font-medium">{{ 'SETTINGS.EXPORT_DATA' | translate }}</p>
             <p class="text-sm text-slate-500">{{ 'SETTINGS.EXPORT_DATA_DESC' | translate }}</p>
           </div>
           <button
@@ -171,7 +171,7 @@
 
         <div class="flex items-center justify-between ml-13 p-4 bg-red-900/10 border border-red-900/30 rounded-lg">
           <div>
-            <p class="text-slate-300 font-medium">{{ 'SETTINGS.RESET_DATA' | translate }}</p>
+            <p class="text-foreground font-medium">{{ 'SETTINGS.RESET_DATA' | translate }}</p>
             <p class="text-sm text-slate-500">{{ 'SETTINGS.RESET_DATA_DESC' | translate }}</p>
           </div>
           <button

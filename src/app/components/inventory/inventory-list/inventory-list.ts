@@ -21,6 +21,7 @@ import { NotificationService } from '../../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory-item/inventory-item';
+import { ImportDialog } from '../../import/import-dialog';
 
 @Component({
   selector: 'app-inventory-list',
@@ -306,32 +307,51 @@ export class InventoryList implements OnInit {
     this.router.navigate(['/inventory/add']);
   }
 
+  // Open import dialog
+  openImportDialog(): void {
+    this.dialog.open(ImportDialog, {
+      width: '800px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'import-dialog-container'
+    });
+  }
+
   // Export functionality
   exportData(): void {
     const data = this.dataSource.data;
     const csvContent = this.convertToCSV(data);
-    this.downloadCSV(csvContent, 'inventory-data.csv');
+    this.downloadCSV(csvContent, `inventory-${new Date().toISOString().split('T')[0]}.csv`);
   }
 
   private convertToCSV(data: InventoryItemInterface[]): string {
-    const headers = ['Name', 'Description', 'Quantity', 'Category', 'Warehouse', 'Status', 'Last Updated'];
-    const csvData = data.map(item => [
-      item.name,
-      item.description ?? '',
-      item.quantity.toString(),
-      item.category,
-      item.warehouse?.name ?? '',
-      item.status,
-      this.formatDate(item.updatedAt)
-    ]);
+    const d = ';'; // Semicolon delimiter for Excel compatibility
+    const headers = [
+      this.translate.instant('DASHBOARD.TABLE.ITEM'),
+      this.translate.instant('ITEM_DETAIL.DESCRIPTION'),
+      this.translate.instant('DASHBOARD.TABLE.QUANTITY'),
+      this.translate.instant('DASHBOARD.TABLE.CATEGORY'),
+      this.translate.instant('DASHBOARD.TABLE.WAREHOUSE'),
+      this.translate.instant('DASHBOARD.TABLE.STATUS'),
+      this.translate.instant('DASHBOARD.TABLE.LAST_UPDATED')
+    ].join(d);
 
-    return [headers, ...csvData]
-      .map(row => row.map(field => '"' + field + '"').join(','))
-      .join('\n');
+    const rows = data.map(item => [
+      `"${item.name}"`,
+      `"${item.description ?? ''}"`,
+      item.quantity.toString(),
+      `"${item.category}"`,
+      `"${item.warehouse?.name ?? ''}"`,
+      `"${this.getStatusText(item)}"`,
+      `"${this.formatDate(item.updatedAt)}"`
+    ].join(d));
+
+    return [headers, ...rows].join('\n');
   }
 
   private downloadCSV(content: string, fileName: string): void {
-    const blob = new Blob([content], { type: 'text/csv' });
+    const BOM = '\uFEFF'; // UTF-8 BOM for Excel
+    const blob = new Blob([BOM + content], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

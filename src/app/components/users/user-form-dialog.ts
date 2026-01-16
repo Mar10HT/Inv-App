@@ -37,14 +37,14 @@ export interface UserFormDialogData {
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
         <div>
-          <h2 class="text-xl font-semibold text-slate-300">
+          <h2 class="text-xl font-semibold text-foreground">
             {{ (data.mode === 'add' ? 'USER.ADD' : 'USER.EDIT') | translate }}
           </h2>
         </div>
         <button
           type="button"
           (click)="dialogRef.close()"
-          class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -59,7 +59,7 @@ export interface UserFormDialogData {
           <input
             type="text"
             formControlName="name"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
             [placeholder]="'USER.NAME' | translate"
           />
         </div>
@@ -67,13 +67,13 @@ export interface UserFormDialogData {
         <!-- Email -->
         <div>
           <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'USER.EMAIL' | translate }} *
+            {{ 'USER.EMAIL' | translate }} {{ isExternalUser() ? '' : '*' }}
           </label>
           <input
             type="email"
             formControlName="email"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-            [placeholder]="'USER.EMAIL' | translate"
+            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            [placeholder]="isExternalUser() ? ('USER.EMAIL_OPTIONAL' | translate) : ('USER.EMAIL' | translate)"
           />
           @if (form.get('email')?.invalid && form.get('email')?.touched) {
             @if (form.get('email')?.errors?.['required']) {
@@ -84,25 +84,34 @@ export interface UserFormDialogData {
           }
         </div>
 
-        <!-- Password -->
-        <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'USER.PASSWORD' | translate }} {{ data.mode === 'add' ? '*' : '' }}
-          </label>
-          <input
-            type="password"
-            formControlName="password"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
-            [placeholder]="data.mode === 'edit' ? ('USER.PASSWORD_HINT' | translate) : ('USER.PASSWORD' | translate)"
-          />
-          @if (form.get('password')?.invalid && form.get('password')?.touched) {
-            @if (form.get('password')?.errors?.['required']) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
-            } @else if (form.get('password')?.errors?.['minlength']) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+        <!-- Password (hidden for EXTERNAL users) -->
+        @if (!isExternalUser()) {
+          <div>
+            <label class="block text-sm font-medium text-slate-400 mb-2">
+              {{ 'USER.PASSWORD' | translate }} {{ data.mode === 'add' ? '*' : '' }}
+            </label>
+            <input
+              type="password"
+              formControlName="password"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              [placeholder]="data.mode === 'edit' ? ('USER.PASSWORD_HINT' | translate) : ('USER.PASSWORD' | translate)"
+            />
+            @if (form.get('password')?.invalid && form.get('password')?.touched) {
+              @if (form.get('password')?.errors?.['required']) {
+                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+              } @else if (form.get('password')?.errors?.['minlength']) {
+                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+              }
             }
-          }
-        </div>
+          </div>
+        } @else {
+          <div class="bg-[#2d4a3f]/30 border border-[#4d7c6f]/30 rounded-lg p-4">
+            <div class="flex items-center gap-3 text-[#4d7c6f]">
+              <mat-icon class="!text-xl">info</mat-icon>
+              <span class="text-sm">{{ 'USER.EXTERNAL_NO_LOGIN' | translate }}</span>
+            </div>
+          </div>
+        }
 
         <!-- Role -->
         <div>
@@ -111,7 +120,7 @@ export interface UserFormDialogData {
           </label>
           <select
             formControlName="role"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
+            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
             @for (role of roles; track role) {
               <option [value]="role">{{ 'USER.ROLES.' + role | translate }}</option>
             }
@@ -123,7 +132,7 @@ export interface UserFormDialogData {
           <button
             type="button"
             (click)="dialogRef.close()"
-            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-slate-300 transition-colors font-medium">
+            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-foreground transition-colors font-medium">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button
@@ -147,6 +156,7 @@ export class UserFormDialog implements OnInit {
   private userService = inject(UserService);
 
   saving = signal(false);
+  selectedRole = signal<UserRole>(UserRole.USER);
   roles = Object.values(UserRole);
 
   form: FormGroup = this.fb.group({
@@ -173,7 +183,44 @@ export class UserFormDialog implements OnInit {
         email: this.data.user.email,
         role: this.data.user.role || UserRole.USER
       });
+      this.selectedRole.set(this.data.user.role || UserRole.USER);
     }
+
+    // Listen to role changes to update validators
+    this.form.get('role')?.valueChanges.subscribe((role: UserRole) => {
+      this.selectedRole.set(role);
+      this.updateValidatorsForRole(role);
+    });
+  }
+
+  isExternalUser(): boolean {
+    return this.selectedRole() === UserRole.EXTERNAL;
+  }
+
+  private updateValidatorsForRole(role: UserRole): void {
+    const passwordControl = this.form.get('password');
+    const emailControl = this.form.get('email');
+
+    if (role === UserRole.EXTERNAL) {
+      // EXTERNAL users don't need password or email
+      passwordControl?.clearValidators();
+      passwordControl?.setValue('');
+      emailControl?.clearValidators();
+      emailControl?.setValidators([Validators.email]); // Only validate format if provided
+    } else {
+      // Non-external users need email
+      emailControl?.setValidators([Validators.required, Validators.email]);
+
+      if (this.data.mode === 'add') {
+        // New non-external users need password
+        passwordControl?.setValidators([Validators.required, Validators.minLength(6), Validators.maxLength(100)]);
+      } else {
+        // Editing non-external users - password optional
+        passwordControl?.setValidators([Validators.minLength(6), Validators.maxLength(100)]);
+      }
+    }
+    passwordControl?.updateValueAndValidity();
+    emailControl?.updateValueAndValidity();
   }
 
   onSubmit(): void {

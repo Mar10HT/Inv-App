@@ -1,5 +1,53 @@
 # Changelog - INV-APP
 
+## [1.4.0] - January 15, 2026
+
+### Added
+- **Loans System (Warehouse-to-Warehouse)**: Complete loan management between warehouses
+  - Create loans from one warehouse to another with due date
+  - Support for multiple items per loan (same UI as transactions)
+  - Each item row has: item selector, quantity input, notes input
+  - Items show available quantity in dropdown
+  - Validation to prevent selecting same item twice
+  - Loan statuses: ACTIVE, OVERDUE, RETURNED
+  - Automatic overdue detection
+  - Return loan functionality with confirmation dialog
+  - Loan statistics: Active, Overdue, Due Soon, Returned
+  - Filter by status
+  - Search by item name or warehouse
+  - Pagination
+  - CSV export with quantity
+  - Desktop table view with quantity column
+  - Mobile card view
+  - Full i18n support (ES/EN)
+
+- **New Loan Interface Fields**:
+  - `quantity: number` - Amount of items being loaned
+  - `sourceWarehouseId/Name` - Warehouse lending the items
+  - `destinationWarehouseId/Name` - Warehouse receiving the items
+
+- **New Translations**:
+  - `LOANS.SOURCE_WAREHOUSE` - Bodega Origen / Source Warehouse
+  - `LOANS.DEST_WAREHOUSE` - Bodega Destino / Destination Warehouse
+  - `LOANS.SELECT_SOURCE_WAREHOUSE` - Select source warehouse
+  - `LOANS.SELECT_DEST_WAREHOUSE` - Select destination warehouse
+  - `LOANS.NO_ITEMS_IN_WAREHOUSE` - No available items message
+  - `LOANS.NO_ITEMS_ADDED` - No items added message
+  - `LOANS.SELECT_SOURCE_FIRST` - Select source first message
+  - `LOANS.LOANS_CREATED` - Multiple loans created message
+
+### Changed
+- Loans now work between warehouses instead of users
+- Loan form UI matches transaction form exactly
+- Removed UNIQUE-only restriction for loans (all items can be loaned)
+- Updated COMPONENT_GUIDE.md with theme-aware classes documentation
+
+### Fixed
+- Theme colors across all components (replaced hardcoded `text-slate-300` with `text-foreground`)
+- Fixed reactive item filtering using Angular Signals
+
+---
+
 ## [1.3.0] - January 14, 2026
 
 ### Added
@@ -123,6 +171,17 @@
 
 ### Supplier
 - id, name, location, phone, email
+
+### Loan
+- id, inventoryItemId, inventoryItemName, inventoryItemServiceTag
+- quantity
+- sourceWarehouseId, sourceWarehouseName
+- destinationWarehouseId, destinationWarehouseName
+- loanDate, dueDate, returnDate
+- status (ACTIVE/RETURNED/OVERDUE)
+- notes
+- createdById, createdByName
+- createdAt, updatedAt
 
 ---
 

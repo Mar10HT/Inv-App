@@ -106,38 +106,82 @@ imports: [
 
 ---
 
-## Tailwind CSS - Patterns
+## Design System - Theme-Aware Classes
 
-### Project Color Palette
+### ⚠️ IMPORTANT: Use Theme Variables
+
+This project supports **Light and Dark mode**. Always use theme-aware CSS classes instead of hardcoded colors.
+
+### Theme-Aware Classes (REQUIRED)
 
 ```css
-/* Backgrounds */
-bg-[#0a0a0a]    /* Main background (darkest) */
-bg-[#1a1a1a]    /* Cards/sections background */
-bg-[#2a2a2a]    /* Hover/elements background */
-bg-[#242424]    /* Alternative background */
-
-/* Borders */
-border-[#2a2a2a]   /* Standard border */
-border-slate-700   /* Alternative border */
-border-slate-800   /* Subtle border */
+/* ✅ USE THESE - They respond to theme changes */
 
 /* Text */
-text-white         /* Main headings */
-text-slate-300     /* Primary text */
-text-slate-400     /* Secondary text/labels */
-text-slate-500     /* Tertiary text/placeholders */
-text-slate-600     /* Placeholders */
+text-foreground       /* Primary text (replaces text-white, text-slate-300) */
+text-slate-400        /* Secondary text/labels - OK (works in both themes) */
+text-slate-500        /* Tertiary text/placeholders - OK */
 
-/* Accent (green) */
-bg-[#4d7c6f]       /* Primary button */
-hover:bg-[#5d8c7f] /* Primary hover */
-text-[#4d7c6f]     /* Accent text */
+/* Backgrounds */
+bg-surface            /* Main page background */
+bg-surface-variant    /* Cards/sections background */
+bg-surface-elevated   /* Elevated elements */
 
-/* States */
-text-emerald-400   /* Success/In stock */
-text-amber-400     /* Warning/Low stock */
-text-rose-400      /* Error/Out of stock */
+/* Borders */
+border-theme          /* Standard border (replaces border-[#2a2a2a]) */
+
+/* Accent (green) - These are OK as-is */
+bg-[#4d7c6f]          /* Primary button */
+hover:bg-[#5d8c7f]    /* Primary hover */
+text-[#4d7c6f]        /* Accent text */
+
+/* States - These are OK as-is */
+text-emerald-400      /* Success/In stock */
+text-amber-400        /* Warning/Low stock */
+text-rose-400         /* Error/Out of stock */
+```
+
+### ❌ DO NOT USE (Hardcoded Colors)
+
+```css
+/* These do NOT respond to theme and break in light mode */
+text-white            /* ❌ Use text-foreground instead */
+text-slate-300        /* ❌ Use text-foreground instead */
+text-slate-200        /* ❌ Use text-foreground instead */
+border-[#2a2a2a]      /* ❌ Use border-theme instead */
+border-slate-800      /* ❌ Use border-theme instead */
+border-slate-700      /* ❌ Use border-theme instead */
+bg-[#0a0a0a]          /* ❌ Use bg-surface instead */
+bg-[#1a1a1a]          /* ❌ Use bg-surface-variant instead */
+```
+
+### Exception: White Text on Colored Backgrounds
+
+`text-white` is **OK** on colored button backgrounds:
+
+```html
+<!-- ✅ OK - White on colored background -->
+<button class="bg-[#4d7c6f] text-white">Save</button>
+<button class="bg-emerald-600 text-white">Confirm</button>
+<button class="bg-rose-600 text-white">Delete</button>
+```
+
+### Theme Variables (defined in styles.css)
+
+```css
+:root {
+  --color-foreground: #0a0a0a;        /* Light mode text */
+  --color-surface: #ffffff;            /* Light mode bg */
+  --color-surface-variant: #f8fafc;    /* Light mode cards */
+  --color-border: #e2e8f0;             /* Light mode border */
+}
+
+.dark {
+  --color-foreground: #e2e8f0;        /* Dark mode text */
+  --color-surface: #0a0a0a;           /* Dark mode bg */
+  --color-surface-variant: #1a1a1a;   /* Dark mode cards */
+  --color-border: #2a2a2a;            /* Dark mode border */
+}
 ```
 
 ### Standard Input
@@ -146,8 +190,8 @@ text-rose-400      /* Error/Out of stock */
 <input
   type="text"
   formControlName="fieldName"
-  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3
-         text-slate-300 placeholder-slate-600
+  class="w-full bg-surface border border-theme rounded-lg px-4 py-3
+         text-foreground placeholder-slate-500
          focus:outline-none focus:border-[#4d7c6f] transition-colors"
   [placeholder]="'TRANSLATION.KEY' | translate"
 />
@@ -158,8 +202,8 @@ text-rose-400      /* Error/Out of stock */
 ```html
 <select
   formControlName="fieldName"
-  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3
-         text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors">
+  class="w-full bg-surface border border-theme rounded-lg px-4 py-3
+         text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors">
   <option value="" disabled>Select...</option>
   @for (item of items(); track item.id) {
     <option [value]="item.id">{{ item.name }}</option>
@@ -173,8 +217,8 @@ text-rose-400      /* Error/Out of stock */
 <textarea
   formControlName="fieldName"
   rows="3"
-  class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3
-         text-slate-300 placeholder-slate-600
+  class="w-full bg-surface border border-theme rounded-lg px-4 py-3
+         text-foreground placeholder-slate-500
          focus:outline-none focus:border-[#4d7c6f] transition-colors resize-none"
   [placeholder]="'TRANSLATION.KEY' | translate"
 ></textarea>
@@ -202,9 +246,8 @@ text-rose-400      /* Error/Out of stock */
 <button
   type="button"
   (click)="onCancel()"
-  class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400
-         hover:bg-[#3a3a3a] hover:text-slate-300
-         transition-colors font-medium">
+  class="px-6 py-2.5 rounded-lg border border-theme text-foreground
+         hover:bg-slate-800 transition-colors font-medium">
   {{ 'COMMON.CANCEL' | translate }}
 </button>
 ```
@@ -212,7 +255,7 @@ text-rose-400      /* Error/Out of stock */
 ### Card/Section
 
 ```html
-<div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6">
+<div class="bg-surface-variant rounded-xl border border-theme p-6">
   <!-- Content -->
 </div>
 ```
@@ -239,14 +282,14 @@ export interface MyDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [/* ... */],
   template: `
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+    <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
-        <h2 class="text-xl font-semibold text-slate-300">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-theme">
+        <h2 class="text-xl font-semibold text-foreground">
           {{ (data.mode === 'add' ? 'ENTITY.ADD' : 'ENTITY.EDIT') | translate }}
         </h2>
         <button type="button" (click)="dialogRef.close()"
-          class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -256,7 +299,7 @@ export interface MyDialogData {
         <!-- Fields... -->
 
         <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
+        <div class="flex justify-end gap-3 pt-4 border-t border-theme">
           <button type="button" (click)="dialogRef.close()" class="...">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
@@ -314,13 +357,13 @@ openDialog(): void {
 ### Base Template
 
 ```html
-<div class="min-h-screen bg-[#0a0a0a] p-4 md:p-6">
+<div class="min-h-screen bg-surface p-4 md:p-6">
   <div class="max-w-[1400px] mx-auto">
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl md:text-3xl font-bold text-white">
+        <h1 class="text-2xl md:text-3xl font-bold text-foreground">
           {{ 'ENTITY.TITLE' | translate }}
         </h1>
         <p class="text-slate-400 mt-1">
@@ -334,14 +377,14 @@ openDialog(): void {
     </div>
 
     <!-- Stats Card -->
-    <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-6 mb-6">
+    <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
       <div class="flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-[#4d7c6f]/20 flex items-center justify-center">
           <mat-icon class="!text-[#4d7c6f]">icon_name</mat-icon>
         </div>
         <div>
           <p class="text-sm text-slate-400">{{ 'ENTITY.TOTAL' | translate }}</p>
-          <p class="text-2xl font-bold text-white">{{ items().length }}</p>
+          <p class="text-2xl font-bold text-foreground">{{ items().length }}</p>
         </div>
       </div>
     </div>
@@ -353,9 +396,9 @@ openDialog(): void {
       </div>
     } @else if (items().length === 0) {
       <!-- Empty State -->
-      <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-12 text-center">
+      <div class="bg-surface-variant rounded-xl border border-theme p-12 text-center">
         <mat-icon class="!text-6xl !w-16 !h-16 text-slate-600 mb-4">icon</mat-icon>
-        <h3 class="text-xl font-semibold text-slate-300 mb-2">
+        <h3 class="text-xl font-semibold text-foreground mb-2">
           {{ 'ENTITY.NO_ITEMS' | translate }}
         </h3>
         <p class="text-slate-500 mb-6">
@@ -367,9 +410,9 @@ openDialog(): void {
       </div>
     } @else {
       <!-- Table (Desktop) -->
-      <div class="hidden md:block bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] overflow-hidden">
+      <div class="hidden md:block bg-surface-variant rounded-xl border border-theme overflow-hidden">
         <table class="w-full">
-          <thead class="bg-[#0a0a0a]">
+          <thead class="bg-surface">
             <tr>
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-400">
                 {{ 'ENTITY.COLUMN' | translate }}
@@ -380,10 +423,10 @@ openDialog(): void {
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#2a2a2a]">
+          <tbody class="divide-y divide-theme">
             @for (item of items(); track item.id) {
-              <tr class="hover:bg-[#242424] transition-colors">
-                <td class="px-6 py-4 text-slate-300">{{ item.field }}</td>
+              <tr class="hover:bg-surface-elevated transition-colors">
+                <td class="px-6 py-4 text-foreground">{{ item.field }}</td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
                     <button (click)="edit(item)" class="p-2 rounded-lg...">
@@ -403,7 +446,7 @@ openDialog(): void {
       <!-- Cards (Mobile) -->
       <div class="md:hidden space-y-4">
         @for (item of items(); track item.id) {
-          <div class="bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] p-4">
+          <div class="bg-surface-variant rounded-xl border border-theme p-4">
             <!-- Card content -->
           </div>
         }
@@ -513,8 +556,11 @@ export class MyService {
 - [ ] Use `ChangeDetectionStrategy.OnPush`
 - [ ] Use `inject()` for DI
 - [ ] Use Signals for state
+- [ ] **Use theme-aware classes** (`text-foreground`, `bg-surface`, `border-theme`)
+- [ ] **NO hardcoded colors** (`text-white`, `text-slate-300`, `bg-[#1a1a1a]`)
 - [ ] Add translations in `es.json` and `en.json`
 - [ ] Add route in `app.routes.ts`
 - [ ] Add navigation link (if applicable)
 - [ ] Create backend endpoint (if CRUD)
 - [ ] Responsive design (mobile + desktop)
+- [ ] Test in both Light and Dark mode

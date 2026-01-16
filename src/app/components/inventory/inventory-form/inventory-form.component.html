@@ -5,11 +5,11 @@
       <button
         mat-icon-button
         (click)="onCancel()"
-        class="!text-slate-400 hover:!text-white mb-4"
+        class="!text-slate-400 hover:!text-foreground mb-4"
       >
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <h1 class="text-3xl font-bold text-white mb-2">
+      <h1 class="text-3xl font-bold text-foreground mb-2">
         @if (isEditMode()) { {{ 'INVENTORY.FORM.EDIT_TITLE' | translate }} } @else { {{ 'INVENTORY.FORM.ADD_TITLE' | translate }} }
       </h1>
       <p class="text-slate-400">
@@ -20,27 +20,27 @@
     <!-- Form -->
     <form [formGroup]="inventoryForm" (ngSubmit)="onSubmit()">
       <!-- Item Type Selection -->
-      <div class="bg-surface-variant rounded-xl border border-slate-800 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
           <mat-icon class="!text-blue-400">category</mat-icon>
           <span>{{ 'INVENTORY.FORM.ITEM_TYPE.TITLE' | translate }}</span>
         </h3>
         <div class="flex flex-col gap-3">
           <label class="flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-all"
-            [class]="itemTypeControl?.value === ItemType.BULK ? 'border-blue-500 bg-blue-500/10' : 'border-slate-700 hover:border-slate-600'">
+            [class]="itemTypeControl?.value === ItemType.BULK ? 'border-blue-500 bg-blue-500/10' : 'border-theme hover:border-theme'">
             <input type="radio" [value]="ItemType.BULK" formControlName="itemType"
               (change)="onItemTypeChange(ItemType.BULK)" class="mt-1 w-4 h-4 accent-blue-500" />
             <div>
-              <div class="font-semibold text-white">{{ 'INVENTORY.FORM.ITEM_TYPE.BULK' | translate }}</div>
+              <div class="font-semibold text-foreground">{{ 'INVENTORY.FORM.ITEM_TYPE.BULK' | translate }}</div>
               <div class="text-sm text-slate-400">{{ 'INVENTORY.FORM.ITEM_TYPE.BULK_HINT' | translate }}</div>
             </div>
           </label>
           <label class="flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-all"
-            [class]="itemTypeControl?.value === ItemType.UNIQUE ? 'border-blue-500 bg-blue-500/10' : 'border-slate-700 hover:border-slate-600'">
+            [class]="itemTypeControl?.value === ItemType.UNIQUE ? 'border-blue-500 bg-blue-500/10' : 'border-theme hover:border-theme'">
             <input type="radio" [value]="ItemType.UNIQUE" formControlName="itemType"
               (change)="onItemTypeChange(ItemType.UNIQUE)" class="mt-1 w-4 h-4 accent-blue-500" />
             <div>
-              <div class="font-semibold text-white">{{ 'INVENTORY.FORM.ITEM_TYPE.UNIQUE' | translate }}</div>
+              <div class="font-semibold text-foreground">{{ 'INVENTORY.FORM.ITEM_TYPE.UNIQUE' | translate }}</div>
               <div class="text-sm text-slate-400">{{ 'INVENTORY.FORM.ITEM_TYPE.UNIQUE_HINT' | translate }}</div>
             </div>
           </label>
@@ -48,8 +48,8 @@
       </div>
 
       <!-- Basic Information -->
-      <div class="bg-surface-variant rounded-xl border border-slate-800 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
           <mat-icon class="!text-green-400">info</mat-icon>
           <span>{{ 'INVENTORY.FORM.BASIC_INFO.TITLE' | translate }}</span>
         </h3>
@@ -59,7 +59,7 @@
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.BASIC_INFO.NAME' | translate }} *</label>
             <input type="text" formControlName="name"
               [placeholder]="'INVENTORY.FORM.BASIC_INFO.NAME_PLACEHOLDER' | translate"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
             @if (hasError('name')) {
               <span class="text-sm text-red-400">{{ getErrorMessage('name') }}</span>
             }
@@ -70,7 +70,7 @@
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.BASIC_INFO.CATEGORY' | translate }} *</label>
             <input type="text" formControlName="category"
               [placeholder]="'INVENTORY.FORM.BASIC_INFO.CATEGORY_PLACEHOLDER' | translate"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
             @if (hasError('category')) {
               <span class="text-sm text-red-400">{{ getErrorMessage('category') }}</span>
             }
@@ -81,7 +81,7 @@
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.BASIC_INFO.MODEL' | translate }} <span class="text-slate-600">({{ 'INVENTORY.FORM.BASIC_INFO.MODEL_OPTIONAL' | translate }})</span></label>
             <input type="text" formControlName="model"
               [placeholder]="'INVENTORY.FORM.BASIC_INFO.MODEL_PLACEHOLDER' | translate"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
             <span class="text-xs text-slate-500">{{ 'INVENTORY.FORM.BASIC_INFO.MODEL_HINT' | translate }}</span>
           </div>
 
@@ -90,14 +90,14 @@
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.BASIC_INFO.DESCRIPTION' | translate }}</label>
             <textarea formControlName="description" rows="3"
               [placeholder]="'INVENTORY.FORM.BASIC_INFO.DESCRIPTION_PLACEHOLDER' | translate"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors resize-none"></textarea>
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors resize-none"></textarea>
           </div>
 
           <!-- Warehouse -->
           <div class="flex flex-col gap-1">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.WAREHOUSE.LABEL' | translate }} *</label>
             <select formControlName="warehouseId"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground focus:border-blue-500 focus:outline-none transition-colors">
               <option value="" disabled>{{ 'INVENTORY.FORM.WAREHOUSE.HINT' | translate }}</option>
               @for (warehouse of warehouses(); track warehouse.id) {
                 <option [value]="warehouse.id">{{ warehouse.name }} - {{ warehouse.location }}</option>
@@ -111,8 +111,8 @@
       </div>
 
       <!-- Identifiers Section -->
-      <div class="bg-surface-variant rounded-xl border border-slate-800 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
           <mat-icon class="!text-purple-400">qr_code</mat-icon>
           <span>{{ 'INVENTORY.FORM.IDENTIFIERS.TITLE' | translate }}</span>
         </h3>
@@ -122,7 +122,7 @@
               <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG' | translate }} *</label>
               <input type="text" formControlName="serviceTag"
                 [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG_PLACEHOLDER' | translate"
-                class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+                class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
               <span class="text-xs text-slate-500">{{ 'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG_HINT' | translate }}</span>
               @if (hasError('serviceTag')) {
                 <span class="text-sm text-red-400">{{ getErrorMessage('serviceTag') }}</span>
@@ -132,7 +132,7 @@
               <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER' | translate }}</label>
               <input type="text" formControlName="serialNumber"
                 [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER_PLACEHOLDER' | translate"
-                class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+                class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
               <span class="text-xs text-slate-500">{{ 'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER_HINT' | translate }}</span>
             </div>
           </div>
@@ -142,21 +142,21 @@
               <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.IDENTIFIERS.SKU' | translate }}</label>
               <input type="text" formControlName="sku"
                 [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SKU_PLACEHOLDER' | translate"
-                class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+                class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.IDENTIFIERS.BARCODE' | translate }}</label>
               <input type="text" formControlName="barcode"
                 [placeholder]="'INVENTORY.FORM.IDENTIFIERS.BARCODE_PLACEHOLDER' | translate"
-                class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+                class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
             </div>
           </div>
         }
       </div>
 
       <!-- Quantity & Stock -->
-      <div class="bg-surface-variant rounded-xl border border-slate-800 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
           <mat-icon class="!text-orange-400">inventory_2</mat-icon>
           <span>{{ 'INVENTORY.FORM.QUANTITY.TITLE' | translate }}</span>
         </h3>
@@ -164,7 +164,7 @@
           <div class="flex flex-col gap-1">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.QUANTITY.CURRENT' | translate }} *</label>
             <input type="number" formControlName="quantity" placeholder="0"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
             @if (isUniqueItem()) {
               <span class="text-xs text-slate-500">{{ 'INVENTORY.FORM.QUANTITY.UNIQUE_HINT' | translate }}</span>
             }
@@ -175,14 +175,14 @@
           <div class="flex flex-col gap-1">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.QUANTITY.MINIMUM' | translate }}</label>
             <input type="number" formControlName="minQuantity" placeholder="0"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
           </div>
         </div>
       </div>
 
       <!-- Price & Supplier -->
-      <div class="bg-surface-variant rounded-xl border border-slate-800 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
           <mat-icon class="!text-yellow-400">attach_money</mat-icon>
           <span>{{ 'INVENTORY.FORM.PRICE.TITLE' | translate }}</span>
         </h3>
@@ -190,12 +190,12 @@
           <div class="flex flex-col gap-1 md:col-span-2">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.PRICE.AMOUNT' | translate }}</label>
             <input type="number" step="0.01" formControlName="price" placeholder="0.00"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-colors" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.PRICE.CURRENCY' | translate }}</label>
             <select formControlName="currency"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground focus:border-blue-500 focus:outline-none transition-colors">
               <option [value]="Currency.HNL">HNL (L)</option>
               <option [value]="Currency.USD">USD ($)</option>
             </select>
@@ -203,7 +203,7 @@
           <div class="flex flex-col gap-1 md:col-span-3">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.SUPPLIER.LABEL' | translate }}</label>
             <select formControlName="supplierId"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground focus:border-blue-500 focus:outline-none transition-colors">
               <option value="">{{ 'INVENTORY.FORM.SUPPLIER.NONE' | translate }}</option>
               @for (supplier of suppliers(); track supplier.id) {
                 <option [value]="supplier.id">{{ supplier.name }}@if (supplier.location) { - {{ supplier.location }}}</option>
@@ -216,15 +216,15 @@
 
       <!-- Assignment Section (Only for UNIQUE items) -->
       @if (isUniqueItem()) {
-        <div class="bg-surface-variant rounded-xl border border-slate-800 p-6 mb-6">
-          <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+        <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
             <mat-icon class="!text-pink-400">person</mat-icon>
             <span>{{ 'INVENTORY.FORM.ASSIGNMENT.TITLE' | translate }}</span>
           </h3>
           <div class="flex flex-col gap-1">
             <label class="text-sm text-slate-400">{{ 'INVENTORY.FORM.ASSIGNMENT.USER' | translate }}</label>
             <select formControlName="assignedToUserId"
-              class="w-full px-4 py-3 bg-surface border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+              class="w-full px-4 py-3 bg-surface border border-theme rounded-lg text-foreground focus:border-blue-500 focus:outline-none transition-colors">
               <option value="">{{ 'INVENTORY.FORM.ASSIGNMENT.UNASSIGNED' | translate }}</option>
               @for (user of assignableUsers(); track user.id) {
                 <option [value]="user.id">{{ user.name }} ({{ user.email }}) - {{ user.role }}</option>
@@ -238,12 +238,12 @@
       <!-- Form Actions -->
       <div class="flex justify-end gap-4">
         <button type="button" (click)="onCancel()" [disabled]="loading()"
-          class="px-6 py-3 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-800 transition-colors flex items-center gap-2 disabled:opacity-50">
+          class="px-6 py-3 rounded-lg border border-theme text-foreground hover:bg-slate-800 transition-colors flex items-center gap-2 disabled:opacity-50">
           <mat-icon>close</mat-icon>
           {{ 'COMMON.CANCEL' | translate }}
         </button>
         <button type="submit" [disabled]="inventoryForm.invalid || loading()"
-          class="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          class="px-6 py-3 rounded-lg bg-blue-600 text-foreground hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
           @if (loading()) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {

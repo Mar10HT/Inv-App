@@ -101,6 +101,20 @@
       }
     </a>
 
+    <a
+      routerLink="/loans"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.LOANS' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">assignment</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
+      }
+    </a>
+
     <!-- Transactions with Submenu -->
     <div class="nav-item-with-submenu">
       <button
@@ -160,6 +174,20 @@
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
+      }
+    </a>
+
+    <a
+      routerLink="/audit"
+      routerLinkActive="active-link"
+      class="nav-link"
+      [matTooltip]="isCollapsed() ? ('NAV.AUDIT' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <mat-icon class="nav-icon">history</mat-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="nav-text">{{ 'NAV.AUDIT' | translate }}</span>
       }
     </a>
 

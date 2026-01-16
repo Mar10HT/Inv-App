@@ -2,7 +2,7 @@
   <div class="max-w-[1600px] mx-auto">
     <!-- Welcome Section -->
     <div class="mb-8">
-      <h1 class="text-4xl font-bold text-slate-300 mb-2">
+      <h1 class="text-4xl font-bold text-foreground mb-2">
         {{ 'DASHBOARD.WELCOME' | translate }}, {{ userName() }}!
       </h1>
       <p class="text-slate-500 text-lg">
@@ -35,7 +35,7 @@
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats()?.totalItems || 0 }}</p>
+            <p class="text-3xl font-bold text-foreground">{{ stats()?.totalItems || 0 }}</p>
           </div>
           <div class="bg-surface-elevated p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <mat-icon class="!text-slate-500 !text-2xl !leading-none !block">inventory</mat-icon>
@@ -142,13 +142,13 @@
           <!-- Drag Handle -->
           <div cdkDragHandle class="flex items-center justify-between mb-4">
             @if (widget === 'status') {
-              <h3 class="text-lg font-semibold text-slate-300">{{ 'COMMON.STATUS' | translate }}</h3>
+              <h3 class="text-lg font-semibold text-foreground">{{ 'COMMON.STATUS' | translate }}</h3>
               <mat-icon class="!text-slate-600 !leading-none !block">donut_large</mat-icon>
             } @else if (widget === 'categories') {
-              <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.CATEGORIES' | translate }}</h3>
+              <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.CATEGORIES' | translate }}</h3>
               <mat-icon class="!text-slate-600 !leading-none !block">category</mat-icon>
             } @else if (widget === 'warehouses') {
-              <h3 class="text-lg font-semibold text-slate-300">{{ 'NAV.WAREHOUSES' | translate }}</h3>
+              <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.WAREHOUSES' | translate }}</h3>
               <mat-icon class="!text-slate-600 !leading-none !block">warehouse</mat-icon>
             }
           </div>
@@ -222,7 +222,7 @@
     <!-- Custom Charts Section -->
     <div class="mb-8">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.CUSTOM_CHART.SECTION_TITLE' | translate }}</h3>
+        <h3 class="text-lg font-semibold text-foreground">{{ 'DASHBOARD.CUSTOM_CHART.SECTION_TITLE' | translate }}</h3>
         <button
           (click)="openCustomChartDialog()"
           class="flex items-center gap-2 px-4 py-2 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] transition-colors text-sm font-medium">
@@ -246,11 +246,11 @@
           @for (chart of customCharts(); track chart.id) {
             <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-[#3a3a3a] transition-colors">
               <div class="flex items-center justify-between mb-4">
-                <h4 class="text-md font-semibold text-slate-300 truncate">{{ chart.title }}</h4>
+                <h4 class="text-md font-semibold text-foreground truncate">{{ chart.title }}</h4>
                 <div class="flex items-center gap-1">
                   <button
                     (click)="openCustomChartDialog(chart)"
-                    class="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
                     <mat-icon class="!text-lg">edit</mat-icon>
                   </button>
                   <button
@@ -304,7 +304,7 @@
           @if (widget === 'transactions') {
             <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-slate-300">{{ 'TRANSACTION.TITLE' | translate }}</h2>
+                <h2 class="text-lg font-semibold text-foreground">{{ 'TRANSACTION.TITLE' | translate }}</h2>
                 <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
               </div>
               <button
@@ -336,7 +336,7 @@
                         </mat-icon>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-slate-300">
+                        <p class="text-sm font-medium text-foreground">
                           {{ 'TRANSACTION.TYPES.' + tx.type | translate }}
                         </p>
                         <p class="text-xs text-slate-500">
@@ -357,7 +357,7 @@
           @if (widget === 'lowStock') {
             <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-slate-300">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
+                <h2 class="text-lg font-semibold text-foreground">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
                 <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
               </div>
               <button
@@ -383,7 +383,7 @@
                         <mat-icon class="!text-orange-500 !leading-none !block">warning</mat-icon>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-slate-300 truncate">{{ item.name }}</p>
+                        <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
                         <p class="text-xs text-slate-500">{{ item.category?.name || '-' }}</p>
                       </div>
                       <div class="text-right">
@@ -414,7 +414,7 @@
     <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
       <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
         <div>
-          <h2 class="text-xl font-semibold text-slate-300">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
+          <h2 class="text-xl font-semibold text-foreground">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
           <p class="text-slate-500 text-sm mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
         </div>
         <button
@@ -462,7 +462,7 @@
                         <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
                       </div>
                       <div class="min-w-0 max-w-[350px]">
-                        <p class="font-medium text-slate-300 truncate">{{ item.name }}</p>
+                        <p class="font-medium text-foreground truncate">{{ item.name }}</p>
                         <p class="text-sm text-slate-500 truncate">{{ item.description || '-' }}</p>
                       </div>
                     </div>
@@ -475,13 +475,13 @@
 
                   <!-- Quantity Column -->
                   <td class="px-6 py-4">
-                    <span class="text-slate-300 font-medium">{{ item.quantity }}</span>
+                    <span class="text-foreground font-medium">{{ item.quantity }}</span>
                   </td>
 
                   <!-- Price Column -->
                   <td class="px-6 py-4">
                     @if (item.price) {
-                      <span class="text-slate-300 font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
+                      <span class="text-foreground font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
                     } @else {
                       <span class="text-slate-600">-</span>
                     }
@@ -512,7 +512,7 @@
                       <button
                         type="button"
                         (click)="$event.stopPropagation(); editItem(item)"
-                        class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+                        class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
                         <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                       </button>
                       <button
@@ -538,7 +538,7 @@
                   <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-slate-300">{{ item.name }}</h3>
+                  <h3 class="font-semibold text-foreground">{{ item.name }}</h3>
                   <p class="text-sm text-slate-500 truncate">{{ item.description || '-' }}</p>
                 </div>
               </div>
@@ -550,12 +550,12 @@
                 </div>
                 <div>
                   <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</p>
-                  <p class="text-slate-300 font-semibold">{{ item.quantity }}</p>
+                  <p class="text-foreground font-semibold">{{ item.quantity }}</p>
                 </div>
                 <div>
                   <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</p>
                   @if (item.price) {
-                    <p class="text-slate-300 font-semibold">{{ formatCurrency(item.price, item.currency) }}</p>
+                    <p class="text-foreground font-semibold">{{ formatCurrency(item.price, item.currency) }}</p>
                   } @else {
                     <p class="text-slate-600">-</p>
                   }
@@ -606,7 +606,7 @@
       </button>
       <button
         (click)="viewAllInventory()"
-        class="bg-slate-800 text-slate-300 px-6 py-2 rounded-lg hover:bg-slate-700 transition-all font-medium">
+        class="bg-slate-800 text-foreground px-6 py-2 rounded-lg hover:bg-slate-700 transition-all font-medium">
         {{ 'COMMON.VIEW_ALL' | translate }} {{ 'NAV.INVENTORY' | translate }}
       </button>
     </div>

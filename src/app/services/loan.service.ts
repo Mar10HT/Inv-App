@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { AuthService } from './auth.service';
 import { AuditService } from './audit.service';
 import { InventoryService } from './inventory/inventory.service';
-import { UserService } from './user.service';
+import { WarehouseService } from './warehouse.service';
 import {
   Loan,
   LoanStatus,
@@ -11,7 +11,6 @@ import {
   LoanFilter,
   LoanStats
 } from '../interfaces/loan.interface';
-import { ItemType } from '../interfaces/inventory-item.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,7 @@ export class LoanService {
   private authService = inject(AuthService);
   private auditService = inject(AuditService);
   private inventoryService = inject(InventoryService);
-  private userService = inject(UserService);
+  private warehouseService = inject(WarehouseService);
 
   private loansSignal = signal<Loan[]>([]);
   private loadingSignal = signal(false);
@@ -117,20 +116,26 @@ export class LoanService {
   }
 
   /**
-   * Create a new loan
+   * Create a new loan (warehouse to warehouse)
    */
   createLoan(dto: CreateLoanDto): Loan | null {
     const user = this.authService.currentUser();
     if (!user) return null;
+
+    // Validate warehouses are different
+    if (dto.sourceWarehouseId === dto.destinationWarehouseId) {
+      console.error('Source and destination warehouses must be different');
+      return null;
+    }
 
     // Get item details
     const items = this.inventoryService.items();
     const item = items.find(i => i.id === dto.inventoryItemId);
     if (!item) return null;
 
-    // Check if item is UNIQUE type
-    if (item.itemType !== ItemType.UNIQUE) {
-      console.error('Only UNIQUE items can be loaned');
+    // Check if item belongs to source warehouse
+    if (item.warehouseId !== dto.sourceWarehouseId) {
+      console.error('Item does not belong to the source warehouse');
       return null;
     }
 
@@ -144,9 +149,15 @@ export class LoanService {
       return null;
     }
 
-    // Get borrower details
-    const users = this.userService.users();
-    const borrower = users.find(u => u.id === dto.borrowerId);
+    // Get warehouse details
+    const warehouses = this.warehouseService.warehouses();
+    const sourceWarehouse = warehouses.find(w => w.id === dto.sourceWarehouseId);
+    const destinationWarehouse = warehouses.find(w => w.id === dto.destinationWarehouseId);
+
+    if (!sourceWarehouse || !destinationWarehouse) {
+      console.error('Invalid warehouse');
+      return null;
+    }
 
     const now = new Date();
     const newLoan: Loan = {
@@ -154,9 +165,11 @@ export class LoanService {
       inventoryItemId: dto.inventoryItemId,
       inventoryItemName: item.name,
       inventoryItemServiceTag: item.serviceTag,
-      borrowerId: dto.borrowerId,
-      borrowerName: borrower?.name || borrower?.email || 'Unknown',
-      borrowerEmail: borrower?.email,
+      quantity: dto.quantity,
+      sourceWarehouseId: dto.sourceWarehouseId,
+      sourceWarehouseName: sourceWarehouse.name,
+      destinationWarehouseId: dto.destinationWarehouseId,
+      destinationWarehouseName: destinationWarehouse.name,
       loanDate: now,
       dueDate: new Date(dto.dueDate),
       status: LoanStatus.ACTIVE,
@@ -171,7 +184,12 @@ export class LoanService {
     this.saveToStorage();
 
     // Log audit
-    this.auditService.logLoan(newLoan.id, item.name, newLoan.borrowerName, 'LOAN');
+    this.auditService.logLoan(
+      newLoan.id,
+      item.name,
+      `${sourceWarehouse.name} → ${destinationWarehouse.name}`,
+      'LOAN'
+    );
 
     return newLoan;
   }
@@ -205,7 +223,12 @@ export class LoanService {
     this.saveToStorage();
 
     // Log audit
-    this.auditService.logLoan(loan.id, loan.inventoryItemName, loan.borrowerName, 'RETURN');
+    this.auditService.logLoan(
+      loan.id,
+      loan.inventoryItemName,
+      `${loan.destinationWarehouseName} → ${loan.sourceWarehouseName}`,
+      'RETURN'
+    );
 
     return updatedLoan;
   }
@@ -227,11 +250,20 @@ export class LoanService {
   }
 
   /**
-   * Get loans for a specific borrower
+   * Get loans from a specific warehouse
    */
-  getLoansForBorrower(borrowerId: string): Loan[] {
+  getLoansFromWarehouse(warehouseId: string): Loan[] {
     return this.loansSignal()
-      .filter(l => l.borrowerId === borrowerId)
+      .filter(l => l.sourceWarehouseId === warehouseId)
+      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+  }
+
+  /**
+   * Get loans to a specific warehouse
+   */
+  getLoansToWarehouse(warehouseId: string): Loan[] {
+    return this.loansSignal()
+      .filter(l => l.destinationWarehouseId === warehouseId)
       .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
   }
 
@@ -264,8 +296,12 @@ export class LoanService {
       loans = loans.filter(l => l.status === filter.status);
     }
 
-    if (filter.borrowerId) {
-      loans = loans.filter(l => l.borrowerId === filter.borrowerId);
+    if (filter.sourceWarehouseId) {
+      loans = loans.filter(l => l.sourceWarehouseId === filter.sourceWarehouseId);
+    }
+
+    if (filter.destinationWarehouseId) {
+      loans = loans.filter(l => l.destinationWarehouseId === filter.destinationWarehouseId);
     }
 
     if (filter.inventoryItemId) {
@@ -307,10 +343,10 @@ export class LoanService {
     const data = loans || this.loansSignal();
     const d = ';';
 
-    let csv = `Item${d}Service Tag${d}Borrower${d}Email${d}Loan Date${d}Due Date${d}Return Date${d}Status${d}Notes\n`;
+    let csv = `Item${d}Service Tag${d}Cantidad${d}Origen${d}Destino${d}Fecha Préstamo${d}Fecha Devolución${d}Fecha Retorno${d}Estado${d}Notas\n`;
 
     for (const loan of data) {
-      csv += `"${loan.inventoryItemName}"${d}"${loan.inventoryItemServiceTag || ''}"${d}"${loan.borrowerName}"${d}"${loan.borrowerEmail || ''}"${d}"${loan.loanDate.toLocaleDateString()}"${d}"${loan.dueDate.toLocaleDateString()}"${d}"${loan.returnDate?.toLocaleDateString() || ''}"${d}"${loan.status}"${d}"${loan.notes || ''}"\n`;
+      csv += `"${loan.inventoryItemName}"${d}"${loan.inventoryItemServiceTag || ''}"${d}${loan.quantity}${d}"${loan.sourceWarehouseName}"${d}"${loan.destinationWarehouseName}"${d}"${loan.loanDate.toLocaleDateString()}"${d}"${loan.dueDate.toLocaleDateString()}"${d}"${loan.returnDate?.toLocaleDateString() || ''}"${d}"${loan.status}"${d}"${loan.notes || ''}"\n`;
     }
 
     const BOM = '\uFEFF';

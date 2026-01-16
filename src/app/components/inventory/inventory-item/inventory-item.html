@@ -34,7 +34,7 @@
           <mat-icon class="!text-[#4d7c6f] !text-2xl">inventory_2</mat-icon>
         </div>
         <div class="min-w-0 flex-1">
-          <h1 class="text-2xl font-bold text-slate-200 truncate">{{ item.name }}</h1>
+          <h1 class="text-2xl font-bold text-foreground truncate">{{ item.name }}</h1>
           <p class="text-slate-500 mt-1 line-clamp-2">{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
 
           <!-- Status Badge -->
@@ -66,7 +66,7 @@
       <!-- Close Button -->
       <button
         (click)="close()"
-        class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex-shrink-0">
+        class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex-shrink-0">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -85,39 +85,39 @@
           <div class="space-y-3">
             <div class="flex justify-between">
               <span class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.CATEGORY' | translate }}</span>
-              <span class="text-slate-300 text-sm">{{ item.category }}</span>
+              <span class="text-foreground text-sm">{{ item.category }}</span>
             </div>
 
             <div class="flex justify-between">
               <span class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.TYPE.LABEL' | translate }}</span>
-              <span class="text-slate-300 text-sm">{{ getItemTypeKey(item.itemType) | translate }}</span>
+              <span class="text-foreground text-sm">{{ getItemTypeKey(item.itemType) | translate }}</span>
             </div>
 
             @if (item.sku) {
               <div class="flex justify-between">
                 <span class="text-xs text-slate-500 uppercase">{{ 'COMMON.SKU' | translate }}</span>
-                <span class="text-slate-300 text-sm font-mono">{{ item.sku }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.sku }}</span>
               </div>
             }
 
             @if (item.barcode) {
               <div class="flex justify-between">
                 <span class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.BARCODE' | translate }}</span>
-                <span class="text-slate-300 text-sm font-mono">{{ item.barcode }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.barcode }}</span>
               </div>
             }
 
             @if (item.serialNumber) {
               <div class="flex justify-between">
                 <span class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.SERIAL_NUMBER' | translate }}</span>
-                <span class="text-slate-300 text-sm font-mono">{{ item.serialNumber }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.serialNumber }}</span>
               </div>
             }
 
             @if (item.serviceTag) {
               <div class="flex justify-between">
                 <span class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.SERVICE_TAG' | translate }}</span>
-                <span class="text-slate-300 text-sm font-mono">{{ item.serviceTag }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.serviceTag }}</span>
               </div>
             }
           </div>
@@ -134,7 +134,7 @@
             <div class="flex items-center justify-between p-3 bg-surface-variant rounded-lg">
               <div>
                 <p class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.QUANTITY' | translate }}</p>
-                <p class="text-2xl font-bold text-slate-200">{{ item.quantity }}</p>
+                <p class="text-2xl font-bold text-foreground">{{ item.quantity }}</p>
               </div>
               <div class="text-right">
                 <p class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.MIN_QUANTITY' | translate }}</p>
@@ -150,7 +150,7 @@
             @if (item.price) {
               <div class="flex justify-between">
                 <span class="text-xs text-slate-500 uppercase">{{ 'ITEM_DETAIL.TOTAL_VALUE' | translate }}</span>
-                <span class="text-slate-300 font-semibold">{{ formatCurrency(item.price * item.quantity, item.currency) }}</span>
+                <span class="text-foreground font-semibold">{{ formatCurrency(item.price * item.quantity, item.currency) }}</span>
               </div>
             }
           </div>
@@ -168,7 +168,7 @@
 
           @if (item.warehouse) {
             <div class="space-y-2">
-              <p class="text-slate-300 font-medium">{{ item.warehouse.name }}</p>
+              <p class="text-foreground font-medium">{{ item.warehouse.name }}</p>
               <p class="text-slate-500 text-sm">{{ item.warehouse.location }}</p>
               @if (item.warehouse.description) {
                 <p class="text-slate-600 text-xs">{{ item.warehouse.description }}</p>
@@ -188,7 +188,7 @@
 
           @if (item.supplier) {
             <div class="space-y-2">
-              <p class="text-slate-300 font-medium">{{ item.supplier.name }}</p>
+              <p class="text-foreground font-medium">{{ item.supplier.name }}</p>
               <p class="text-slate-500 text-sm">{{ item.supplier.location }}</p>
               @if (item.supplier.email) {
                 <p class="text-sky-400 text-sm">{{ item.supplier.email }}</p>
@@ -216,7 +216,7 @@
               <mat-icon class="!text-sky-400 !text-lg">person</mat-icon>
             </div>
             <div>
-              <p class="text-slate-300 font-medium">{{ item.assignedToUser.name || item.assignedToUser.email }}</p>
+              <p class="text-foreground font-medium">{{ item.assignedToUser.name || item.assignedToUser.email }}</p>
               <p class="text-slate-500 text-sm">{{ item.assignedToUser.email }}</p>
               @if (item.assignedAt) {
                 <p class="text-slate-600 text-xs mt-1">{{ 'ITEM_DETAIL.ASSIGNED_ON' | translate }}: {{ formatDate(item.assignedAt) }}</p>
@@ -249,7 +249,7 @@
     <div class="p-4 border-t border-theme flex items-center justify-end gap-3">
       <button
         (click)="close()"
-        class="px-4 py-2 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+        class="px-4 py-2 rounded-lg text-slate-400 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
         {{ 'COMMON.CANCEL' | translate }}
       </button>
       <button

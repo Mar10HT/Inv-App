@@ -43,14 +43,18 @@ Record all changes made in the system.
 
 ### 3. Temporary Loans
 **Priority:** Medium
-**Status:** Pending
+**Status:** ✅ COMPLETED (v1.4.0)
 
-Loan system with return date.
-- Assign item with due date
-- Expiration alerts
-- Loan history by item/user
-- States: On Loan, Returned, Overdue
-- Active loans dashboard
+Warehouse-to-warehouse loan system with return date.
+- ✅ Loan items from one warehouse to another with due date
+- ✅ Support for multiple items per loan (quantity + notes per item)
+- ✅ Expiration alerts (automatic overdue detection)
+- ✅ Loan history with filters and search
+- ✅ States: ACTIVE, RETURNED, OVERDUE
+- ✅ Active loans dashboard with statistics
+- ✅ Return loan functionality
+- ✅ CSV export
+- ✅ Full i18n (ES/EN)
 
 ---
 
@@ -116,11 +120,17 @@ Draggable widgets on dashboard.
 
 ## Changelog
 
+### v1.4.0 (Current)
+- [x] Warehouse-to-warehouse loans system
+- [x] Multiple items per loan with quantity
+- [x] Loan statistics and filtering
+- [x] Theme-aware design system classes
+
 ### v2.1.0 (In Development)
 - [ ] Bulk CSV import
 - [ ] Change history / Audit log
 
-### v2.0.0 (Current)
+### v2.0.0
 - [x] Complete base system
 - [x] Reports with PDF/CSV export
 - [x] EXTERNAL role for users without access
@@ -129,4 +139,4 @@ Draggable widgets on dashboard.
 
 ---
 
-*Last updated: January 2026*
+*Last updated: January 15, 2026*

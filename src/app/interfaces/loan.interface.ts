@@ -10,10 +10,13 @@ export interface Loan {
   inventoryItemId: string;
   inventoryItemName: string;
   inventoryItemServiceTag?: string;
-  // Borrower info
-  borrowerId: string;
-  borrowerName: string;
-  borrowerEmail?: string;
+  quantity: number;
+  // Source warehouse (who lends)
+  sourceWarehouseId: string;
+  sourceWarehouseName: string;
+  // Destination warehouse (who borrows)
+  destinationWarehouseId: string;
+  destinationWarehouseName: string;
   // Loan dates
   loanDate: Date;
   dueDate: Date;
@@ -32,8 +35,10 @@ export interface Loan {
 
 export interface CreateLoanDto {
   inventoryItemId: string;
-  borrowerId: string;
-  dueDate: Date;
+  quantity: number;
+  sourceWarehouseId: string;
+  destinationWarehouseId: string;
+  dueDate: Date | string;
   notes?: string;
 }
 
@@ -44,7 +49,8 @@ export interface ReturnLoanDto {
 
 export interface LoanFilter {
   status?: LoanStatus;
-  borrowerId?: string;
+  sourceWarehouseId?: string;
+  destinationWarehouseId?: string;
   inventoryItemId?: string;
   overdue?: boolean;
   dateFrom?: Date;

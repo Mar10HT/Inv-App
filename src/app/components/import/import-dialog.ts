@@ -26,13 +26,13 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
         <div>
-          <h2 class="text-xl font-semibold text-slate-300">{{ 'IMPORT.TITLE' | translate }}</h2>
+          <h2 class="text-xl font-semibold text-foreground">{{ 'IMPORT.TITLE' | translate }}</h2>
           <p class="text-sm text-slate-500 mt-1">{{ 'IMPORT.SUBTITLE' | translate }}</p>
         </div>
         <button
           type="button"
           (click)="dialogRef.close()"
-          class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors">
+          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -47,7 +47,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
               <div class="flex items-start gap-3">
                 <mat-icon class="text-[#4d7c6f] mt-0.5">info</mat-icon>
                 <div class="flex-1">
-                  <p class="text-slate-300 font-medium">{{ 'IMPORT.TEMPLATE_INFO' | translate }}</p>
+                  <p class="text-foreground font-medium">{{ 'IMPORT.TEMPLATE_INFO' | translate }}</p>
                   <p class="text-slate-500 text-sm mt-1">{{ 'IMPORT.TEMPLATE_DESC' | translate }}</p>
                   <button
                     (click)="downloadTemplate()"
@@ -100,7 +100,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             <!-- Summary -->
             <div class="grid grid-cols-3 gap-4">
               <div class="bg-[#141414] rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-slate-300">{{ preview()!.totalCount }}</p>
+                <p class="text-2xl font-bold text-foreground">{{ preview()!.totalCount }}</p>
                 <p class="text-sm text-slate-500">{{ 'IMPORT.TOTAL_ROWS' | translate }}</p>
               </div>
               <div class="bg-[#141414] rounded-lg p-4 text-center">
@@ -139,7 +139,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
                             <span class="text-rose-400"><mat-icon class="!text-lg">error</mat-icon></span>
                           }
                         </td>
-                        <td class="px-4 py-3 text-slate-300">{{ row.name || '-' }}</td>
+                        <td class="px-4 py-3 text-foreground">{{ row.name || '-' }}</td>
                         <td class="px-4 py-3 text-slate-400">{{ row.category || '-' }}</td>
                         <td class="px-4 py-3 text-slate-400">{{ row.quantity }}</td>
                         <td class="px-4 py-3 text-slate-400">{{ row.warehouseName || '-' }}</td>
@@ -168,7 +168,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
         @if (step() === 'importing') {
           <div class="text-center py-8">
             <mat-icon class="!text-5xl text-[#4d7c6f] mb-4 animate-pulse">cloud_sync</mat-icon>
-            <p class="text-slate-300 text-lg mb-4">{{ 'IMPORT.IMPORTING' | translate }}</p>
+            <p class="text-foreground text-lg mb-4">{{ 'IMPORT.IMPORTING' | translate }}</p>
             <mat-progress-bar
               mode="determinate"
               [value]="importService.progress()"
@@ -229,7 +229,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
           @if (step() === 'preview') {
             <button
               (click)="goBack()"
-              class="px-4 py-2 text-slate-400 hover:text-slate-300 transition-colors">
+              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
               <mat-icon class="!text-lg align-middle mr-1">arrow_back</mat-icon>
               {{ 'COMMON.BACK' | translate }}
             </button>
@@ -238,7 +238,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
         <div class="flex gap-3">
           <button
             (click)="dialogRef.close()"
-            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-slate-300 transition-colors font-medium">
+            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-foreground transition-colors font-medium">
             {{ step() === 'result' ? ('COMMON.CLOSE' | translate) : ('COMMON.CANCEL' | translate) }}
           </button>
           @if (step() === 'preview' && preview()!.validCount > 0) {

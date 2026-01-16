@@ -5,7 +5,7 @@
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#4d7c6f]/20 mb-4">
         <mat-icon class="!text-4xl !w-10 !h-10 text-[#4d7c6f]">inventory_2</mat-icon>
       </div>
-      <h1 class="text-3xl font-bold text-white mb-2">{{ 'LOGIN.TITLE' | translate }}</h1>
+      <h1 class="text-3xl font-bold text-foreground mb-2">{{ 'LOGIN.TITLE' | translate }}</h1>
       <p class="text-slate-400">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
     </div>
 
@@ -22,7 +22,7 @@
               type="email"
               formControlName="email"
               class="w-full bg-surface border border-theme rounded-lg px-4 py-3 pl-11
-                     text-slate-300 placeholder-slate-600
+                     text-foreground placeholder-slate-600
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
             />
@@ -45,7 +45,7 @@
               [type]="showPassword() ? 'text' : 'password'"
               formControlName="password"
               class="w-full bg-surface border border-theme rounded-lg px-4 py-3 pl-11 pr-11
-                     text-slate-300 placeholder-slate-600
+                     text-foreground placeholder-slate-600
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
             />
@@ -55,7 +55,7 @@
             <button
               type="button"
               (click)="togglePasswordVisibility()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-foreground transition-colors"
             >
               <mat-icon class="!w-5 !h-5 !text-base">
                 {{ showPassword() ? 'visibility_off' : 'visibility' }}

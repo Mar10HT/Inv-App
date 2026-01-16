@@ -63,12 +63,12 @@ export interface CustomChartDialogData {
     <div class="bg-[#1a1a1a] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
       <!-- Header -->
       <div class="flex items-center justify-between p-6 border-b border-[#2a2a2a] flex-shrink-0">
-        <h2 class="text-xl font-semibold text-slate-300">
+        <h2 class="text-xl font-semibold text-foreground">
           {{ isEditing ? ('DASHBOARD.CUSTOM_CHART.EDIT' | translate) : ('DASHBOARD.CUSTOM_CHART.CREATE' | translate) }}
         </h2>
         <button
           (click)="close()"
-          class="text-slate-500 hover:text-slate-300 transition-colors">
+          class="text-slate-500 hover:text-foreground transition-colors">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -84,7 +84,7 @@ export interface CustomChartDialogData {
             <input
               type="text"
               formControlName="title"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'DASHBOARD.CUSTOM_CHART.TITLE_PLACEHOLDER' | translate"
             />
           </div>
@@ -225,7 +225,7 @@ export interface CustomChartDialogData {
         <button
           type="button"
           (click)="close()"
-          class="px-4 py-2.5 text-slate-400 hover:text-slate-300 transition-colors font-medium">
+          class="px-4 py-2.5 text-slate-400 hover:text-foreground transition-colors font-medium">
           {{ 'COMMON.CANCEL' | translate }}
         </button>
         <button

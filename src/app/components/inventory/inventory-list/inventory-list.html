@@ -4,7 +4,7 @@
     <div class="mb-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-slate-300 mb-2">{{ 'DASHBOARD.TITLE' | translate }}</h1>
+          <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'DASHBOARD.TITLE' | translate }}</h1>
           <p class="text-slate-500 text-lg">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
         </div>
         <button
@@ -23,7 +23,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
+            <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
             <p class="text-sm text-sky-500 mt-1">+8% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#242424] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -37,7 +37,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().inStock }}</p>
+            <p class="text-3xl font-bold text-foreground">{{ stats().inStock }}</p>
             <p class="text-sm text-[#4d7c6f] mt-1">+12% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -51,7 +51,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().lowStock }}</p>
+            <p class="text-3xl font-bold text-foreground">{{ stats().lowStock }}</p>
             <p class="text-sm text-orange-600 mt-1">+5% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -65,7 +65,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().outOfStock }}</p>
+            <p class="text-3xl font-bold text-foreground">{{ stats().outOfStock }}</p>
             <p class="text-sm mt-1" style="color: var(--color-status-error)">-3% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0" style="background-color: var(--color-error-bg)">
@@ -87,7 +87,7 @@
               [value]="searchQuery()"
               (input)="onSearchChange(searchInput.value)"
               [placeholder]="'INVENTORY.SEARCH_PLACEHOLDER' | translate"
-              class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-slate-300 placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+              class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
             />
             <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl !leading-none !block">search</mat-icon>
           </div>
@@ -98,7 +98,7 @@
           <select
             [value]="selectedCategory()"
             (change)="onCategoryChange($any($event.target).value)"
-            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
+            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
             <option value="all">{{ 'INVENTORY.ALL_CATEGORIES' | translate }}</option>
@@ -111,7 +111,7 @@
           <select
             [value]="selectedLocation()"
             (change)="onLocationChange($any($event.target).value)"
-            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
+            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
             <option value="all">{{ 'INVENTORY.ALL_LOCATIONS' | translate }}</option>
@@ -124,7 +124,7 @@
           <select
             [value]="selectedStatus()"
             (change)="onStatusChange($any($event.target).value)"
-            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
+            class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
             style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
           >
             <option value="all">{{ 'INVENTORY.ALL_STATUS' | translate }}</option>
@@ -138,7 +138,7 @@
         <button
           *ngIf="searchQuery() !== '' || selectedCategory() !== 'all' || selectedLocation() !== 'all' || selectedStatus() !== 'all'"
           (click)="clearFilters()"
-          class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-300 px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
+          class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
           <mat-icon class="!text-lg !leading-none !block">clear</mat-icon>
           {{ 'INVENTORY.LIST.CLEAR_FILTERS' | translate }}
         </button>
@@ -150,13 +150,13 @@
       <!-- Table Header -->
       <div class="px-6 py-4 border-b border-theme flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 class="text-xl font-semibold text-slate-300">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
+          <h2 class="text-xl font-semibold text-foreground">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
           <p class="text-slate-500 text-sm mt-1">{{ 'INVENTORY.LIST.ITEMS_COUNT' | translate:{ count: totalItems() } }}</p>
         </div>
         <div class="flex items-center gap-2">
           <button
             (click)="openImportDialog()"
-            class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-300 px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
+            class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
             <mat-icon class="!text-lg !leading-none !block">upload</mat-icon>
             {{ 'COMMON.IMPORT' | translate }}
           </button>
@@ -196,7 +196,7 @@
                     <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
                   </div>
                   <div class="min-w-0">
-                    <p class="font-medium text-slate-300 truncate">{{ item.name }}</p>
+                    <p class="font-medium text-foreground truncate">{{ item.name }}</p>
                     <p class="text-sm text-slate-500 truncate" *ngIf="item.description">
                       {{ item.description.length > 40 ? (item.description | slice:0:40) + '...' : item.description }}
                     </p>
@@ -216,7 +216,7 @@
 
               <!-- Quantity Column -->
               <td class="px-6 py-4">
-                <span class="text-slate-300 font-medium">{{ item.quantity }}</span>
+                <span class="text-foreground font-medium">{{ item.quantity }}</span>
               </td>
 
               <!-- Location Column -->
@@ -257,7 +257,7 @@
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); editItem(item)"
-                    class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+                    class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
                     <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                   </button>
                   <button
@@ -301,7 +301,7 @@
                 <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
               </div>
               <div class="min-w-0 flex-1">
-                <h3 class="font-semibold text-slate-300 text-base mb-1 truncate">{{ item.name }}</h3>
+                <h3 class="font-semibold text-foreground text-base mb-1 truncate">{{ item.name }}</h3>
                 <p class="text-slate-500 text-sm">{{ item.category }}</p>
                 <p class="text-slate-600 text-xs" *ngIf="item.model">Modelo: {{ item.model }}</p>
                 <p class="text-slate-600 text-xs mt-1 line-clamp-2" *ngIf="item.description">
@@ -324,13 +324,13 @@
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
               <p class="text-xs text-slate-600 font-medium uppercase tracking-wide mb-1">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</p>
-              <p class="text-slate-300 font-semibold">{{ item.quantity }} {{ 'INVENTORY.LIST.UNITS' | translate }}</p>
+              <p class="text-foreground font-semibold">{{ item.quantity }} {{ 'INVENTORY.LIST.UNITS' | translate }}</p>
             </div>
             <div>
               <p class="text-xs text-slate-600 font-medium uppercase tracking-wide mb-1">{{ 'DASHBOARD.TABLE.LOCATION' | translate }}</p>
               <div class="flex items-center gap-1">
                 <mat-icon class="!text-sm !text-slate-500 !leading-none !block">place</mat-icon>
-                <p class="text-slate-300 font-semibold text-sm truncate">{{ item.warehouse?.name }}</p>
+                <p class="text-foreground font-semibold text-sm truncate">{{ item.warehouse?.name }}</p>
               </div>
             </div>
           </div>
@@ -351,7 +351,7 @@
             <button
               type="button"
               (click)="$event.stopPropagation(); editItem(item)"
-              class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+              class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
               <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
             </button>
             <button

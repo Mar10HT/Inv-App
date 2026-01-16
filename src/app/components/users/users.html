@@ -4,7 +4,7 @@
     <div class="mb-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-slate-300 mb-2">{{ 'USER.TITLE' | translate }}</h1>
+          <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'USER.TITLE' | translate }}</h1>
           <p class="text-slate-500 text-lg">{{ 'USER.SUBTITLE' | translate }}</p>
         </div>
         <button
@@ -22,7 +22,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-xs font-medium text-slate-500">{{ 'USER.TOTAL' | translate }}</p>
-            <p class="text-2xl font-bold text-slate-300">{{ stats().total }}</p>
+            <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
             <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">people</mat-icon>
@@ -96,7 +96,7 @@
     <!-- Users Table -->
     <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
       <div class="px-6 py-4 border-b border-theme">
-        <h2 class="text-xl font-semibold text-slate-300">{{ 'USER.LIST' | translate }}</h2>
+        <h2 class="text-xl font-semibold text-foreground">{{ 'USER.LIST' | translate }}</h2>
       </div>
 
       @if (users().length === 0 && !loading()) {
@@ -133,7 +133,7 @@
                         <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">person</mat-icon>
                       </div>
                       <div>
-                        <p class="font-medium text-slate-300">{{ user.name || 'No name' }}</p>
+                        <p class="font-medium text-foreground">{{ user.name || 'No name' }}</p>
                       </div>
                     </div>
                   </td>
@@ -159,7 +159,7 @@
                       <button
                         type="button"
                         (click)="editUser(user)"
-                        class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+                        class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
                         <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                       </button>
                       <button
@@ -185,7 +185,7 @@
                   <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">person</mat-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-slate-300">{{ user.name || 'No name' }}</h3>
+                  <h3 class="font-semibold text-foreground">{{ user.name || 'No name' }}</h3>
                   <div class="flex items-center gap-1 text-slate-500 text-sm mt-1">
                     <mat-icon class="!text-sm !leading-none !block">email</mat-icon>
                     <span>{{ user.email }}</span>
@@ -201,7 +201,7 @@
                   <button
                     type="button"
                     (click)="editUser(user)"
-                    class="p-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
+                    class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
                     <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
                   </button>
                   <button

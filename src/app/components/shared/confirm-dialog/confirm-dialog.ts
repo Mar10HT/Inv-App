@@ -57,7 +57,7 @@ export interface ConfirmDialogData {
       <div class="px-6 pb-6 flex justify-end gap-3">
         <button
           (click)="onCancel()"
-          class="px-4 py-2 rounded-lg bg-[#242424] text-slate-300 hover:bg-[#2a2a2a] transition-colors font-medium">
+          class="px-4 py-2 rounded-lg bg-[#242424] text-foreground hover:bg-[#2a2a2a] transition-colors font-medium">
           {{ data.cancelText || ('COMMON.CANCEL' | translate) }}
         </button>
         <button

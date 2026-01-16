@@ -2,7 +2,7 @@
   <div class="max-w-3xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-slate-300">{{ 'NAV.PROFILE' | translate }}</h1>
+      <h1 class="text-3xl font-bold text-foreground">{{ 'NAV.PROFILE' | translate }}</h1>
       <p class="text-slate-500 mt-1">{{ 'PROFILE.SUBTITLE' | translate }}</p>
     </div>
 
@@ -17,7 +17,7 @@
           </div>
           <div>
             <h2 class="text-2xl font-bold text-white">{{ user()?.name || 'Usuario' }}</h2>
-            <p class="text-slate-300">{{ user()?.email }}</p>
+            <p class="text-foreground">{{ user()?.email }}</p>
             <span class="inline-block mt-2 px-3 py-1 bg-[#4d7c6f] rounded-full text-xs font-medium text-white">
               {{ getRoleDisplay(user()?.role) }}
             </span>
@@ -28,11 +28,11 @@
       <!-- Profile Info -->
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-slate-300">{{ 'PROFILE.INFO' | translate }}</h3>
+          <h3 class="text-lg font-semibold text-foreground">{{ 'PROFILE.INFO' | translate }}</h3>
           <button
             (click)="toggleEditMode()"
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            [class]="editMode() ? 'bg-slate-700 text-slate-300' : 'bg-[#4d7c6f] text-white hover:bg-[#5d8c7f]'">
+            [class]="editMode() ? 'bg-slate-700 text-foreground' : 'bg-[#4d7c6f] text-white hover:bg-[#5d8c7f]'">
             <mat-icon class="!text-lg">{{ editMode() ? 'close' : 'edit' }}</mat-icon>
             {{ editMode() ? ('COMMON.CANCEL' | translate) : ('COMMON.EDIT' | translate) }}
           </button>
@@ -49,7 +49,7 @@
                 <input
                   type="text"
                   formControlName="name"
-                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
                   [class.!border-rose-500]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
                 />
                 @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
@@ -60,7 +60,7 @@
                   }
                 }
               } @else {
-                <p class="text-slate-300 py-3">{{ user()?.name }}</p>
+                <p class="text-foreground py-3">{{ user()?.name }}</p>
               }
             </div>
 
@@ -73,7 +73,7 @@
                 <input
                   type="email"
                   formControlName="email"
-                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-slate-300 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
                   [class.!border-rose-500]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
                 />
                 @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
@@ -84,7 +84,7 @@
                   }
                 }
               } @else {
-                <p class="text-slate-300 py-3">{{ user()?.email }}</p>
+                <p class="text-foreground py-3">{{ user()?.email }}</p>
               }
             </div>
 
@@ -93,7 +93,7 @@
               <label class="block text-sm font-medium text-slate-400 mb-2">
                 {{ 'USER.ROLE' | translate }}
               </label>
-              <p class="text-slate-300 py-3">{{ getRoleDisplay(user()?.role) }}</p>
+              <p class="text-foreground py-3">{{ getRoleDisplay(user()?.role) }}</p>
             </div>
 
             <!-- Member Since -->
@@ -101,7 +101,7 @@
               <label class="block text-sm font-medium text-slate-400 mb-2">
                 {{ 'PROFILE.MEMBER_SINCE' | translate }}
               </label>
-              <p class="text-slate-300 py-3">{{ formatDate(user()?.createdAt) }}</p>
+              <p class="text-foreground py-3">{{ formatDate(user()?.createdAt) }}</p>
             </div>
           </div>
 
@@ -125,15 +125,15 @@
     <!-- Security Section -->
     <div class="bg-surface-variant rounded-xl border border-theme overflow-hidden">
       <div class="p-6">
-        <h3 class="text-lg font-semibold text-slate-300 mb-4">{{ 'PROFILE.SECURITY' | translate }}</h3>
+        <h3 class="text-lg font-semibold text-foreground mb-4">{{ 'PROFILE.SECURITY' | translate }}</h3>
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-slate-300">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</p>
+            <p class="text-foreground">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</p>
             <p class="text-sm text-slate-500">{{ 'PROFILE.CHANGE_PASSWORD_DESC' | translate }}</p>
           </div>
           <button
             (click)="openChangePasswordDialog()"
-            class="flex items-center gap-2 px-4 py-2.5 bg-[#2a2a2a] text-slate-300 rounded-lg hover:bg-[#3a3a3a] transition-colors font-medium">
+            class="flex items-center gap-2 px-4 py-2.5 bg-[#2a2a2a] text-foreground rounded-lg hover:bg-[#3a3a3a] transition-colors font-medium">
             <mat-icon class="!text-lg">lock</mat-icon>
             {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
           </button>

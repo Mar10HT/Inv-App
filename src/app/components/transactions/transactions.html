@@ -4,7 +4,7 @@
     <div class="mb-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-slate-300 mb-2">{{ 'TRANSACTION.TITLE' | translate }}</h1>
+          <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'TRANSACTION.TITLE' | translate }}</h1>
           <p class="text-slate-500 text-lg">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
         </div>
         <button
@@ -22,7 +22,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TOTAL' | translate }}</p>
-            <p class="text-3xl font-bold text-slate-300">{{ stats().total }}</p>
+            <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">receipt_long</mat-icon>
@@ -85,7 +85,7 @@
     <!-- Transactions Table -->
     <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
       <div class="px-6 py-4 border-b border-theme">
-        <h2 class="text-xl font-semibold text-slate-300">{{ 'TRANSACTION.LIST' | translate }}</h2>
+        <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSACTION.LIST' | translate }}</h2>
       </div>
 
       @if (transactions().length === 0 && !loading()) {
@@ -131,7 +131,7 @@
 
                   <!-- Date Column -->
                   <td class="px-6 py-4">
-                    <span class="text-slate-300">{{ formatDate(transaction.date) }}</span>
+                    <span class="text-foreground">{{ formatDate(transaction.date) }}</span>
                   </td>
 
                   <!-- Warehouses Column -->

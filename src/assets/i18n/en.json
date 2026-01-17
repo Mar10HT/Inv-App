@@ -645,5 +645,36 @@
       "OVERDUE": "Overdue",
       "RETURNED": "Returned"
     }
+  },
+  "COMMAND_PALETTE": {
+    "PLACEHOLDER": "Search for pages, items, actions...",
+    "NO_RESULTS": "No results found",
+    "NAVIGATION": "Pages",
+    "ACTIONS": "Actions",
+    "INVENTORY": "Inventory Items",
+    "NAVIGATE": "to navigate",
+    "SELECT": "to select",
+    "CLOSE": "to close",
+    "NEW_ITEM": "Create new item",
+    "LOGOUT": "Log out",
+    "DESC": {
+      "DASHBOARD": "View dashboard and statistics",
+      "INVENTORY": "Manage inventory items",
+      "WAREHOUSES": "Manage warehouse locations",
+      "TRANSACTIONS": "View transaction history",
+      "LOANS": "Manage equipment loans",
+      "REPORTS": "Generate and view reports",
+      "SUPPLIERS": "Manage suppliers",
+      "CATEGORIES": "Manage item categories",
+      "USERS": "Manage system users",
+      "AUDIT": "View audit logs"
+    }
+  },
+  "THEME": {
+    "SWITCH_TO_LIGHT": "Switch to light mode",
+    "SWITCH_TO_DARK": "Switch to dark mode",
+    "LIGHT": "Light",
+    "DARK": "Dark",
+    "SYSTEM": "System"
   }
 }

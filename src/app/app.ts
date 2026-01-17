@@ -4,6 +4,7 @@ import { Navigation } from './components/shared/navigation/navigation';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from './services/auth.service';
 import { SidebarService } from './services/sidebar.service';
+import { CommandPaletteService } from './services/command-palette.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,6 +20,7 @@ import { CommonModule } from '@angular/common';
 })
 export class App implements OnInit {
   private translate = inject(TranslateService);
+  private commandPalette = inject(CommandPaletteService);
   authService = inject(AuthService);
   sidebarService = inject(SidebarService);
   title = 'ICN';
@@ -26,6 +28,8 @@ export class App implements OnInit {
   isCollapsed = computed(() => this.sidebarService.isCollapsed());
 
   ngOnInit() {
+    // Initialize command palette keyboard shortcut (Ctrl+K / Cmd+K)
+    this.commandPalette.initKeyboardShortcut();
     // Configure available languages
     this.translate.addLangs(['es', 'en']);
 

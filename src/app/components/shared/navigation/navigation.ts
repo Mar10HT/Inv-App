@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { AuthService } from '../../../services/auth.service';
 import { SidebarService } from '../../../services/sidebar.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-navigation',
@@ -28,15 +29,14 @@ import { SidebarService } from '../../../services/sidebar.service';
 export class Navigation {
   private authService = inject(AuthService);
   private sidebarService = inject(SidebarService);
+  private themeService = inject(ThemeService);
   private router = inject(Router);
 
   currentUser = computed(() => this.authService.currentUser());
   isCollapsed = computed(() => this.sidebarService.isCollapsed());
 
-  // Theme state - initialize from localStorage or default to dark
-  isDarkMode = signal<boolean>(
-    (typeof localStorage !== 'undefined' ? localStorage.getItem('theme') : 'dark') !== 'light'
-  );
+  // Theme state from service
+  isDarkMode = computed(() => this.themeService.isDark());
 
   // Transactions submenu state
   private transactionsExpanded = signal<boolean>(false);
@@ -67,10 +67,6 @@ export class Navigation {
 
   // Toggle between dark and light theme
   toggleTheme(): void {
-    const newIsDark = !this.isDarkMode();
-    this.isDarkMode.set(newIsDark);
-    const theme = newIsDark ? 'dark' : 'light';
-    localStorage.setItem('theme', theme);
-    document.documentElement.setAttribute('data-theme', theme);
+    this.themeService.toggle();
   }
 }

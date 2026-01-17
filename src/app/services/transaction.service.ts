@@ -83,7 +83,7 @@ export class TransactionService {
     return this.http.post<Transaction>(this.apiUrl, transaction).pipe(
       tap({
         next: (newTransaction) => {
-          this.transactions.update(transactions => [newTransaction, ...transactions]);
+          this.transactionsSignal.update(txs => [newTransaction, ...txs]);
           this.loading.set(false);
         },
         error: (error) => {
@@ -101,8 +101,8 @@ export class TransactionService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap({
         next: () => {
-          this.transactions.update(transactions =>
-            transactions.filter(t => t.id !== id)
+          this.transactionsSignal.update(txs =>
+            txs.filter(t => t.id !== id)
           );
           this.loading.set(false);
         },

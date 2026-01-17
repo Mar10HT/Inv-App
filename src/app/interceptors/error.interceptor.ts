@@ -20,8 +20,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         switch (error.status) {
           case 401:
             // Unauthorized - clear auth and redirect to login
-            authService.clearAuth();
-            router.navigate(['/login']);
+            authService.logout();
             errorMessage = 'Session expired. Please log in again.';
             break;
 

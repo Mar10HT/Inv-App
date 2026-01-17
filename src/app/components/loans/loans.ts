@@ -509,11 +509,9 @@ export class LoansComponent implements OnInit {
 
   ngOnInit(): void {
     this.warehouseService.getAll().subscribe();
-    this.loanService.loadAll();
+    this.loanService.loadLoans();
     // Apply filters after data loads
-    this.loanService.getAll().subscribe(() => {
-      this.applyFilters();
-    });
+    this.applyFilters();
   }
 
   applyFilters(): void {

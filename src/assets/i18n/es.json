@@ -645,5 +645,36 @@
       "OVERDUE": "Vencido",
       "RETURNED": "Devuelto"
     }
+  },
+  "COMMAND_PALETTE": {
+    "PLACEHOLDER": "Buscar páginas, items, acciones...",
+    "NO_RESULTS": "No se encontraron resultados",
+    "NAVIGATION": "Páginas",
+    "ACTIONS": "Acciones",
+    "INVENTORY": "Items de Inventario",
+    "NAVIGATE": "para navegar",
+    "SELECT": "para seleccionar",
+    "CLOSE": "para cerrar",
+    "NEW_ITEM": "Crear nuevo item",
+    "LOGOUT": "Cerrar sesión",
+    "DESC": {
+      "DASHBOARD": "Ver dashboard y estadísticas",
+      "INVENTORY": "Gestionar items de inventario",
+      "WAREHOUSES": "Gestionar bodegas",
+      "TRANSACTIONS": "Ver historial de transacciones",
+      "LOANS": "Gestionar préstamos de equipo",
+      "REPORTS": "Generar y ver reportes",
+      "SUPPLIERS": "Gestionar proveedores",
+      "CATEGORIES": "Gestionar categorías",
+      "USERS": "Gestionar usuarios del sistema",
+      "AUDIT": "Ver registros de auditoría"
+    }
+  },
+  "THEME": {
+    "SWITCH_TO_LIGHT": "Cambiar a modo claro",
+    "SWITCH_TO_DARK": "Cambiar a modo oscuro",
+    "LIGHT": "Claro",
+    "DARK": "Oscuro",
+    "SYSTEM": "Sistema"
   }
 }

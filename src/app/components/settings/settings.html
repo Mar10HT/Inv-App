@@ -11,7 +11,7 @@
       <div class="p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
-            <mat-icon class="!text-[#5d8c7f]">language</mat-icon>
+            <lucide-icon name="Globe" class="!text-[#5d8c7f]"></lucide-icon>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
@@ -47,7 +47,7 @@
       <div class="p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
-            <mat-icon class="!text-[#5d8c7f]">palette</mat-icon>
+            <lucide-icon name="Palette" class="!text-[#5d8c7f]"></lucide-icon>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.APPEARANCE' | translate }}</h3>
@@ -57,7 +57,7 @@
 
         <div class="flex items-center justify-between ml-13 p-4 bg-surface-elevated rounded-lg">
           <div class="flex items-center gap-3">
-            <mat-icon class="!text-slate-400">{{ darkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+            <lucide-icon [name]="darkMode() ? 'Moon' : 'Sun'" class="!text-slate-400"></lucide-icon>
             <span class="text-foreground font-medium">
               {{ darkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate) }}
             </span>
@@ -80,7 +80,7 @@
       <div class="p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
-            <mat-icon class="!text-[#5d8c7f]">notifications</mat-icon>
+            <lucide-icon name="Bell" class="!text-[#5d8c7f]"></lucide-icon>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.NOTIFICATIONS' | translate }}</h3>
@@ -130,7 +130,7 @@
       <div class="p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-[#2d4a3f] flex items-center justify-center">
-            <mat-icon class="!text-[#5d8c7f]">storage</mat-icon>
+            <lucide-icon name="HardDrive" class="!text-[#5d8c7f]"></lucide-icon>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-foreground">{{ 'SETTINGS.DATA' | translate }}</h3>
@@ -149,7 +149,7 @@
             @if (exporting()) {
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             } @else {
-              <mat-icon class="!text-lg">download</mat-icon>
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
             }
             <span>{{ 'COMMON.EXPORT' | translate }}</span>
           </button>
@@ -162,7 +162,7 @@
       <div class="p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-red-900/30 flex items-center justify-center">
-            <mat-icon class="!text-red-400">warning</mat-icon>
+            <lucide-icon name="AlertTriangle" class="!text-red-400"></lucide-icon>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-red-400">{{ 'SETTINGS.DANGER_ZONE' | translate }}</h3>
@@ -177,7 +177,7 @@
           <button
             (click)="resetData()"
             class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-            <mat-icon class="!text-lg">delete_forever</mat-icon>
+            <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
             <span>{{ 'SETTINGS.RESET_DATA' | translate }}</span>
           </button>
         </div>

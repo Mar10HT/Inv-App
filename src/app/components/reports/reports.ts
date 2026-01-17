@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -49,7 +49,7 @@ interface TrendPoint {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    MatIconModule,
+    LucideAngularModule,
     MatTabsModule,
     FormsModule,
     TranslateModule,
@@ -457,19 +457,19 @@ export class Reports implements OnInit {
 
   getStatusIcon(status: InventoryStatus): string {
     switch (status) {
-      case InventoryStatus.IN_STOCK: return 'check_circle';
-      case InventoryStatus.LOW_STOCK: return 'warning';
-      case InventoryStatus.OUT_OF_STOCK: return 'error';
-      default: return 'help';
+      case InventoryStatus.IN_STOCK: return 'CheckCircle2';
+      case InventoryStatus.LOW_STOCK: return 'AlertTriangle';
+      case InventoryStatus.OUT_OF_STOCK: return 'XCircle';
+      default: return 'HelpCircle';
     }
   }
 
   getTransactionIcon(type: TransactionType): string {
     switch (type) {
-      case TransactionType.IN: return 'arrow_downward';
-      case TransactionType.OUT: return 'arrow_upward';
-      case TransactionType.TRANSFER: return 'swap_horiz';
-      default: return 'receipt';
+      case TransactionType.IN: return 'ArrowDown';
+      case TransactionType.OUT: return 'ArrowUp';
+      case TransactionType.TRANSFER: return 'ArrowLeftRight';
+      default: return 'Receipt';
     }
   }
 

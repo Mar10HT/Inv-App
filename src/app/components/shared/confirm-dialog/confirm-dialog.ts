@@ -2,7 +2,7 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 export interface ConfirmDialogData {
@@ -21,7 +21,7 @@ export interface ConfirmDialogData {
     CommonModule,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule,
+    LucideAngularModule,
     TranslateModule
   ],
   template: `
@@ -36,15 +36,15 @@ export interface ConfirmDialogData {
               'bg-orange-950/50': data.type === 'warning',
               'bg-sky-950/50': data.type === 'info' || !data.type
             }">
-            <mat-icon
+            <lucide-icon
+              [name]="data.type === 'danger' ? 'AlertTriangle' : data.type === 'warning' ? 'AlertCircle' : 'Info'"
               [ngClass]="{
-                '!text-rose-400': data.type === 'danger',
-                '!text-orange-400': data.type === 'warning',
-                '!text-sky-400': data.type === 'info' || !data.type
+                'text-rose-400': data.type === 'danger',
+                'text-orange-400': data.type === 'warning',
+                'text-sky-400': data.type === 'info' || !data.type
               }"
-              class="!text-2xl">
-              {{ data.type === 'danger' ? 'warning' : data.type === 'warning' ? 'error_outline' : 'info' }}
-            </mat-icon>
+              class="!w-6 !h-6">
+            </lucide-icon>
           </div>
           <div class="flex-1 min-w-0">
             <h2 class="text-lg font-semibold text-slate-200 mb-1">{{ data.title }}</h2>

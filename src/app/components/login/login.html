@@ -3,7 +3,7 @@
     <!-- Logo/Title -->
     <div class="text-center mb-8">
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#4d7c6f]/20 mb-4">
-        <mat-icon class="!text-4xl !w-10 !h-10 text-[#4d7c6f]">inventory_2</mat-icon>
+        <lucide-icon name="Package" class="!w-10 !h-10 text-[#4d7c6f]"></lucide-icon>
       </div>
       <h1 class="text-3xl font-bold text-foreground mb-2">{{ 'LOGIN.TITLE' | translate }}</h1>
       <p class="text-slate-400">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
@@ -26,9 +26,7 @@
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
             />
-            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5 !text-base">
-              email
-            </mat-icon>
+            <lucide-icon name="Mail" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
           </div>
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
             <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
@@ -49,17 +47,13 @@
                      focus:outline-none focus:border-[#4d7c6f] transition-colors"
               [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
             />
-            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5 !text-base">
-              lock
-            </mat-icon>
+            <lucide-icon name="Lock" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
             <button
               type="button"
               (click)="togglePasswordVisibility()"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-foreground transition-colors"
             >
-              <mat-icon class="!w-5 !h-5 !text-base">
-                {{ showPassword() ? 'visibility_off' : 'visibility' }}
-              </mat-icon>
+              <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-5 !h-5"></lucide-icon>
             </button>
           </div>
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
@@ -79,7 +73,7 @@
             <mat-spinner diameter="20" class="!w-5 !h-5"></mat-spinner>
             <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
           } @else {
-            <mat-icon class="!w-5 !h-5 !text-base">login</mat-icon>
+            <lucide-icon name="LogIn" class="!w-5 !h-5"></lucide-icon>
             <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
           }
         </button>

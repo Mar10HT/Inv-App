@@ -10,7 +10,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -35,7 +35,7 @@ import { ImportDialog } from '../../import/import-dialog';
     MatPaginatorModule,
     MatSortModule,
     MatButtonModule,
-    MatIconModule,
+    LucideAngularModule,
     MatDialogModule,
     MatSnackBarModule,
     MatTooltipModule,

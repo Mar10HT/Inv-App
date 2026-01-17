@@ -10,7 +10,7 @@
         <button
           (click)="addUser()"
           class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-          <mat-icon class="!leading-none !block">add</mat-icon>
+          <lucide-icon name="Plus" class="!w-5 !h-5"></lucide-icon>
           {{ 'USER.ADD' | translate }}
         </button>
       </div>
@@ -25,7 +25,7 @@
             <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">people</mat-icon>
+            <lucide-icon name="Users" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
             <p class="text-2xl font-bold text-rose-400">{{ stats().admins }}</p>
           </div>
           <div class="bg-rose-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-rose-400 !text-xl !leading-none !block">admin_panel_settings</mat-icon>
+            <lucide-icon name="ShieldCheck" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
             <p class="text-2xl font-bold text-emerald-400">{{ stats().users }}</p>
           </div>
           <div class="bg-emerald-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-emerald-400 !text-xl !leading-none !block">person</mat-icon>
+            <lucide-icon name="User" class="!text-emerald-400 !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
             <p class="text-2xl font-bold text-blue-400">{{ stats().viewers }}</p>
           </div>
           <div class="bg-blue-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-blue-400 !text-xl !leading-none !block">visibility</mat-icon>
+            <lucide-icon name="Eye" class="!text-blue-400 !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
@@ -69,7 +69,7 @@
             <p class="text-2xl font-bold text-orange-400">{{ stats().external }}</p>
           </div>
           <div class="bg-orange-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <mat-icon class="!text-orange-400 !text-xl !leading-none !block">badge</mat-icon>
+            <lucide-icon name="BadgeCheck" class="!text-orange-400 !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
     @if (error()) {
       <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
-          <mat-icon class="!text-rose-400 !leading-none !block">error</mat-icon>
+          <lucide-icon name="CircleAlert" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
           <span class="text-rose-400">{{ error() }}</span>
         </div>
       </div>
@@ -102,7 +102,7 @@
       @if (users().length === 0 && !loading()) {
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-16">
-          <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">people</mat-icon>
+          <lucide-icon name="Users" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
           <p class="text-slate-500 text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
           <p class="text-slate-600 text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
           <button
@@ -130,7 +130,7 @@
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 bg-[#2d4a3f] rounded-full flex items-center justify-center flex-shrink-0">
-                        <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">person</mat-icon>
+                        <lucide-icon name="User" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
                       </div>
                       <div>
                         <p class="font-medium text-foreground">{{ user.name || 'No name' }}</p>
@@ -141,7 +141,7 @@
                   <!-- Email Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-2 text-slate-400">
-                      <mat-icon class="!text-sm !text-slate-500 !leading-none !block">email</mat-icon>
+                      <lucide-icon name="Mail" class="!w-3.5 !h-3.5 !text-slate-500"></lucide-icon>
                       <span>{{ user.email }}</span>
                     </div>
                   </td>
@@ -160,13 +160,13 @@
                         type="button"
                         (click)="editUser(user)"
                         class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
-                        <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
+                        <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
                       </button>
                       <button
                         type="button"
                         (click)="deleteUser(user)"
                         class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
-                        <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
+                        <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                       </button>
                     </div>
                   </td>
@@ -182,12 +182,12 @@
             <div class="p-4">
               <div class="flex items-start gap-3 mb-3">
                 <div class="w-10 h-10 bg-[#2d4a3f] rounded-full flex items-center justify-center flex-shrink-0">
-                  <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">person</mat-icon>
+                  <lucide-icon name="User" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
                 </div>
                 <div class="flex-1 min-w-0">
                   <h3 class="font-semibold text-foreground">{{ user.name || 'No name' }}</h3>
                   <div class="flex items-center gap-1 text-slate-500 text-sm mt-1">
-                    <mat-icon class="!text-sm !leading-none !block">email</mat-icon>
+                    <lucide-icon name="Mail" class="!w-3.5 !h-3.5"></lucide-icon>
                     <span>{{ user.email }}</span>
                   </div>
                 </div>
@@ -202,13 +202,13 @@
                     type="button"
                     (click)="editUser(user)"
                     class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
-                    <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
+                    <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
                   </button>
                   <button
                     type="button"
                     (click)="deleteUser(user)"
                     class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
-                    <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
+                    <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                   </button>
                 </div>
               </div>

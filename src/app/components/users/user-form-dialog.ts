@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -26,7 +26,7 @@ export interface UserFormDialogData {
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule,
+    LucideAngularModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -45,7 +45,7 @@ export interface UserFormDialogData {
           type="button"
           (click)="dialogRef.close()"
           class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
-          <mat-icon>close</mat-icon>
+          <lucide-icon name="X"></lucide-icon>
         </button>
       </div>
 
@@ -107,7 +107,7 @@ export interface UserFormDialogData {
         } @else {
           <div class="bg-[#2d4a3f]/30 border border-[#4d7c6f]/30 rounded-lg p-4">
             <div class="flex items-center gap-3 text-[#4d7c6f]">
-              <mat-icon class="!text-xl">info</mat-icon>
+              <lucide-icon name="Info" class="!w-5 !h-5"></lucide-icon>
               <span class="text-sm">{{ 'USER.EXTERNAL_NO_LOGIN' | translate }}</span>
             </div>
           </div>

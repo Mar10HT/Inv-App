@@ -3,11 +3,10 @@
     <!-- Header -->
     <div class="mb-6">
       <button
-        mat-icon-button
         (click)="onCancel()"
-        class="!text-slate-400 hover:!text-foreground mb-4"
+        class="text-slate-400 hover:text-foreground mb-4 p-2 rounded-lg hover:bg-slate-800 transition-colors"
       >
-        <mat-icon>arrow_back</mat-icon>
+        <lucide-icon name="ArrowLeft" class="!w-5 !h-5"></lucide-icon>
       </button>
       <h1 class="text-3xl font-bold text-foreground mb-2">
         @if (isEditMode()) { {{ 'INVENTORY.FORM.EDIT_TITLE' | translate }} } @else { {{ 'INVENTORY.FORM.ADD_TITLE' | translate }} }
@@ -22,7 +21,7 @@
       <!-- Item Type Selection -->
       <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
         <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
-          <mat-icon class="!text-blue-400">category</mat-icon>
+          <lucide-icon name="Tag" class="!w-5 !h-5 text-blue-400"></lucide-icon>
           <span>{{ 'INVENTORY.FORM.ITEM_TYPE.TITLE' | translate }}</span>
         </h3>
         <div class="flex flex-col gap-3">
@@ -50,7 +49,7 @@
       <!-- Basic Information -->
       <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
         <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
-          <mat-icon class="!text-green-400">info</mat-icon>
+          <lucide-icon name="Info" class="!w-5 !h-5 text-green-400"></lucide-icon>
           <span>{{ 'INVENTORY.FORM.BASIC_INFO.TITLE' | translate }}</span>
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -113,7 +112,7 @@
       <!-- Identifiers Section -->
       <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
         <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
-          <mat-icon class="!text-purple-400">qr_code</mat-icon>
+          <lucide-icon name="QrCode" class="!w-5 !h-5 text-purple-400"></lucide-icon>
           <span>{{ 'INVENTORY.FORM.IDENTIFIERS.TITLE' | translate }}</span>
         </h3>
         @if (isUniqueItem()) {
@@ -157,7 +156,7 @@
       <!-- Quantity & Stock -->
       <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
         <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
-          <mat-icon class="!text-orange-400">inventory_2</mat-icon>
+          <lucide-icon name="Package" class="!w-5 !h-5 text-orange-400"></lucide-icon>
           <span>{{ 'INVENTORY.FORM.QUANTITY.TITLE' | translate }}</span>
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -183,7 +182,7 @@
       <!-- Price & Supplier -->
       <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
         <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
-          <mat-icon class="!text-yellow-400">attach_money</mat-icon>
+          <lucide-icon name="DollarSign" class="!w-5 !h-5 text-yellow-400"></lucide-icon>
           <span>{{ 'INVENTORY.FORM.PRICE.TITLE' | translate }}</span>
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -218,7 +217,7 @@
       @if (isUniqueItem()) {
         <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
           <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center gap-3">
-            <mat-icon class="!text-pink-400">person</mat-icon>
+            <lucide-icon name="User" class="!w-5 !h-5 text-pink-400"></lucide-icon>
             <span>{{ 'INVENTORY.FORM.ASSIGNMENT.TITLE' | translate }}</span>
           </h3>
           <div class="flex flex-col gap-1">
@@ -239,7 +238,7 @@
       <div class="flex justify-end gap-4">
         <button type="button" (click)="onCancel()" [disabled]="loading()"
           class="px-6 py-3 rounded-lg border border-theme text-foreground hover:bg-slate-800 transition-colors flex items-center gap-2 disabled:opacity-50">
-          <mat-icon>close</mat-icon>
+          <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
           {{ 'COMMON.CANCEL' | translate }}
         </button>
         <button type="submit" [disabled]="inventoryForm.invalid || loading()"
@@ -247,7 +246,7 @@
           @if (loading()) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
-            <mat-icon>save</mat-icon>
+            <lucide-icon name="Save" class="!w-4 !h-4"></lucide-icon>
           }
           {{ 'COMMON.SAVE' | translate }}
         </button>

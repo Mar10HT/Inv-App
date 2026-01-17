@@ -3,11 +3,13 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { LucideAngularModule } from 'lucide-angular';
 import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor, errorInterceptor } from './interceptors';
+import { APP_ICONS } from './shared/icons';
 
 // Import translations directly (SSR-safe)
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
@@ -36,6 +38,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor, errorInterceptor])
     ),
     importProvidersFrom(
+      LucideAngularModule.pick(APP_ICONS),
       TranslateModule.forRoot({
         defaultLanguage: 'en',
         loader: {

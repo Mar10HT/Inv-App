@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -20,7 +20,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
   imports: [
     CommonModule,
     FormsModule,
-    MatIconModule,
+    LucideAngularModule,
     MatButtonModule,
     MatDialogModule,
     MatPaginatorModule,
@@ -40,13 +40,13 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
               <button
                 (click)="exportToCSV()"
                 class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium">
-                <mat-icon class="!leading-none !block">download</mat-icon>
+                <lucide-icon name="Download" class="!w-5 !h-5"></lucide-icon>
                 {{ 'COMMON.EXPORT' | translate }}
               </button>
               <button
                 (click)="openNewLoanDialog()"
                 class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-                <mat-icon class="!leading-none !block">add</mat-icon>
+                <lucide-icon name="Plus" class="!w-5 !h-5"></lucide-icon>
                 {{ 'LOANS.NEW_LOAN' | translate }}
               </button>
             </div>
@@ -62,7 +62,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <p class="text-2xl font-bold text-foreground">{{ stats().totalActive }}</p>
               </div>
               <div class="bg-sky-950/50 p-3 rounded-lg">
-                <mat-icon class="!text-sky-400 !text-xl !leading-none !block">pending</mat-icon>
+                <lucide-icon name="Clock" class="!text-sky-400 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -73,7 +73,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <p class="text-2xl font-bold text-red-400">{{ stats().totalOverdue }}</p>
               </div>
               <div class="bg-red-950/50 p-3 rounded-lg">
-                <mat-icon class="!text-red-400 !text-xl !leading-none !block">warning</mat-icon>
+                <lucide-icon name="AlertTriangle" class="!text-red-400 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <p class="text-2xl font-bold text-amber-400">{{ stats().dueSoon }}</p>
               </div>
               <div class="bg-amber-950/50 p-3 rounded-lg">
-                <mat-icon class="!text-amber-400 !text-xl !leading-none !block">schedule</mat-icon>
+                <lucide-icon name="Clock" class="!text-amber-400 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -95,7 +95,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <p class="text-2xl font-bold text-emerald-400">{{ stats().totalReturned }}</p>
               </div>
               <div class="bg-emerald-950/50 p-3 rounded-lg">
-                <mat-icon class="!text-emerald-400 !text-xl !leading-none !block">check_circle</mat-icon>
+                <lucide-icon name="CheckCircle2" class="!text-emerald-400 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -114,7 +114,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                   [placeholder]="'LOANS.SEARCH_PLACEHOLDER' | translate"
                   class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
                 />
-                <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl !leading-none !block">search</mat-icon>
+                <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
               <button
                 (click)="clearFilters()"
                 class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
-                <mat-icon class="!text-lg !leading-none !block">clear</mat-icon>
+                <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                 {{ 'COMMON.CLEAR' | translate }}
               </button>
             }
@@ -178,13 +178,13 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                     <td class="px-6 py-4 text-foreground">{{ loan.quantity }}</td>
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-2">
-                        <mat-icon class="!text-slate-500 !text-lg !leading-none !block">warehouse</mat-icon>
+                        <lucide-icon name="Warehouse" class="!text-slate-500 !w-4 !h-4"></lucide-icon>
                         <span class="text-foreground">{{ loan.sourceWarehouseName }}</span>
                       </div>
                     </td>
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-2">
-                        <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">warehouse</mat-icon>
+                        <lucide-icon name="Warehouse" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
                         <span class="text-foreground">{{ loan.destinationWarehouseName }}</span>
                       </div>
                     </td>
@@ -201,7 +201,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                         <button
                           (click)="returnLoan(loan)"
                           class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm">
-                          <mat-icon class="!text-sm !leading-none !block">keyboard_return</mat-icon>
+                          <lucide-icon name="CornerDownLeft" class="!w-3.5 !h-3.5"></lucide-icon>
                           {{ 'LOANS.RETURN' | translate }}
                         </button>
                       } @else {
@@ -212,7 +212,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 } @empty {
                   <tr>
                     <td colspan="7" class="px-6 py-16 text-center">
-                      <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">assignment</mat-icon>
+                      <lucide-icon name="ClipboardList" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
                       <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'LOANS.NO_LOANS' | translate }}</h3>
                       <p class="text-slate-600">{{ 'LOANS.NO_LOANS_DESC' | translate }}</p>
                     </td>
@@ -258,14 +258,14 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                   <button
                     (click)="returnLoan(loan)"
                     class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm">
-                    <mat-icon class="!text-sm !leading-none !block">keyboard_return</mat-icon>
+                    <lucide-icon name="CornerDownLeft" class="!w-3.5 !h-3.5"></lucide-icon>
                     {{ 'LOANS.RETURN' | translate }}
                   </button>
                 }
               </div>
             } @empty {
               <div class="p-8 text-center">
-                <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">assignment</mat-icon>
+                <lucide-icon name="ClipboardList" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
                 <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'LOANS.NO_LOANS' | translate }}</h3>
               </div>
             }
@@ -363,7 +363,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                   type="button"
                   (click)="addLoanItem()"
                   class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] flex items-center gap-1">
-                  <mat-icon class="!text-lg">add</mat-icon>
+                  <lucide-icon name="Plus" class="!w-4 !h-4"></lucide-icon>
                   {{ 'TRANSACTION.ADD_ITEM' | translate }}
                 </button>
               </div>
@@ -406,7 +406,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                         type="button"
                         (click)="removeLoanItem(i)"
                         class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                        <mat-icon class="!text-lg">delete</mat-icon>
+                        <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                       </button>
                     </div>
                   </div>

@@ -22,7 +22,7 @@
     @if (error()) {
       <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
-          <mat-icon class="!text-rose-400 !leading-none !block">error</mat-icon>
+          <lucide-icon name="AlertCircle" class="!w-5 !h-5 text-rose-400"></lucide-icon>
           <span class="text-rose-400">{{ error() }}</span>
         </div>
       </div>
@@ -38,7 +38,7 @@
             <p class="text-3xl font-bold text-foreground">{{ stats()?.totalItems || 0 }}</p>
           </div>
           <div class="bg-surface-elevated p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-slate-500 !text-2xl !leading-none !block">inventory</mat-icon>
+            <lucide-icon name="Package" class="!w-6 !h-6 text-slate-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
             <p class="text-3xl font-bold text-emerald-400">{{ stats()?.inStockItems || 0 }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-emerald-700 !text-2xl !leading-none !block">check_circle</mat-icon>
+            <lucide-icon name="CheckCircle2" class="!w-6 !h-6 text-emerald-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
             <p class="text-3xl font-bold text-orange-400">{{ stats()?.lowStockItems || 0 }}</p>
           </div>
           <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-orange-700 !text-2xl !leading-none !block">warning</mat-icon>
+            <lucide-icon name="AlertTriangle" class="!w-6 !h-6 text-orange-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -77,7 +77,7 @@
             <p class="text-3xl font-bold text-sky-400">{{ formatCurrency(stats()?.totalValueUSD || 0) }}</p>
           </div>
           <div class="bg-sky-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-sky-700 !text-2xl !leading-none !block">attach_money</mat-icon>
+            <lucide-icon name="DollarSign" class="!w-6 !h-6 text-sky-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@
             <p class="text-3xl font-bold text-purple-400">{{ stats()?.totalUsers || 0 }}</p>
           </div>
           <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-purple-500 !text-2xl !leading-none !block">people</mat-icon>
+            <lucide-icon name="Users" class="!w-6 !h-6 text-purple-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -103,7 +103,7 @@
             <p class="text-3xl font-bold text-cyan-400">{{ stats()?.totalWarehouses || 0 }}</p>
           </div>
           <div class="bg-cyan-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-cyan-500 !text-2xl !leading-none !block">warehouse</mat-icon>
+            <lucide-icon name="Warehouse" class="!w-6 !h-6 text-cyan-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -114,7 +114,7 @@
             <p class="text-3xl font-bold text-amber-400">{{ stats()?.totalCategories || 0 }}</p>
           </div>
           <div class="bg-amber-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-amber-500 !text-2xl !leading-none !block">category</mat-icon>
+            <lucide-icon name="FolderOpen" class="!w-6 !h-6 text-amber-500"></lucide-icon>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@
             <p class="text-3xl font-bold" style="color: var(--color-status-error)">{{ stats()?.outOfStockItems || 0 }}</p>
           </div>
           <div class="ds-icon-container--error p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <mat-icon class="!text-2xl !leading-none !block" style="color: var(--color-status-error)">block</mat-icon>
+            <lucide-icon name="Ban" class="!w-6 !h-6" style="color: var(--color-status-error)"></lucide-icon>
           </div>
         </div>
       </div>
@@ -143,13 +143,13 @@
           <div cdkDragHandle class="flex items-center justify-between mb-4">
             @if (widget === 'status') {
               <h3 class="text-lg font-semibold text-foreground">{{ 'COMMON.STATUS' | translate }}</h3>
-              <mat-icon class="!text-slate-600 !leading-none !block">donut_large</mat-icon>
+              <lucide-icon name="PieChart" class="!w-4 !h-4 text-slate-600"></lucide-icon>
             } @else if (widget === 'categories') {
               <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.CATEGORIES' | translate }}</h3>
-              <mat-icon class="!text-slate-600 !leading-none !block">category</mat-icon>
+              <lucide-icon name="FolderOpen" class="!w-4 !h-4 text-slate-600"></lucide-icon>
             } @else if (widget === 'warehouses') {
               <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.WAREHOUSES' | translate }}</h3>
-              <mat-icon class="!text-slate-600 !leading-none !block">warehouse</mat-icon>
+              <lucide-icon name="Warehouse" class="!w-4 !h-4 text-slate-600"></lucide-icon>
             }
           </div>
 
@@ -168,7 +168,7 @@
               </apx-chart>
             } @else {
               <div class="flex flex-col items-center justify-center py-12">
-                <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">donut_large</mat-icon>
+                <lucide-icon name="PieChart" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
                 <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
@@ -187,7 +187,7 @@
               </apx-chart>
             } @else {
               <div class="flex flex-col items-center justify-center py-12">
-                <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
+                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
                 <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
@@ -207,7 +207,7 @@
               </apx-chart>
             } @else {
               <div class="flex flex-col items-center justify-center py-12">
-                <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
+                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
                 <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
@@ -226,14 +226,14 @@
         <button
           (click)="openCustomChartDialog()"
           class="flex items-center gap-2 px-4 py-2 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] transition-colors text-sm font-medium">
-          <mat-icon class="!text-lg">add</mat-icon>
+          <lucide-icon name="Plus" class="!w-4 !h-4"></lucide-icon>
           {{ 'DASHBOARD.CUSTOM_CHART.ADD' | translate }}
         </button>
       </div>
 
       @if (customCharts().length === 0) {
         <div class="bg-surface-variant rounded-xl border border-dashed border-[#3a3a3a] p-8 text-center">
-          <mat-icon class="!text-4xl !text-slate-700 mb-3 !leading-none !block mx-auto">add_chart</mat-icon>
+          <lucide-icon name="BarChart3" class="!w-10 !h-10 text-slate-700 mb-3 mx-auto"></lucide-icon>
           <p class="text-slate-500 text-sm mb-4">{{ 'DASHBOARD.CUSTOM_CHART.EMPTY' | translate }}</p>
           <button
             (click)="openCustomChartDialog()"
@@ -251,12 +251,12 @@
                   <button
                     (click)="openCustomChartDialog(chart)"
                     class="p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
-                    <mat-icon class="!text-lg">edit</mat-icon>
+                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                   </button>
                   <button
                     (click)="deleteCustomChart(chart)"
                     class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                    <mat-icon class="!text-lg">delete</mat-icon>
+                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                   </button>
                 </div>
               </div>
@@ -282,7 +282,7 @@
                 </apx-chart>
               } @else {
                 <div class="flex flex-col items-center justify-center py-8">
-                  <mat-icon class="!text-3xl !text-slate-700 mb-2 !leading-none !block">bar_chart</mat-icon>
+                  <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
                   <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
                 </div>
               }
@@ -316,7 +316,7 @@
 
             @if (recentTransactions().length === 0) {
               <div class="flex flex-col items-center justify-center py-12">
-                <mat-icon class="!text-4xl !text-slate-700 mb-3 !leading-none !block">receipt_long</mat-icon>
+                <lucide-icon name="Receipt" class="!w-10 !h-10 text-slate-700 mb-3"></lucide-icon>
                 <p class="text-slate-500 text-sm">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
               </div>
             } @else {
@@ -331,9 +331,7 @@
                           'bg-rose-950/50': tx.type === TransactionType.OUT,
                           'bg-blue-950/50': tx.type === TransactionType.TRANSFER
                         }">
-                        <mat-icon [class]="getTransactionTypeClass(tx.type) + ' !leading-none !block'">
-                          {{ getTransactionTypeIcon(tx.type) }}
-                        </mat-icon>
+                        <lucide-icon [name]="getTransactionTypeIcon(tx.type)" [class]="getTransactionTypeClass(tx.type) + ' !w-5 !h-5'"></lucide-icon>
                       </div>
                       <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-foreground">
@@ -369,7 +367,7 @@
 
             @if (lowStockItems().length === 0) {
               <div class="flex flex-col items-center justify-center py-12">
-                <mat-icon class="!text-4xl !text-emerald-700 mb-3 !leading-none !block">check_circle</mat-icon>
+                <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-emerald-500 mb-3"></lucide-icon>
                 <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             } @else {
@@ -380,7 +378,7 @@
                     class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
                     <div class="flex items-center gap-4">
                       <div class="w-10 h-10 bg-orange-950/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <mat-icon class="!text-orange-500 !leading-none !block">warning</mat-icon>
+                        <lucide-icon name="AlertTriangle" class="!w-5 !h-5 text-orange-500"></lucide-icon>
                       </div>
                       <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
@@ -427,7 +425,7 @@
       @if (items().length === 0 && !loading()) {
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-16">
-          <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">inventory_2</mat-icon>
+          <lucide-icon name="Package" class="!w-14 !h-14 text-slate-700 mb-4"></lucide-icon>
           <p class="text-slate-500 text-lg mb-2">{{ 'INVENTORY.NO_ITEMS' | translate }}</p>
           <p class="text-slate-600 text-sm mb-6">{{ 'INVENTORY.NO_ITEMS_DESC' | translate }}</p>
           <button
@@ -459,7 +457,7 @@
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                        <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
+                        <lucide-icon name="Package" class="!w-5 !h-5 text-[#4d7c6f]"></lucide-icon>
                       </div>
                       <div class="min-w-0 max-w-[350px]">
                         <p class="font-medium text-foreground truncate">{{ item.name }}</p>
@@ -507,19 +505,19 @@
                         type="button"
                         (click)="$event.stopPropagation(); viewItem(item)"
                         class="p-2 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
-                        <mat-icon class="!text-xl !leading-none !block">visibility</mat-icon>
+                        <lucide-icon name="Eye" class="!w-5 !h-5"></lucide-icon>
                       </button>
                       <button
                         type="button"
                         (click)="$event.stopPropagation(); editItem(item)"
                         class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
-                        <mat-icon class="!text-xl !leading-none !block">edit</mat-icon>
+                        <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
                       </button>
                       <button
                         type="button"
                         (click)="$event.stopPropagation(); deleteItem(item)"
                         class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                        <mat-icon class="!text-xl !leading-none !block">delete</mat-icon>
+                        <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                       </button>
                     </div>
                   </td>
@@ -535,7 +533,7 @@
             <div class="p-4">
               <div class="flex items-start gap-3 mb-3">
                 <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <mat-icon class="!text-[#4d7c6f] !text-lg !leading-none !block">inventory_2</mat-icon>
+                  <lucide-icon name="Package" class="!w-5 !h-5 text-[#4d7c6f]"></lucide-icon>
                 </div>
                 <div class="flex-1 min-w-0">
                   <h3 class="font-semibold text-foreground">{{ item.name }}</h3>
@@ -578,17 +576,17 @@
                 <button
                   (click)="viewItem(item)"
                   class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
-                  <mat-icon class="!text-slate-500 !text-base !leading-none !block">visibility</mat-icon>
+                  <lucide-icon name="Eye" class="!w-4 !h-4 text-slate-500"></lucide-icon>
                 </button>
                 <button
                   (click)="editItem(item)"
                   class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
-                  <mat-icon class="!text-slate-500 !text-base !leading-none !block">edit</mat-icon>
+                  <lucide-icon name="Pencil" class="!w-4 !h-4 text-slate-500"></lucide-icon>
                 </button>
                 <button
                   (click)="deleteItem(item)"
                   class="p-2 hover:bg-rose-950/20 rounded-lg transition-colors">
-                  <mat-icon class="!text-rose-500 !text-base !leading-none !block">delete</mat-icon>
+                  <lucide-icon name="Trash2" class="!w-4 !h-4 text-rose-500"></lucide-icon>
                 </button>
               </div>
             </div>

@@ -1,23 +1,34 @@
 /* Global styles */
 @import "tailwindcss";
-@import "./styles/design-system/index.css";
 
 /* ============================================
-   Tailwind v4 Theme - Semantic colors
-   Maps Tailwind to Design System tokens
+   Tailwind v4 Theme
+   Disable Tailwind's default semantic colors so our design system takes over.
+   Using 'initial' removes these from Tailwind's utility generation.
    ============================================ */
 @theme {
-    /* Semantic colors from Design System */
-    --color-foreground: var(--color-on-surface);
-    --color-foreground-muted: var(--color-on-surface-variant);
-    --color-background: var(--color-surface);
-    --color-card: var(--color-surface-variant);
-    --color-card-hover: var(--color-surface-elevated);
-    --color-border: var(--color-border);
-    --color-border-muted: var(--color-border-subtle);
-    --color-accent: var(--color-primary);
-    --color-accent-foreground: var(--color-primary-on);
+    /* Remove Tailwind's default semantic colors */
+    /* Our design-system/utilities.css provides these instead */
+    --color-foreground: initial;
+    --color-background: initial;
+    --color-card: initial;
+    --color-border: initial;
+    --color-primary: initial;
+    --color-accent: initial;
+    --color-muted: initial;
+    --color-muted-foreground: initial;
+    --color-popover: initial;
+    --color-popover-foreground: initial;
+    --color-secondary: initial;
+    --color-secondary-foreground: initial;
+    --color-destructive: initial;
+    --color-destructive-foreground: initial;
+    --color-ring: initial;
+    --color-input: initial;
 }
+
+/* Import design system AFTER @theme to allow CSS cascade overrides */
+@import "./styles/design-system/index.css";
 
 
 html {
@@ -27,7 +38,23 @@ html {
 html, body { height: 100%; }
 body {
     margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: "Outfit", "Helvetica Neue", sans-serif;
+}
+
+/* Monospace font for data/numbers */
+.font-mono,
+code,
+pre,
+kbd,
+samp,
+.data-value,
+.service-tag,
+.quantity,
+.price,
+.stock-value,
+table td:nth-child(n+3):not(:last-child) {
+    font-family: "JetBrains Mono", monospace;
+    font-feature-settings: "liga" 1, "calt" 1;
 }
 
 /* Theme color-scheme */
@@ -97,6 +124,92 @@ mat-icon {
     vertical-align: middle !important;
     width: 1em !important;
     height: 1em !important;
+}
+
+/* Lucide Icons - Consistent sizing and alignment */
+lucide-icon,
+i-lucide {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: -0.125em !important;
+    width: 1.25em !important;
+    height: 1.25em !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Lucide SVG internal alignment */
+lucide-icon svg,
+i-lucide svg {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    stroke-width: 2 !important;
+}
+
+/* When inside flex containers, reset vertical-align */
+.flex lucide-icon,
+.inline-flex lucide-icon,
+.flex i-lucide,
+.inline-flex i-lucide {
+    vertical-align: baseline !important;
+}
+
+/* Ensure icons align with text in flex items */
+.flex.items-center lucide-icon,
+.inline-flex.items-center lucide-icon,
+.flex.items-start lucide-icon,
+.inline-flex.items-start lucide-icon {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Icon size variants */
+.icon-xs lucide-icon,
+.icon-xs i-lucide { width: 0.875em !important; height: 0.875em !important; }
+
+.icon-sm lucide-icon,
+.icon-sm i-lucide { width: 1em !important; height: 1em !important; }
+
+.icon-md lucide-icon,
+.icon-md i-lucide { width: 1.25em !important; height: 1.25em !important; }
+
+.icon-lg lucide-icon,
+.icon-lg i-lucide { width: 1.5em !important; height: 1.5em !important; }
+
+.icon-xl lucide-icon,
+.icon-xl i-lucide { width: 2em !important; height: 2em !important; }
+
+/* Text size utility for icons */
+.\!text-lg lucide-icon,
+.\!text-lg i-lucide {
+    width: 1.125em !important;
+    height: 1.125em !important;
+}
+
+.\!text-xl lucide-icon,
+.\!text-xl i-lucide {
+    width: 1.25em !important;
+    height: 1.25em !important;
+}
+
+.\!text-2xl lucide-icon,
+.\!text-2xl i-lucide {
+    width: 1.5em !important;
+    height: 1.5em !important;
+}
+
+.\!text-3xl lucide-icon,
+.\!text-3xl i-lucide {
+    width: 1.875em !important;
+    height: 1.875em !important;
+}
+
+.\!text-4xl lucide-icon,
+.\!text-4xl i-lucide {
+    width: 2.25em !important;
+    height: 2.25em !important;
 }
 
 /* ============================================
@@ -182,7 +295,42 @@ html[data-theme="light"] [class*="sky-950/"] {
 /* ============================================
    Light theme overrides
    ============================================ */
+
+/* Force CSS variables on html element */
+html[data-theme="light"] {
+    --color-foreground: #0f172a !important;
+    --color-on-surface: #0f172a !important;
+    --tw-text-opacity: 1 !important;
+}
+
+/* Force text-foreground color with highest specificity */
+html[data-theme="light"] .text-foreground,
+html[data-theme="light"] [class*="text-foreground"],
+[data-theme="light"] .text-foreground,
+:root[data-theme="light"] .text-foreground {
+    color: #0f172a !important;
+    --tw-text-opacity: 1 !important;
+}
+
+/* Also target any element using the foreground color variable */
+html[data-theme="light"] [style*="--color-foreground"],
+html[data-theme="light"] [style*="color: var(--color"] {
+    color: #0f172a !important;
+}
+
 [data-theme="light"] {
+    /* ----------------------------------------
+       CSS Variables for light theme
+       ---------------------------------------- */
+    --color-foreground: #0f172a;
+    --color-on-surface: #0f172a;
+
+    /* ----------------------------------------
+       Core text colors for light theme
+       ---------------------------------------- */
+    .text-foreground { color: #0f172a !important; }
+    .text-white { color: #ffffff !important; }
+
     /* ----------------------------------------
        Text colors - light to dark
        ---------------------------------------- */
@@ -686,4 +834,70 @@ html[data-theme="light"] [class*="sky-950/"] {
     .mat-mdc-form-field-type-mat-select .mat-mdc-select-value-text {
         color: #1e293b !important;
     }
+}
+
+/* ============================================
+   FINAL OVERRIDES - Highest Priority
+   These rules MUST be at the end of the file
+   ============================================ */
+
+/*
+   Override Tailwind's text-foreground utility
+   Using @layer utilities to ensure it's processed correctly
+*/
+@layer utilities {
+    .text-foreground {
+        color: var(--color-foreground, var(--on-surface, #0f172a)) !important;
+    }
+}
+
+/* Force dark text in light theme - multiple selector specificity */
+html[data-theme="light"] .text-foreground,
+body[data-theme="light"] .text-foreground,
+[data-theme="light"] .text-foreground {
+    color: #0f172a !important;
+    --color-foreground: #0f172a !important;
+}
+
+html[data-theme="light"] p.text-foreground,
+html[data-theme="light"] span.text-foreground,
+html[data-theme="light"] h1.text-foreground,
+html[data-theme="light"] h2.text-foreground,
+html[data-theme="light"] h3.text-foreground,
+html[data-theme="light"] div.text-foreground,
+html[data-theme="light"] label.text-foreground {
+    color: #0f172a !important;
+}
+
+/* Force the CSS variable value on html element */
+html[data-theme="light"] {
+    --color-foreground: #0f172a !important;
+    --color-on-surface: #0f172a !important;
+    --on-surface: #0f172a !important;
+}
+
+/* ============================================
+   NUCLEAR OPTION - Maximum Specificity Override
+   These rules use specificity hacks to guarantee
+   they override Tailwind's generated utilities.
+   ============================================ */
+
+/* Using :where() to check, then :is() for specificity boost */
+html:is([data-theme="light"]) :is(.text-foreground) {
+    color: #0f172a !important;
+}
+
+/* Multiple attribute selectors for higher specificity */
+[data-theme="light"][data-theme="light"] .text-foreground {
+    color: #0f172a !important;
+}
+
+/* Class repeated for specificity */
+.text-foreground.text-foreground {
+    color: var(--color-foreground) !important;
+}
+
+/* Final fallback - inline style equivalent via attribute selector */
+[data-theme="light"] [class~="text-foreground"] {
+    color: #0f172a !important;
 }

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 
 export interface CustomSnackbarData {
@@ -12,7 +12,7 @@ export interface CustomSnackbarData {
 @Component({
   selector: 'app-custom-snackbar',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, LucideAngularModule],
   template: `
     <div
       class="flex items-stretch overflow-hidden rounded-xl min-w-[360px] max-w-[520px] border-[5px]"
@@ -21,7 +21,7 @@ export interface CustomSnackbarData {
       <div
         class="flex items-center justify-center w-16 flex-shrink-0"
         [ngClass]="iconBgClass">
-        <mat-icon class="!text-white !text-2xl">{{ icon }}</mat-icon>
+        <lucide-icon [name]="icon" class="!w-6 !h-6 text-white"></lucide-icon>
       </div>
 
       <!-- Content Section -->
@@ -31,7 +31,7 @@ export interface CustomSnackbarData {
         <button
           (click)="dismiss()"
           class="text-slate-500 hover:text-white transition-colors flex-shrink-0 p-1">
-          <mat-icon class="!text-xl">close</mat-icon>
+          <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
         </button>
       </div>
     </div>
@@ -48,11 +48,11 @@ export class CustomSnackbar {
 
   get icon(): string {
     switch (this.data.type) {
-      case 'success': return 'check';
-      case 'error': return 'priority_high';
-      case 'warning': return 'priority_high';
-      case 'info': return 'info';
-      default: return 'info';
+      case 'success': return 'Check';
+      case 'error': return 'AlertCircle';
+      case 'warning': return 'AlertTriangle';
+      case 'info': return 'Info';
+      default: return 'Info';
     }
   }
 

@@ -31,6 +31,16 @@
   --color-on-surface-variant: #94a3b8;  /* WCAG AA: 5.4:1 contrast */
   --color-on-surface-muted: #64748b;
 
+  /* Tailwind semantic aliases - for text-*, bg-*, etc utilities */
+  --color-foreground: #cbd5e1;
+  --color-foreground-muted: #94a3b8;
+  --color-background: #0a0a0a;
+  --color-card: #1a1a1a;
+  --color-card-hover: #242424;
+  --color-border-muted: #2a2a2a;
+  --color-accent: #4d7c6f;
+  --color-accent-foreground: #ffffff;
+
   /* Borders */
   --color-border: #3a3a3a;
   --color-border-subtle: #2a2a2a;
@@ -100,6 +110,16 @@
   --color-on-surface: #0f172a;
   --color-on-surface-variant: #334155;  /* WCAG AA: 7.1:1 contrast */
   --color-on-surface-muted: #64748b;
+
+  /* Tailwind semantic aliases - DARK text for light theme */
+  --color-foreground: #0f172a;
+  --color-foreground-muted: #334155;
+  --color-background: #f8fafc;
+  --color-card: #ffffff;
+  --color-card-hover: #ffffff;
+  --color-border-muted: #cbd5e1;
+  --color-accent: #2d5a4e;
+  --color-accent-foreground: #ffffff;
 
   /* Borders */
   --color-border: #b6c2d1;

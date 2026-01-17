@@ -4,7 +4,7 @@
     <div class="mb-6">
       <div class="flex items-center gap-4">
         <div class="w-12 h-12 bg-[#2d4a3f] rounded-xl flex items-center justify-center flex-shrink-0">
-          <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">assessment</mat-icon>
+          <lucide-icon name="BarChart3" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
         </div>
         <div>
           <h1 class="text-4xl font-bold text-foreground mb-1">{{ 'REPORTS.TITLE' | translate }}</h1>
@@ -20,35 +20,35 @@
           (click)="onTabChange(0)"
           [class]="activeTab() === 0 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
-          <mat-icon class="!text-lg !leading-none">payments</mat-icon>
+          <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_VALUE' | translate }}
         </button>
         <button
           (click)="onTabChange(1)"
           [class]="activeTab() === 1 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
-          <mat-icon class="!text-lg !leading-none">swap_horiz</mat-icon>
+          <lucide-icon name="ArrowLeftRight" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_TRANSACTIONS' | translate }}
         </button>
         <button
           (click)="onTabChange(2)"
           [class]="activeTab() === 2 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
-          <mat-icon class="!text-lg !leading-none">inventory</mat-icon>
+          <lucide-icon name="Package" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_STATUS' | translate }}
         </button>
         <button
           (click)="onTabChange(3)"
           [class]="activeTab() === 3 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
-          <mat-icon class="!text-lg !leading-none">person_pin</mat-icon>
+          <lucide-icon name="UserCheck" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_ASSIGNMENTS' | translate }}
         </button>
         <button
           (click)="onTabChange(4)"
           [class]="activeTab() === 4 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
-          <mat-icon class="!text-lg !leading-none">trending_up</mat-icon>
+          <lucide-icon name="TrendingUp" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_TRENDS' | translate }}
         </button>
       </div>
@@ -81,13 +81,13 @@
             <button
               (click)="exportReport()"
               class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
-              <mat-icon class="!leading-none !block !text-lg">table_chart</mat-icon>
+              <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
               CSV
             </button>
             <button
               (click)="exportValueReportPDF()"
               class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
-              <mat-icon class="!leading-none !block !text-lg">picture_as_pdf</mat-icon>
+              <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
               PDF
             </button>
           </div>
@@ -102,7 +102,7 @@
                 <p class="text-3xl font-bold text-[#4d7c6f]">{{ formatCurrency(totalValue()) }}</p>
               </div>
               <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-                <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">payments</mat-icon>
+                <lucide-icon name="DollarSign" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@
                 <p class="text-3xl font-bold text-sky-400">{{ totalItemsCount() }}</p>
               </div>
               <div class="bg-sky-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-                <mat-icon class="!text-sky-500 !text-2xl !leading-none !block">inventory_2</mat-icon>
+                <lucide-icon name="Package" class="!text-sky-500 !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
@@ -124,7 +124,7 @@
                 <p class="text-3xl font-bold text-purple-400">{{ valueByCategory().length }}</p>
               </div>
               <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-                <mat-icon class="!text-purple-500 !text-2xl !leading-none !block">category</mat-icon>
+                <lucide-icon name="Tag" class="!text-purple-500 !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
@@ -135,7 +135,7 @@
                 <p class="text-3xl font-bold text-orange-400">{{ valueByWarehouse().length }}</p>
               </div>
               <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-                <mat-icon class="!text-orange-500 !text-2xl !leading-none !block">warehouse</mat-icon>
+                <lucide-icon name="Warehouse" class="!text-orange-500 !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
@@ -143,10 +143,10 @@
 
         <!-- Reports Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          @for (section of [{title: 'REPORTS.BY_CATEGORY', icon: 'category', data: valueByCategory()}, {title: 'REPORTS.BY_WAREHOUSE', icon: 'warehouse', data: valueByWarehouse()}, {title: 'REPORTS.BY_SUPPLIER', icon: 'local_shipping', data: valueBySupplier()}]; track section.title) {
+          @for (section of [{title: 'REPORTS.BY_CATEGORY', icon: 'Tag', data: valueByCategory()}, {title: 'REPORTS.BY_WAREHOUSE', icon: 'Warehouse', data: valueByWarehouse()}, {title: 'REPORTS.BY_SUPPLIER', icon: 'Truck', data: valueBySupplier()}]; track section.title) {
             <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
               <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-                <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">{{ section.icon }}</mat-icon>
+                <lucide-icon [name]="section.icon" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
                 <h2 class="text-lg font-semibold text-foreground">{{ section.title | translate }}</h2>
               </div>
               <div class="p-4 max-h-[400px] overflow-y-auto">
@@ -172,7 +172,7 @@
         <!-- Top Items -->
         <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
           <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-            <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">trending_up</mat-icon>
+            <lucide-icon name="TrendingUp" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
             <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TOP_ITEMS' | translate }}</h2>
           </div>
           <div class="overflow-x-auto">
@@ -247,7 +247,7 @@
                 <button
                   (click)="clearTransactionFilters()"
                   class="text-slate-400 hover:text-foreground transition-colors flex items-center gap-1">
-                  <mat-icon class="!text-lg">close</mat-icon>
+                  <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                   {{ 'COMMON.CLEAR' | translate }}
                 </button>
               }
@@ -256,13 +256,13 @@
               <button
                 (click)="exportTransactions()"
                 class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
-                <mat-icon class="!leading-none !block !text-lg">table_chart</mat-icon>
+                <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
                 CSV
               </button>
               <button
                 (click)="exportTransactionsPDF()"
                 class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
-                <mat-icon class="!leading-none !block !text-lg">picture_as_pdf</mat-icon>
+                <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
                 PDF
               </button>
             </div>
@@ -309,7 +309,7 @@
                       <td class="px-6 py-4">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
                           [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-emerald-400' : tx.type === 'OUT' ? 'bg-rose-500/20 text-rose-400' : 'bg-blue-500/20 text-blue-400'">
-                          <mat-icon class="!text-sm !w-4 !h-4">{{ getTransactionIcon(tx.type) }}</mat-icon>
+                          <lucide-icon [name]="getTransactionIcon(tx.type)" class="!text-sm !w-4 !h-4"></lucide-icon>
                           {{ tx.type }}
                         </span>
                       </td>
@@ -338,13 +338,13 @@
             <button
               (click)="exportStatusReport()"
               class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
-              <mat-icon class="!leading-none !block !text-lg">table_chart</mat-icon>
+              <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
               CSV
             </button>
             <button
               (click)="exportStatusReportPDF()"
               class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
-              <mat-icon class="!leading-none !block !text-lg">picture_as_pdf</mat-icon>
+              <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
               PDF
             </button>
           </div>
@@ -358,9 +358,10 @@
               <div class="flex items-center gap-4 mb-4">
                 <div class="p-3 rounded-lg"
                   [class]="summary.status === InventoryStatus.IN_STOCK ? 'bg-emerald-500/20' : summary.status === InventoryStatus.LOW_STOCK ? 'bg-orange-500/20' : 'bg-rose-500/20'">
-                  <mat-icon
+                  <lucide-icon
+                    [name]="getStatusIcon(summary.status)"
                     [class]="summary.status === InventoryStatus.IN_STOCK ? '!text-emerald-400' : summary.status === InventoryStatus.LOW_STOCK ? '!text-orange-400' : '!text-rose-400'"
-                    class="!text-2xl !leading-none !block">{{ getStatusIcon(summary.status) }}</mat-icon>
+                    class="!w-6 !h-6"></lucide-icon>
                 </div>
                 <div>
                   <p class="text-sm text-slate-500">{{ 'STATUS.' + summary.status | translate }}</p>
@@ -379,7 +380,7 @@
           <!-- Out of Stock -->
           <div class="bg-surface-variant border border-rose-900/50 rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-rose-950/20">
-              <mat-icon class="!text-rose-400 !text-xl !leading-none !block">error</mat-icon>
+              <lucide-icon name="XCircle" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-rose-400">{{ 'REPORTS.OUT_OF_STOCK_ITEMS' | translate }}</h2>
               <span class="ml-auto bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded text-sm font-medium">{{ outOfStockItems().length }}</span>
             </div>
@@ -401,7 +402,7 @@
           <!-- Low Stock -->
           <div class="bg-surface-variant border border-orange-900/50 rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-orange-950/20">
-              <mat-icon class="!text-orange-400 !text-xl !leading-none !block">warning</mat-icon>
+              <lucide-icon name="AlertTriangle" class="!text-orange-400 !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-orange-400">{{ 'REPORTS.LOW_STOCK_ITEMS' | translate }}</h2>
               <span class="ml-auto bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded text-sm font-medium">{{ lowStockItems().length }}</span>
             </div>
@@ -432,13 +433,13 @@
             <button
               (click)="exportAssignments()"
               class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
-              <mat-icon class="!leading-none !block !text-lg">table_chart</mat-icon>
+              <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
               CSV
             </button>
             <button
               (click)="exportAssignmentsReportPDF()"
               class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
-              <mat-icon class="!leading-none !block !text-lg">picture_as_pdf</mat-icon>
+              <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
               PDF
             </button>
           </div>
@@ -449,7 +450,7 @@
           <div class="bg-surface-variant border border-theme rounded-xl p-6">
             <div class="flex items-center gap-4">
               <div class="bg-[#2d4a3f] p-3 rounded-lg">
-                <mat-icon class="!text-[#4d7c6f] !text-2xl !leading-none !block">devices</mat-icon>
+                <lucide-icon name="Monitor" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
               </div>
               <div>
                 <p class="text-sm text-slate-500">{{ 'REPORTS.TOTAL_UNIQUE_ITEMS' | translate }}</p>
@@ -460,7 +461,7 @@
           <div class="bg-surface-variant border border-theme rounded-xl p-6">
             <div class="flex items-center gap-4">
               <div class="bg-emerald-500/20 p-3 rounded-lg">
-                <mat-icon class="!text-emerald-400 !text-2xl !leading-none !block">person_pin</mat-icon>
+                <lucide-icon name="UserCheck" class="!text-emerald-400 !w-6 !h-6"></lucide-icon>
               </div>
               <div>
                 <p class="text-sm text-slate-500">{{ 'REPORTS.ASSIGNED' | translate }}</p>
@@ -471,7 +472,7 @@
           <div class="bg-surface-variant border border-theme rounded-xl p-6">
             <div class="flex items-center gap-4">
               <div class="bg-slate-500/20 p-3 rounded-lg">
-                <mat-icon class="!text-slate-400 !text-2xl !leading-none !block">person_off</mat-icon>
+                <lucide-icon name="UserX" class="!text-slate-400 !w-6 !h-6"></lucide-icon>
               </div>
               <div>
                 <p class="text-sm text-slate-500">{{ 'REPORTS.UNASSIGNED' | translate }}</p>
@@ -484,7 +485,7 @@
         <!-- Assignments by User -->
         <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden mb-6">
           <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-            <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">group</mat-icon>
+            <lucide-icon name="Users" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
             <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.ASSIGNMENTS_BY_USER' | translate }}</h2>
           </div>
           <div class="divide-y divide-[#1e1e1e]">
@@ -525,7 +526,7 @@
         @if (unassignedUniqueItems().length > 0) {
           <div class="bg-surface-variant border border-slate-700/50 rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-              <mat-icon class="!text-slate-400 !text-xl !leading-none !block">person_off</mat-icon>
+              <lucide-icon name="UserX" class="!text-slate-400 !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-slate-400">{{ 'REPORTS.UNASSIGNED_ITEMS' | translate }}</h2>
               <span class="ml-auto bg-slate-500/20 text-slate-400 px-2 py-0.5 rounded text-sm font-medium">{{ unassignedUniqueItems().length }}</span>
             </div>
@@ -554,7 +555,7 @@
           <!-- Trend Chart -->
           <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-              <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">show_chart</mat-icon>
+              <lucide-icon name="LineChart" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TRANSACTIONS_LAST_30_DAYS' | translate }}</h2>
             </div>
             <div class="p-6">
@@ -577,7 +578,7 @@
           <!-- Daily Summary -->
           <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-              <mat-icon class="!text-[#4d7c6f] !text-xl !leading-none !block">calendar_today</mat-icon>
+              <lucide-icon name="Calendar" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.DAILY_SUMMARY' | translate }}</h2>
             </div>
             <div class="overflow-x-auto max-h-[400px] overflow-y-auto">

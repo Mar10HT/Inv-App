@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, e
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, Package, CheckCircle2, AlertTriangle, DollarSign, Users, Warehouse, FolderOpen, Ban, PieChart, BarChart2, Receipt, Plus, BarChart3, Pencil, Trash2, Eye, ArrowDown, ArrowUp, ArrowLeftRight, AlertCircle } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
@@ -43,7 +43,7 @@ import { NotificationService } from '../../services/notification.service';
     CdkDrag,
     CdkDropList,
     CdkDragPlaceholder,
-    MatIconModule,
+    LucideAngularModule,
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
@@ -962,9 +962,9 @@ export class Dashboard implements OnInit {
 
   getTransactionTypeIcon(type: TransactionType): string {
     switch (type) {
-      case TransactionType.IN: return 'arrow_downward';
-      case TransactionType.OUT: return 'arrow_upward';
-      case TransactionType.TRANSFER: return 'swap_horiz';
+      case TransactionType.IN: return 'arrow-down';
+      case TransactionType.OUT: return 'arrow-up';
+      case TransactionType.TRANSFER: return 'arrow-left-right';
       default: return 'receipt';
     }
   }

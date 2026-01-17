@@ -1,10 +1,10 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { LucideAngularModule } from 'lucide-angular';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { AuthService } from '../../../services/auth.service';
 import { SidebarService } from '../../../services/sidebar.service';
@@ -17,7 +17,7 @@ import { ThemeService } from '../../../services/theme.service';
     CommonModule,
     RouterLink,
     RouterLinkActive,
-    MatIconModule,
+    LucideAngularModule,
     MatButtonModule,
     MatTooltipModule,
     TranslateModule,

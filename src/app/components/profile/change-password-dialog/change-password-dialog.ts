@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { NotificationService } from '../../../services/notification.service';
 
@@ -13,7 +13,7 @@ import { NotificationService } from '../../../services/notification.service';
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatIconModule,
+    LucideAngularModule,
     TranslateModule
   ],
   template: `
@@ -24,7 +24,7 @@ import { NotificationService } from '../../../services/notification.service';
         <button
           (click)="close()"
           class="text-slate-500 hover:text-foreground transition-colors">
-          <mat-icon>close</mat-icon>
+          <lucide-icon name="X"></lucide-icon>
         </button>
       </div>
 

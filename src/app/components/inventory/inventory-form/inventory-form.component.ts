@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -33,7 +33,7 @@ import { User, UserRole } from '../../../interfaces/user.interface';
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
-    MatIconModule,
+    LucideAngularModule,
     MatRadioModule,
     MatDividerModule,
     MatProgressSpinnerModule,

@@ -2,7 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,7 +16,7 @@ import { NotificationService } from '../../services/notification.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatIconModule,
+    LucideAngularModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
     TranslateModule

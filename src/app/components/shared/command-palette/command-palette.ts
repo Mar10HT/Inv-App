@@ -2,7 +2,7 @@ import { Component, inject, signal, computed, OnInit, OnDestroy, ElementRef, Vie
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -24,7 +24,7 @@ interface CommandItem {
 @Component({
   selector: 'app-command-palette',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
   template: `
     <div class="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
       <!-- Backdrop -->
@@ -37,7 +37,7 @@ interface CommandItem {
       <div class="relative w-full max-w-2xl mx-4 bg-[#1a1a1a] rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden">
         <!-- Search Input -->
         <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-700/50">
-          <mat-icon class="text-slate-400">search</mat-icon>
+          <lucide-icon name="Search" class="text-slate-400"></lucide-icon>
           <input
             #searchInput
             type="text"
@@ -56,7 +56,7 @@ interface CommandItem {
         <div class="max-h-[60vh] overflow-y-auto">
           @if (filteredItems().length === 0 && searchQuery.length > 0) {
             <div class="px-4 py-8 text-center text-slate-500">
-              <mat-icon class="!text-4xl mb-2">search_off</mat-icon>
+              <lucide-icon name="SearchX" class="!w-10 !h-10 mb-2"></lucide-icon>
               <p>{{ 'COMMAND_PALETTE.NO_RESULTS' | translate }}</p>
             </div>
           }
@@ -74,7 +74,7 @@ interface CommandItem {
                   [ngClass]="{'bg-slate-700/50': selectedIndex() === getGlobalIndex('navigation', i)}"
                   class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
                   <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-teal-500/20">
-                    <mat-icon class="!text-lg text-slate-400 group-hover:text-teal-500">{{ item.icon }}</mat-icon>
+                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-slate-400 group-hover:text-teal-500"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
                     <p class="text-sm text-white">{{ item.label }}</p>
@@ -103,7 +103,7 @@ interface CommandItem {
                   [ngClass]="{'bg-slate-700/50': selectedIndex() === getGlobalIndex('action', i)}"
                   class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
                   <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-blue-500/20">
-                    <mat-icon class="!text-lg text-slate-400 group-hover:text-blue-400">{{ item.icon }}</mat-icon>
+                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-slate-400 group-hover:text-blue-400"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
                     <p class="text-sm text-white">{{ item.label }}</p>
@@ -126,7 +126,7 @@ interface CommandItem {
                   [ngClass]="{'bg-slate-700/50': selectedIndex() === getGlobalIndex('item', i)}"
                   class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
                   <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-emerald-500/20">
-                    <mat-icon class="!text-lg text-slate-400 group-hover:text-emerald-400">inventory_2</mat-icon>
+                    <lucide-icon name="Package" class="!w-4 !h-4 text-slate-400 group-hover:text-emerald-400"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left min-w-0">
                     <p class="text-sm text-white truncate">{{ item.label }}</p>
@@ -293,7 +293,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-dashboard',
         type: 'navigation',
-        icon: 'dashboard',
+        icon: 'LayoutDashboard',
         label: this.translate.instant('NAV.DASHBOARD'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.DASHBOARD'),
         action: () => this.router.navigate(['/dashboard'])
@@ -301,7 +301,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-inventory',
         type: 'navigation',
-        icon: 'inventory_2',
+        icon: 'Package',
         label: this.translate.instant('NAV.INVENTORY'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.INVENTORY'),
         action: () => this.router.navigate(['/inventory'])
@@ -309,7 +309,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-warehouses',
         type: 'navigation',
-        icon: 'warehouse',
+        icon: 'Warehouse',
         label: this.translate.instant('NAV.WAREHOUSES'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.WAREHOUSES'),
         action: () => this.router.navigate(['/warehouses'])
@@ -317,7 +317,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-transactions',
         type: 'navigation',
-        icon: 'receipt_long',
+        icon: 'Receipt',
         label: this.translate.instant('NAV.TRANSACTIONS'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.TRANSACTIONS'),
         action: () => this.router.navigate(['/transactions'])
@@ -325,7 +325,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-loans',
         type: 'navigation',
-        icon: 'swap_horiz',
+        icon: 'ArrowLeftRight',
         label: this.translate.instant('NAV.LOANS'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.LOANS'),
         action: () => this.router.navigate(['/loans'])
@@ -333,7 +333,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-reports',
         type: 'navigation',
-        icon: 'assessment',
+        icon: 'BarChart3',
         label: this.translate.instant('NAV.REPORTS'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.REPORTS'),
         action: () => this.router.navigate(['/reports'])
@@ -341,7 +341,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-suppliers',
         type: 'navigation',
-        icon: 'local_shipping',
+        icon: 'Truck',
         label: this.translate.instant('NAV.SUPPLIERS'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.SUPPLIERS'),
         action: () => this.router.navigate(['/suppliers'])
@@ -349,7 +349,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-categories',
         type: 'navigation',
-        icon: 'category',
+        icon: 'Tag',
         label: this.translate.instant('NAV.CATEGORIES'),
         description: this.translate.instant('COMMAND_PALETTE.DESC.CATEGORIES'),
         action: () => this.router.navigate(['/categories'])
@@ -357,14 +357,14 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'nav-profile',
         type: 'navigation',
-        icon: 'person',
+        icon: 'User',
         label: this.translate.instant('NAV.PROFILE'),
         action: () => this.router.navigate(['/profile'])
       },
       {
         id: 'nav-settings',
         type: 'navigation',
-        icon: 'settings',
+        icon: 'Settings',
         label: this.translate.instant('NAV.SETTINGS'),
         action: () => this.router.navigate(['/settings'])
       },
@@ -373,14 +373,14 @@ export class CommandPalette implements OnInit, OnDestroy {
       {
         id: 'action-new-item',
         type: 'action',
-        icon: 'add_circle',
+        icon: 'PlusCircle',
         label: this.translate.instant('COMMAND_PALETTE.NEW_ITEM'),
         action: () => this.router.navigate(['/inventory/add'])
       },
       {
         id: 'action-logout',
         type: 'action',
-        icon: 'logout',
+        icon: 'LogOut',
         label: this.translate.instant('COMMAND_PALETTE.LOGOUT'),
         action: () => {
           this.authService.logout();
@@ -395,7 +395,7 @@ export class CommandPalette implements OnInit, OnDestroy {
         {
           id: 'nav-users',
           type: 'navigation',
-          icon: 'group',
+          icon: 'Users',
           label: this.translate.instant('NAV.USERS'),
           description: this.translate.instant('COMMAND_PALETTE.DESC.USERS'),
           action: () => this.router.navigate(['/users'])
@@ -403,7 +403,7 @@ export class CommandPalette implements OnInit, OnDestroy {
         {
           id: 'nav-audit',
           type: 'navigation',
-          icon: 'history',
+          icon: 'History',
           label: this.translate.instant('NAV.AUDIT'),
           description: this.translate.instant('COMMAND_PALETTE.DESC.AUDIT'),
           action: () => this.router.navigate(['/audit'])
@@ -431,7 +431,7 @@ export class CommandPalette implements OnInit, OnDestroy {
       .map(item => ({
         id: `item-${item.id}`,
         type: 'item' as const,
-        icon: 'inventory_2',
+        icon: 'Package',
         label: item.name,
         description: `${item.category || ''} ${item.warehouse?.name ? '• ' + item.warehouse.name : ''}`.trim(),
         action: () => this.router.navigate(['/inventory/edit', item.id])

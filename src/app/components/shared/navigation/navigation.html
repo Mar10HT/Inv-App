@@ -7,7 +7,7 @@
     @if (!isCollapsed()) {
       <div class="logo-section">
         <div class="logo-icon">
-          <mat-icon>inventory_2</mat-icon>
+          <lucide-icon name="Package"></lucide-icon>
         </div>
         <span class="logo-text">InvApp</span>
       </div>
@@ -15,7 +15,7 @@
     <button
       class="toggle-btn"
       (click)="toggleSidebar($event)">
-      <mat-icon>{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      <lucide-icon [name]="isCollapsed() ? 'ChevronRight' : 'ChevronLeft'"></lucide-icon>
     </button>
   </div>
 
@@ -29,7 +29,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.DASHBOARD' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">dashboard</mat-icon>
+        <lucide-icon name="LayoutDashboard" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
@@ -52,7 +52,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.INVENTORY' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">inventory_2</mat-icon>
+        <lucide-icon name="Package" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.INVENTORY' | translate }}</span>
@@ -66,7 +66,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.WAREHOUSES' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">warehouse</mat-icon>
+        <lucide-icon name="Warehouse" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.WAREHOUSES' | translate }}</span>
@@ -80,7 +80,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.CATEGORIES' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">category</mat-icon>
+        <lucide-icon name="Tag" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.CATEGORIES' | translate }}</span>
@@ -94,7 +94,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.SUPPLIERS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">local_shipping</mat-icon>
+        <lucide-icon name="Truck" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.SUPPLIERS' | translate }}</span>
@@ -108,7 +108,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.LOANS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">assignment</mat-icon>
+        <lucide-icon name="ClipboardList" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
@@ -125,11 +125,11 @@
         [matTooltip]="isCollapsed() ? ('NAV.TRANSACTIONS' | translate) : ''"
         matTooltipPosition="right">
         <div class="nav-icon-container">
-          <mat-icon class="nav-icon">receipt_long</mat-icon>
+          <lucide-icon name="Receipt" class="nav-icon"></lucide-icon>
         </div>
         @if (!isCollapsed()) {
           <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
-          <mat-icon class="expand-icon">{{ isTransactionsExpanded() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <lucide-icon [name]="isTransactionsExpanded() ? 'ChevronUp' : 'ChevronDown'" class="expand-icon"></lucide-icon>
         }
       </button>
 
@@ -140,14 +140,14 @@
             routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: true }"
             class="nav-link submenu-link">
-            <mat-icon class="submenu-icon">list</mat-icon>
+            <lucide-icon name="List" class="submenu-icon"></lucide-icon>
             <span class="nav-text">{{ 'NAV.TRANSACTIONS_LIST' | translate }}</span>
           </a>
           <a
             routerLink="/reports"
             routerLinkActive="active-link"
             class="nav-link submenu-link">
-            <mat-icon class="submenu-icon">assessment</mat-icon>
+            <lucide-icon name="BarChart3" class="submenu-icon"></lucide-icon>
             <span class="nav-text">{{ 'NAV.REPORTS' | translate }}</span>
           </a>
         </div>
@@ -170,7 +170,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.USERS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">people</mat-icon>
+        <lucide-icon name="Users" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
@@ -184,7 +184,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.AUDIT' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">history</mat-icon>
+        <lucide-icon name="History" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.AUDIT' | translate }}</span>
@@ -198,7 +198,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.SETTINGS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">settings</mat-icon>
+        <lucide-icon name="Settings" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.SETTINGS' | translate }}</span>
@@ -212,7 +212,7 @@
       [matTooltip]="isCollapsed() ? ('NAV.PROFILE' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
-        <mat-icon class="nav-icon">account_circle</mat-icon>
+        <lucide-icon name="CircleUser" class="nav-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="nav-text">{{ 'NAV.PROFILE' | translate }}</span>
@@ -246,7 +246,7 @@
       [matTooltip]="isCollapsed() ? (isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate)) : ''"
       matTooltipPosition="right">
       <div class="theme-icon-container">
-        <mat-icon class="theme-icon">{{ isDarkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        <lucide-icon [name]="isDarkMode() ? 'Moon' : 'Sun'" class="theme-icon"></lucide-icon>
       </div>
       @if (!isCollapsed()) {
         <span class="theme-text">{{ isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate) }}</span>

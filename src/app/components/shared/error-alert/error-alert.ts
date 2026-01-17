@@ -1,17 +1,17 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-error-alert',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, LucideAngularModule, MatButtonModule],
   template: `
     <div
       class="flex items-start gap-3 p-4 rounded-lg"
       [ngClass]="alertClass">
-      <mat-icon class="flex-shrink-0 mt-0.5" [ngClass]="iconClass">{{ icon }}</mat-icon>
+      <lucide-icon [name]="icon" class="flex-shrink-0 mt-0.5 !w-5 !h-5" [ngClass]="iconClass"></lucide-icon>
 
       <div class="flex-1 min-w-0">
         @if (title) {
@@ -27,7 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
             (click)="retry.emit()"
             class="!w-8 !h-8"
             [ngClass]="iconClass">
-            <mat-icon class="!text-lg">refresh</mat-icon>
+            <lucide-icon name="RefreshCw" class="!w-4 !h-4"></lucide-icon>
           </button>
         }
         @if (dismissible) {
@@ -36,7 +36,7 @@ import { MatButtonModule } from '@angular/material/button';
             (click)="dismiss.emit()"
             class="!w-8 !h-8"
             [ngClass]="iconClass">
-            <mat-icon class="!text-lg">close</mat-icon>
+            <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
           </button>
         }
       </div>
@@ -54,11 +54,11 @@ export class ErrorAlert {
 
   get icon(): string {
     switch (this.type) {
-      case 'error': return 'error';
-      case 'warning': return 'warning';
-      case 'info': return 'info';
-      case 'success': return 'check_circle';
-      default: return 'error';
+      case 'error': return 'AlertCircle';
+      case 'warning': return 'AlertTriangle';
+      case 'info': return 'Info';
+      case 'success': return 'CheckCircle2';
+      default: return 'AlertCircle';
     }
   }
 

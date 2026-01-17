@@ -33,7 +33,27 @@
 .bg-primary { background-color: var(--color-primary) !important; }
 .bg-primary-container { background-color: var(--color-primary-container) !important; }
 
-/* Text */
+/* Text - Semantic foreground colors with theme-specific selectors */
+/* These selectors have high specificity to override Tailwind defaults */
+:root .text-foreground,
+[data-theme] .text-foreground,
+html .text-foreground {
+    color: var(--color-foreground) !important;
+}
+
+:root[data-theme="light"] .text-foreground,
+html[data-theme="light"] .text-foreground,
+[data-theme="light"] .text-foreground {
+    color: #0f172a !important;
+}
+
+:root[data-theme="dark"] .text-foreground,
+html[data-theme="dark"] .text-foreground,
+[data-theme="dark"] .text-foreground {
+    color: #cbd5e1 !important;
+}
+
+.text-foreground-muted { color: var(--color-foreground-muted) !important; }
 .text-on-surface { color: var(--color-on-surface) !important; }
 .text-on-surface-variant { color: var(--color-on-surface-variant) !important; }
 .text-on-surface-muted { color: var(--color-on-surface-muted) !important; }

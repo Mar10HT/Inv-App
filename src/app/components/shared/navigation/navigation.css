@@ -48,9 +48,8 @@
   justify-content: center;
 }
 
-.logo-icon mat-icon {
+.logo-icon lucide-icon {
   color: white !important;
-  font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
 }
@@ -97,16 +96,15 @@
   box-shadow: 0 0 0 2px var(--primary-container);
 }
 
-.toggle-btn mat-icon {
+.toggle-btn lucide-icon {
   color: var(--on-surface-variant) !important;
-  font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
   transition: color 0.2s ease;
   pointer-events: none;
 }
 
-.toggle-btn:hover mat-icon {
+.toggle-btn:hover lucide-icon {
   color: var(--primary) !important;
 }
 

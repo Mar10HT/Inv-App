@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -15,7 +15,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
   imports: [
     CommonModule,
     FormsModule,
-    MatIconModule,
+    LucideAngularModule,
     MatButtonModule,
     MatPaginatorModule,
     TranslateModule
@@ -33,7 +33,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
             <button
               (click)="exportToCSV()"
               class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-              <mat-icon class="!leading-none !block">download</mat-icon>
+              <lucide-icon name="Download" class="!w-5 !h-5"></lucide-icon>
               {{ 'COMMON.EXPORT' | translate }}
             </button>
           </div>
@@ -52,7 +52,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
                   [placeholder]="'AUDIT.SEARCH_PLACEHOLDER' | translate"
                   class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
                 />
-                <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !text-xl !leading-none !block">search</mat-icon>
+                <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
 
@@ -91,7 +91,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
               <button
                 (click)="clearFilters()"
                 class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
-                <mat-icon class="!text-lg !leading-none !block">clear</mat-icon>
+                <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                 {{ 'COMMON.CLEAR' | translate }}
               </button>
             }
@@ -132,7 +132,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
                 <div class="flex items-start gap-4">
                   <!-- Icon -->
                   <div [class]="getActionIconClass(log.action)" class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <mat-icon class="!text-lg !leading-none !block">{{ getActionIcon(log.action) }}</mat-icon>
+                    <lucide-icon [name]="getActionIcon(log.action)" class="!w-5 !h-5"></lucide-icon>
                   </div>
 
                   <!-- Content -->
@@ -153,7 +153,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
 
                     <!-- User Info -->
                     <div class="flex items-center gap-2 mt-2 text-sm text-slate-500">
-                      <mat-icon class="!text-sm !leading-none !block">person</mat-icon>
+                      <lucide-icon name="User" class="!w-3.5 !h-3.5"></lucide-icon>
                       <span>{{ log.userName }}</span>
                       @if (log.userEmail) {
                         <span class="text-slate-600">({{ log.userEmail }})</span>
@@ -193,7 +193,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
               </div>
             } @empty {
               <div class="p-12 text-center">
-                <mat-icon class="!text-6xl !text-slate-700 mb-4 !leading-none !block">history</mat-icon>
+                <lucide-icon name="History" class="!w-14 !h-14 text-slate-700 mb-4"></lucide-icon>
                 <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'AUDIT.NO_LOGS' | translate }}</h3>
                 <p class="text-slate-600">{{ 'AUDIT.NO_LOGS_DESC' | translate }}</p>
               </div>
@@ -334,16 +334,16 @@ export class AuditLogComponent implements OnInit {
 
   getActionIcon(action: AuditAction): string {
     const icons: Record<AuditAction, string> = {
-      [AuditAction.CREATE]: 'add_circle',
-      [AuditAction.UPDATE]: 'edit',
-      [AuditAction.DELETE]: 'delete',
-      [AuditAction.ASSIGN]: 'person_add',
-      [AuditAction.UNASSIGN]: 'person_remove',
-      [AuditAction.TRANSFER]: 'swap_horiz',
-      [AuditAction.LOAN]: 'output',
-      [AuditAction.RETURN]: 'input'
+      [AuditAction.CREATE]: 'PlusCircle',
+      [AuditAction.UPDATE]: 'Pencil',
+      [AuditAction.DELETE]: 'Trash2',
+      [AuditAction.ASSIGN]: 'UserPlus',
+      [AuditAction.UNASSIGN]: 'UserMinus',
+      [AuditAction.TRANSFER]: 'ArrowLeftRight',
+      [AuditAction.LOAN]: 'ArrowUpRight',
+      [AuditAction.RETURN]: 'ArrowDownLeft'
     };
-    return icons[action] || 'info';
+    return icons[action] || 'Info';
   }
 
   getActionIconClass(action: AuditAction): string {

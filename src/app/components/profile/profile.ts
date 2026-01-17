@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
@@ -16,7 +16,7 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatIconModule,
+    LucideAngularModule,
     MatDialogModule,
     TranslateModule
   ],

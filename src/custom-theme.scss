@@ -110,3 +110,15 @@ body {
   font-family: Roboto, Arial, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* ============================================
+   TEXT-FOREGROUND OVERRIDE
+   This MUST override Tailwind's default foreground color
+   ============================================ */
+[data-theme="light"] .text-foreground {
+  color: #0f172a !important;
+}
+
+[data-theme="dark"] .text-foreground {
+  color: #cbd5e1 !important;
+}

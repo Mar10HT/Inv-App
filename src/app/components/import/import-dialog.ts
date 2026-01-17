@@ -1,7 +1,7 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -17,7 +17,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
   imports: [
     CommonModule,
     MatDialogModule,
-    MatIconModule,
+    LucideAngularModule,
     MatProgressBarModule,
     TranslateModule
   ],
@@ -33,7 +33,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
           type="button"
           (click)="dialogRef.close()"
           class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
-          <mat-icon>close</mat-icon>
+          <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
         </button>
       </div>
 
@@ -45,14 +45,14 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             <!-- Download Template -->
             <div class="bg-[#2d4a3f]/20 border border-[#4d7c6f]/30 rounded-lg p-4">
               <div class="flex items-start gap-3">
-                <mat-icon class="text-[#4d7c6f] mt-0.5">info</mat-icon>
+                <lucide-icon name="Info" class="text-[#4d7c6f] mt-0.5 !w-5 !h-5"></lucide-icon>
                 <div class="flex-1">
                   <p class="text-foreground font-medium">{{ 'IMPORT.TEMPLATE_INFO' | translate }}</p>
                   <p class="text-slate-500 text-sm mt-1">{{ 'IMPORT.TEMPLATE_DESC' | translate }}</p>
                   <button
                     (click)="downloadTemplate()"
                     class="mt-3 text-[#4d7c6f] hover:text-[#5d8c7f] text-sm font-medium flex items-center gap-1">
-                    <mat-icon class="!text-lg">download</mat-icon>
+                    <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
                     {{ 'IMPORT.DOWNLOAD_TEMPLATE' | translate }}
                   </button>
                 </div>
@@ -66,7 +66,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
               (dragover)="onDragOver($event)"
               (dragleave)="onDragLeave($event)"
               (drop)="onDrop($event)">
-              <mat-icon class="!text-5xl text-slate-600 mb-4">cloud_upload</mat-icon>
+              <lucide-icon name="CloudUpload" class="!w-12 !h-12 text-slate-600 mb-4"></lucide-icon>
               <p class="text-slate-400 mb-2">{{ 'IMPORT.DROP_FILE' | translate }}</p>
               <p class="text-slate-600 text-sm mb-4">{{ 'IMPORT.OR' | translate }}</p>
               <label class="inline-block">
@@ -86,7 +86,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             @if (fileError()) {
               <div class="bg-rose-950/30 border border-rose-900 rounded-lg p-4">
                 <div class="flex items-center gap-2 text-rose-400">
-                  <mat-icon>error</mat-icon>
+                  <lucide-icon name="AlertCircle" class="!w-5 !h-5"></lucide-icon>
                   <span>{{ fileError() }}</span>
                 </div>
               </div>
@@ -134,9 +134,9 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
                         <td class="px-4 py-3 text-slate-500">{{ row.rowNumber }}</td>
                         <td class="px-4 py-3">
                           @if (row.isValid) {
-                            <span class="text-emerald-400"><mat-icon class="!text-lg">check_circle</mat-icon></span>
+                            <span class="text-emerald-400"><lucide-icon name="CheckCircle2" class="!w-4 !h-4"></lucide-icon></span>
                           } @else {
-                            <span class="text-rose-400"><mat-icon class="!text-lg">error</mat-icon></span>
+                            <span class="text-rose-400"><lucide-icon name="AlertCircle" class="!w-4 !h-4"></lucide-icon></span>
                           }
                         </td>
                         <td class="px-4 py-3 text-foreground">{{ row.name || '-' }}</td>
@@ -156,7 +156,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             @if (preview()!.invalidCount > 0) {
               <div class="bg-amber-950/30 border border-amber-900/50 rounded-lg p-4">
                 <div class="flex items-start gap-2 text-amber-400">
-                  <mat-icon class="mt-0.5">warning</mat-icon>
+                  <lucide-icon name="AlertTriangle" class="mt-0.5 !w-5 !h-5"></lucide-icon>
                   <p class="text-sm">{{ 'IMPORT.INVALID_WARNING' | translate }}</p>
                 </div>
               </div>
@@ -167,7 +167,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
         <!-- Step 3: Importing -->
         @if (step() === 'importing') {
           <div class="text-center py-8">
-            <mat-icon class="!text-5xl text-[#4d7c6f] mb-4 animate-pulse">cloud_sync</mat-icon>
+            <lucide-icon name="CloudCog" class="!w-12 !h-12 text-[#4d7c6f] mb-4 animate-pulse"></lucide-icon>
             <p class="text-foreground text-lg mb-4">{{ 'IMPORT.IMPORTING' | translate }}</p>
             <mat-progress-bar
               mode="determinate"
@@ -185,12 +185,12 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             <div class="text-center">
               @if (result()!.success) {
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-950/30 rounded-full mb-4">
-                  <mat-icon class="!text-4xl text-emerald-400">check_circle</mat-icon>
+                  <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-emerald-400"></lucide-icon>
                 </div>
                 <h3 class="text-xl font-semibold text-emerald-400">{{ 'IMPORT.SUCCESS' | translate }}</h3>
               } @else {
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-amber-950/30 rounded-full mb-4">
-                  <mat-icon class="!text-4xl text-amber-400">warning</mat-icon>
+                  <lucide-icon name="AlertTriangle" class="!w-10 !h-10 text-amber-400"></lucide-icon>
                 </div>
                 <h3 class="text-xl font-semibold text-amber-400">{{ 'IMPORT.PARTIAL_SUCCESS' | translate }}</h3>
               }
@@ -230,7 +230,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             <button
               (click)="goBack()"
               class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
-              <mat-icon class="!text-lg align-middle mr-1">arrow_back</mat-icon>
+              <lucide-icon name="ArrowLeft" class="!w-4 !h-4 align-middle mr-1"></lucide-icon>
               {{ 'COMMON.BACK' | translate }}
             </button>
           }
@@ -245,7 +245,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             <button
               (click)="startImport()"
               class="px-6 py-2.5 rounded-lg bg-[#4d7c6f] text-white hover:bg-[#5d8c7f] transition-colors font-medium flex items-center gap-2">
-              <mat-icon class="!text-lg">upload</mat-icon>
+              <lucide-icon name="Upload" class="!w-4 !h-4"></lucide-icon>
               {{ 'IMPORT.IMPORT_VALID' | translate }} ({{ preview()!.validCount }})
             </button>
           }

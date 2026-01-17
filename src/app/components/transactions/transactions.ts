@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
@@ -17,7 +17,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    MatIconModule,
+    LucideAngularModule,
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
@@ -123,13 +123,13 @@ export class Transactions implements OnInit {
   getTypeIcon(type: TransactionType): string {
     switch (type) {
       case TransactionType.IN:
-        return 'arrow_downward';
+        return 'ArrowDown';
       case TransactionType.OUT:
-        return 'arrow_upward';
+        return 'ArrowUp';
       case TransactionType.TRANSFER:
-        return 'swap_horiz';
+        return 'ArrowLeftRight';
       default:
-        return 'receipt';
+        return 'Receipt';
     }
   }
 

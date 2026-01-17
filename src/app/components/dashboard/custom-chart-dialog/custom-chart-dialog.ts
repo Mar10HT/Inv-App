@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
@@ -55,7 +55,7 @@ export interface CustomChartDialogData {
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatIconModule,
+    LucideAngularModule,
     TranslateModule,
     NgApexchartsModule
   ],
@@ -69,7 +69,7 @@ export interface CustomChartDialogData {
         <button
           (click)="close()"
           class="text-slate-500 hover:text-foreground transition-colors">
-          <mat-icon>close</mat-icon>
+          <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
         </button>
       </div>
 
@@ -104,7 +104,7 @@ export interface CustomChartDialogData {
                   [class]="chartForm.get('dataSource')?.value === source.value
                     ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
                     : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
-                  <mat-icon class="!text-2xl mb-1">{{ source.icon }}</mat-icon>
+                  <lucide-icon [name]="source.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                   <p class="text-xs">{{ source.label | translate }}</p>
                 </button>
               }
@@ -123,7 +123,7 @@ export interface CustomChartDialogData {
                   [class]="chartForm.get('dataSource')?.value === source.value
                     ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
                     : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
-                  <mat-icon class="!text-2xl mb-1">{{ source.icon }}</mat-icon>
+                  <lucide-icon [name]="source.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                   <p class="text-xs">{{ source.label | translate }}</p>
                 </button>
               }
@@ -145,7 +145,7 @@ export interface CustomChartDialogData {
                     [class]="chartForm.get('currency')?.value === curr.value
                       ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
                       : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
-                    <mat-icon class="!text-2xl mb-1">{{ curr.icon }}</mat-icon>
+                    <lucide-icon [name]="curr.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                     <p class="text-xs">{{ curr.label | translate }}</p>
                   </button>
                 }
@@ -167,7 +167,7 @@ export interface CustomChartDialogData {
                   [class]="chartForm.get('chartType')?.value === type.value
                     ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
                     : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
-                  <mat-icon class="!text-2xl mb-1">{{ type.icon }}</mat-icon>
+                  <lucide-icon [name]="type.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                   <p class="text-xs">{{ type.label }}</p>
                 </button>
               }
@@ -233,7 +233,7 @@ export interface CustomChartDialogData {
           (click)="save()"
           [disabled]="chartForm.invalid"
           class="flex items-center gap-2 px-6 py-2.5 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
-          <mat-icon class="!text-lg">{{ isEditing ? 'save' : 'add' }}</mat-icon>
+          <lucide-icon [name]="isEditing ? 'Save' : 'Plus'" class="!w-4 !h-4"></lucide-icon>
           {{ isEditing ? ('COMMON.SAVE' | translate) : ('COMMON.CREATE' | translate) }}
         </button>
       </div>
@@ -262,33 +262,33 @@ export class CustomChartDialog implements OnInit {
   });
 
   currencyOptions = [
-    { value: 'USD' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.USD_ONLY', icon: 'attach_money' },
-    { value: 'HNL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.HNL_ONLY', icon: 'payments' },
-    { value: 'ALL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.ALL_CURRENCIES', icon: 'currency_exchange' }
+    { value: 'USD' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.USD_ONLY', icon: 'DollarSign' },
+    { value: 'HNL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.HNL_ONLY', icon: 'Banknote' },
+    { value: 'ALL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.ALL_CURRENCIES', icon: 'ArrowLeftRight' }
   ];
 
   quantitySources = [
-    { value: 'categories' as DataSource, label: 'NAV.CATEGORIES', icon: 'category' },
-    { value: 'warehouses' as DataSource, label: 'NAV.WAREHOUSES', icon: 'warehouse' },
-    { value: 'status' as DataSource, label: 'COMMON.STATUS', icon: 'donut_large' },
-    { value: 'lowStock' as DataSource, label: 'DASHBOARD.LOW_STOCK', icon: 'warning' }
+    { value: 'categories' as DataSource, label: 'NAV.CATEGORIES', icon: 'Tag' },
+    { value: 'warehouses' as DataSource, label: 'NAV.WAREHOUSES', icon: 'Warehouse' },
+    { value: 'status' as DataSource, label: 'COMMON.STATUS', icon: 'CircleDot' },
+    { value: 'lowStock' as DataSource, label: 'DASHBOARD.LOW_STOCK', icon: 'AlertTriangle' }
   ];
 
   valueSources = [
-    { value: 'valueByCategory' as DataSource, label: 'NAV.CATEGORIES', icon: 'category' },
-    { value: 'valueByWarehouse' as DataSource, label: 'NAV.WAREHOUSES', icon: 'warehouse' },
-    { value: 'valueBySupplier' as DataSource, label: 'NAV.SUPPLIERS', icon: 'local_shipping' },
-    { value: 'valueByStatus' as DataSource, label: 'COMMON.STATUS', icon: 'donut_large' },
-    { value: 'topItemsByValue' as DataSource, label: 'DASHBOARD.CUSTOM_CHART.TOP_ITEMS', icon: 'trending_up' }
+    { value: 'valueByCategory' as DataSource, label: 'NAV.CATEGORIES', icon: 'Tag' },
+    { value: 'valueByWarehouse' as DataSource, label: 'NAV.WAREHOUSES', icon: 'Warehouse' },
+    { value: 'valueBySupplier' as DataSource, label: 'NAV.SUPPLIERS', icon: 'Truck' },
+    { value: 'valueByStatus' as DataSource, label: 'COMMON.STATUS', icon: 'CircleDot' },
+    { value: 'topItemsByValue' as DataSource, label: 'DASHBOARD.CUSTOM_CHART.TOP_ITEMS', icon: 'TrendingUp' }
   ];
 
   chartTypes = [
-    { value: 'bar' as ChartType, label: 'Bar', icon: 'bar_chart' },
-    { value: 'line' as ChartType, label: 'Line', icon: 'show_chart' },
-    { value: 'area' as ChartType, label: 'Area', icon: 'area_chart' },
-    { value: 'pie' as ChartType, label: 'Pie', icon: 'pie_chart' },
-    { value: 'donut' as ChartType, label: 'Donut', icon: 'donut_large' },
-    { value: 'radialBar' as ChartType, label: 'Radial', icon: 'data_usage' }
+    { value: 'bar' as ChartType, label: 'Bar', icon: 'BarChart3' },
+    { value: 'line' as ChartType, label: 'Line', icon: 'LineChart' },
+    { value: 'area' as ChartType, label: 'Area', icon: 'AreaChart' },
+    { value: 'pie' as ChartType, label: 'Pie', icon: 'PieChart' },
+    { value: 'donut' as ChartType, label: 'Donut', icon: 'CircleDot' },
+    { value: 'radialBar' as ChartType, label: 'Radial', icon: 'Activity' }
   ];
 
   colorOptions = [

@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { authInterceptor } from './interceptors/auth.interceptor';
+import { authInterceptor, errorInterceptor } from './interceptors';
 
 // Import translations directly (SSR-safe)
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
@@ -33,7 +33,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, errorInterceptor])
     ),
     importProvidersFrom(
       TranslateModule.forRoot({

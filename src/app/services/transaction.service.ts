@@ -1,8 +1,20 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, tap, map } from 'rxjs';
 import { Transaction, CreateTransactionDto } from '../interfaces/transaction.interface';
 import { environment } from '../../environments/environment';
+
+interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,18 +23,30 @@ export class TransactionService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/transactions`;
 
-  transactions = signal<Transaction[]>([]);
+  private transactionsSignal = signal<Transaction[]>([]);
+  private totalSignal = signal<number>(0);
+  private pageSignal = signal<number>(1);
+
+  transactions = computed(() => this.transactionsSignal());
+  total = computed(() => this.totalSignal());
+  currentPage = computed(() => this.pageSignal());
+
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  getAll(): Observable<Transaction[]> {
+  getAll(page: number = 1, limit: number = 50): Observable<Transaction[]> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<Transaction[]>(this.apiUrl).pipe(
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<PaginatedResponse<Transaction>>(this.apiUrl, { params }).pipe(
+      map(response => response.data),
       tap({
         next: (transactions) => {
-          this.transactions.set(transactions);
+          this.transactionsSignal.set(transactions);
           this.loading.set(false);
         },
         error: (error) => {

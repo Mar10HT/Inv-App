@@ -509,8 +509,11 @@ export class LoansComponent implements OnInit {
 
   ngOnInit(): void {
     this.warehouseService.getAll().subscribe();
-    this.loanService.checkOverdueLoans();
-    this.applyFilters();
+    this.loanService.loadAll();
+    // Apply filters after data loads
+    this.loanService.getAll().subscribe(() => {
+      this.applyFilters();
+    });
   }
 
   applyFilters(): void {
@@ -632,35 +635,46 @@ export class LoansComponent implements OnInit {
     const items = this.loanItems().filter(item => item.inventoryItemId);
     const generalNotes = this.selectedNotes();
     let successCount = 0;
+    let completedCount = 0;
 
     // Create a loan for each selected item
     for (const item of items) {
       // Combine general notes with item-specific notes
       const notes = [generalNotes, item.notes].filter(n => n).join(' - ') || undefined;
 
-      const loan = this.loanService.createLoan({
+      this.loanService.createLoan({
         inventoryItemId: item.inventoryItemId,
         quantity: item.quantity,
         sourceWarehouseId: this.selectedSourceWarehouseId(),
         destinationWarehouseId: this.selectedDestWarehouseId(),
         dueDate: this.selectedDueDate(),
         notes
+      }).subscribe({
+        next: () => {
+          successCount++;
+          completedCount++;
+          this.checkAllCompleted(completedCount, items.length, successCount);
+        },
+        error: () => {
+          completedCount++;
+          this.checkAllCompleted(completedCount, items.length, successCount);
+        }
       });
-
-      if (loan) {
-        successCount++;
-      }
     }
+  }
 
-    if (successCount > 0) {
-      const message = successCount === 1
-        ? this.translate.instant('LOANS.LOAN_CREATED')
-        : this.translate.instant('LOANS.LOANS_CREATED', { count: successCount });
-      this.notifications.success(message);
-      this.closeNewLoanDialog();
-      this.applyFilters();
-    } else {
-      this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
+  private checkAllCompleted(completed: number, total: number, successCount: number): void {
+    if (completed === total) {
+      if (successCount > 0) {
+        const message = successCount === 1
+          ? this.translate.instant('LOANS.LOAN_CREATED')
+          : this.translate.instant('LOANS.LOANS_CREATED', { count: successCount });
+        this.notifications.success(message);
+        this.closeNewLoanDialog();
+        this.applyFilters();
+      } else {
+        this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
+      }
     }
   }
 
@@ -682,11 +696,15 @@ export class LoansComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        const result = this.loanService.returnLoan(loan.id);
-        if (result) {
-          this.notifications.success(this.translate.instant('LOANS.RETURN_SUCCESS'));
-          this.applyFilters();
-        }
+        this.loanService.returnLoan(loan.id).subscribe({
+          next: () => {
+            this.notifications.success(this.translate.instant('LOANS.RETURN_SUCCESS'));
+            this.applyFilters();
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('LOANS.RETURN_ERROR'));
+          }
+        });
       }
     });
   }

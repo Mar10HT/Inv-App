@@ -1,49 +1,73 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { AuthService } from './auth.service';
-import { AuditService } from './audit.service';
-import { InventoryService } from './inventory/inventory.service';
-import { WarehouseService } from './warehouse.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap, map, catchError, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 import {
   Loan,
   LoanStatus,
   CreateLoanDto,
   ReturnLoanDto,
-  LoanFilter,
   LoanStats
 } from '../interfaces/loan.interface';
+import { AuthService } from './auth.service';
+
+interface LoanApiResponse {
+  id: string;
+  inventoryItemId: string;
+  quantity: number;
+  sourceWarehouseId: string;
+  destinationWarehouseId: string;
+  loanDate: string;
+  dueDate: string;
+  returnDate?: string;
+  status: LoanStatus;
+  notes?: string;
+  createdById: string;
+  createdAt: string;
+  updatedAt: string;
+  inventoryItem: {
+    id: string;
+    name: string;
+    serviceTag?: string;
+    quantity: number;
+  };
+  sourceWarehouse: {
+    id: string;
+    name: string;
+    location: string;
+  };
+  destinationWarehouse: {
+    id: string;
+    name: string;
+    location: string;
+  };
+  createdBy: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoanService {
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private auditService = inject(AuditService);
-  private inventoryService = inject(InventoryService);
-  private warehouseService = inject(WarehouseService);
+  private apiUrl = `${environment.apiUrl}/loans`;
 
   private loansSignal = signal<Loan[]>([]);
   private loadingSignal = signal(false);
+  private statsSignal = signal<LoanStats>({
+    totalActive: 0,
+    totalOverdue: 0,
+    totalReturned: 0,
+    dueSoon: 0
+  });
 
   loans = computed(() => this.loansSignal());
   loading = computed(() => this.loadingSignal());
-
-  // Computed stats
-  stats = computed<LoanStats>(() => {
-    const loans = this.loansSignal();
-    const now = new Date();
-    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    return {
-      totalActive: loans.filter(l => l.status === LoanStatus.ACTIVE).length,
-      totalOverdue: loans.filter(l => l.status === LoanStatus.OVERDUE).length,
-      totalReturned: loans.filter(l => l.status === LoanStatus.RETURNED).length,
-      dueSoon: loans.filter(l =>
-        l.status === LoanStatus.ACTIVE &&
-        new Date(l.dueDate) <= sevenDaysFromNow &&
-        new Date(l.dueDate) > now
-      ).length
-    };
-  });
+  stats = computed(() => this.statsSignal());
 
   // Active loans only
   activeLoans = computed(() =>
@@ -55,216 +79,158 @@ export class LoanService {
     this.loansSignal().filter(l => l.status === LoanStatus.OVERDUE)
   );
 
-  constructor() {
-    this.loadFromStorage();
+  /**
+   * Map API response to frontend Loan interface
+   */
+  private mapLoan(apiLoan: LoanApiResponse): Loan {
+    return {
+      id: apiLoan.id,
+      inventoryItemId: apiLoan.inventoryItemId,
+      inventoryItemName: apiLoan.inventoryItem.name,
+      inventoryItemServiceTag: apiLoan.inventoryItem.serviceTag,
+      quantity: apiLoan.quantity,
+      sourceWarehouseId: apiLoan.sourceWarehouseId,
+      sourceWarehouseName: apiLoan.sourceWarehouse.name,
+      destinationWarehouseId: apiLoan.destinationWarehouseId,
+      destinationWarehouseName: apiLoan.destinationWarehouse.name,
+      loanDate: new Date(apiLoan.loanDate),
+      dueDate: new Date(apiLoan.dueDate),
+      returnDate: apiLoan.returnDate ? new Date(apiLoan.returnDate) : undefined,
+      status: apiLoan.status,
+      notes: apiLoan.notes,
+      createdById: apiLoan.createdById,
+      createdByName: apiLoan.createdBy.name || apiLoan.createdBy.email,
+      createdAt: new Date(apiLoan.createdAt),
+      updatedAt: new Date(apiLoan.updatedAt)
+    };
+  }
+
+  /**
+   * Get all loans
+   */
+  getAll(): Observable<Loan[]> {
+    this.loadingSignal.set(true);
+
+    return this.http.get<LoanApiResponse[]>(this.apiUrl).pipe(
+      map(loans => loans.map(loan => this.mapLoan(loan))),
+      tap({
+        next: (loans) => {
+          this.loansSignal.set(loans);
+          this.loadingSignal.set(false);
+        },
+        error: () => {
+          this.loadingSignal.set(false);
+        }
+      })
+    );
+  }
+
+  /**
+   * Get loan stats
+   */
+  getStats(): Observable<LoanStats> {
+    return this.http.get<LoanStats>(`${this.apiUrl}/stats`).pipe(
+      tap(stats => this.statsSignal.set(stats))
+    );
+  }
+
+  /**
+   * Load all data (loans + stats)
+   */
+  loadAll(): void {
+    this.getAll().subscribe();
+    this.getStats().subscribe();
     this.checkOverdueLoans();
-  }
-
-  /**
-   * Load loans from localStorage
-   */
-  private loadFromStorage(): void {
-    try {
-      const stored = localStorage.getItem('loans');
-      if (stored) {
-        const loans = JSON.parse(stored).map((loan: any) => ({
-          ...loan,
-          loanDate: new Date(loan.loanDate),
-          dueDate: new Date(loan.dueDate),
-          returnDate: loan.returnDate ? new Date(loan.returnDate) : undefined,
-          createdAt: new Date(loan.createdAt),
-          updatedAt: new Date(loan.updatedAt)
-        }));
-        this.loansSignal.set(loans);
-      }
-    } catch (e) {
-      console.error('Error loading loans:', e);
-    }
-  }
-
-  /**
-   * Save loans to localStorage
-   */
-  private saveToStorage(): void {
-    try {
-      localStorage.setItem('loans', JSON.stringify(this.loansSignal()));
-    } catch (e) {
-      console.error('Error saving loans:', e);
-    }
   }
 
   /**
    * Check and update overdue loans
    */
   checkOverdueLoans(): void {
-    const now = new Date();
-    let hasChanges = false;
-
-    this.loansSignal.update(loans =>
-      loans.map(loan => {
-        if (loan.status === LoanStatus.ACTIVE && new Date(loan.dueDate) < now) {
-          hasChanges = true;
-          return { ...loan, status: LoanStatus.OVERDUE, updatedAt: now };
-        }
-        return loan;
-      })
-    );
-
-    if (hasChanges) {
-      this.saveToStorage();
-    }
+    this.http.post<any>(`${this.apiUrl}/check-overdue`, {}).pipe(
+      catchError(() => of(null))
+    ).subscribe(() => {
+      // Refresh data after checking
+      this.getAll().subscribe();
+      this.getStats().subscribe();
+    });
   }
 
   /**
-   * Create a new loan (warehouse to warehouse)
+   * Create a new loan
    */
-  createLoan(dto: CreateLoanDto): Loan | null {
+  createLoan(dto: CreateLoanDto): Observable<Loan> {
     const user = this.authService.currentUser();
-    if (!user) return null;
-
-    // Validate warehouses are different
-    if (dto.sourceWarehouseId === dto.destinationWarehouseId) {
-      console.error('Source and destination warehouses must be different');
-      return null;
+    if (!user) {
+      throw new Error('User not authenticated');
     }
 
-    // Get item details
-    const items = this.inventoryService.items();
-    const item = items.find(i => i.id === dto.inventoryItemId);
-    if (!item) return null;
-
-    // Check if item belongs to source warehouse
-    if (item.warehouseId !== dto.sourceWarehouseId) {
-      console.error('Item does not belong to the source warehouse');
-      return null;
-    }
-
-    // Check if item is already on loan
-    const existingLoan = this.loansSignal().find(
-      l => l.inventoryItemId === dto.inventoryItemId &&
-           (l.status === LoanStatus.ACTIVE || l.status === LoanStatus.OVERDUE)
-    );
-    if (existingLoan) {
-      console.error('Item is already on loan');
-      return null;
-    }
-
-    // Get warehouse details
-    const warehouses = this.warehouseService.warehouses();
-    const sourceWarehouse = warehouses.find(w => w.id === dto.sourceWarehouseId);
-    const destinationWarehouse = warehouses.find(w => w.id === dto.destinationWarehouseId);
-
-    if (!sourceWarehouse || !destinationWarehouse) {
-      console.error('Invalid warehouse');
-      return null;
-    }
-
-    const now = new Date();
-    const newLoan: Loan = {
-      id: this.generateId(),
+    const payload = {
       inventoryItemId: dto.inventoryItemId,
-      inventoryItemName: item.name,
-      inventoryItemServiceTag: item.serviceTag,
       quantity: dto.quantity,
       sourceWarehouseId: dto.sourceWarehouseId,
-      sourceWarehouseName: sourceWarehouse.name,
       destinationWarehouseId: dto.destinationWarehouseId,
-      destinationWarehouseName: destinationWarehouse.name,
-      loanDate: now,
-      dueDate: new Date(dto.dueDate),
-      status: LoanStatus.ACTIVE,
-      notes: dto.notes,
+      dueDate: typeof dto.dueDate === 'string' ? dto.dueDate : dto.dueDate.toISOString(),
       createdById: user.id,
-      createdByName: user.name || user.email,
-      createdAt: now,
-      updatedAt: now
+      notes: dto.notes
     };
 
-    this.loansSignal.update(loans => [newLoan, ...loans]);
-    this.saveToStorage();
-
-    // Log audit
-    this.auditService.logLoan(
-      newLoan.id,
-      item.name,
-      `${sourceWarehouse.name} → ${destinationWarehouse.name}`,
-      'LOAN'
+    return this.http.post<LoanApiResponse>(this.apiUrl, payload).pipe(
+      map(loan => this.mapLoan(loan)),
+      tap(loan => {
+        this.loansSignal.update(loans => [loan, ...loans]);
+        this.getStats().subscribe();
+      })
     );
-
-    return newLoan;
   }
 
   /**
    * Return a loan
    */
-  returnLoan(loanId: string, dto?: ReturnLoanDto): Loan | null {
-    const loan = this.loansSignal().find(l => l.id === loanId);
-    if (!loan) return null;
+  returnLoan(loanId: string, dto?: ReturnLoanDto): Observable<Loan> {
+    const payload = dto ? {
+      returnDate: dto.returnDate ?
+        (typeof dto.returnDate === 'string' ? dto.returnDate : dto.returnDate.toISOString())
+        : undefined,
+      notes: dto.notes
+    } : {};
 
-    if (loan.status === LoanStatus.RETURNED) {
-      console.error('Loan is already returned');
-      return null;
-    }
-
-    const now = new Date();
-    const returnDate = dto?.returnDate ? new Date(dto.returnDate) : now;
-
-    const updatedLoan: Loan = {
-      ...loan,
-      status: LoanStatus.RETURNED,
-      returnDate,
-      notes: dto?.notes ? `${loan.notes || ''}\n${dto.notes}`.trim() : loan.notes,
-      updatedAt: now
-    };
-
-    this.loansSignal.update(loans =>
-      loans.map(l => l.id === loanId ? updatedLoan : l)
+    return this.http.patch<LoanApiResponse>(`${this.apiUrl}/${loanId}/return`, payload).pipe(
+      map(loan => this.mapLoan(loan)),
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
+        this.getStats().subscribe();
+      })
     );
-    this.saveToStorage();
-
-    // Log audit
-    this.auditService.logLoan(
-      loan.id,
-      loan.inventoryItemName,
-      `${loan.destinationWarehouseName} → ${loan.sourceWarehouseName}`,
-      'RETURN'
-    );
-
-    return updatedLoan;
   }
 
   /**
    * Get loan by ID
    */
-  getLoanById(id: string): Loan | undefined {
-    return this.loansSignal().find(l => l.id === id);
+  getLoanById(id: string): Observable<Loan> {
+    return this.http.get<LoanApiResponse>(`${this.apiUrl}/${id}`).pipe(
+      map(loan => this.mapLoan(loan))
+    );
   }
 
   /**
    * Get loans for a specific item
    */
-  getLoansForItem(inventoryItemId: string): Loan[] {
-    return this.loansSignal()
-      .filter(l => l.inventoryItemId === inventoryItemId)
-      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+  getLoansForItem(inventoryItemId: string): Observable<Loan[]> {
+    return this.http.get<LoanApiResponse[]>(`${this.apiUrl}/item/${inventoryItemId}`).pipe(
+      map(loans => loans.map(loan => this.mapLoan(loan)))
+    );
   }
 
   /**
-   * Get loans from a specific warehouse
+   * Get loans for a specific warehouse
    */
-  getLoansFromWarehouse(warehouseId: string): Loan[] {
-    return this.loansSignal()
-      .filter(l => l.sourceWarehouseId === warehouseId)
-      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
-  }
-
-  /**
-   * Get loans to a specific warehouse
-   */
-  getLoansToWarehouse(warehouseId: string): Loan[] {
-    return this.loansSignal()
-      .filter(l => l.destinationWarehouseId === warehouseId)
-      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+  getLoansForWarehouse(warehouseId: string): Observable<Loan[]> {
+    return this.http.get<LoanApiResponse[]>(`${this.apiUrl}/warehouse/${warehouseId}`).pipe(
+      map(loans => loans.map(loan => this.mapLoan(loan)))
+    );
   }
 
   /**
@@ -285,55 +251,24 @@ export class LoanService {
   }
 
   /**
-   * Get filtered loans
+   * Check if an item is on loan (API call)
    */
-  getFilteredLoans(filter?: LoanFilter): Loan[] {
-    let loans = this.loansSignal();
-
-    if (!filter) return loans;
-
-    if (filter.status) {
-      loans = loans.filter(l => l.status === filter.status);
-    }
-
-    if (filter.sourceWarehouseId) {
-      loans = loans.filter(l => l.sourceWarehouseId === filter.sourceWarehouseId);
-    }
-
-    if (filter.destinationWarehouseId) {
-      loans = loans.filter(l => l.destinationWarehouseId === filter.destinationWarehouseId);
-    }
-
-    if (filter.inventoryItemId) {
-      loans = loans.filter(l => l.inventoryItemId === filter.inventoryItemId);
-    }
-
-    if (filter.overdue) {
-      loans = loans.filter(l => l.status === LoanStatus.OVERDUE);
-    }
-
-    if (filter.dateFrom) {
-      loans = loans.filter(l => l.loanDate >= filter.dateFrom!);
-    }
-
-    if (filter.dateTo) {
-      loans = loans.filter(l => l.loanDate <= filter.dateTo!);
-    }
-
-    return loans.sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+  checkItemOnLoan(inventoryItemId: string): Observable<boolean> {
+    return this.http.get<{ onLoan: boolean }>(`${this.apiUrl}/check-item/${inventoryItemId}`).pipe(
+      map(response => response.onLoan)
+    );
   }
 
   /**
    * Delete a loan (admin only)
    */
-  deleteLoan(loanId: string): boolean {
-    const loan = this.loansSignal().find(l => l.id === loanId);
-    if (!loan) return false;
-
-    this.loansSignal.update(loans => loans.filter(l => l.id !== loanId));
-    this.saveToStorage();
-
-    return true;
+  deleteLoan(loanId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${loanId}`).pipe(
+      tap(() => {
+        this.loansSignal.update(loans => loans.filter(l => l.id !== loanId));
+        this.getStats().subscribe();
+      })
+    );
   }
 
   /**
@@ -355,9 +290,5 @@ export class LoanService {
     link.href = URL.createObjectURL(blob);
     link.download = `loans-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
-  }
-
-  private generateId(): string {
-    return 'loan-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
   }
 }

@@ -370,28 +370,44 @@ html[data-theme="light"] [class*="sky-950/"] {
 
     /* ----------------------------------------
        SUCCESS - Green (confirmations)
+       Darker green for better contrast on pastel backgrounds
        ---------------------------------------- */
-    .text-emerald-400 { color: #059669 !important; } /* emerald-600 */
-    .bg-emerald-950\/50 { background-color: #ecfdf5 !important; } /* emerald-50 */
+    .text-emerald-400 { color: #047857 !important; } /* emerald-700 */
+    .bg-emerald-950\/50 { background-color: #d1fae5 !important; } /* emerald-100 */
     .border-emerald-900 { border-color: #a7f3d0 !important; } /* emerald-200 */
     .border-emerald-900\/50 { border-color: #d1fae5 !important; } /* emerald-100 */
-    .\!text-emerald-400 { color: #059669 !important; }
+    .\!text-emerald-400 { color: #047857 !important; } /* emerald-700 */
 
     /* ----------------------------------------
-       WARNING - Orange (alerts) - muted for light theme
+       WARNING - Orange/Amber (alerts)
+       Using very dark brown for maximum contrast on light backgrounds
        ---------------------------------------- */
-    .text-orange-400 { color: #c2410c !important; } /* orange-700 */
-    .text-amber-400 { color: #c2410c !important; }
-    .bg-orange-950\/50 { background-color: #fff7ed !important; } /* orange-50 */
-    .bg-amber-950\/50 { background-color: #fff7ed !important; }
-    .border-orange-900 { border-color: #fed7aa !important; } /* orange-200 */
-    .border-orange-900\/50 { border-color: #fed7aa !important; }
-    .hover\:border-orange-800\/50:hover { border-color: #fdba74 !important; } /* orange-300 */
-    .\!text-orange-400 { color: #c2410c !important; }
-    .\!text-orange-500 { color: #c2410c !important; }
-    .\!text-orange-700 { color: #c2410c !important; }
-    .\!text-amber-400 { color: #c2410c !important; }
-    .\!text-amber-500 { color: #c2410c !important; }
+    .text-orange-400,
+    p.text-orange-400,
+    span.text-orange-400,
+    [class*="text-orange-400"] { color: #78350f !important; } /* amber-900 - very dark */
+
+    .text-amber-400,
+    p.text-amber-400,
+    span.text-amber-400,
+    [class*="text-amber-400"] { color: #78350f !important; } /* amber-900 - very dark */
+
+    .text-yellow-400,
+    p.text-yellow-400,
+    span.text-yellow-400,
+    [class*="text-yellow-400"] { color: #854d0e !important; } /* yellow-800 */
+
+    .bg-orange-950\/50 { background-color: #fef3c7 !important; } /* amber-100 */
+    .bg-amber-950\/50 { background-color: #fef3c7 !important; } /* amber-100 */
+    .border-orange-900 { border-color: #fde68a !important; } /* amber-200 */
+    .border-orange-900\/50 { border-color: #fde68a !important; }
+    .hover\:border-orange-800\/50:hover { border-color: #fcd34d !important; } /* amber-300 */
+    .\!text-orange-400 { color: #78350f !important; } /* amber-900 */
+    .\!text-orange-500 { color: #78350f !important; }
+    .\!text-orange-700 { color: #78350f !important; } /* amber-900 */
+    .\!text-amber-400 { color: #78350f !important; } /* amber-900 */
+    .\!text-amber-500 { color: #78350f !important; }
+    .\!text-yellow-400 { color: #854d0e !important; } /* yellow-800 */
 
     /* ----------------------------------------
        DANGER - Rose (destructive actions)
@@ -428,17 +444,28 @@ html[data-theme="light"] [class*="sky-950/"] {
 
     /* ----------------------------------------
        INFO - Sky Blue (information)
+       More vibrant colors for better contrast on pastel backgrounds
        ---------------------------------------- */
-    .text-sky-400 { color: #0284c7 !important; } /* sky-600 */
-    .text-blue-400 { color: #1d4ed8 !important; } /* blue-700 - darker for contrast */
-    .bg-sky-950\/50 { background-color: #f0f9ff !important; } /* sky-50 */
+    .text-sky-400 { color: #0369a1 !important; } /* sky-700 - darker for contrast */
+    .text-blue-400 { color: #1d4ed8 !important; } /* blue-700 */
+    .bg-sky-950\/50 { background-color: #e0f2fe !important; } /* sky-100 */
     .bg-blue-950\/50 { background-color: #dbeafe !important; } /* blue-100 */
     .border-sky-900 { border-color: #7dd3fc !important; } /* sky-300 */
     .border-sky-900\/50 { border-color: #bae6fd !important; } /* sky-200 */
-    .hover\:text-sky-300:hover { color: #0369a1 !important; } /* sky-700 */
-    .\!text-sky-400 { color: #0284c7 !important; }
+    .hover\:text-sky-300:hover { color: #075985 !important; } /* sky-800 */
+    .\!text-sky-400 { color: #0369a1 !important; } /* sky-700 */
     .\!text-blue-400 { color: #1d4ed8 !important; }
     .\!text-blue-500 { color: #1d4ed8 !important; }
+
+    /* ----------------------------------------
+       RED - Error/Overdue
+       Vibrant red for warning indicators
+       ---------------------------------------- */
+    .text-red-400 { color: #b91c1c !important; } /* red-700 */
+    .\!text-red-400 { color: #b91c1c !important; }
+    .\!text-red-500 { color: #b91c1c !important; }
+    .bg-red-950\/50 { background-color: #fee2e2 !important; } /* red-100 */
+    .border-red-900 { border-color: #fecaca !important; } /* red-200 */
 
     /* ----------------------------------------
        PURPLE - Accent

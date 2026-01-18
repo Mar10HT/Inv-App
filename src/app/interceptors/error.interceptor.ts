@@ -3,10 +3,12 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { LoggerService } from '../services/logger.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
+  const logger = inject(LoggerService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -55,7 +57,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      console.error('HTTP Error:', {
+      logger.error('HTTP Error', error, {
         status: error.status,
         message: errorMessage,
         url: req.url

@@ -52,6 +52,21 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  updateProfile(data: { name?: string; email: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/profile`, data).pipe(
+      tap(response => {
+        // Update current user in storage and signal
+        const updatedUser = { ...this.currentUser(), ...response.user };
+        localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
+        this.currentUser.set(updatedUser);
+      })
+    );
+  }
+
+  changePassword(data: { currentPassword: string; newPassword: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, data);
+  }
+
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }

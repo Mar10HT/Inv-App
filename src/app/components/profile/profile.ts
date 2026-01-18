@@ -67,12 +67,17 @@ export class Profile implements OnInit {
 
     this.saving.set(true);
 
-    // TODO: Implement actual API call to update profile
-    setTimeout(() => {
-      this.saving.set(false);
-      this.editMode.set(false);
-      this.notifications.success('PROFILE.UPDATED');
-    }, 500);
+    this.authService.updateProfile(this.profileForm.value).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.editMode.set(false);
+        this.notifications.success('PROFILE.UPDATED');
+      },
+      error: (error) => {
+        this.saving.set(false);
+        this.notifications.error(error.error?.message || 'ERRORS.GENERIC');
+      }
+    });
   }
 
   openChangePasswordDialog(): void {

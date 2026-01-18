@@ -5,6 +5,7 @@ import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { NotificationService } from '../../../services/notification.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-change-password-dialog',
@@ -121,6 +122,7 @@ export class ChangePasswordDialog {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ChangePasswordDialog>);
   private notifications = inject(NotificationService);
+  private authService = inject(AuthService);
 
   saving = signal(false);
 
@@ -137,7 +139,7 @@ export class ChangePasswordDialog {
   submit(): void {
     if (this.passwordForm.invalid) return;
 
-    const { newPassword, confirmPassword } = this.passwordForm.value;
+    const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
     if (newPassword !== confirmPassword) {
       this.notifications.error('PROFILE.PASSWORD_MISMATCH');
       return;
@@ -145,11 +147,16 @@ export class ChangePasswordDialog {
 
     this.saving.set(true);
 
-    // TODO: Implement actual API call to change password
-    setTimeout(() => {
-      this.saving.set(false);
-      this.notifications.success('PROFILE.PASSWORD_CHANGED');
-      this.dialogRef.close(true);
-    }, 500);
+    this.authService.changePassword({ currentPassword, newPassword }).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.notifications.success('PROFILE.PASSWORD_CHANGED');
+        this.dialogRef.close(true);
+      },
+      error: (error) => {
+        this.saving.set(false);
+        this.notifications.error(error.error?.message || 'ERRORS.GENERIC');
+      }
+    });
   }
 }

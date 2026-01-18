@@ -23,3 +23,12 @@ export interface AuthUser {
   role: UserRole;
   createdAt?: Date | string;
 }
+
+export interface UpdateProfileResponse {
+  message: string;
+  user: AuthUser;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}

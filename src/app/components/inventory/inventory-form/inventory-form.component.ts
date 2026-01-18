@@ -17,6 +17,7 @@ import { InventoryService } from '../../../services/inventory/inventory.service'
 import { WarehouseService } from '../../../services/warehouse.service';
 import { SupplierService } from '../../../services/supplier.service';
 import { UserService } from '../../../services/user.service';
+import { LoggerService } from '../../../services/logger.service';
 import { ItemType, Currency, CreateInventoryItemDto, InventoryStatus } from '../../../interfaces/inventory-item.interface';
 import { Warehouse } from '../../../interfaces/warehouse.interface';
 import { Supplier } from '../../../interfaces/supplier.interface';
@@ -51,6 +52,7 @@ export class InventoryFormComponent implements OnInit {
   private supplierService = inject(SupplierService);
   private userService = inject(UserService);
   private translate = inject(TranslateService);
+  private logger = inject(LoggerService);
 
   // Enums for template
   ItemType = ItemType;
@@ -189,7 +191,7 @@ export class InventoryFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading item:', error);
+        this.logger.error('Error loading item', error);
         this.loading.set(false);
         this.router.navigate(['/inventory']);
       }
@@ -236,17 +238,17 @@ export class InventoryFormComponent implements OnInit {
   private loadData(): void {
     // Load warehouses
     this.warehouseService.getAll().subscribe({
-      error: (error) => console.error('Error loading warehouses:', error)
+      error: (error) => this.logger.error('Error loading warehouses', error)
     });
 
     // Load suppliers
     this.supplierService.getAll().subscribe({
-      error: (error) => console.error('Error loading suppliers:', error)
+      error: (error) => this.logger.error('Error loading suppliers', error)
     });
 
     // Load users
     this.userService.getAll().subscribe({
-      error: (error) => console.error('Error loading users:', error)
+      error: (error) => this.logger.error('Error loading users', error)
     });
   }
 
@@ -318,7 +320,7 @@ export class InventoryFormComponent implements OnInit {
           this.router.navigate(['/inventory']);
         },
         error: (error) => {
-          console.error('Error updating item:', error);
+          this.logger.error('Error updating item', error);
           this.loading.set(false);
         }
       });
@@ -329,7 +331,7 @@ export class InventoryFormComponent implements OnInit {
           this.router.navigate(['/inventory']);
         },
         error: (error) => {
-          console.error('Error creating item:', error);
+          this.logger.error('Error creating item', error);
           this.loading.set(false);
         }
       });

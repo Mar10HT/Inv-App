@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { AuthService } from './auth.service';
+import { LoggerService } from './logger.service';
 import {
   AuditLog,
   AuditAction,
@@ -14,6 +15,7 @@ import {
 })
 export class AuditService {
   private authService = inject(AuthService);
+  private logger = inject(LoggerService);
 
   private logsSignal = signal<AuditLog[]>([]);
   private loadingSignal = signal(false);
@@ -39,7 +41,7 @@ export class AuditService {
         this.logsSignal.set(logs);
       }
     } catch (e) {
-      console.error('Error loading audit logs:', e);
+      this.logger.error('Error loading audit logs', e);
     }
   }
 
@@ -50,7 +52,7 @@ export class AuditService {
     try {
       localStorage.setItem('audit_logs', JSON.stringify(this.logsSignal()));
     } catch (e) {
-      console.error('Error saving audit logs:', e);
+      this.logger.error('Error saving audit logs', e);
     }
   }
 

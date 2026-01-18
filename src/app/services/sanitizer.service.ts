@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { DomSanitizer, SafeHtml, SafeResourceUrl, SafeUrl, SecurityContext } from '@angular/platform-browser';
+import { Injectable, inject, SecurityContext } from '@angular/core';
+import { DomSanitizer, SafeHtml, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 /**
  * Service for sanitizing user input to prevent XSS attacks

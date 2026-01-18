@@ -1,13 +1,15 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { loginGuard } from './guards/login.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 
-  // Login - public route
+  // Login - public route (redirects to dashboard if already authenticated)
   {
     path: 'login',
-    loadComponent: () => import('./components/login/login').then(m => m.Login)
+    loadComponent: () => import('./components/login/login').then(m => m.Login),
+    canActivate: [loginGuard]
   },
 
   // Dashboard - protected route

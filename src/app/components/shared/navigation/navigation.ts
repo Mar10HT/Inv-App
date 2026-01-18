@@ -69,4 +69,9 @@ export class Navigation {
   toggleTheme(): void {
     this.themeService.toggle();
   }
+
+  // Logout
+  logout(): void {
+    this.authService.logout();
+  }
 }

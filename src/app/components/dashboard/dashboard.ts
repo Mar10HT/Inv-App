@@ -28,6 +28,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { DashboardService, DashboardStats, CategoryStats, WarehouseStats, StatusStats } from '../../services/dashboard.service';
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
+import { LoggerService } from '../../services/logger.service';
 import { InventoryItemInterface, InventoryStatus, Currency } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
@@ -63,6 +64,7 @@ export class Dashboard implements OnInit {
   private snackBar = inject(MatSnackBar);
   private translate = inject(TranslateService);
   private notifications = inject(NotificationService);
+  private logger = inject(LoggerService);
 
   userName = computed(() => this.authService.currentUser()?.name || 'User');
 
@@ -243,7 +245,7 @@ export class Dashboard implements OnInit {
         }
       }
     } catch (e) {
-      console.warn('Could not load dashboard layout', e);
+      this.logger.warn('Could not load dashboard layout', e);
     }
   }
 
@@ -277,7 +279,7 @@ export class Dashboard implements OnInit {
         this.customCharts.set(JSON.parse(saved));
       }
     } catch (e) {
-      console.warn('Could not load custom charts', e);
+      this.logger.warn('Could not load custom charts', e);
     }
   }
 
@@ -883,7 +885,7 @@ export class Dashboard implements OnInit {
         }, 100);
       },
       error: (err) => {
-        console.error('Error loading dashboard data:', err);
+        this.logger.error('Error loading dashboard data', err);
         this.error.set('Error loading dashboard data: ' + (err.message || 'Unknown error'));
         this.loading.set(false);
       }

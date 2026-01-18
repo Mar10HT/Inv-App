@@ -238,6 +238,21 @@
       </div>
     }
 
+    <!-- Logout Button -->
+    <button
+      class="logout-btn"
+      [class.collapsed]="isCollapsed()"
+      (click)="logout()"
+      [matTooltip]="isCollapsed() ? ('NAV.LOGOUT' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="logout-icon-container">
+        <lucide-icon name="LogOut" class="logout-icon"></lucide-icon>
+      </div>
+      @if (!isCollapsed()) {
+        <span class="logout-text">{{ 'NAV.LOGOUT' | translate }}</span>
+      }
+    </button>
+
     <!-- Theme Toggle Button -->
     <button
       class="theme-toggle-btn"

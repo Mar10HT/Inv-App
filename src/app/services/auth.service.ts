@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { LoginRequest, RegisterRequest, AuthResponse, AuthUser } from '../interfaces/auth.interface';
+import { LoginRequest, RegisterRequest, AuthResponse, AuthUser, UpdateProfileResponse, ChangePasswordResponse } from '../interfaces/auth.interface';
 import { PermissionsService } from './permissions.service';
 
 @Injectable({
@@ -52,8 +52,8 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  updateProfile(data: { name?: string; email: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/profile`, data).pipe(
+  updateProfile(data: { name?: string; email: string }): Observable<UpdateProfileResponse> {
+    return this.http.post<UpdateProfileResponse>(`${this.apiUrl}/profile`, data).pipe(
       tap(response => {
         // Update current user in storage and signal
         const updatedUser = { ...this.currentUser(), ...response.user };
@@ -63,8 +63,8 @@ export class AuthService {
     );
   }
 
-  changePassword(data: { currentPassword: string; newPassword: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/change-password`, data);
+  changePassword(data: { currentPassword: string; newPassword: string }): Observable<ChangePasswordResponse> {
+    return this.http.post<ChangePasswordResponse>(`${this.apiUrl}/change-password`, data);
   }
 
   getToken(): string | null {

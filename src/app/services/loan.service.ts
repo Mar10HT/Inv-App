@@ -10,6 +10,7 @@ import {
   LoanFilter,
   LoanStats
 } from '../interfaces/loan.interface';
+import { LoggerService } from './logger.service';
 
 interface PaginatedResponse<T> {
   data: T[];
@@ -28,6 +29,7 @@ interface PaginatedResponse<T> {
 })
 export class LoanService {
   private http = inject(HttpClient);
+  private logger = inject(LoggerService);
   private apiUrl = `${environment.apiUrl}/loans`;
 
   private loansSignal = signal<Loan[]>([]);
@@ -82,7 +84,7 @@ export class LoanService {
     this.http.get<PaginatedResponse<any>>(this.apiUrl, { params }).pipe(
       map(response => response.data.map((loan: any) => this.transformLoan(loan))),
       catchError(err => {
-        console.error('Error loading loans:', err);
+        this.logger.error('Error loading loans', err);
         this.errorSignal.set(err.message || 'Error loading loans');
         return of([]);
       })
@@ -138,7 +140,7 @@ export class LoanService {
         }
       }),
       catchError(err => {
-        console.error('Error creating loan:', err);
+        this.logger.error('Error creating loan', err);
         return of(null);
       })
     );
@@ -166,7 +168,7 @@ export class LoanService {
         }
       }),
       catchError(err => {
-        console.error('Error returning loan:', err);
+        this.logger.error('Error returning loan', err);
         return of(null);
       })
     );
@@ -275,7 +277,7 @@ export class LoanService {
         return true;
       }),
       catchError(err => {
-        console.error('Error deleting loan:', err);
+        this.logger.error('Error deleting loan', err);
         this.errorSignal.set(err.message || 'Error deleting loan');
         this.loadingSignal.set(false);
         return of(false);

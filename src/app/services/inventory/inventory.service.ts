@@ -1,10 +1,10 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map, catchError, of } from 'rxjs';
-import { 
-  InventoryItemInterface, 
-  CreateInventoryItemDto, 
-  UpdateInventoryItemDto, 
+import {
+  InventoryItemInterface,
+  CreateInventoryItemDto,
+  UpdateInventoryItemDto,
   InventoryStatus,
   PaginatedResponse,
   StatsResponse,
@@ -12,6 +12,7 @@ import {
   Supplier
 } from '../../interfaces/inventory-item.interface';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from '../logger.service';
 
 export interface FilterParams {
   search?: string;
@@ -30,6 +31,7 @@ export interface FilterParams {
 })
 export class InventoryService {
   private http = inject(HttpClient);
+  private logger = inject(LoggerService);
   private apiUrl = environment.apiUrl;
   
   private itemsSignal = signal<InventoryItemInterface[]>([]);
@@ -67,7 +69,7 @@ export class InventoryService {
   loadWarehouses(): void {
     this.http.get<Warehouse[]>(this.apiUrl + '/warehouses').pipe(
       catchError(err => {
-        console.error('Error loading warehouses:', err);
+        this.logger.error('Error loading warehouses', err);
         return of([]);
       })
     ).subscribe(warehouses => {
@@ -78,7 +80,7 @@ export class InventoryService {
   loadSuppliers(): void {
     this.http.get<Supplier[]>(this.apiUrl + '/suppliers').pipe(
       catchError(err => {
-        console.error('Error loading suppliers:', err);
+        this.logger.error('Error loading suppliers', err);
         return of([]);
       })
     ).subscribe(suppliers => {

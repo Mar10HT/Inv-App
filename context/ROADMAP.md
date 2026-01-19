@@ -120,17 +120,21 @@ Draggable widgets on dashboard.
 
 ## Changelog
 
-### v1.4.0 (Current)
+### v0.4.5 (Current)
+- [x] CSRF protection (Double Submit Cookie Pattern)
+- [x] Secure HttpOnly cookies for JWT tokens
 - [x] Warehouse-to-warehouse loans system
 - [x] Multiple items per loan with quantity
 - [x] Loan statistics and filtering
 - [x] Theme-aware design system classes
 
-### v2.1.0 (In Development)
+### v0.5.0 (Next)
 - [ ] Bulk CSV import
 - [ ] Change history / Audit log
+- [ ] Security: Input validation and sanitization
+- [ ] Security: Rate limiting enhancements
 
-### v2.0.0
+### v0.4.0
 - [x] Complete base system
 - [x] Reports with PDF/CSV export
 - [x] EXTERNAL role for users without access
@@ -139,4 +143,4 @@ Draggable widgets on dashboard.
 
 ---
 
-*Last updated: January 15, 2026*
+*Last updated: January 19, 2026*

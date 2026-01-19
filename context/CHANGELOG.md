@@ -1,6 +1,26 @@
 # Changelog - INV-APP
 
-## [1.4.0] - January 15, 2026
+> **Version Scheme**: This project uses [Semantic Versioning](https://semver.org/)
+> - `0.x.x` = Pre-beta (current phase - not production ready)
+> - `1.0.0` = First stable release (production ready)
+> - Major version stays at `0` until all critical features and security requirements are met
+
+---
+
+## [0.4.5] - January 19, 2026
+
+### Security
+- **CSRF Protection**: Implemented Double Submit Cookie Pattern using csrf-csrf
+  - CSRF token endpoint: `/api/auth/csrf-token`
+  - HttpOnly cookie `_csrf` with SameSite=Strict
+  - Token validation on all state-changing requests (POST, PUT, PATCH, DELETE)
+  - Frontend automatically includes `X-CSRF-Token` header via interceptor
+
+- **Secure Token Storage**: Migrated from localStorage to HttpOnly cookies
+  - JWT tokens now stored in secure HttpOnly cookies
+  - Frontend no longer has access to raw tokens (prevents XSS token theft)
+  - All HTTP requests use `withCredentials: true`
+  - Removed `TOKEN_KEY` from localStorage
 
 ### Added
 - **Loans System (Warehouse-to-Warehouse)**: Complete loan management between warehouses
@@ -27,8 +47,8 @@
   - `destinationWarehouseId/Name` - Warehouse receiving the items
 
 - **New Translations**:
-  - `LOANS.SOURCE_WAREHOUSE` - Bodega Origen / Source Warehouse
-  - `LOANS.DEST_WAREHOUSE` - Bodega Destino / Destination Warehouse
+  - `LOANS.SOURCE_WAREHOUSE` - Source Warehouse
+  - `LOANS.DEST_WAREHOUSE` - Destination Warehouse
   - `LOANS.SELECT_SOURCE_WAREHOUSE` - Select source warehouse
   - `LOANS.SELECT_DEST_WAREHOUSE` - Select destination warehouse
   - `LOANS.NO_ITEMS_IN_WAREHOUSE` - No available items message
@@ -48,7 +68,7 @@
 
 ---
 
-## [1.3.0] - January 14, 2026
+## [0.4.0] - January 14, 2026
 
 ### Added
 - **Light Mode**: Full light theme support with theme toggle
@@ -85,7 +105,7 @@
 
 ---
 
-## [1.2.0] - January 12, 2026
+## [0.3.0] - January 12, 2026
 
 ### Added
 - **Collapsible Sidebar**: New fixed sidebar with collapse/expand functionality
@@ -109,7 +129,7 @@
 
 ---
 
-## [1.1.0] - January 9, 2026
+## [0.2.0] - January 9, 2026
 
 ### Added
 - **Warehouses CRUD**: Full warehouse management with list, add, edit, delete
@@ -124,7 +144,7 @@
 
 ---
 
-## [1.0.0] - November 22, 2025
+## [0.1.0] - November 22, 2025
 
 ### Added
 - **Inventory Management**: Full CRUD with filters, search, pagination

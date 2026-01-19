@@ -78,14 +78,22 @@ Inv-App/
 
 ## Implemented Features
 
-### 1. Authentication System (FULLY FUNCTIONAL)
+### 1. Authentication & Security (FULLY FUNCTIONAL)
 - JWT-based authentication with 7-day token expiration
+- **Secure HttpOnly cookies**: Tokens stored in secure cookies (not localStorage)
+- **CSRF Protection**: Double Submit Cookie Pattern with csrf-csrf
+  - CSRF token endpoint: `/api/auth/csrf-token`
+  - HttpOnly `_csrf` cookie with SameSite=Strict
+  - Automatic token validation on state-changing requests
+  - Frontend CSRF interceptor adds `X-CSRF-Token` header
 - Login page with email/password
 - User registration
 - Auth guard protecting all routes
-- HTTP interceptor automatically adding JWT to requests
+- HTTP interceptor with `withCredentials: true`
 - Auto-redirect to login when not authenticated
 - Secure password hashing with bcrypt (10 rounds)
+- Rate limiting: 5 login attempts per minute, 3 register attempts per minute
+- Security headers with Helmet
 - Admin user auto-created in seed script
 - **Credentials**: admin@example.com / password123
 
@@ -196,9 +204,13 @@ Inv-App/
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - User login (returns JWT)
-- `POST /api/auth/register` - User registration
+- `GET /api/auth/csrf-token` - Get CSRF token (sets HttpOnly cookie)
+- `POST /api/auth/login` - User login (sets JWT in HttpOnly cookie)
+- `POST /api/auth/register` - User registration (sets JWT in HttpOnly cookie)
+- `POST /api/auth/logout` - User logout (clears cookies)
 - `GET /api/auth/profile` - Get current user profile (requires JWT)
+- `POST /api/auth/profile` - Update current user profile
+- `POST /api/auth/change-password` - Change user password
 
 ### Inventory
 - `GET /api/inventory` - List all items (with filters, pagination)
@@ -276,9 +288,13 @@ text-slate-500  /* Tertiary/placeholders */
 - **Core infrastructure**: 100% ✓
 - **Authentication & Security**: 100% ✓
   - JWT authentication ✓
+  - HttpOnly cookies for tokens ✓
+  - CSRF protection (Double Submit Cookie) ✓
   - Auth guards ✓
   - HTTP interceptor ✓
   - Password hashing ✓
+  - Rate limiting ✓
+  - Security headers (Helmet) ✓
 - **Inventory management**: 100% ✓
   - CRUD operations ✓
   - Advanced filtering ✓
@@ -368,5 +384,5 @@ Password: password123
 
 ---
 
-**Last Updated**: January 15, 2026
-**Version**: 1.4.0
+**Last Updated**: January 19, 2026
+**Version**: 0.4.5

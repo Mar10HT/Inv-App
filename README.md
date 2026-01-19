@@ -15,7 +15,7 @@ A modern inventory management system built with Angular 20 and NestJS.
 - **Inventory Management** - Full CRUD with advanced filters, search, and pagination
   - **Item Types** - Support for UNIQUE (individual items) and BULK (quantity-based) items
   - **Model Field** - Group similar items by model (e.g., "Dell Latitude 5430")
-  - **Smart Status Display** - UNIQUE items show "Disponible"/"No Disponible" instead of stock levels
+  - **Smart Status Display** - UNIQUE items show "Available"/"Not Available" instead of stock levels
   - **Advanced Search** - Search by name, description, and model
 - **Warehouse Management** - Track multiple storage locations
 - **Supplier Management** - Manage vendor contacts and information

@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CdkDragPlaceholder } from '@angular/cdk/drag-drop';
+import { CdkDragPlaceholder, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -19,18 +19,19 @@ export interface LowStockItem {
   imports: [
     CommonModule,
     CdkDragPlaceholder,
+    CdkDragHandle,
     LucideAngularModule,
     TranslateModule
   ],
   template: `
-    <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
+    <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between cursor-grab active:cursor-grabbing">
       <div>
         <h2 class="text-lg font-semibold text-foreground">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
         <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
       </div>
       <button
         (click)="$event.stopPropagation(); viewAll.emit()"
-        class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+        class="text-sm text-sky-400 hover:text-sky-300 transition-colors cursor-pointer">
         {{ 'COMMON.VIEW_ALL' | translate }}
       </button>
     </div>

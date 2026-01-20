@@ -31,6 +31,7 @@ import {
   BarChartOptions,
   LowStockItem
 } from './components';
+import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboard';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,6 +49,7 @@ import {
     NgApexchartsModule,
     DashboardStatsComponent,
     DashboardChartsComponent,
+    SkeletonDashboardComponent,
     DashboardTransactionsComponent,
     DashboardLowStockComponent
   ],

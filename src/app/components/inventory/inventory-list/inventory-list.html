@@ -17,9 +17,16 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <!-- Total Items -->
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+    @if (loading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        @for (card of [1, 2, 3, 4]; track $index) {
+          <app-skeleton-card />
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Items -->
+        <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
@@ -73,7 +80,8 @@
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    }
 
     <!-- Filters Section - REDESIGNED -->
     <div class="bg-surface-variant border border-theme rounded-xl p-6 mb-8">
@@ -169,16 +177,31 @@
         </div>
       </div>
 
-      <!-- Desktop Table View - REDESIGNED -->
-      <div class="hidden lg:block overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="bg-[#141414]">
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Modelo</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.LOCATION' | translate }}</th>
+      <!-- Loading State -->
+      @if (loading()) {
+        <!-- Desktop Skeleton -->
+        <div class="hidden lg:block p-6">
+          <app-skeleton-table [rows]="10" [columns]="8" />
+        </div>
+        <!-- Mobile Skeleton -->
+        <div class="lg:hidden p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @for (card of [1, 2, 3, 4, 5, 6]; track $index) {
+              <app-skeleton-card />
+            }
+          </div>
+        </div>
+      } @else {
+        <!-- Desktop Table View - REDESIGNED -->
+        <div class="hidden lg:block overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-[#141414]">
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Modelo</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.LOCATION' | translate }}</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.LAST_UPDATED' | translate }}</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</th>
               <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
@@ -280,10 +303,10 @@
             </tr>
           </tbody>
         </table>
-      </div>
+        </div>
 
-      <!-- Mobile Card View - GRID 2 COLUMNS -->
-      <div class="lg:hidden p-4">
+        <!-- Mobile Card View - GRID 2 COLUMNS -->
+        <div class="lg:hidden p-4">
         <div *ngIf="paginatedItems().length === 0" class="p-8 text-center">
           <lucide-icon name="Package" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
           <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'INVENTORY.LIST.NO_ITEMS_FOUND' | translate }}</h3>
@@ -347,7 +370,8 @@
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      }
 
       <!-- Paginator -->
       <div class="border-t border-theme px-4 py-2">

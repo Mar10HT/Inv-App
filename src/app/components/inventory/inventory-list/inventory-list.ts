@@ -22,6 +22,8 @@ import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../inte
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory-item/inventory-item';
 import { ImportDialog } from '../../import/import-dialog';
+import { SkeletonCardComponent } from '../../shared/skeleton/skeleton-card';
+import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
 
 @Component({
   selector: 'app-inventory-list',
@@ -39,7 +41,9 @@ import { ImportDialog } from '../../import/import-dialog';
     MatDialogModule,
     MatSnackBarModule,
     MatTooltipModule,
-    TranslateModule
+    TranslateModule,
+    SkeletonCardComponent,
+    SkeletonTableComponent
   ],
   templateUrl: './inventory-list.html',
   styleUrl: './inventory-list.css'
@@ -74,6 +78,7 @@ export class InventoryList implements OnInit {
   // Computed values
   categories = computed(() => this.inventoryService.categories());
   locations = computed(() => this.inventoryService.locations());
+  loading = computed(() => this.inventoryService.loading());
 
   // Reactive filtered items with computed signal
   filteredItems = computed(() => {

@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CdkDragPlaceholder } from '@angular/cdk/drag-drop';
+import { CdkDragPlaceholder, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { Transaction, TransactionType } from '../../../../interfaces/transaction.interface';
@@ -12,18 +12,19 @@ import { Transaction, TransactionType } from '../../../../interfaces/transaction
   imports: [
     CommonModule,
     CdkDragPlaceholder,
+    CdkDragHandle,
     LucideAngularModule,
     TranslateModule
   ],
   template: `
-    <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
+    <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between cursor-grab active:cursor-grabbing">
       <div>
         <h2 class="text-lg font-semibold text-foreground">{{ 'TRANSACTION.TITLE' | translate }}</h2>
         <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
       </div>
       <button
         (click)="$event.stopPropagation(); viewAll.emit()"
-        class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+        class="text-sm text-sky-400 hover:text-sky-300 transition-colors cursor-pointer">
         {{ 'COMMON.VIEW_ALL' | translate }}
       </button>
     </div>

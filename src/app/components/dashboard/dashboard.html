@@ -10,14 +10,6 @@
       </p>
     </div>
 
-    <!-- Loading State -->
-    @if (loading()) {
-      <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
-      </div>
-    }
-
     <!-- Error State -->
     @if (error()) {
       <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
@@ -28,8 +20,12 @@
       </div>
     }
 
-    <!-- Stats Cards Component -->
-    <app-dashboard-stats [stats]="stats()" />
+    <!-- Loading State with Skeleton -->
+    @if (loading()) {
+      <app-skeleton-dashboard />
+    } @else {
+      <!-- Stats Cards Component -->
+      <app-dashboard-stats [stats]="stats()" />
 
     <!-- Charts Section Component -->
     <app-dashboard-charts
@@ -125,7 +121,7 @@
       (cdkDropListDropped)="onTableWidgetDrop($event)"
       class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       @for (widget of tableWidgets(); track widget) {
-        <div cdkDrag class="bg-surface-variant border border-theme rounded-xl overflow-hidden cursor-move hover:border-[#3a3a3a] transition-colors">
+        <div cdkDrag class="bg-surface-variant border border-theme rounded-xl overflow-hidden transition-colors">
           <!-- Transactions Widget -->
           @if (widget === 'transactions') {
             <app-dashboard-transactions
@@ -329,18 +325,19 @@
       }
     </div>
 
-    <!-- Quick Actions -->
-    <div class="mt-6 flex flex-wrap gap-4">
-      <button
-        (click)="addNewItem()"
-        class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
-        {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
-      </button>
-      <button
-        (click)="viewAllInventory()"
-        class="bg-slate-800 text-foreground px-6 py-2 rounded-lg hover:bg-slate-700 transition-all font-medium">
-        {{ 'COMMON.VIEW_ALL' | translate }} {{ 'NAV.INVENTORY' | translate }}
-      </button>
-    </div>
+      <!-- Quick Actions -->
+      <div class="mt-6 flex flex-wrap gap-4">
+        <button
+          (click)="addNewItem()"
+          class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
+          {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
+        </button>
+        <button
+          (click)="viewAllInventory()"
+          class="bg-slate-800 text-foreground px-6 py-2 rounded-lg hover:bg-slate-700 transition-all font-medium">
+          {{ 'COMMON.VIEW_ALL' | translate }} {{ 'NAV.INVENTORY' | translate }}
+        </button>
+      </div>
+    }
   </div>
 </div>

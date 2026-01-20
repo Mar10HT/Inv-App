@@ -11,6 +11,7 @@ import { NotificationService } from '../../services/notification.service';
 import { Category } from '../../interfaces/category.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { CategoryFormDialog } from './category-form-dialog';
+import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 
 @Component({
   selector: 'app-categories',
@@ -22,7 +23,8 @@ import { CategoryFormDialog } from './category-form-dialog';
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    TranslateModule
+    TranslateModule,
+    SkeletonCardComponent
   ],
   templateUrl: './categories.html',
   styleUrl: './categories.css'

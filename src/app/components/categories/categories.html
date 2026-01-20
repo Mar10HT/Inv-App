@@ -17,25 +17,23 @@
     </div>
 
     <!-- Stats Card -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'CATEGORY.TOTAL' | translate }}</p>
-            <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
-          </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Tag" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
+    @if (loading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <app-skeleton-card />
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-500">{{ 'CATEGORY.TOTAL' | translate }}</p>
+              <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
+            </div>
+            <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+              <lucide-icon name="Tag" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    @if (loading()) {
-      <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
 
@@ -50,7 +48,19 @@
     }
 
     <!-- Categories Grid -->
-    <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+    @if (loading()) {
+      <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-theme">
+          <h2 class="text-xl font-semibold text-foreground">{{ 'CATEGORY.LIST' | translate }}</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          @for (card of [1, 2, 3, 4, 5, 6, 7, 8]; track $index) {
+            <app-skeleton-card />
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
       <div class="px-6 py-4 border-b border-theme">
         <h2 class="text-xl font-semibold text-foreground">{{ 'CATEGORY.LIST' | translate }}</h2>
       </div>
@@ -114,6 +124,7 @@
           }
         </div>
       }
-    </div>
+      </div>
+    }
   </div>
 </div>

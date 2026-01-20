@@ -1,10 +1,26 @@
+<!-- Mobile hamburger button -->
+<button
+  class="mobile-menu-btn"
+  (click)="toggleMobileMenu()"
+  [style.display]="isMobileMenuOpen() ? 'none' : null">
+  <lucide-icon name="Menu"></lucide-icon>
+</button>
+
+<!-- Mobile overlay -->
+<div
+  class="sidebar-overlay"
+  [class.visible]="isMobileMenuOpen()"
+  (click)="closeMobileMenu()">
+</div>
+
 <aside
   class="sidebar"
-  [class.collapsed]="isCollapsed()">
+  [class.collapsed]="isCollapsed()"
+  [class.mobile-open]="isMobileMenuOpen()">
 
   <!-- Header with Logo and Toggle -->
   <div class="sidebar-header">
-    @if (!isCollapsed()) {
+    @if (showExpandedContent()) {
       <div class="logo-section">
         <div class="logo-icon">
           <lucide-icon name="Package"></lucide-icon>
@@ -14,8 +30,8 @@
     }
     <button
       class="toggle-btn"
-      (click)="toggleSidebar($event)">
-      <lucide-icon [name]="isCollapsed() ? 'ChevronRight' : 'ChevronLeft'"></lucide-icon>
+      (click)="isMobileMenuOpen() ? closeMobileMenu() : toggleSidebar($event)">
+      <lucide-icon [name]="isMobileMenuOpen() ? 'X' : (isCollapsed() ? 'ChevronRight' : 'ChevronLeft')"></lucide-icon>
     </button>
   </div>
 
@@ -26,18 +42,19 @@
       routerLink="/dashboard"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.DASHBOARD' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.DASHBOARD' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="LayoutDashboard" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
       }
     </a>
 
     <!-- Inventario Group -->
-    @if (!isCollapsed()) {
+    @if (showExpandedContent()) {
       <div class="nav-group-label">
         {{ 'NAV.INVENTORY' | translate }}
       </div>
@@ -49,12 +66,13 @@
       routerLink="/inventory"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.INVENTORY' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.INVENTORY' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="Package" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.INVENTORY' | translate }}</span>
       }
     </a>
@@ -63,12 +81,13 @@
       routerLink="/warehouses"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.WAREHOUSES' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.WAREHOUSES' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="Warehouse" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.WAREHOUSES' | translate }}</span>
       }
     </a>
@@ -77,12 +96,13 @@
       routerLink="/categories"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.CATEGORIES' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.CATEGORIES' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="Tag" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.CATEGORIES' | translate }}</span>
       }
     </a>
@@ -91,12 +111,13 @@
       routerLink="/suppliers"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.SUPPLIERS' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SUPPLIERS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="Truck" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.SUPPLIERS' | translate }}</span>
       }
     </a>
@@ -105,12 +126,13 @@
       routerLink="/loans"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.LOANS' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.LOANS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="ClipboardList" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
       }
     </a>
@@ -122,31 +144,33 @@
         [class.expanded]="isTransactionsExpanded()"
         [class.active-parent]="isTransactionsActive()"
         (click)="toggleTransactions()"
-        [matTooltip]="isCollapsed() ? ('NAV.TRANSACTIONS' | translate) : ''"
+        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSACTIONS' | translate) : ''"
         matTooltipPosition="right">
         <div class="nav-icon-container">
           <lucide-icon name="Receipt" class="nav-icon"></lucide-icon>
         </div>
-        @if (!isCollapsed()) {
+        @if (showExpandedContent()) {
           <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
           <lucide-icon [name]="isTransactionsExpanded() ? 'ChevronUp' : 'ChevronDown'" class="expand-icon"></lucide-icon>
         }
       </button>
 
-      @if (!isCollapsed() && isTransactionsExpanded()) {
+      @if (showExpandedContent() && isTransactionsExpanded()) {
         <div class="submenu">
           <a
             routerLink="/transactions"
             routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="nav-link submenu-link">
+            class="nav-link submenu-link"
+            (click)="closeMobileMenu()">
             <lucide-icon name="List" class="submenu-icon"></lucide-icon>
             <span class="nav-text">{{ 'NAV.TRANSACTIONS_LIST' | translate }}</span>
           </a>
           <a
             routerLink="/reports"
             routerLinkActive="active-link"
-            class="nav-link submenu-link">
+            class="nav-link submenu-link"
+            (click)="closeMobileMenu()">
             <lucide-icon name="BarChart3" class="submenu-icon"></lucide-icon>
             <span class="nav-text">{{ 'NAV.REPORTS' | translate }}</span>
           </a>
@@ -155,7 +179,7 @@
     </div>
 
     <!-- Administración Group -->
-    @if (!isCollapsed()) {
+    @if (showExpandedContent()) {
       <div class="nav-group-label">
         {{ 'NAV.ADMIN' | translate }}
       </div>
@@ -167,12 +191,13 @@
       routerLink="/users"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.USERS' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.USERS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="Users" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
       }
     </a>
@@ -181,12 +206,13 @@
       routerLink="/audit"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.AUDIT' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.AUDIT' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="History" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.AUDIT' | translate }}</span>
       }
     </a>
@@ -195,12 +221,13 @@
       routerLink="/settings"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.SETTINGS' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SETTINGS' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="Settings" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.SETTINGS' | translate }}</span>
       }
     </a>
@@ -209,12 +236,13 @@
       routerLink="/profile"
       routerLinkActive="active-link"
       class="nav-link"
-      [matTooltip]="isCollapsed() ? ('NAV.PROFILE' | translate) : ''"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.PROFILE' | translate) : ''"
       matTooltipPosition="right">
       <div class="nav-icon-container">
         <lucide-icon name="CircleUser" class="nav-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="nav-text">{{ 'NAV.PROFILE' | translate }}</span>
       }
     </a>
@@ -223,13 +251,13 @@
   <!-- Footer -->
   <div class="sidebar-footer">
     @if (currentUser(); as user) {
-      <div class="user-info" [class.collapsed]="isCollapsed()">
+      <div class="user-info" [class.collapsed]="isCollapsed() && !isMobileMenuOpen()">
         <div class="user-avatar"
-             [matTooltip]="isCollapsed() ? user.name || user.email : ''"
+             [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? user.name || user.email : ''"
              matTooltipPosition="right">
           <span>{{ (user.name || user.email || 'U').charAt(0).toUpperCase() }}</span>
         </div>
-        @if (!isCollapsed()) {
+        @if (showExpandedContent()) {
           <div class="user-details">
             <p class="user-name">{{ user.name || ('COMMON.USER' | translate) }}</p>
             <p class="user-email">{{ user.email }}</p>
@@ -243,7 +271,7 @@
       class="logout-btn"
       [class.collapsed]="isCollapsed()"
       (click)="logout()"
-      [matTooltip]="isCollapsed() ? ('NAV.LOGOUT' | translate) : ''"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.LOGOUT' | translate) : ''"
       matTooltipPosition="right">
       <div class="logout-icon-container">
         <lucide-icon name="LogOut" class="logout-icon"></lucide-icon>
@@ -256,19 +284,19 @@
     <!-- Theme Toggle Button -->
     <button
       class="theme-toggle-btn"
-      [class.collapsed]="isCollapsed()"
+      [class.collapsed]="isCollapsed() && !isMobileMenuOpen()"
       (click)="toggleTheme()"
-      [matTooltip]="isCollapsed() ? (isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate)) : ''"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? (isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate)) : ''"
       matTooltipPosition="right">
       <div class="theme-icon-container">
         <lucide-icon [name]="isDarkMode() ? 'Moon' : 'Sun'" class="theme-icon"></lucide-icon>
       </div>
-      @if (!isCollapsed()) {
+      @if (showExpandedContent()) {
         <span class="theme-text">{{ isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate) }}</span>
       }
     </button>
 
-    @if (!isCollapsed()) {
+    @if (showExpandedContent()) {
       <div class="language-selector-wrapper">
         <app-language-selector></app-language-selector>
       </div>

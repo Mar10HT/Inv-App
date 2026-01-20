@@ -527,70 +527,65 @@
           </table>
         </div>
 
-        <!-- Mobile Card View -->
-        <div class="lg:hidden divide-y divide-[#1e1e1e]">
-          @for (item of items(); track trackByFn($index, item)) {
-            <div class="p-4">
-              <div class="flex items-start gap-3 mb-3">
-                <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <lucide-icon name="Package" class="!w-5 !h-5 text-[#4d7c6f]"></lucide-icon>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-foreground">{{ item.name }}</h3>
-                  <p class="text-sm text-slate-500 truncate">{{ item.description || '-' }}</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</p>
-                  <p class="text-slate-400 text-sm">{{ item.category }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</p>
-                  <p class="text-foreground font-semibold">{{ item.quantity }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</p>
-                  @if (item.price) {
-                    <p class="text-foreground font-semibold">{{ formatCurrency(item.price, item.currency) }}</p>
-                  } @else {
-                    <p class="text-slate-600">-</p>
-                  }
-                </div>
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</p>
+        <!-- Mobile Card View - GRID 2 COLUMNS -->
+        <div class="lg:hidden p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @for (item of items(); track trackByFn($index, item)) {
+              <div
+                class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors cursor-pointer"
+                (click)="viewItem(item)">
+                <!-- Status Badge -->
+                <div class="flex justify-between items-start mb-2">
+                  <div class="w-8 h-8 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <lucide-icon name="Package" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
+                  </div>
                   <span
                     [ngClass]="{
-                      'text-emerald-400 bg-emerald-950/50 border border-emerald-900': item.status === 'IN_STOCK',
-                      'text-orange-400 bg-orange-950/50 border border-orange-900': item.status === 'LOW_STOCK',
-                      'text-rose-400 bg-rose-950/50 border border-rose-900': item.status === 'OUT_OF_STOCK'
+                      'bg-emerald-950/50 text-emerald-400': item.status === 'IN_STOCK',
+                      'bg-orange-950/50 text-orange-400': item.status === 'LOW_STOCK',
+                      'bg-red-950/50 text-red-400': item.status === 'OUT_OF_STOCK'
                     }"
-                    class="px-3 py-1 rounded-md text-xs font-medium inline-block mt-1">
+                    class="px-1.5 py-0.5 rounded text-[10px] font-medium">
                     {{ getStatusKey(item.status) | translate }}
                   </span>
                 </div>
-              </div>
 
-              <div class="flex justify-end gap-2 pt-3 border-t border-theme">
-                <button
-                  (click)="viewItem(item)"
-                  class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
-                  <lucide-icon name="Eye" class="!w-4 !h-4 text-slate-500"></lucide-icon>
-                </button>
-                <button
-                  (click)="editItem(item)"
-                  class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
-                  <lucide-icon name="Pencil" class="!w-4 !h-4 text-slate-500"></lucide-icon>
-                </button>
-                <button
-                  (click)="deleteItem(item)"
-                  class="p-2 hover:bg-rose-950/20 rounded-lg transition-colors">
-                  <lucide-icon name="Trash2" class="!w-4 !h-4 text-rose-500"></lucide-icon>
-                </button>
+                <!-- Item Name -->
+                <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
+                <p class="text-slate-500 text-xs truncate mb-2">{{ item.category }}</p>
+
+                <!-- Quick Info -->
+                <div class="flex items-center justify-between text-xs mb-2">
+                  <span class="text-slate-400">Cant: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
+                  @if (item.price) {
+                    <span class="text-emerald-400 font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
+                  }
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-1 pt-2 border-t border-[#1e1e1e]">
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); viewItem(item)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
+                    <lucide-icon name="Eye" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); editItem(item)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); deleteItem(item)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                </div>
               </div>
-            </div>
-          }
+            }
+          </div>
         </div>
       }
     </div>

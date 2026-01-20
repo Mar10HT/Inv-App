@@ -38,6 +38,13 @@ export class Navigation {
   // Theme state from service
   isDarkMode = computed(() => this.themeService.isDark());
 
+  // Mobile menu state
+  private mobileMenuOpen = signal<boolean>(false);
+  isMobileMenuOpen = computed(() => this.mobileMenuOpen());
+
+  // Computed to show expanded content (desktop expanded OR mobile open)
+  showExpandedContent = computed(() => !this.isCollapsed() || this.isMobileMenuOpen());
+
   // Transactions submenu state
   private transactionsExpanded = signal<boolean>(false);
 
@@ -68,6 +75,15 @@ export class Navigation {
   // Toggle between dark and light theme
   toggleTheme(): void {
     this.themeService.toggle();
+  }
+
+  // Mobile menu methods
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update(v => !v);
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 
   // Logout

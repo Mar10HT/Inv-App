@@ -175,7 +175,9 @@
             <lucide-icon name="TrendingUp" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
             <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TOP_ITEMS' | translate }}</h2>
           </div>
-          <div class="overflow-x-auto">
+
+          <!-- Desktop Table -->
+          <div class="hidden lg:block overflow-x-auto">
             <table class="w-full">
               <thead>
                 <tr class="bg-[#141414]">
@@ -207,6 +209,33 @@
                 }
               </tbody>
             </table>
+          </div>
+
+          <!-- Mobile Card View - GRID 2 COLUMNS -->
+          <div class="lg:hidden p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              @for (item of topItems(); track item.id; let i = $index) {
+                <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+                  <!-- Rank Badge -->
+                  <div class="flex justify-between items-start mb-2">
+                    <span class="w-6 h-6 bg-[#2d4a3f] rounded-md flex items-center justify-center text-xs font-bold text-[#4d7c6f]">{{ i + 1 }}</span>
+                    <span class="text-[#4d7c6f] font-bold text-sm">{{ formatCurrency(item.totalValue) }}</span>
+                  </div>
+
+                  <!-- Item Name -->
+                  <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
+                  <p class="text-slate-500 text-xs truncate mb-2">{{ item.category }}</p>
+
+                  <!-- Quick Info -->
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Cant: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
+                    <span class="text-slate-500">{{ formatCurrency(item.price || 0) }}/u</span>
+                  </div>
+                </div>
+              } @empty {
+                <div class="col-span-2 py-8 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</div>
+              }
+            </div>
           </div>
         </div>
       }
@@ -290,7 +319,8 @@
 
           <!-- Transactions Table -->
           <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
-            <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+            <!-- Desktop Table -->
+            <div class="hidden lg:block overflow-x-auto max-h-[600px] overflow-y-auto">
               <table class="w-full">
                 <thead class="sticky top-0 z-10">
                   <tr class="bg-[#141414]">
@@ -325,6 +355,47 @@
                   }
                 </tbody>
               </table>
+            </div>
+
+            <!-- Mobile Card View - GRID 2 COLUMNS -->
+            <div class="lg:hidden p-4 max-h-[600px] overflow-y-auto">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @for (tx of filteredTransactions(); track tx.id) {
+                  <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+                    <!-- Type Badge -->
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium"
+                        [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-emerald-400' : tx.type === 'OUT' ? 'bg-rose-500/20 text-rose-400' : 'bg-blue-500/20 text-blue-400'">
+                        <lucide-icon [name]="getTransactionIcon(tx.type)" class="!w-3 !h-3"></lucide-icon>
+                        {{ tx.type }}
+                      </span>
+                      <span class="text-foreground font-medium text-xs">{{ tx.items.length }} items</span>
+                    </div>
+
+                    <!-- Date -->
+                    <p class="text-slate-400 text-xs mb-2">{{ formatDateTime(tx.date) }}</p>
+
+                    <!-- Warehouses -->
+                    <div class="text-xs space-y-0.5 mb-1">
+                      @if (tx.sourceWarehouse) {
+                        <div class="text-slate-500 truncate">
+                          <span class="text-slate-600">De:</span> {{ tx.sourceWarehouse.name }}
+                        </div>
+                      }
+                      @if (tx.destinationWarehouse) {
+                        <div class="text-slate-500 truncate">
+                          <span class="text-slate-600">A:</span> {{ tx.destinationWarehouse.name }}
+                        </div>
+                      }
+                    </div>
+
+                    <!-- User -->
+                    <p class="text-slate-600 text-[10px] truncate">{{ tx.user?.name || tx.user?.email || '-' }}</p>
+                  </div>
+                } @empty {
+                  <div class="col-span-2 py-8 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</div>
+                }
+              </div>
             </div>
           </div>
         }

@@ -10,3 +10,12 @@
 .main-content.with-sidebar.sidebar-collapsed {
   margin-left: 68px;
 }
+
+/* Mobile responsive - no margin when sidebar is hidden */
+@media (max-width: 768px) {
+  .main-content.with-sidebar,
+  .main-content.with-sidebar.sidebar-collapsed {
+    margin-left: 0;
+    padding-top: 70px; /* Space for mobile menu button */
+  }
+}

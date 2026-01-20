@@ -130,43 +130,45 @@
           </table>
         </div>
 
-        <!-- Mobile Card View -->
-        <div class="lg:hidden divide-y divide-[#1e1e1e]">
-          @for (warehouse of warehouses(); track trackByFn($index, warehouse)) {
-            <div class="p-4">
-              <div class="flex items-start gap-3 mb-3">
-                <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+        <!-- Mobile Card View - GRID 2 COLUMNS -->
+        <div class="lg:hidden p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @for (warehouse of warehouses(); track trackByFn($index, warehouse)) {
+              <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+                <!-- Icon -->
+                <div class="w-8 h-8 bg-[#2d4a3f] rounded-lg flex items-center justify-center mb-2">
                   <lucide-icon name="Warehouse" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
                 </div>
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-foreground">{{ warehouse.name }}</h3>
-                  <div class="flex items-center gap-1 text-slate-500 text-sm mt-1">
-                    <lucide-icon name="MapPin" class="!w-3.5 !h-3.5"></lucide-icon>
-                    <span>{{ warehouse.location }}</span>
-                  </div>
+
+                <!-- Warehouse Info -->
+                <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ warehouse.name }}</h3>
+                <div class="flex items-center gap-1 text-slate-500 text-xs truncate mb-2">
+                  <lucide-icon name="MapPin" class="!w-3 !h-3 flex-shrink-0"></lucide-icon>
+                  <span class="truncate">{{ warehouse.location }}</span>
+                </div>
+
+                @if (warehouse.description) {
+                  <p class="text-slate-600 text-xs line-clamp-2 mb-2">{{ warehouse.description }}</p>
+                }
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-1 pt-2 border-t border-[#1e1e1e]">
+                  <button
+                    type="button"
+                    (click)="editWarehouse(warehouse)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deleteWarehouse(warehouse)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+                  </button>
                 </div>
               </div>
-
-              @if (warehouse.description) {
-                <p class="text-slate-500 text-sm mb-4">{{ warehouse.description }}</p>
-              }
-
-              <div class="flex justify-end gap-2 pt-3 border-t border-theme">
-                <button
-                  type="button"
-                  (click)="editWarehouse(warehouse)"
-                  class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center">
-                  <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
-                </button>
-                <button
-                  type="button"
-                  (click)="deleteWarehouse(warehouse)"
-                  class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
-                  <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
-                </button>
-              </div>
-            </div>
-          }
+            }
+          </div>
         </div>
       }
     </div>

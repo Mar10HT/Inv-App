@@ -1,31 +1,18 @@
-import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
-import { LucideAngularModule, Package, CheckCircle2, AlertTriangle, DollarSign, Users, Warehouse, FolderOpen, Ban, PieChart, BarChart2, Receipt, Plus, BarChart3, Pencil, Trash2, Eye, ArrowDown, ArrowUp, ArrowLeftRight, AlertCircle } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { forkJoin, catchError, of } from 'rxjs';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import {
-  ApexChart,
-  ApexNonAxisChartSeries,
-  ApexResponsive,
-  ApexLegend,
-  ApexDataLabels,
-  ApexPlotOptions,
-  ApexAxisChartSeries,
-  ApexXAxis,
-  ApexYAxis,
-  ApexGrid,
-  ApexTooltip,
-  ApexFill
-} from 'ng-apexcharts';
+import { ApexNonAxisChartSeries, ApexAxisChartSeries } from 'ng-apexcharts';
 
 import { InventoryService } from '../../services/inventory/inventory.service';
-import { DashboardService, DashboardStats, CategoryStats, WarehouseStats, StatusStats } from '../../services/dashboard.service';
+import { DashboardService, DashboardStats, CategoryStats, WarehouseStats } from '../../services/dashboard.service';
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../services/logger.service';
@@ -35,6 +22,15 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory/inventory-item/inventory-item';
 import { CustomChartDialog, CustomChart, CustomChartDialogData, InventoryItemData, ChartCurrency } from './custom-chart-dialog/custom-chart-dialog';
 import { NotificationService } from '../../services/notification.service';
+import {
+  DashboardStatsComponent,
+  DashboardChartsComponent,
+  DashboardTransactionsComponent,
+  DashboardLowStockComponent,
+  StatusChartOptions,
+  BarChartOptions,
+  LowStockItem
+} from './components';
 
 @Component({
   selector: 'app-dashboard',
@@ -49,7 +45,11 @@ import { NotificationService } from '../../services/notification.service';
     MatDialogModule,
     MatSnackBarModule,
     TranslateModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    DashboardStatsComponent,
+    DashboardChartsComponent,
+    DashboardTransactionsComponent,
+    DashboardLowStockComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -72,9 +72,8 @@ export class Dashboard implements OnInit {
   stats = signal<DashboardStats | null>(null);
   categoryStats = signal<CategoryStats[]>([]);
   warehouseStats = signal<WarehouseStats[]>([]);
-  statusStats = signal<StatusStats[]>([]);
   recentTransactions = signal<Transaction[]>([]);
-  lowStockItems = signal<any[]>([]);
+  lowStockItems = signal<LowStockItem[]>([]);
 
   // Reactive data from service
   items = computed(() => this.inventoryService.items().slice(0, 5));
@@ -102,136 +101,33 @@ export class Dashboard implements OnInit {
   // Exchange rate: 1 USD = 25 HNL
   private readonly HNL_TO_USD_RATE = 25;
 
-  // Convert item value to USD
-  private getItemValueInUSD(item: InventoryItemInterface): number {
-    const rawValue = (item.price || 0) * item.quantity;
-    if (item.currency === Currency.HNL) {
-      return rawValue / this.HNL_TO_USD_RATE;
-    }
-    return rawValue; // Already in USD
-  }
-
-  valueByCategory = computed(() => {
-    const items = this.allItems();
-    const grouped = new Map<string, number>();
-    items.forEach(item => {
-      const category = item.category || 'Sin Categoría';
-      const value = this.getItemValueInUSD(item);
-      grouped.set(category, (grouped.get(category) || 0) + value);
-    });
-    return Array.from(grouped.entries())
-      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
-      .sort((a, b) => b.value - a.value);
-  });
-
-  valueByWarehouse = computed(() => {
-    const items = this.allItems();
-    const grouped = new Map<string, number>();
-    items.forEach(item => {
-      const warehouse = item.warehouse?.name || 'Sin Bodega';
-      const value = this.getItemValueInUSD(item);
-      grouped.set(warehouse, (grouped.get(warehouse) || 0) + value);
-    });
-    return Array.from(grouped.entries())
-      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
-      .sort((a, b) => b.value - a.value);
-  });
-
-  valueBySupplier = computed(() => {
-    const items = this.allItems();
-    const grouped = new Map<string, number>();
-    items.forEach(item => {
-      const supplier = item.supplier?.name || 'Sin Proveedor';
-      const value = this.getItemValueInUSD(item);
-      grouped.set(supplier, (grouped.get(supplier) || 0) + value);
-    });
-    return Array.from(grouped.entries())
-      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
-      .sort((a, b) => b.value - a.value);
-  });
-
-  valueByStatus = computed(() => {
-    const items = this.allItems();
-    const grouped = new Map<string, number>();
-    items.forEach(item => {
-      let statusLabel: string;
-      switch (item.status) {
-        case InventoryStatus.IN_STOCK:
-          statusLabel = this.translate.instant('DASHBOARD.IN_STOCK');
-          break;
-        case InventoryStatus.LOW_STOCK:
-          statusLabel = this.translate.instant('DASHBOARD.LOW_STOCK');
-          break;
-        case InventoryStatus.OUT_OF_STOCK:
-          statusLabel = this.translate.instant('DASHBOARD.OUT_OF_STOCK');
-          break;
-        default:
-          statusLabel = 'Unknown';
-      }
-      const value = this.getItemValueInUSD(item);
-      grouped.set(statusLabel, (grouped.get(statusLabel) || 0) + value);
-    });
-    return Array.from(grouped.entries())
-      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }));
-  });
-
-  topItemsByValue = computed(() => {
-    const items = this.allItems();
-    return items
-      .map(item => ({
-        name: item.name,
-        value: Math.round(this.getItemValueInUSD(item) * 100) / 100
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 10);
-  });
-
   // Chart configurations
   statusChartSeries = signal<ApexNonAxisChartSeries>([]);
-  statusChartOptions = signal<{
-    chart: ApexChart;
-    labels: string[];
-    colors: string[];
-    legend: ApexLegend;
-    dataLabels: ApexDataLabels;
-    plotOptions: ApexPlotOptions;
-    responsive: ApexResponsive[];
-  } | null>(null);
+  statusChartOptions = signal<StatusChartOptions | null>(null);
 
   categoryChartSeries = signal<ApexAxisChartSeries>([]);
-  categoryChartOptions = signal<{
-    chart: ApexChart;
-    xaxis: ApexXAxis;
-    yaxis: ApexYAxis;
-    colors: string[];
-    grid: ApexGrid;
-    plotOptions: ApexPlotOptions;
-    dataLabels: ApexDataLabels;
-    tooltip: ApexTooltip;
-  } | null>(null);
+  categoryChartOptions = signal<BarChartOptions | null>(null);
 
   warehouseChartSeries = signal<ApexAxisChartSeries>([]);
-  warehouseChartOptions = signal<{
-    chart: ApexChart;
-    xaxis: ApexXAxis;
-    yaxis: ApexYAxis;
-    colors: string[];
-    grid: ApexGrid;
-    plotOptions: ApexPlotOptions;
-    dataLabels: ApexDataLabels;
-    tooltip: ApexTooltip;
-    fill: ApexFill;
-  } | null>(null);
+  warehouseChartOptions = signal<BarChartOptions | null>(null);
+
+  // Color palette for charts
+  private readonly chartColors = [
+    '#4d7c6f', '#5d8c7f', '#6d9c8f', '#7dac9f', '#8dbcaf',
+    '#9dcdbf', '#3d6c5f', '#2d5c4f', '#1d4c3f', '#0d3c2f'
+  ];
 
   constructor() {
-    // Initialize chart options
     this.initChartOptions();
-    // Load saved layout
     this.loadSavedLayout();
-    // Load custom charts
     this.loadCustomCharts();
   }
 
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
+
+  // Layout persistence
   private loadSavedLayout(): void {
     try {
       const saved = localStorage.getItem(this.STORAGE_KEY);
@@ -287,7 +183,6 @@ export class Dashboard implements OnInit {
     localStorage.setItem(this.CUSTOM_CHARTS_KEY, JSON.stringify(this.customCharts()));
   }
 
-  // Convert inventory items to simplified format for chart dialog
   private getItemsForDialog(): InventoryItemData[] {
     return this.allItems().map(item => ({
       name: item.name,
@@ -351,7 +246,6 @@ export class Dashboard implements OnInit {
         this.customCharts.set(charts);
         this.saveCustomCharts();
 
-        // Show notification
         if (isEditing) {
           this.notifications.success('DASHBOARD.CUSTOM_CHART.UPDATED', { interpolateParams: { name: result.title } });
         } else {
@@ -384,11 +278,11 @@ export class Dashboard implements OnInit {
     });
   }
 
+  // Custom chart data methods
   private isValueSource(source: string): boolean {
     return ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue'].includes(source);
   }
 
-  // Filter items by currency for value charts
   private getFilteredItemsByCurrency(currency: ChartCurrency = 'USD'): InventoryItemInterface[] {
     const items = this.allItems();
     if (currency === 'ALL') {
@@ -397,7 +291,6 @@ export class Dashboard implements OnInit {
     return items.filter(item => item.currency === currency);
   }
 
-  // Calculate value data grouped by a field
   private calculateValueDataForChart(
     groupBy: 'category' | 'warehouse' | 'supplier' | 'status',
     currency: ChartCurrency = 'USD'
@@ -430,7 +323,6 @@ export class Dashboard implements OnInit {
       .sort((a, b) => b.count - a.count);
   }
 
-  // Calculate top items by value
   private calculateTopItemsForChart(currency: ChartCurrency = 'USD'): { name: string; count: number }[] {
     const items = this.getFilteredItemsByCurrency(currency);
     return items
@@ -492,7 +384,6 @@ export class Dashboard implements OnInit {
     return { labels, series };
   }
 
-  // Complementary color palettes for pie/donut/radial charts
   private readonly customChartPalettes: Record<string, string[]> = {
     '#4d7c6f': ['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308'],
     '#10b981': ['#10b981', '#ef4444', '#8b5cf6', '#f97316', '#3b82f6', '#ec4899'],
@@ -506,7 +397,6 @@ export class Dashboard implements OnInit {
     '#64748b': ['#64748b', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#3b82f6']
   };
 
-  // Format number with thousands separator and 2 decimals
   private formatNumber(value: number): string {
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
@@ -566,12 +456,7 @@ export class Dashboard implements OnInit {
     };
   }
 
-  ngOnInit(): void {
-    this.loadDashboardData();
-  }
-
   private initChartOptions(): void {
-    // Status Donut Chart Options
     this.statusChartOptions.set({
       chart: {
         type: 'donut',
@@ -587,19 +472,12 @@ export class Dashboard implements OnInit {
       colors: ['#10b981', '#f97316', '#ef4444'],
       legend: {
         position: 'bottom',
-        labels: {
-          colors: '#94a3b8'
-        }
+        labels: { colors: '#94a3b8' }
       },
       dataLabels: {
         enabled: true,
-        style: {
-          fontSize: '12px',
-          fontWeight: 600
-        },
-        dropShadow: {
-          enabled: false
-        }
+        style: { fontSize: '12px', fontWeight: 600 },
+        dropShadow: { enabled: false }
       },
       plotOptions: {
         pie: {
@@ -607,17 +485,8 @@ export class Dashboard implements OnInit {
             size: '65%',
             labels: {
               show: true,
-              name: {
-                show: true,
-                fontSize: '14px',
-                color: '#94a3b8'
-              },
-              value: {
-                show: true,
-                fontSize: '20px',
-                fontWeight: 700,
-                color: '#e2e8f0'
-              },
+              name: { show: true, fontSize: '14px', color: '#94a3b8' },
+              value: { show: true, fontSize: '20px', fontWeight: 700, color: '#e2e8f0' },
               total: {
                 show: true,
                 label: this.translate.instant('DASHBOARD.TOTAL_ITEMS'),
@@ -631,146 +500,53 @@ export class Dashboard implements OnInit {
       },
       responsive: [{
         breakpoint: 480,
-        options: {
-          chart: {
-            height: 250
-          },
-          legend: {
-            position: 'bottom'
-          }
-        }
+        options: { chart: { height: 250 }, legend: { position: 'bottom' } }
       }]
     });
 
-    // Category Bar Chart Options
     this.categoryChartOptions.set({
       chart: {
         type: 'bar',
         height: 280,
         background: 'transparent',
         foreColor: '#94a3b8',
-        toolbar: {
-          show: false
-        }
+        toolbar: { show: false }
       },
       xaxis: {
         categories: [],
-        labels: {
-          style: {
-            colors: '#94a3b8',
-            fontSize: '11px'
-          },
-          rotate: -45,
-          rotateAlways: false,
-          trim: true,
-          maxHeight: 80
-        },
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
+        labels: { style: { colors: '#94a3b8', fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
+        axisBorder: { show: false },
+        axisTicks: { show: false }
       },
-      yaxis: {
-        labels: {
-          style: {
-            colors: '#94a3b8'
-          }
-        }
-      },
+      yaxis: { labels: { style: { colors: '#94a3b8' } } },
       colors: this.chartColors,
-      grid: {
-        borderColor: '#2a2a2a',
-        strokeDashArray: 4
-      },
-      plotOptions: {
-        bar: {
-          borderRadius: 4,
-          horizontal: false,
-          columnWidth: '60%',
-          distributed: true
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      tooltip: {
-        theme: 'dark',
-        y: {
-          formatter: (val: number) => `${val} items`
-        }
-      }
+      grid: { borderColor: '#2a2a2a', strokeDashArray: 4 },
+      plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%', distributed: true } },
+      dataLabels: { enabled: false },
+      tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} items` } }
     });
 
-    // Warehouse Bar Chart Options
     this.warehouseChartOptions.set({
       chart: {
         type: 'bar',
         height: 280,
         background: 'transparent',
         foreColor: '#94a3b8',
-        toolbar: {
-          show: false
-        }
+        toolbar: { show: false }
       },
       xaxis: {
         categories: [],
-        labels: {
-          style: {
-            colors: '#94a3b8',
-            fontSize: '11px'
-          },
-          rotate: -45,
-          rotateAlways: false,
-          trim: true,
-          maxHeight: 80
-        },
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
+        labels: { style: { colors: '#94a3b8', fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
+        axisBorder: { show: false },
+        axisTicks: { show: false }
       },
-      yaxis: {
-        labels: {
-          style: {
-            colors: '#94a3b8'
-          }
-        }
-      },
+      yaxis: { labels: { style: { colors: '#94a3b8' } } },
       colors: ['#06b6d4'],
-      grid: {
-        borderColor: '#2a2a2a',
-        strokeDashArray: 4
-      },
-      plotOptions: {
-        bar: {
-          borderRadius: 4,
-          horizontal: false,
-          columnWidth: '60%'
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      tooltip: {
-        theme: 'dark',
-        y: {
-          formatter: (val: number) => `${val} items`
-        }
-      },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'dark',
-          type: 'vertical',
-          shadeIntensity: 0.3,
-          opacityFrom: 1,
-          opacityTo: 0.8
-        }
-      }
+      grid: { borderColor: '#2a2a2a', strokeDashArray: 4 },
+      plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
+      dataLabels: { enabled: false },
+      tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} items` } },
+      fill: { type: 'gradient', gradient: { shade: 'dark', type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.8 } }
     });
   }
 
@@ -779,7 +555,6 @@ export class Dashboard implements OnInit {
     const categories = this.categoryStats();
     const warehouses = this.warehouseStats();
 
-    // Update Status Donut Chart
     if (currentStats) {
       this.statusChartSeries.set([
         currentStats.inStockItems || 0,
@@ -788,39 +563,25 @@ export class Dashboard implements OnInit {
       ]);
     }
 
-    // Update Category Bar Chart
     if (categories.length > 0) {
       const categoryOptions = this.categoryChartOptions();
       if (categoryOptions) {
         this.categoryChartOptions.set({
           ...categoryOptions,
-          xaxis: {
-            ...categoryOptions.xaxis,
-            categories: categories.map(c => c.category || 'Sin Categoría')
-          }
+          xaxis: { ...categoryOptions.xaxis, categories: categories.map(c => c.category || 'Sin Categoría') }
         });
-        this.categoryChartSeries.set([{
-          name: 'Items',
-          data: categories.map(c => c.count)
-        }]);
+        this.categoryChartSeries.set([{ name: 'Items', data: categories.map(c => c.count) }]);
       }
     }
 
-    // Update Warehouse Bar Chart
     if (warehouses.length > 0) {
       const warehouseOptions = this.warehouseChartOptions();
       if (warehouseOptions) {
         this.warehouseChartOptions.set({
           ...warehouseOptions,
-          xaxis: {
-            ...warehouseOptions.xaxis,
-            categories: warehouses.map(w => w.name || 'Sin Bodega')
-          }
+          xaxis: { ...warehouseOptions.xaxis, categories: warehouses.map(w => w.name || 'Sin Bodega') }
         });
-        this.warehouseChartSeries.set([{
-          name: 'Items',
-          data: warehouses.map(w => w.itemCount)
-        }]);
+        this.warehouseChartSeries.set([{ name: 'Items', data: warehouses.map(w => w.itemCount) }]);
       }
     }
   }
@@ -829,7 +590,6 @@ export class Dashboard implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    // Load all data in parallel using forkJoin
     forkJoin({
       stats: this.dashboardService.getStats().pipe(catchError(() => of(null))),
       usersCount: this.dashboardService.getUsersCount().pipe(catchError(() => of(0))),
@@ -842,7 +602,6 @@ export class Dashboard implements OnInit {
       next: (results) => {
         const data = results.stats || {};
 
-        // Map backend response to DashboardStats format with all counts
         const dashboardStats: DashboardStats = {
           totalItems: data.total || 0,
           totalUsers: results.usersCount,
@@ -857,8 +616,6 @@ export class Dashboard implements OnInit {
         };
 
         this.stats.set(dashboardStats);
-
-        // Set category and warehouse stats from the same response
         this.categoryStats.set((data.categories || []).map((cat: any) => ({
           category: cat.name,
           count: cat.count,
@@ -876,10 +633,8 @@ export class Dashboard implements OnInit {
         this.allItems.set(results.allItems);
         this.loading.set(false);
 
-        // Update charts with new data
         this.updateCharts();
 
-        // Mark data as ready for custom charts (with a small delay to ensure DOM is updated)
         setTimeout(() => {
           this.dataReady.set(true);
         }, 100);
@@ -891,11 +646,11 @@ export class Dashboard implements OnInit {
       }
     });
 
-    // Also load inventory items for the table
     this.inventoryService.loadItems();
   }
 
-  viewItem(item: InventoryItemInterface): void {
+  // Item actions
+  viewItem(item: InventoryItemInterface | LowStockItem): void {
     this.dialog.open(InventoryItem, {
       data: { itemId: item.id },
       width: '800px',
@@ -941,6 +696,7 @@ export class Dashboard implements OnInit {
     });
   }
 
+  // Navigation actions
   addNewItem(): void {
     this.router.navigate(['/inventory/add']);
   }
@@ -953,6 +709,7 @@ export class Dashboard implements OnInit {
     this.router.navigate(['/transactions']);
   }
 
+  // Utility methods
   getStatusKey(status: InventoryStatus): string {
     switch (status) {
       case InventoryStatus.IN_STOCK: return 'INVENTORY.STATUS.IN_STOCK';
@@ -960,68 +717,6 @@ export class Dashboard implements OnInit {
       case InventoryStatus.OUT_OF_STOCK: return 'INVENTORY.STATUS.OUT_OF_STOCK';
       default: return status;
     }
-  }
-
-  getTransactionTypeIcon(type: TransactionType): string {
-    switch (type) {
-      case TransactionType.IN: return 'arrow-down';
-      case TransactionType.OUT: return 'arrow-up';
-      case TransactionType.TRANSFER: return 'arrow-left-right';
-      default: return 'receipt';
-    }
-  }
-
-  getTransactionTypeClass(type: TransactionType): string {
-    switch (type) {
-      case TransactionType.IN: return '!text-emerald-400';
-      case TransactionType.OUT: return '!text-rose-400';
-      case TransactionType.TRANSFER: return '!text-blue-400';
-      default: return '!text-slate-400';
-    }
-  }
-
-  // Calculate percentage for status bar
-  getStatusPercentage(status: string): number {
-    const total = this.stats()?.totalItems || 0;
-    if (total === 0) return 0;
-
-    let count = 0;
-    switch (status) {
-      case 'IN_STOCK':
-        count = this.stats()?.inStockItems || 0;
-        break;
-      case 'LOW_STOCK':
-        count = this.stats()?.lowStockItems || 0;
-        break;
-      case 'OUT_OF_STOCK':
-        count = this.stats()?.outOfStockItems || 0;
-        break;
-    }
-    return Math.round((count / total) * 100);
-  }
-
-  // Memoized date formatter
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
-  private readonly dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  formatDate(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
-  }
-
-  formatDateTime(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateTimeFormatter.format(d);
   }
 
   formatCurrency(value: number, currency: string = 'USD'): string {
@@ -1035,50 +730,5 @@ export class Dashboard implements OnInit {
 
   trackByFn(index: number, item: InventoryItemInterface): string {
     return item.id;
-  }
-
-  trackByTransaction(index: number, transaction: Transaction): string {
-    return transaction.id;
-  }
-
-  trackByCategory(index: number, cat: CategoryStats): string {
-    return cat.category || `category-${index}`;
-  }
-
-  trackByWarehouse(index: number, wh: WarehouseStats): string {
-    return wh.id || wh.name;
-  }
-
-  // Get max count for percentage calculations
-  getMaxCategoryCount(): number {
-    const cats = this.categoryStats();
-    if (cats.length === 0) return 1;
-    return Math.max(...cats.map(c => c.count), 1);
-  }
-
-  getMaxWarehouseCount(): number {
-    const whs = this.warehouseStats();
-    if (whs.length === 0) return 1;
-    return Math.max(...whs.map(w => w.itemCount), 1);
-  }
-
-  getCategoryPercentage(count: number): number {
-    const max = this.getMaxCategoryCount();
-    return Math.round((count / max) * 100);
-  }
-
-  getWarehousePercentage(itemCount: number): number {
-    const max = this.getMaxWarehouseCount();
-    return Math.round((itemCount / max) * 100);
-  }
-
-  // Color palette for charts
-  private readonly chartColors = [
-    '#4d7c6f', '#5d8c7f', '#6d9c8f', '#7dac9f', '#8dbcaf',
-    '#9dcdbf', '#3d6c5f', '#2d5c4f', '#1d4c3f', '#0d3c2f'
-  ];
-
-  getCategoryColor(index: number): string {
-    return this.chartColors[index % this.chartColors.length];
   }
 }

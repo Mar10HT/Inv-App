@@ -28,196 +28,22 @@
       </div>
     }
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <!-- Total Items Card -->
-      <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-slate-700 transition-all">
-        <div class="flex items-center justify-between">
-          <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
-            <p class="text-3xl font-bold text-foreground">{{ stats()?.totalItems || 0 }}</p>
-          </div>
-          <div class="bg-surface-elevated p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Package" class="!w-6 !h-6 text-slate-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
+    <!-- Stats Cards Component -->
+    <app-dashboard-stats [stats]="stats()" />
 
-      <!-- In Stock Card -->
-      <div class="bg-surface-variant rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
-        <div class="flex items-center justify-between">
-          <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-emerald-400">{{ stats()?.inStockItems || 0 }}</p>
-          </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="CheckCircle2" class="!w-6 !h-6 text-emerald-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
-
-      <!-- Low Stock Card -->
-      <div class="bg-surface-variant rounded-xl border border-orange-900/50 p-6 hover:border-orange-800/50 transition-all">
-        <div class="flex items-center justify-between">
-          <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-orange-400">{{ stats()?.lowStockItems || 0 }}</p>
-          </div>
-          <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="AlertTriangle" class="!w-6 !h-6 text-orange-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Value Card -->
-      <div class="bg-surface-variant rounded-xl border border-sky-900/50 p-6 hover:border-sky-800/50 transition-all">
-        <div class="flex items-center justify-between">
-          <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
-            <p class="text-3xl font-bold text-sky-400">{{ formatCurrency(stats()?.totalValueUSD || 0) }}</p>
-          </div>
-          <div class="bg-sky-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="DollarSign" class="!w-6 !h-6 text-sky-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Secondary Stats Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-      <div class="bg-surface-variant rounded-xl border border-theme p-6">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
-            <p class="text-3xl font-bold text-purple-400">{{ stats()?.totalUsers || 0 }}</p>
-          </div>
-          <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Users" class="!w-6 !h-6 text-purple-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
-      <div class="bg-surface-variant rounded-xl border border-theme p-6">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'NAV.WAREHOUSES' | translate }}</p>
-            <p class="text-3xl font-bold text-cyan-400">{{ stats()?.totalWarehouses || 0 }}</p>
-          </div>
-          <div class="bg-cyan-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Warehouse" class="!w-6 !h-6 text-cyan-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
-      <div class="bg-surface-variant rounded-xl border border-theme p-6">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'NAV.CATEGORIES' | translate }}</p>
-            <p class="text-3xl font-bold text-amber-400">{{ stats()?.totalCategories || 0 }}</p>
-          </div>
-          <div class="bg-amber-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="FolderOpen" class="!w-6 !h-6 text-amber-500"></lucide-icon>
-          </div>
-        </div>
-      </div>
-      <div class="bg-surface-variant rounded-xl border border-theme p-6">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold" style="color: var(--color-status-error)">{{ stats()?.outOfStockItems || 0 }}</p>
-          </div>
-          <div class="ds-icon-container--error p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Ban" class="!w-6 !h-6" style="color: var(--color-status-error)"></lucide-icon>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts Section (Drag & Drop) -->
-    <div
-      cdkDropList
-      cdkDropListOrientation="horizontal"
-      (cdkDropListDropped)="onChartWidgetDrop($event)"
-      class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      @for (widget of chartWidgets(); track widget) {
-        <div cdkDrag class="bg-surface-variant rounded-xl border border-theme p-6 cursor-move hover:border-[#3a3a3a] transition-colors">
-          <!-- Drag Handle -->
-          <div cdkDragHandle class="flex items-center justify-between mb-4">
-            @if (widget === 'status') {
-              <h3 class="text-lg font-semibold text-foreground">{{ 'COMMON.STATUS' | translate }}</h3>
-              <lucide-icon name="PieChart" class="!w-4 !h-4 text-slate-600"></lucide-icon>
-            } @else if (widget === 'categories') {
-              <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.CATEGORIES' | translate }}</h3>
-              <lucide-icon name="FolderOpen" class="!w-4 !h-4 text-slate-600"></lucide-icon>
-            } @else if (widget === 'warehouses') {
-              <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.WAREHOUSES' | translate }}</h3>
-              <lucide-icon name="Warehouse" class="!w-4 !h-4 text-slate-600"></lucide-icon>
-            }
-          </div>
-
-          <!-- Widget Content -->
-          @if (widget === 'status') {
-            @if (stats()?.totalItems && statusChartOptions()) {
-              <apx-chart
-                [series]="statusChartSeries()"
-                [chart]="statusChartOptions()!.chart"
-                [labels]="statusChartOptions()!.labels"
-                [colors]="statusChartOptions()!.colors"
-                [legend]="statusChartOptions()!.legend"
-                [dataLabels]="statusChartOptions()!.dataLabels"
-                [plotOptions]="statusChartOptions()!.plotOptions"
-                [responsive]="statusChartOptions()!.responsive">
-              </apx-chart>
-            } @else {
-              <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="PieChart" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-              </div>
-            }
-          } @else if (widget === 'categories') {
-            @if (categoryStats().length > 0 && categoryChartOptions()) {
-              <apx-chart
-                [series]="categoryChartSeries()"
-                [chart]="categoryChartOptions()!.chart"
-                [xaxis]="categoryChartOptions()!.xaxis"
-                [yaxis]="categoryChartOptions()!.yaxis"
-                [colors]="categoryChartOptions()!.colors"
-                [grid]="categoryChartOptions()!.grid"
-                [plotOptions]="categoryChartOptions()!.plotOptions"
-                [dataLabels]="categoryChartOptions()!.dataLabels"
-                [tooltip]="categoryChartOptions()!.tooltip">
-              </apx-chart>
-            } @else {
-              <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-              </div>
-            }
-          } @else if (widget === 'warehouses') {
-            @if (warehouseStats().length > 0 && warehouseChartOptions()) {
-              <apx-chart
-                [series]="warehouseChartSeries()"
-                [chart]="warehouseChartOptions()!.chart"
-                [xaxis]="warehouseChartOptions()!.xaxis"
-                [yaxis]="warehouseChartOptions()!.yaxis"
-                [colors]="warehouseChartOptions()!.colors"
-                [grid]="warehouseChartOptions()!.grid"
-                [plotOptions]="warehouseChartOptions()!.plotOptions"
-                [dataLabels]="warehouseChartOptions()!.dataLabels"
-                [tooltip]="warehouseChartOptions()!.tooltip"
-                [fill]="warehouseChartOptions()!.fill">
-              </apx-chart>
-            } @else {
-              <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-              </div>
-            }
-          }
-
-          <!-- Drag Placeholder -->
-          <div *cdkDragPlaceholder class="bg-[#2a2a2a] rounded-xl border-2 border-dashed border-[#4d7c6f] h-full min-h-[320px]"></div>
-        </div>
-      }
-    </div>
+    <!-- Charts Section Component -->
+    <app-dashboard-charts
+      [widgets]="chartWidgets()"
+      [stats]="stats()"
+      [categoryStats]="categoryStats()"
+      [warehouseStats]="warehouseStats()"
+      [statusChartSeries]="statusChartSeries()"
+      [statusChartOptions]="statusChartOptions()"
+      [categoryChartSeries]="categoryChartSeries()"
+      [categoryChartOptions]="categoryChartOptions()"
+      [warehouseChartSeries]="warehouseChartSeries()"
+      [warehouseChartOptions]="warehouseChartOptions()"
+      (widgetDrop)="onChartWidgetDrop($event)" />
 
     <!-- Custom Charts Section -->
     <div class="mb-8">
@@ -302,104 +128,17 @@
         <div cdkDrag class="bg-surface-variant border border-theme rounded-xl overflow-hidden cursor-move hover:border-[#3a3a3a] transition-colors">
           <!-- Transactions Widget -->
           @if (widget === 'transactions') {
-            <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
-              <div>
-                <h2 class="text-lg font-semibold text-foreground">{{ 'TRANSACTION.TITLE' | translate }}</h2>
-                <p class="text-slate-500 text-xs mt-1">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
-              </div>
-              <button
-                (click)="$event.stopPropagation(); viewAllTransactions()"
-                class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
-                {{ 'COMMON.VIEW_ALL' | translate }}
-              </button>
-            </div>
-
-            @if (recentTransactions().length === 0) {
-              <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="Receipt" class="!w-10 !h-10 text-slate-700 mb-3"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
-              </div>
-            } @else {
-              <div class="divide-y divide-[#242424]">
-                @for (tx of recentTransactions(); track trackByTransaction($index, tx)) {
-                  <div class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors">
-                    <div class="flex items-center gap-4">
-                      <div
-                        class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                        [ngClass]="{
-                          'bg-emerald-950/50': tx.type === TransactionType.IN,
-                          'bg-rose-950/50': tx.type === TransactionType.OUT,
-                          'bg-blue-950/50': tx.type === TransactionType.TRANSFER
-                        }">
-                        <lucide-icon [name]="getTransactionTypeIcon(tx.type)" [class]="getTransactionTypeClass(tx.type) + ' !w-5 !h-5'"></lucide-icon>
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-foreground">
-                          {{ 'TRANSACTION.TYPES.' + tx.type | translate }}
-                        </p>
-                        <p class="text-xs text-slate-500">
-                          {{ tx.items.length }} {{ 'TRANSACTION.ITEMS_COUNT' | translate }}
-                        </p>
-                      </div>
-                      <div class="text-right">
-                        <p class="text-xs text-slate-500">{{ formatDateTime(tx.date) }}</p>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
+            <app-dashboard-transactions
+              [transactions]="recentTransactions()"
+              (viewAll)="viewAllTransactions()" />
           }
 
           <!-- Low Stock Widget -->
           @if (widget === 'lowStock') {
-            <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between">
-              <div>
-                <h2 class="text-lg font-semibold text-foreground">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
-                <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
-              </div>
-              <button
-                (click)="$event.stopPropagation(); viewAllInventory()"
-                class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
-                {{ 'COMMON.VIEW_ALL' | translate }}
-              </button>
-            </div>
-
-            @if (lowStockItems().length === 0) {
-              <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-emerald-500 mb-3"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
-              </div>
-            } @else {
-              <div class="divide-y divide-[#242424] max-h-[500px] overflow-y-auto">
-                @for (item of lowStockItems().slice(0, 10); track item.id) {
-                  <div
-                    (click)="viewItem(item)"
-                    class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
-                    <div class="flex items-center gap-4">
-                      <div class="w-10 h-10 bg-orange-950/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <lucide-icon name="AlertTriangle" class="!w-5 !h-5 text-orange-500"></lucide-icon>
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
-                        <p class="text-xs text-slate-500">{{ item.category?.name || '-' }}</p>
-                      </div>
-                      <div class="text-right">
-                        <p class="text-lg font-bold text-orange-400">{{ item.quantity }}</p>
-                        <p class="text-xs text-slate-500">min: {{ item.minQuantity }}</p>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-              @if (lowStockItems().length > 10) {
-                <div class="px-6 py-3 bg-surface-container border-t border-theme text-center">
-                  <p class="text-xs text-slate-500">
-                    Showing 10 of {{ lowStockItems().length }} low stock items
-                  </p>
-                </div>
-              }
-            }
+            <app-dashboard-low-stock
+              [items]="lowStockItems()"
+              (viewAll)="viewAllInventory()"
+              (itemClick)="viewItem($event)" />
           }
 
           <!-- Drag Placeholder -->
@@ -527,70 +266,65 @@
           </table>
         </div>
 
-        <!-- Mobile Card View -->
-        <div class="lg:hidden divide-y divide-[#1e1e1e]">
-          @for (item of items(); track trackByFn($index, item)) {
-            <div class="p-4">
-              <div class="flex items-start gap-3 mb-3">
-                <div class="w-10 h-10 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <lucide-icon name="Package" class="!w-5 !h-5 text-[#4d7c6f]"></lucide-icon>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-foreground">{{ item.name }}</h3>
-                  <p class="text-sm text-slate-500 truncate">{{ item.description || '-' }}</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</p>
-                  <p class="text-slate-400 text-sm">{{ item.category }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</p>
-                  <p class="text-foreground font-semibold">{{ item.quantity }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</p>
-                  @if (item.price) {
-                    <p class="text-foreground font-semibold">{{ formatCurrency(item.price, item.currency) }}</p>
-                  } @else {
-                    <p class="text-slate-600">-</p>
-                  }
-                </div>
-                <div>
-                  <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</p>
+        <!-- Mobile Card View - GRID 2 COLUMNS -->
+        <div class="lg:hidden p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @for (item of items(); track trackByFn($index, item)) {
+              <div
+                class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors cursor-pointer"
+                (click)="viewItem(item)">
+                <!-- Status Badge -->
+                <div class="flex justify-between items-start mb-2">
+                  <div class="w-8 h-8 bg-[#2d4a3f] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <lucide-icon name="Package" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
+                  </div>
                   <span
                     [ngClass]="{
-                      'text-emerald-400 bg-emerald-950/50 border border-emerald-900': item.status === 'IN_STOCK',
-                      'text-orange-400 bg-orange-950/50 border border-orange-900': item.status === 'LOW_STOCK',
-                      'text-rose-400 bg-rose-950/50 border border-rose-900': item.status === 'OUT_OF_STOCK'
+                      'bg-emerald-950/50 text-emerald-400': item.status === 'IN_STOCK',
+                      'bg-orange-950/50 text-orange-400': item.status === 'LOW_STOCK',
+                      'bg-red-950/50 text-red-400': item.status === 'OUT_OF_STOCK'
                     }"
-                    class="px-3 py-1 rounded-md text-xs font-medium inline-block mt-1">
+                    class="px-1.5 py-0.5 rounded text-[10px] font-medium">
                     {{ getStatusKey(item.status) | translate }}
                   </span>
                 </div>
-              </div>
 
-              <div class="flex justify-end gap-2 pt-3 border-t border-theme">
-                <button
-                  (click)="viewItem(item)"
-                  class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
-                  <lucide-icon name="Eye" class="!w-4 !h-4 text-slate-500"></lucide-icon>
-                </button>
-                <button
-                  (click)="editItem(item)"
-                  class="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
-                  <lucide-icon name="Pencil" class="!w-4 !h-4 text-slate-500"></lucide-icon>
-                </button>
-                <button
-                  (click)="deleteItem(item)"
-                  class="p-2 hover:bg-rose-950/20 rounded-lg transition-colors">
-                  <lucide-icon name="Trash2" class="!w-4 !h-4 text-rose-500"></lucide-icon>
-                </button>
+                <!-- Item Name -->
+                <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
+                <p class="text-slate-500 text-xs truncate mb-2">{{ item.category }}</p>
+
+                <!-- Quick Info -->
+                <div class="flex items-center justify-between text-xs mb-2">
+                  <span class="text-slate-400">Cant: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
+                  @if (item.price) {
+                    <span class="text-emerald-400 font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
+                  }
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-1 pt-2 border-t border-[#1e1e1e]">
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); viewItem(item)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
+                    <lucide-icon name="Eye" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); editItem(item)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); deleteItem(item)"
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                </div>
               </div>
-            </div>
-          }
+            }
+          </div>
         </div>
       }
     </div>

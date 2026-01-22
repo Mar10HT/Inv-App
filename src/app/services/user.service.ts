@@ -1,8 +1,18 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, tap, map } from 'rxjs';
 import { User, CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
 import { environment } from '../../environments/environment';
+
+interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +29,10 @@ export class UserService {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<User[]>(this.apiUrl).pipe(
+    const params = new HttpParams().set('limit', '1000');
+
+    return this.http.get<PaginatedResponse<User>>(this.apiUrl, { params }).pipe(
+      map(response => response.data),
       tap({
         next: (users) => {
           this.users.set(users);

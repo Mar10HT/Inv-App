@@ -27,19 +27,40 @@
       <!-- Stats Cards Component -->
       <app-dashboard-stats [stats]="stats()" />
 
-    <!-- Charts Section Component -->
-    <app-dashboard-charts
-      [widgets]="chartWidgets()"
-      [stats]="stats()"
-      [categoryStats]="categoryStats()"
-      [warehouseStats]="warehouseStats()"
-      [statusChartSeries]="statusChartSeries()"
-      [statusChartOptions]="statusChartOptions()"
-      [categoryChartSeries]="categoryChartSeries()"
-      [categoryChartOptions]="categoryChartOptions()"
-      [warehouseChartSeries]="warehouseChartSeries()"
-      [warehouseChartOptions]="warehouseChartOptions()"
-      (widgetDrop)="onChartWidgetDrop($event)" />
+    <!-- Charts Section Component - Lazy loaded with @defer -->
+    @defer (on viewport; prefetch on idle) {
+      <app-dashboard-charts
+        [widgets]="chartWidgets()"
+        [stats]="stats()"
+        [categoryStats]="categoryStats()"
+        [warehouseStats]="warehouseStats()"
+        [statusChartSeries]="statusChartSeries()"
+        [statusChartOptions]="statusChartOptions()"
+        [categoryChartSeries]="categoryChartSeries()"
+        [categoryChartOptions]="categoryChartOptions()"
+        [warehouseChartSeries]="warehouseChartSeries()"
+        [warehouseChartOptions]="warehouseChartOptions()"
+        (widgetDrop)="onChartWidgetDrop($event)" />
+    } @placeholder {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="bg-surface-variant rounded-xl border border-theme p-6 animate-pulse">
+            <div class="h-6 bg-slate-700 rounded w-1/3 mb-4"></div>
+            <div class="h-64 bg-slate-800 rounded"></div>
+          </div>
+        }
+      </div>
+    } @loading (minimum 200ms) {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="bg-surface-variant rounded-xl border border-theme p-6">
+            <div class="flex items-center justify-center h-72">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
 
     <!-- Custom Charts Section -->
     <div class="mb-8">
@@ -89,19 +110,23 @@
                   <p class="text-slate-500 text-sm">{{ 'COMMON.LOADING' | translate }}...</p>
                 </div>
               } @else if (getCustomChartData(chart).series.length > 0 || (getCustomChartData(chart).series[0]?.data?.length > 0)) {
-                <apx-chart
-                  [series]="getCustomChartData(chart).series"
-                  [chart]="getCustomChartOptions(chart).chart"
-                  [xaxis]="getCustomChartOptions(chart).xaxis"
-                  [yaxis]="getCustomChartOptions(chart).yaxis"
-                  [colors]="getCustomChartOptions(chart).colors"
-                  [grid]="getCustomChartOptions(chart).grid"
-                  [plotOptions]="getCustomChartOptions(chart).plotOptions"
-                  [dataLabels]="getCustomChartOptions(chart).dataLabels"
-                  [legend]="getCustomChartOptions(chart).legend"
-                  [labels]="getCustomChartData(chart).labels"
-                  [tooltip]="getCustomChartOptions(chart).tooltip">
-                </apx-chart>
+                @defer (on viewport) {
+                  <apx-chart
+                    [series]="getCustomChartData(chart).series"
+                    [chart]="getCustomChartOptions(chart).chart"
+                    [xaxis]="getCustomChartOptions(chart).xaxis"
+                    [yaxis]="getCustomChartOptions(chart).yaxis"
+                    [colors]="getCustomChartOptions(chart).colors"
+                    [grid]="getCustomChartOptions(chart).grid"
+                    [plotOptions]="getCustomChartOptions(chart).plotOptions"
+                    [dataLabels]="getCustomChartOptions(chart).dataLabels"
+                    [legend]="getCustomChartOptions(chart).legend"
+                    [labels]="getCustomChartData(chart).labels"
+                    [tooltip]="getCustomChartOptions(chart).tooltip">
+                  </apx-chart>
+                } @placeholder {
+                  <div class="h-64 bg-slate-800 rounded animate-pulse"></div>
+                }
               } @else {
                 <div class="flex flex-col items-center justify-center py-8">
                   <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>

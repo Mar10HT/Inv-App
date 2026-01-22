@@ -1,8 +1,18 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, tap, map } from 'rxjs';
 import { Supplier, CreateSupplierDto, UpdateSupplierDto } from '../interfaces/supplier.interface';
 import { environment } from '../../environments/environment';
+
+interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +29,10 @@ export class SupplierService {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.get<Supplier[]>(this.apiUrl).pipe(
+    const params = new HttpParams().set('limit', '1000');
+
+    return this.http.get<PaginatedResponse<Supplier>>(this.apiUrl, { params }).pipe(
+      map(response => response.data),
       tap({
         next: (suppliers) => {
           this.suppliers.set(suppliers);

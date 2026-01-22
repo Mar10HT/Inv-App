@@ -1,391 +1,366 @@
-# INV-APP
+<div align="center">
 
-A modern inventory management system built with Angular 20 and NestJS.
+# 🖥️ Inv-App Frontend
 
-![Angular](https://img.shields.io/badge/Angular-20.1.0-dd0031?style=flat-square&logo=angular)
-![NestJS](https://img.shields.io/badge/NestJS-10.0-e0234e?style=flat-square&logo=nestjs)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=flat-square&logo=typescript)
-![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38bdf8?style=flat-square&logo=tailwindcss)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+### Modern Angular 20 Inventory Management Interface
 
----
+[![Angular](https://img.shields.io/badge/Angular-20.1.0-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev)
+[![Material](https://img.shields.io/badge/Material-20.1.4-757575?style=for-the-badge&logo=mui&logoColor=white)](https://material.angular.io)
+[![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 
-## Features
+<br/>
 
-- **Inventory Management** - Full CRUD with advanced filters, search, and pagination
-  - **Item Types** - Support for UNIQUE (individual items) and BULK (quantity-based) items
-  - **Model Field** - Group similar items by model (e.g., "Dell Latitude 5430")
-  - **Smart Status Display** - UNIQUE items show "Available"/"Not Available" instead of stock levels
-  - **Advanced Search** - Search by name, description, and model
-- **Warehouse Management** - Track multiple storage locations
-- **Supplier Management** - Manage vendor contacts and information
-- **Dashboard** - Real-time statistics and quick actions
-  - **Custom Charts** - Create custom charts with ng-apexcharts
-    - Multiple chart types: Bar, Line, Area, Pie, Donut, Radial
-    - Data sources by quantity or value
-    - Currency filtering (USD, HNL, All)
-  - **Drag & Drop** - Reorder dashboard widgets with drag and drop
-  - **Complementary Colors** - Pie/Donut/Radial charts use harmonious color palettes
-- **Reports Module** - Comprehensive inventory value reports
-  - Value by Category, Warehouse, and Supplier
-  - Top 10 items by value
-  - Currency filter (USD, HNL, All)
-  - Export to CSV
-  - Number formatting with thousands separators
-- **Transaction Management** - Track inventory movements and transfers
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Dark/Light Theme** - Toggle between themes with navbar button
-  - Theme preference saved in localStorage
-  - WCAG AA compliant contrast ratios
-  - Design System with semantic color tokens
-- **i18n Support** - Available in English and Spanish
+[Features](#-key-features) •
+[Getting Started](#-getting-started) •
+[Structure](#-project-structure) •
+[Components](#-components)
+
+</div>
 
 ---
 
-## Tech Stack
+## ✨ Key Features
 
-### Frontend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Angular | 20.1.0 | Main framework (standalone components) |
-| Angular Material | 20.1.4 | UI components (dialogs, icons, tables) |
-| Angular CDK | 20.1.4 | Drag & Drop functionality |
-| Tailwind CSS | 4.1.11 | Utility-first styling |
-| ngx-translate | 16.0 | Internationalization |
-| ng-apexcharts | 1.13 | Interactive charts |
-| RxJS | 7.8.0 | Reactive programming |
+<table>
+<tr>
+<td>
 
-### Backend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| NestJS | 10.0 | Node.js framework |
-| Prisma | 5.0 | Database ORM |
-| SQLite | - | Development database |
+### 🎨 Modern UI/UX
+- **Standalone Components** - Latest Angular patterns
+- **Angular Signals** - Reactive state management
+- **OnPush Detection** - Optimized rendering
+- **Skeleton Loading** - Smooth loading states
+
+</td>
+<td>
+
+### 🌙 Theming
+- Dark/Light mode toggle
+- WCAG AA compliant
+- Design system tokens
+- Semantic color palette
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 🌍 Internationalization
+- English & Spanish
+- ngx-translate integration
+- Easy to extend
+- Lazy-loaded translations
+
+</td>
+<td>
+
+### ⌨️ Productivity
+- Command palette (Ctrl+K)
+- Keyboard shortcuts
+- Quick search
+- Batch operations
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm 9+
-
-### Installation
+## 🚀 Getting Started
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-
-# Install frontend dependencies
-cd Inv-App
+# Install dependencies
 npm install
 
-# Install backend dependencies
-cd ../Inv-App-API
-npm install
-
-# Run database migrations
-npx prisma migrate dev
-
-# Seed the database (optional)
-npm run seed
-```
-
-### Running the Application
-
-**Start Backend** (runs on http://localhost:3000)
-```bash
-cd Inv-App-API
-npm run start:dev
-```
-
-**Start Frontend** (runs on http://localhost:4200)
-```bash
-cd Inv-App
+# Start development server
 npm start
+# → http://localhost:4200
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+
+# E2E tests
+npm run e2e
 ```
 
----
+### Environment Configuration
 
-## Project Structure
-
-```
-Inv-App/                          # Frontend (Angular)
-├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── dashboard/        # Main dashboard
-│   │   │   │   └── custom-chart-dialog/  # Custom chart creator
-│   │   │   ├── inventory/        # Inventory module
-│   │   │   │   ├── inventory-list/
-│   │   │   │   ├── inventory-form/
-│   │   │   │   └── inventory-item/
-│   │   │   ├── warehouses/       # Warehouse CRUD
-│   │   │   ├── suppliers/        # Supplier CRUD
-│   │   │   ├── categories/       # Category CRUD
-│   │   │   ├── transactions/     # Transaction management
-│   │   │   ├── reports/          # Value reports & analytics
-│   │   │   ├── users/            # User management
-│   │   │   ├── profile/          # User profile
-│   │   │   ├── settings/         # App settings
-│   │   │   ├── login/            # Authentication
-│   │   │   └── shared/           # Shared components
-│   │   │       └── navigation/   # Sidebar with submenus
-│   │   ├── services/             # API services
-│   │   ├── interfaces/           # TypeScript interfaces
-│   │   └── app.routes.ts         # Route definitions
-│   ├── assets/i18n/              # Translation files (en, es)
-│   ├── styles/
-│   │   └── design-system/        # Design system tokens & components
-│   │       ├── colors.css        # Semantic color tokens (dark/light)
-│   │       ├── tokens.css        # Spacing, typography, shadows
-│   │       ├── components.css    # Reusable component classes
-│   │       └── utilities.css     # Helper classes
-│   └── styles.css                # Global styles
-
-Inv-App-API/                      # Backend (NestJS)
-├── src/
-│   ├── inventory/                # Inventory module
-│   ├── warehouse/                # Warehouse module
-│   ├── supplier/                 # Supplier module
-│   ├── transaction/              # Transaction module
-│   └── prisma/                   # Database service
-└── prisma/
-    └── schema.prisma             # Database schema
-```
-
----
-
-## API Endpoints
-
-### Inventory
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/inventory` | List all items (supports filters) |
-| GET | `/api/inventory/:id` | Get item by ID |
-| POST | `/api/inventory` | Create new item |
-| PUT | `/api/inventory/:id` | Update item |
-| DELETE | `/api/inventory/:id` | Delete item |
-| GET | `/api/inventory/stats` | Get inventory statistics |
-
-### Warehouses
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/warehouses` | List all warehouses |
-| GET | `/api/warehouses/:id` | Get warehouse by ID |
-| POST | `/api/warehouses` | Create warehouse |
-| PUT | `/api/warehouses/:id` | Update warehouse |
-| DELETE | `/api/warehouses/:id` | Delete warehouse |
-
-### Suppliers
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/suppliers` | List all suppliers |
-| GET | `/api/suppliers/:id` | Get supplier by ID |
-| POST | `/api/suppliers` | Create supplier |
-| PUT | `/api/suppliers/:id` | Update supplier |
-| DELETE | `/api/suppliers/:id` | Delete supplier |
-
-### Transactions
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/transactions` | List all transactions |
-| GET | `/api/transactions/:id` | Get transaction by ID |
-| POST | `/api/transactions` | Create transaction (IN, OUT, TRANSFER) |
-| DELETE | `/api/transactions/:id` | Delete transaction |
-
----
-
-## Dashboard Features
-
-### Custom Charts
-Create personalized charts to visualize your inventory data:
-
-**Chart Types:**
-- Bar, Line, Area (for trends)
-- Pie, Donut, Radial (for distributions)
-
-**Data Sources:**
-| Source | Description |
-|--------|-------------|
-| By Category | Items grouped by category |
-| By Warehouse | Items grouped by warehouse |
-| By Supplier | Items grouped by supplier |
-| By Status | Items grouped by stock status |
-| Value by Category | Total value ($) by category |
-| Value by Warehouse | Total value ($) by warehouse |
-| Value by Supplier | Total value ($) by supplier |
-| Top Items by Value | Top 10 highest-value items |
-
-**Currency Filter:** For value-based charts, filter by USD, HNL, or All currencies.
-
-### Drag & Drop
-Reorder dashboard widgets by dragging them to your preferred position. The layout is saved automatically.
-
----
-
-## Reports Module
-
-Access via **Transactions > Reports** in the sidebar.
-
-**Features:**
-- **Summary Cards** - Total value, items count, categories, warehouses
-- **Value by Category** - Breakdown of inventory value per category
-- **Value by Warehouse** - Breakdown of inventory value per location
-- **Value by Supplier** - Breakdown of inventory value per vendor
-- **Top 10 Items** - Highest-value items with details
-- **Currency Filter** - View USD only, HNL only, or all currencies
-- **CSV Export** - Download reports for external analysis
-
----
-
-## Data Models
-
-### Inventory Item
 ```typescript
-{
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  model?: string;           // NEW: Model/SKU for grouping similar items
-  quantity: number;
-  minQuantity: number;
-  status: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
-  itemType: 'UNIQUE' | 'BULK';
-  serviceTag?: string;      // For UNIQUE items
-  serialNumber?: string;    // For UNIQUE items
-  sku?: string;             // For BULK items
-  barcode?: string;
-  price?: number;
-  currency: 'USD' | 'HNL';
-  warehouseId: string;
-  supplierId?: string;
-  assignedToUserId?: string; // For UNIQUE items
-}
-```
-
-### Warehouse
-```typescript
-{
-  id: string;
-  name: string;
-  location: string;
-  description?: string;
-}
-```
-
-### Supplier
-```typescript
-{
-  id: string;
-  name: string;
-  location: string;
-  phone?: string;
-  email?: string;
-}
-```
-
----
-
-## Configuration
-
-### Environment Variables
-
-**Frontend** (`src/environments/environment.ts`)
-```typescript
+// src/environments/environment.ts
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api'
 };
 ```
 
-**Backend** (`.env`)
-```env
-DATABASE_URL="file:./dev.db"
-PORT=3000
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── 📂 components/
+│   │   ├── dashboard/           # Main dashboard + custom charts
+│   │   ├── inventory/           # Inventory CRUD
+│   │   │   ├── inventory-list/  # Table with filters
+│   │   │   ├── inventory-form/  # Create/Edit form
+│   │   │   └── inventory-item/  # Detail dialog
+│   │   ├── warehouses/          # Warehouse management
+│   │   ├── suppliers/           # Supplier management
+│   │   ├── categories/          # Category management
+│   │   ├── transactions/        # Stock movements
+│   │   ├── loans/               # Item lending
+│   │   ├── reports/             # Analytics & exports
+│   │   ├── users/               # User management
+│   │   ├── profile/             # User profile
+│   │   ├── settings/            # App settings
+│   │   ├── login/               # Authentication
+│   │   └── shared/              # Reusable components
+│   │       ├── navigation/      # Sidebar + header
+│   │       ├── confirm-dialog/  # Confirmation modal
+│   │       ├── skeleton/        # Loading skeletons
+│   │       └── command-palette/ # Quick search (Ctrl+K)
+│   │
+│   ├── 📂 services/
+│   │   ├── inventory/           # Inventory API + state
+│   │   ├── auth.service.ts      # Authentication
+│   │   ├── theme.service.ts     # Dark/Light mode
+│   │   ├── notification.service.ts
+│   │   └── ...
+│   │
+│   ├── 📂 guards/
+│   │   ├── auth.guard.ts        # Route protection
+│   │   └── role.guard.ts        # Role-based access
+│   │
+│   ├── 📂 interfaces/
+│   │   ├── inventory-item.interface.ts
+│   │   ├── warehouse.interface.ts
+│   │   └── ...
+│   │
+│   └── app.routes.ts            # Lazy-loaded routes
+│
+├── assets/
+│   └── i18n/                    # Translation files
+│       ├── en.json
+│       └── es.json
+│
+└── styles/
+    ├── design-system/           # Design tokens
+    │   ├── colors.css           # Color palette
+    │   ├── tokens.css           # Spacing, typography
+    │   └── components.css       # Component classes
+    └── styles.css               # Global styles
 ```
 
 ---
 
-## Development Guide
+## 🧩 Components
 
-For detailed information on creating new components, see the [Component Guide](./context/COMPONENT_GUIDE.md).
+### Dashboard
+| Component | Description |
+|-----------|-------------|
+| `DashboardComponent` | Main view with stats cards and charts |
+| `CustomChartDialog` | Create custom charts (Bar, Line, Pie, etc.) |
+| `DragDropGrid` | Reorderable widget grid |
 
-### Key Patterns
+### Inventory
+| Component | Description |
+|-----------|-------------|
+| `InventoryList` | Paginated table with filters |
+| `InventoryForm` | Create/Edit form with validation |
+| `InventoryItem` | Detail view dialog |
+| `ImportDialog` | Excel import wizard |
 
-- **Standalone Components** - All components use `standalone: true`
-- **OnPush Change Detection** - For better performance
-- **Angular Signals** - For reactive state management
-- **Tailwind + Material** - Tailwind for layout, Material for icons/dialogs
+### Shared
+| Component | Description |
+|-----------|-------------|
+| `Navigation` | Sidebar with nested menus |
+| `ConfirmDialog` | Generic confirmation modal |
+| `SkeletonCard` | Loading placeholder (card) |
+| `SkeletonTable` | Loading placeholder (table) |
+| `CommandPalette` | Quick search (Ctrl+K) |
 
-### Code Style
+---
+
+## 🎯 State Management
+
+Using **Angular Signals** for reactive state:
 
 ```typescript
-@Component({
-  selector: 'app-my-component',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule, TranslateModule],
-  templateUrl: './my-component.html'
-})
-export class MyComponent {
-  private service = inject(MyService);
-  items = signal<Item[]>([]);
-  loading = signal(false);
+@Injectable({ providedIn: 'root' })
+export class InventoryService {
+  // Signals for reactive state
+  private itemsSignal = signal<InventoryItem[]>([]);
+  private loadingSignal = signal<boolean>(false);
+
+  // Computed values
+  items = computed(() => this.itemsSignal());
+  loading = computed(() => this.loadingSignal());
+
+  lowStockItems = computed(() =>
+    this.items().filter(i => i.status === 'LOW_STOCK')
+  );
+}
+
+// In component
+@Component({...})
+export class InventoryList {
+  private service = inject(InventoryService);
+
+  items = this.service.items;      // Auto-updates
+  loading = this.service.loading;
 }
 ```
 
 ---
 
-## Scripts
+## 🎨 Styling
 
-### Frontend
-```bash
-npm start          # Start dev server
-npm run build      # Production build
-npm test           # Run tests
+### Design System
+
+```css
+/* Semantic color tokens */
+--color-primary: oklch(0.65 0.19 255);
+--color-success: oklch(0.72 0.19 142);
+--color-warning: oklch(0.80 0.15 85);
+--color-danger: oklch(0.65 0.20 27);
+
+/* Dark mode auto-switch */
+@media (prefers-color-scheme: dark) {
+  :root { /* dark colors */ }
+}
 ```
 
-### Backend
-```bash
-npm run start:dev  # Start with hot reload
-npm run build      # Production build
-npm run seed       # Seed database
+### Component Patterns
+
+```typescript
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatIconModule, TranslateModule],
+  template: `
+    @if (loading()) {
+      <app-skeleton-table />
+    } @else {
+      <mat-table [dataSource]="items()">...</mat-table>
+    }
+  `
+})
+export class ExampleComponent {
+  private service = inject(MyService);
+  items = this.service.items;
+  loading = this.service.loading;
+}
 ```
 
 ---
 
-## Documentation
+## 📊 Charts
+
+Using **ng-apexcharts** for data visualization:
+
+| Chart Type | Use Case |
+|------------|----------|
+| Bar | Category comparison |
+| Line | Trends over time |
+| Area | Volume visualization |
+| Pie/Donut | Distribution |
+| Radial | Progress/Goals |
+
+```typescript
+// Custom chart creation
+this.dialog.open(CustomChartDialog, {
+  data: {
+    dataSources: ['byCategory', 'byWarehouse', 'byStatus'],
+    chartTypes: ['bar', 'line', 'pie', 'donut']
+  }
+});
+```
+
+---
+
+## 🔐 Route Guards
+
+```typescript
+// app.routes.ts
+export const routes: Routes = [
+  {
+    path: 'inventory',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/inventory/inventory-list')
+  },
+  {
+    path: 'users',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['SYSTEM_ADMIN'] },
+    loadComponent: () => import('./components/users/users')
+  }
+];
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Unit tests
+npm test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+
+# E2E tests (Playwright)
+npm run e2e
+```
+
+---
+
+## 📦 Build & Deploy
+
+```bash
+# Production build
+npm run build
+# Output: dist/inv-app/
+
+# Analyze bundle
+npm run build -- --stats-json
+npx webpack-bundle-analyzer dist/inv-app/stats.json
+```
+
+### Deploy to Vercel
+
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+See [VERCEL-DEPLOYMENT.md](../context/VERCEL-DEPLOYMENT.md) for details.
+
+---
+
+## 📚 Related Documentation
 
 | Document | Description |
 |----------|-------------|
-| [Component Guide](./context/COMPONENT_GUIDE.md) | How to create new components |
-| [Project Overview](./context/PROJECT_OVERVIEW.md) | Architecture and features |
-| [Changelog](./context/CHANGELOG.md) | Version history |
-| [Optimizations](./context/OPTIMIZATIONS.md) | Performance improvements |
+| [Permissions Guide](../context/PERMISSIONS_GUIDE.md) | RBAC configuration |
+| [Optimizations](../context/OPTIMIZATIONS.md) | Performance analysis |
+| [Migration Lucide](../context/MIGRATION-LUCIDE.md) | Icon migration guide |
 
 ---
 
-## Contributing
+<div align="center">
 
-1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Commit your changes (`git commit -m 'Add amazing feature'`)
-3. Push to the branch (`git push origin feature/amazing-feature`)
-4. Open a Pull Request
+**Part of the Inventory Management System**
 
----
+[← Back to Main README](../README.md)
 
-## License
-
-This project is licensed under the MIT License.
-
----
-
-## Acknowledgments
-
-- [Angular](https://angular.dev/)
-- [NestJS](https://nestjs.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Angular Material](https://material.angular.io/)
+</div>

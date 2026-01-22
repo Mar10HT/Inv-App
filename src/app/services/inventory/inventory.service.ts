@@ -67,7 +67,10 @@ export class InventoryService {
   }
 
   loadWarehouses(): void {
-    this.http.get<Warehouse[]>(this.apiUrl + '/warehouses').pipe(
+    this.http.get<PaginatedResponse<Warehouse>>(this.apiUrl + '/warehouses', {
+      params: new HttpParams().set('limit', '1000')
+    }).pipe(
+      map(response => response.data),
       catchError(err => {
         this.logger.error('Error loading warehouses', err);
         return of([]);
@@ -78,7 +81,10 @@ export class InventoryService {
   }
 
   loadSuppliers(): void {
-    this.http.get<Supplier[]>(this.apiUrl + '/suppliers').pipe(
+    this.http.get<PaginatedResponse<Supplier>>(this.apiUrl + '/suppliers', {
+      params: new HttpParams().set('limit', '1000')
+    }).pipe(
+      map(response => response.data),
       catchError(err => {
         this.logger.error('Error loading suppliers', err);
         return of([]);

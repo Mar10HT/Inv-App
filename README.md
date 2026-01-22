@@ -343,7 +343,7 @@ npm i -g vercel
 vercel --prod
 ```
 
-See [VERCEL-DEPLOYMENT.md](../context/VERCEL-DEPLOYMENT.md) for details.
+See [VERCEL-DEPLOYMENT.md](./context/VERCEL-DEPLOYMENT.md) for details.
 
 ---
 
@@ -351,16 +351,17 @@ See [VERCEL-DEPLOYMENT.md](../context/VERCEL-DEPLOYMENT.md) for details.
 
 | Document | Description |
 |----------|-------------|
-| [Permissions Guide](../context/PERMISSIONS_GUIDE.md) | RBAC configuration |
-| [Optimizations](../context/OPTIMIZATIONS.md) | Performance analysis |
-| [Migration Lucide](../context/MIGRATION-LUCIDE.md) | Icon migration guide |
+| [Component Guide](./context/COMPONENT_GUIDE.md) | How to create components |
+| [Project Overview](./context/PROJECT_OVERVIEW.md) | Architecture overview |
+| [Optimizations](./context/OPTIMIZATIONS.md) | Performance analysis |
+| [Migration Lucide](./context/MIGRATION-LUCIDE.md) | Icon migration guide |
+| [Vercel Deployment](./context/VERCEL-DEPLOYMENT.md) | Frontend hosting |
+| [Changelog](./context/CHANGELOG.md) | Version history |
 
 ---
 
 <div align="center">
 
-**Part of the Inventory Management System**
-
-[← Back to Main README](../README.md)
+**Inventory Management System - Frontend**
 
 </div>

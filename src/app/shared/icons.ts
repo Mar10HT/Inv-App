@@ -104,6 +104,7 @@ import {
   Info,
   HelpCircle,
   CircleAlert,
+  XCircle,
 
   // Files & Documents
   File,
@@ -247,6 +248,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   Info,
   HelpCircle,
   CircleAlert,
+  XCircle,
 
   // Files & Documents
   File,

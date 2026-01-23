@@ -24,7 +24,7 @@ import { ThemeService } from '../../../services/theme.service';
     LanguageSelectorComponent,
   ],
   templateUrl: './navigation.html',
-  styleUrl: './navigation.css'
+  styleUrls: ['./navigation.css', './navigation-mobile.css']
 })
 export class Navigation {
   private authService = inject(AuthService);

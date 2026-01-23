@@ -1,0 +1,53 @@
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.mobile-menu-btn:hover { background-color: var(--surface-variant); border-color: var(--primary); }
+.mobile-menu-btn:active { transform: scale(0.95); }
+.mobile-menu-btn lucide-icon { color: var(--on-surface) !important; width: 24px !important; height: 24px !important; pointer-events: none; }
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 39;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.sidebar-overlay.visible { opacity: 1; visibility: visible; }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .mobile-menu-btn { display: flex; }
+  .sidebar-overlay { display: block; pointer-events: none; touch-action: none; }
+  .sidebar-overlay.visible { pointer-events: auto; }
+  .sidebar { width: 0; transform: translateX(-100%); opacity: 0; visibility: hidden; pointer-events: none; }
+  .sidebar.collapsed { width: 0; transform: translateX(-100%); }
+  .sidebar.mobile-open { width: 70%; max-width: 300px; transform: translateX(0); opacity: 1; visibility: visible; pointer-events: auto; }
+  .sidebar.mobile-open .sidebar-header { justify-content: space-between; padding: 16px 12px; }
+  .sidebar.mobile-open .nav-link,
+  .sidebar.mobile-open .user-info,
+  .sidebar.mobile-open .theme-toggle-btn { justify-content: flex-start; padding: 10px 12px; }
+}

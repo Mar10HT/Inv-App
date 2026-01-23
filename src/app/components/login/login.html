@@ -61,6 +61,25 @@
           }
         </div>
 
+        <!-- Remember Me & Forgot Password -->
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              formControlName="rememberMe"
+              class="w-4 h-4 rounded border-slate-600 bg-surface text-[#4d7c6f]
+                     focus:ring-[#4d7c6f] focus:ring-offset-0 cursor-pointer"
+            />
+            <span class="text-sm text-slate-400">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
+          </label>
+          <a
+            routerLink="/forgot-password"
+            class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] transition-colors"
+          >
+            {{ 'LOGIN.FORGOT_PASSWORD' | translate }}
+          </a>
+        </div>
+
         <!-- Submit Button -->
         <button
           type="submit"

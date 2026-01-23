@@ -17,5 +17,8 @@
   .main-content.with-sidebar.sidebar-collapsed {
     margin-left: 0;
     padding-top: 70px; /* Space for mobile menu button */
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    touch-action: pan-y;
   }
 }

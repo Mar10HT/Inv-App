@@ -88,6 +88,6 @@ export class Navigation {
 
   // Logout
   logout(): void {
-    this.authService.logout();
+    this.authService.logout().subscribe();
   }
 }

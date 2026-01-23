@@ -39,6 +39,15 @@ html, body { height: 100%; }
 body {
     margin: 0;
     font-family: "Outfit", "Helvetica Neue", sans-serif;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile scroll improvements */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+        overscroll-behavior-y: contain;
+    }
 }
 
 /* Monospace font for data/numbers */

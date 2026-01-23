@@ -453,6 +453,8 @@
     "ENTER_PASSWORD": "Ingresa tu contraseña",
     "SIGN_IN": "Iniciar Sesión",
     "SIGNING_IN": "Iniciando sesión...",
+    "REMEMBER_ME": "Recordarme",
+    "FORGOT_PASSWORD": "¿Olvidaste tu contraseña?",
     "DEMO_CREDENTIALS": "Credenciales de demostración:",
     "VERSION": "Sistema de Gestión de Inventario v2.0.0",
     "VALIDATION": {

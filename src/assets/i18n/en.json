@@ -453,6 +453,8 @@
     "ENTER_PASSWORD": "Enter your password",
     "SIGN_IN": "Sign In",
     "SIGNING_IN": "Signing in...",
+    "REMEMBER_ME": "Remember me",
+    "FORGOT_PASSWORD": "Forgot password?",
     "DEMO_CREDENTIALS": "Demo credentials:",
     "VERSION": "Inventory Management System v2.0.0",
     "VALIDATION": {

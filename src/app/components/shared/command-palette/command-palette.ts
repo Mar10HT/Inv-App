@@ -383,8 +383,7 @@ export class CommandPalette implements OnInit, OnDestroy {
         icon: 'LogOut',
         label: this.translate.instant('COMMAND_PALETTE.LOGOUT'),
         action: () => {
-          this.authService.logout();
-          this.router.navigate(['/login']);
+          this.authService.logout().subscribe();
         }
       }
     ];

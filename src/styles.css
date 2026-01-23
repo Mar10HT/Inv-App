@@ -56,8 +56,6 @@ body.mobile-menu-open {
     position: fixed !important;
     width: 100% !important;
     height: 100% !important;
-    touch-action: none !important;
-    -webkit-overflow-scrolling: none !important;
 }
 
 /* Monospace font for data/numbers */

@@ -99,13 +99,23 @@
     padding: 10px 12px;
   }
 
-  /* Prevent scroll on sidebar-nav when menu is open but allow navigation */
+  /* Allow scrolling in sidebar-nav */
   .sidebar.mobile-open .sidebar-nav {
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     touch-action: pan-y;
+  }
+
+  /* Allow scroll gesture on nav items while preserving click */
+  .sidebar.mobile-open .nav-link,
+  .sidebar.mobile-open .nav-parent,
+  .sidebar.mobile-open .logout-btn,
+  .sidebar.mobile-open .theme-toggle-btn,
+  .sidebar.mobile-open .user-info {
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

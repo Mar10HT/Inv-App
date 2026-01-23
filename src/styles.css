@@ -50,6 +50,16 @@ body {
     }
 }
 
+/* Body scroll lock when mobile menu is open */
+body.mobile-menu-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: none !important;
+}
+
 /* Monospace font for data/numbers */
 .font-mono,
 code,

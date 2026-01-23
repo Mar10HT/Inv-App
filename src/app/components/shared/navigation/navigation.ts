@@ -1,4 +1,5 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, effect, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -31,6 +32,7 @@ export class Navigation {
   private sidebarService = inject(SidebarService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  private isBrowser: boolean;
 
   currentUser = computed(() => this.authService.currentUser());
   isCollapsed = computed(() => this.sidebarService.isCollapsed());
@@ -41,6 +43,26 @@ export class Navigation {
   // Mobile menu state
   private mobileMenuOpen = signal<boolean>(false);
   isMobileMenuOpen = computed(() => this.mobileMenuOpen());
+
+  constructor(@Inject(PLATFORM_ID) platformId: object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+
+    // Effect to manage body scroll lock when mobile menu is open
+    effect(() => {
+      if (this.isBrowser) {
+        const isOpen = this.mobileMenuOpen();
+        if (isOpen) {
+          document.body.classList.add('mobile-menu-open');
+          document.body.style.overflow = 'hidden';
+          document.body.style.touchAction = 'none';
+        } else {
+          document.body.classList.remove('mobile-menu-open');
+          document.body.style.overflow = '';
+          document.body.style.touchAction = '';
+        }
+      }
+    });
+  }
 
   // Computed to show expanded content (desktop expanded OR mobile open)
   showExpandedContent = computed(() => !this.isCollapsed() || this.isMobileMenuOpen());

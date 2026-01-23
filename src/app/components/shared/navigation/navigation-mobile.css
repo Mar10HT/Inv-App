@@ -35,19 +35,77 @@
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.sidebar-overlay.visible { opacity: 1; visibility: visible; }
+.sidebar-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .mobile-menu-btn { display: flex; }
-  .sidebar-overlay { display: block; pointer-events: none; touch-action: none; }
-  .sidebar-overlay.visible { pointer-events: auto; }
-  .sidebar { width: 0; transform: translateX(-100%); opacity: 0; visibility: hidden; pointer-events: none; }
-  .sidebar.collapsed { width: 0; transform: translateX(-100%); }
-  .sidebar.mobile-open { width: 70%; max-width: 300px; transform: translateX(0); opacity: 1; visibility: visible; pointer-events: auto; }
-  .sidebar.mobile-open .sidebar-header { justify-content: space-between; padding: 16px 12px; }
+
+  .sidebar-overlay {
+    display: block;
+    pointer-events: none;
+  }
+
+  .sidebar-overlay.visible {
+    pointer-events: auto;
+    touch-action: none;
+  }
+
+  .sidebar {
+    width: 0;
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    overscroll-behavior: contain;
+  }
+
+  .sidebar.collapsed {
+    width: 0;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.mobile-open {
+    width: 70%;
+    max-width: 300px;
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sidebar.mobile-open .sidebar-header {
+    justify-content: space-between;
+    padding: 16px 12px;
+  }
+
   .sidebar.mobile-open .nav-link,
   .sidebar.mobile-open .user-info,
-  .sidebar.mobile-open .theme-toggle-btn { justify-content: flex-start; padding: 10px 12px; }
+  .sidebar.mobile-open .theme-toggle-btn {
+    justify-content: flex-start;
+    padding: 10px 12px;
+  }
+
+  /* Prevent scroll on sidebar-nav when menu is open but allow navigation */
+  .sidebar.mobile-open .sidebar-nav {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
 }
+

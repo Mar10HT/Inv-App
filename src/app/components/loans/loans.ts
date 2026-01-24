@@ -648,8 +648,10 @@ export class LoansComponent implements OnInit {
         dueDate: this.selectedDueDate(),
         notes
       }).subscribe({
-        next: () => {
-          successCount++;
+        next: (result) => {
+          if (result) {
+            successCount++;
+          }
           completedCount++;
           this.checkAllCompleted(completedCount, items.length, successCount);
         },

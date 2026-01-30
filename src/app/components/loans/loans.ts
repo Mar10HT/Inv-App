@@ -5,13 +5,14 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LoanService } from '../../services/loan.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
-import { Loan, LoanStatus } from '../../interfaces/loan.interface';
+import { Loan, LoanStatus, LoanWithQr } from '../../interfaces/loan.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 
 @Component({
@@ -24,6 +25,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     MatButtonModule,
     MatDialogModule,
     MatPaginatorModule,
+    MatMenuModule,
     TranslateModule
   ],
   template: `
@@ -38,31 +40,59 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
             </div>
             <div class="flex gap-2">
               <button
+                (click)="openScanDialog()"
+                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
+                <lucide-icon name="ScanLine" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
+                <span>{{ 'LOANS.QR.SCAN' | translate }}</span>
+              </button>
+              <button
                 (click)="exportToCSV()"
-                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium">
-                <lucide-icon name="Download" class="!w-5 !h-5"></lucide-icon>
-                {{ 'COMMON.EXPORT' | translate }}
+                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
+                <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
+                <span>{{ 'COMMON.EXPORT' | translate }}</span>
               </button>
               <button
                 (click)="openNewLoanDialog()"
-                class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-                <lucide-icon name="Plus" class="!w-5 !h-5"></lucide-icon>
-                {{ 'LOANS.NEW_LOAN' | translate }}
+                class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
+                <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
+                <span>{{ 'LOANS.NEW_LOAN' | translate }}</span>
               </button>
             </div>
           </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-500">{{ 'LOANS.ACTIVE' | translate }}</p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().totalActive }}</p>
+                <p class="text-sm text-slate-500">{{ 'LOANS.PENDING' | translate }}</p>
+                <p class="text-2xl font-bold text-foreground">{{ stats().totalPending }}</p>
+              </div>
+              <div class="bg-slate-800/50 p-3 rounded-lg">
+                <lucide-icon name="Clock" class="!text-slate-400 !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-slate-500">{{ 'LOANS.SENT' | translate }}</p>
+                <p class="text-2xl font-bold text-sky-400">{{ stats().totalSent }}</p>
               </div>
               <div class="bg-sky-950/50 p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-sky-400 !w-5 !h-5"></lucide-icon>
+                <lucide-icon name="Send" class="!text-sky-400 !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-slate-500">{{ 'LOANS.RECEIVED' | translate }}</p>
+                <p class="text-2xl font-bold text-violet-400">{{ stats().totalReceived }}</p>
+              </div>
+              <div class="bg-violet-950/50 p-3 rounded-lg">
+                <lucide-icon name="PackageCheck" class="!text-violet-400 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -74,17 +104,6 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
               </div>
               <div class="bg-red-950/50 p-3 rounded-lg">
                 <lucide-icon name="AlertTriangle" class="!text-red-400 !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-slate-500">{{ 'LOANS.DUE_SOON' | translate }}</p>
-                <p class="text-2xl font-bold text-amber-400">{{ stats().dueSoon }}</p>
-              </div>
-              <div class="bg-amber-950/50 p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-amber-400 !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -119,7 +138,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
             </div>
 
             <!-- Status Filter -->
-            <div class="lg:w-48">
+            <div class="lg:w-56">
               <select
                 [(ngModel)]="selectedStatus"
                 (ngModelChange)="applyFilters()"
@@ -127,9 +146,13 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
               >
                 <option value="all">{{ 'LOANS.ALL_STATUS' | translate }}</option>
-                <option [value]="LoanStatus.ACTIVE">{{ 'LOANS.STATUS.ACTIVE' | translate }}</option>
+                <option [value]="LoanStatus.PENDING">{{ 'LOANS.STATUS.PENDING' | translate }}</option>
+                <option [value]="LoanStatus.SENT">{{ 'LOANS.STATUS.SENT' | translate }}</option>
+                <option [value]="LoanStatus.RECEIVED">{{ 'LOANS.STATUS.RECEIVED' | translate }}</option>
+                <option [value]="LoanStatus.RETURN_PENDING">{{ 'LOANS.STATUS.RETURN_PENDING' | translate }}</option>
                 <option [value]="LoanStatus.OVERDUE">{{ 'LOANS.STATUS.OVERDUE' | translate }}</option>
                 <option [value]="LoanStatus.RETURNED">{{ 'LOANS.STATUS.RETURNED' | translate }}</option>
+                <option [value]="LoanStatus.CANCELLED">{{ 'LOANS.STATUS.CANCELLED' | translate }}</option>
               </select>
             </div>
 
@@ -197,16 +220,72 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                       </span>
                     </td>
                     <td class="px-6 py-4">
-                      @if (loan.status !== LoanStatus.RETURNED) {
-                        <button
-                          (click)="returnLoan(loan)"
-                          class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm">
-                          <lucide-icon name="CornerDownLeft" class="!w-3.5 !h-3.5"></lucide-icon>
-                          {{ 'LOANS.RETURN' | translate }}
-                        </button>
-                      } @else {
-                        <span class="text-slate-500 text-sm">{{ formatDate(loan.returnDate!) }}</span>
-                      }
+                      <div class="flex items-center justify-center gap-2">
+                        @switch (loan.status) {
+                          @case (LoanStatus.PENDING) {
+                            <button
+                              (click)="sendLoan(loan)"
+                              class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              <span>{{ 'LOANS.SEND' | translate }}</span>
+                            </button>
+                            <button
+                              (click)="cancelLoan(loan)"
+                              class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
+                              <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                            </button>
+                          }
+                          @case (LoanStatus.SENT) {
+                            <button
+                              (click)="showQrCode(loan, 'send')"
+                              class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                            </button>
+                          }
+                          @case (LoanStatus.RECEIVED) {
+                            <button
+                              (click)="initiateReturn(loan)"
+                              class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                            </button>
+                          }
+                          @case (LoanStatus.OVERDUE) {
+                            <button
+                              (click)="initiateReturn(loan)"
+                              class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                            </button>
+                          }
+                          @case (LoanStatus.RETURN_PENDING) {
+                            <button
+                              (click)="showQrCode(loan, 'return')"
+                              class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                            </button>
+                          }
+                          @case (LoanStatus.RETURNED) {
+                            <span class="text-slate-500 text-sm">{{ formatDate(loan.returnDate!) }}</span>
+                          }
+                          @case (LoanStatus.CANCELLED) {
+                            <span class="text-slate-500 text-sm">-</span>
+                          }
+                          @case (LoanStatus.ACTIVE) {
+                            <button
+                              (click)="initiateReturn(loan)"
+                              class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                            </button>
+                          }
+                          @default {
+                            <span class="text-slate-500 text-sm">-</span>
+                          }
+                        }
+                      </div>
                     </td>
                   </tr>
                 } @empty {
@@ -254,13 +333,63 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                     <p [class]="getDueDateClass(loan)">{{ formatDate(loan.dueDate) }}</p>
                   </div>
                 </div>
-                @if (loan.status !== LoanStatus.RETURNED) {
-                  <button
-                    (click)="returnLoan(loan)"
-                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm">
-                    <lucide-icon name="CornerDownLeft" class="!w-3.5 !h-3.5"></lucide-icon>
-                    {{ 'LOANS.RETURN' | translate }}
-                  </button>
+                <!-- Mobile Actions -->
+                @switch (loan.status) {
+                  @case (LoanStatus.PENDING) {
+                    <div class="flex gap-2">
+                      <button
+                        (click)="sendLoan(loan)"
+                        class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                        <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        <span>{{ 'LOANS.SEND' | translate }}</span>
+                      </button>
+                      <button
+                        (click)="cancelLoan(loan)"
+                        class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
+                        <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                      </button>
+                    </div>
+                  }
+                  @case (LoanStatus.SENT) {
+                    <button
+                      (click)="showQrCode(loan, 'send')"
+                      class="w-full bg-violet-600 hover:bg-violet-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                      <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                    </button>
+                  }
+                  @case (LoanStatus.RECEIVED) {
+                    <button
+                      (click)="initiateReturn(loan)"
+                      class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                      <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                    </button>
+                  }
+                  @case (LoanStatus.OVERDUE) {
+                    <button
+                      (click)="initiateReturn(loan)"
+                      class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                      <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                    </button>
+                  }
+                  @case (LoanStatus.RETURN_PENDING) {
+                    <button
+                      (click)="showQrCode(loan, 'return')"
+                      class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                      <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                    </button>
+                  }
+                  @case (LoanStatus.ACTIVE) {
+                    <button
+                      (click)="initiateReturn(loan)"
+                      class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                      <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                    </button>
+                  }
                 }
               </div>
             } @empty {
@@ -292,7 +421,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     <!-- New Loan Dialog -->
     @if (showNewLoanDialog) {
       <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeNewLoanDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg" (click)="$event.stopPropagation()">
+        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 class="text-xl font-semibold text-foreground">{{ 'LOANS.NEW_LOAN' | translate }}</h2>
             <p class="text-slate-500 text-sm mt-1">{{ 'LOANS.NEW_LOAN_DESC' | translate }}</p>
@@ -378,7 +507,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                           (ngModelChange)="updateLoanItemId(i, $event)"
                           class="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
                           <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
-                          @for (invItem of getItemsForLoan(); track invItem.id) {
+                          @for (invItem of availableItemsForLoan(); track invItem.id) {
                             <option [value]="invItem.id" [disabled]="isItemAlreadySelected(invItem.id, i)">
                               {{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})
                             </option>
@@ -434,6 +563,91 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
         </div>
       </div>
     }
+
+    <!-- QR Code Dialog -->
+    @if (showQrDialog) {
+      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeQrDialog()">
+        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+          <div class="px-6 py-4 border-b border-theme">
+            <h2 class="text-xl font-semibold text-foreground">
+              {{ qrDialogType === 'send' ? ('LOANS.QR.SEND_TITLE' | translate) : ('LOANS.QR.RETURN_TITLE' | translate) }}
+            </h2>
+            <p class="text-slate-500 text-sm mt-1">
+              {{ qrDialogType === 'send' ? ('LOANS.QR.SEND_INSTRUCTIONS' | translate) : ('LOANS.QR.RETURN_INSTRUCTIONS' | translate) }}
+            </p>
+          </div>
+          <div class="p-6 flex flex-col items-center">
+            @if (currentQrDataUrl) {
+              <div class="bg-white p-4 rounded-lg mb-4">
+                <img [src]="currentQrDataUrl" alt="QR Code" class="w-56 h-56 block" />
+              </div>
+              <p class="text-foreground font-medium text-center mb-1">{{ currentLoan?.inventoryItemName }}</p>
+              <p class="text-slate-500 text-sm text-center">
+                {{ currentLoan?.sourceWarehouseName }} → {{ currentLoan?.destinationWarehouseName }}
+              </p>
+            } @else {
+              <div class="w-64 h-64 flex items-center justify-center bg-slate-800 rounded-lg mb-4">
+                <lucide-icon name="Loader2" class="!w-8 !h-8 !text-slate-500 animate-spin"></lucide-icon>
+              </div>
+              <p class="text-slate-500 text-sm">Cargando QR...</p>
+            }
+          </div>
+          <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
+            <button
+              (click)="printQrCode()"
+              class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+              <lucide-icon name="Printer" class="!w-4 !h-4 !text-current"></lucide-icon>
+              <span>{{ 'LOANS.QR.PRINT' | translate }}</span>
+            </button>
+            <button
+              (click)="downloadQrCode()"
+              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2">
+              <lucide-icon name="Download" class="!w-4 !h-4 !text-white"></lucide-icon>
+              <span>{{ 'LOANS.QR.DOWNLOAD' | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Scan QR Dialog -->
+    @if (showScanDialog) {
+      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeScanDialog()">
+        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+          <div class="px-6 py-4 border-b border-theme">
+            <h2 class="text-xl font-semibold text-foreground">{{ 'LOANS.QR.SCAN_TITLE' | translate }}</h2>
+            <p class="text-slate-500 text-sm mt-1">{{ 'LOANS.QR.SCAN_INSTRUCTIONS' | translate }}</p>
+          </div>
+          <div class="p-6">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-slate-400 mb-2">QR Code Data</label>
+              <textarea
+                [(ngModel)]="scannedQrData"
+                rows="4"
+                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] resize-none font-mono text-sm"
+                placeholder="Paste QR code data here..."
+              ></textarea>
+            </div>
+            <p class="text-slate-500 text-xs">
+              Scan the QR code with your device camera or paste the scanned data above.
+            </p>
+          </div>
+          <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
+            <button
+              (click)="closeScanDialog()"
+              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button
+              (click)="processScannedQr()"
+              [disabled]="!scannedQrData"
+              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 disabled:text-slate-500 text-white px-6 py-2 rounded-lg transition-all">
+              {{ 'COMMON.CONFIRM' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
   `
 })
 export class LoansComponent implements OnInit {
@@ -455,8 +669,18 @@ export class LoansComponent implements OnInit {
   pageIndex = 0;
   pageSize = 10;
 
-  // Dialog state
+  // Dialog states
   showNewLoanDialog = false;
+  showQrDialog = false;
+  showScanDialog = false;
+
+  // QR Dialog state
+  qrDialogType: 'send' | 'return' = 'send';
+  currentQrDataUrl: string | null = null;
+  currentLoan: Loan | null = null;
+
+  // Scan Dialog state
+  scannedQrData = '';
 
   // Form signals for reactivity
   selectedSourceWarehouseId = signal('');
@@ -478,20 +702,26 @@ export class LoansComponent implements OnInit {
     return all.filter(w => w.id !== sourceId);
   });
 
-  // Get items for loan dropdown (items from source warehouse, not on loan)
-  getItemsForLoan() {
+  // Set of item IDs currently on loan (for fast lookup)
+  private itemsOnLoanSet = computed(() => {
+    const activeLoans = this.loanService.activeLoans();
+    return new Set(activeLoans.map(l => l.inventoryItemId));
+  });
+
+  // Items available for loan (computed, not method)
+  availableItemsForLoan = computed(() => {
     const sourceId = this.selectedSourceWarehouseId();
     const items = this.inventoryService.items();
+    const onLoanSet = this.itemsOnLoanSet();
 
     if (!sourceId) {
-      return items.filter(item => !this.loanService.isItemOnLoan(item.id));
+      return items.filter(item => !onLoanSet.has(item.id));
     }
 
     return items.filter(item =>
-      item.warehouseId === sourceId &&
-      !this.loanService.isItemOnLoan(item.id)
+      item.warehouseId === sourceId && !onLoanSet.has(item.id)
     );
-  }
+  });
 
   // Filtered loans
   private filteredLoansSignal = signal<Loan[]>([]);
@@ -508,10 +738,13 @@ export class LoansComponent implements OnInit {
   minDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   ngOnInit(): void {
+    // Load required data
     this.warehouseService.getAll().subscribe();
+    this.inventoryService.loadItems();
     this.loanService.loadLoans();
-    // Apply filters after data loads
-    this.applyFilters();
+
+    // Apply filters after short delay to allow data to load
+    setTimeout(() => this.applyFilters(), 100);
   }
 
   applyFilters(): void {
@@ -555,6 +788,8 @@ export class LoansComponent implements OnInit {
     this.pageSize = event.pageSize;
   }
 
+  // ==================== New Loan Dialog ====================
+
   openNewLoanDialog(): void {
     this.selectedSourceWarehouseId.set('');
     this.selectedDestWarehouseId.set('');
@@ -570,17 +805,14 @@ export class LoansComponent implements OnInit {
 
   onSourceWarehouseChange(warehouseId: string): void {
     this.selectedSourceWarehouseId.set(warehouseId);
-    // Reset items and destination when source changes
     this.loanItems.set([]);
     this.selectedDestWarehouseId.set('');
   }
 
-  // Add empty item row
   addLoanItem(): void {
     this.loanItems.update(items => [...items, { inventoryItemId: '', quantity: 1, notes: '' }]);
   }
 
-  // Update item ID
   updateLoanItemId(index: number, itemId: string): void {
     this.loanItems.update(items => {
       const newItems = [...items];
@@ -589,7 +821,6 @@ export class LoansComponent implements OnInit {
     });
   }
 
-  // Update item quantity
   updateLoanItemQuantity(index: number, quantity: number): void {
     this.loanItems.update(items => {
       const newItems = [...items];
@@ -598,7 +829,6 @@ export class LoansComponent implements OnInit {
     });
   }
 
-  // Update item notes
   updateLoanItemNotes(index: number, notes: string): void {
     this.loanItems.update(items => {
       const newItems = [...items];
@@ -607,12 +837,10 @@ export class LoansComponent implements OnInit {
     });
   }
 
-  // Remove item row
   removeLoanItem(index: number): void {
     this.loanItems.update(items => items.filter((_, i) => i !== index));
   }
 
-  // Check if item is already selected in another row
   isItemAlreadySelected(itemId: string, currentIndex: number): boolean {
     return this.loanItems().some((item, i) => i !== currentIndex && item.inventoryItemId === itemId);
   }
@@ -635,9 +863,7 @@ export class LoansComponent implements OnInit {
     let successCount = 0;
     let completedCount = 0;
 
-    // Create a loan for each selected item
     for (const item of items) {
-      // Combine general notes with item-specific notes
       const notes = [generalNotes, item.notes].filter(n => n).join(' - ') || undefined;
 
       this.loanService.createLoan({
@@ -671,23 +897,27 @@ export class LoansComponent implements OnInit {
           : this.translate.instant('LOANS.LOANS_CREATED', { count: successCount });
         this.notifications.success(message);
         this.closeNewLoanDialog();
-        this.applyFilters();
+        // Reload loans from server to ensure fresh data
+        this.loanService.loadLoans();
+        setTimeout(() => this.applyFilters(), 300);
       } else {
         this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
       }
     }
   }
 
-  returnLoan(loan: Loan): void {
+  // ==================== QR Operations ====================
+
+  sendLoan(loan: Loan): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: this.translate.instant('LOANS.CONFIRM_RETURN_TITLE'),
-        message: this.translate.instant('LOANS.CONFIRM_RETURN_MESSAGE', {
+        title: this.translate.instant('LOANS.CONFIRM_SEND_TITLE'),
+        message: this.translate.instant('LOANS.CONFIRM_SEND_MESSAGE', {
           item: loan.inventoryItemName,
-          from: loan.destinationWarehouseName,
-          to: loan.sourceWarehouseName
+          from: loan.sourceWarehouseName,
+          to: loan.destinationWarehouseName
         }),
-        confirmText: this.translate.instant('LOANS.RETURN'),
+        confirmText: this.translate.instant('LOANS.SEND'),
         cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'info'
       },
@@ -696,39 +926,212 @@ export class LoansComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.loanService.returnLoan(loan.id).subscribe({
-          next: () => {
-            this.notifications.success(this.translate.instant('LOANS.RETURN_SUCCESS'));
-            this.applyFilters();
+        this.loanService.sendLoan(loan.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('LOANS.SEND_SUCCESS'));
+              this.applyFilters();
+              // Show QR code
+              if (result.qrCodeDataUrl) {
+                this.currentQrDataUrl = result.qrCodeDataUrl;
+                this.currentLoan = result;
+                this.qrDialogType = 'send';
+                this.showQrDialog = true;
+              }
+            }
           },
           error: () => {
-            this.notifications.error(this.translate.instant('LOANS.RETURN_ERROR'));
+            this.notifications.error(this.translate.instant('LOANS.SEND_ERROR'));
           }
         });
       }
     });
   }
 
+  initiateReturn(loan: Loan): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_TITLE'),
+        message: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_MESSAGE', {
+          item: loan.inventoryItemName
+        }),
+        confirmText: this.translate.instant('LOANS.INITIATE_RETURN'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'info'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.loanService.initiateReturn(loan.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('LOANS.INITIATE_RETURN_SUCCESS'));
+              this.applyFilters();
+              // Show QR code
+              if (result.qrCodeDataUrl) {
+                this.currentQrDataUrl = result.qrCodeDataUrl;
+                this.currentLoan = result;
+                this.qrDialogType = 'return';
+                this.showQrDialog = true;
+              }
+            }
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
+          }
+        });
+      }
+    });
+  }
+
+  cancelLoan(loan: Loan): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('LOANS.CONFIRM_CANCEL_TITLE'),
+        message: this.translate.instant('LOANS.CONFIRM_CANCEL_MESSAGE', {
+          item: loan.inventoryItemName
+        }),
+        confirmText: this.translate.instant('LOANS.CANCEL_LOAN'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'warning'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.loanService.cancelLoan(loan.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('LOANS.CANCEL_SUCCESS'));
+              this.applyFilters();
+            }
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('LOANS.CANCEL_ERROR'));
+          }
+        });
+      }
+    });
+  }
+
+  showQrCode(loan: Loan, type: 'send' | 'return'): void {
+    this.currentLoan = loan;
+    this.qrDialogType = type;
+    this.currentQrDataUrl = null;
+    this.showQrDialog = true;
+
+    this.loanService.getQrCode(loan.id, type).subscribe({
+      next: (qrDataUrl) => {
+        this.currentQrDataUrl = qrDataUrl;
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.QR.SCAN_ERROR'));
+        this.closeQrDialog();
+      }
+    });
+  }
+
+  closeQrDialog(): void {
+    this.showQrDialog = false;
+    this.currentQrDataUrl = null;
+    this.currentLoan = null;
+  }
+
+  printQrCode(): void {
+    if (!this.currentQrDataUrl || !this.currentLoan) return;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>QR Code - ${this.currentLoan.inventoryItemName}</title>
+            <style>
+              body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+              img { max-width: 300px; }
+              h2 { margin-bottom: 5px; }
+              p { color: #666; margin: 5px 0; }
+            </style>
+          </head>
+          <body>
+            <img src="${this.currentQrDataUrl}" alt="QR Code" />
+            <h2>${this.currentLoan.inventoryItemName}</h2>
+            <p>${this.currentLoan.sourceWarehouseName} → ${this.currentLoan.destinationWarehouseName}</p>
+            <p>${this.qrDialogType === 'send' ? 'Scan to confirm receipt' : 'Scan to confirm return'}</p>
+            <script>window.onload = function() { window.print(); }</script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+  }
+
+  downloadQrCode(): void {
+    if (!this.currentQrDataUrl || !this.currentLoan) return;
+
+    const link = document.createElement('a');
+    link.href = this.currentQrDataUrl;
+    link.download = `qr-${this.qrDialogType}-${this.currentLoan.id}.png`;
+    link.click();
+  }
+
+  // ==================== Scan QR Dialog ====================
+
+  openScanDialog(): void {
+    this.scannedQrData = '';
+    this.showScanDialog = true;
+  }
+
+  closeScanDialog(): void {
+    this.showScanDialog = false;
+    this.scannedQrData = '';
+  }
+
+  processScannedQr(): void {
+    if (!this.scannedQrData) return;
+
+    this.loanService.scanQr(this.scannedQrData).subscribe({
+      next: (result) => {
+        if (result) {
+          this.notifications.success(this.translate.instant('LOANS.QR.SCAN_SUCCESS'));
+          this.closeScanDialog();
+          this.applyFilters();
+        }
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.QR.SCAN_ERROR'));
+      }
+    });
+  }
+
+  // ==================== Helper Methods ====================
+
   getStatusLabel(status: LoanStatus): string {
-    const labels: Record<LoanStatus, string> = {
-      [LoanStatus.ACTIVE]: this.translate.instant('LOANS.STATUS.ACTIVE'),
-      [LoanStatus.OVERDUE]: this.translate.instant('LOANS.STATUS.OVERDUE'),
-      [LoanStatus.RETURNED]: this.translate.instant('LOANS.STATUS.RETURNED')
-    };
-    return labels[status] || status;
+    const key = `LOANS.STATUS.${status}`;
+    return this.translate.instant(key);
   }
 
   getStatusClass(status: LoanStatus): string {
-    const classes: Record<LoanStatus, string> = {
-      [LoanStatus.ACTIVE]: 'bg-sky-950/50 text-sky-400 border border-sky-900',
+    const classes: Record<string, string> = {
+      [LoanStatus.PENDING]: 'bg-slate-800/50 text-slate-400 border border-slate-700',
+      [LoanStatus.SENT]: 'bg-sky-950/50 text-sky-400 border border-sky-900',
+      [LoanStatus.RECEIVED]: 'bg-violet-950/50 text-violet-400 border border-violet-900',
+      [LoanStatus.RETURN_PENDING]: 'bg-amber-950/50 text-amber-400 border border-amber-900',
+      [LoanStatus.RETURNED]: 'bg-emerald-950/50 text-emerald-400 border border-emerald-900',
       [LoanStatus.OVERDUE]: 'bg-red-950/50 text-red-400 border border-red-900',
-      [LoanStatus.RETURNED]: 'bg-emerald-950/50 text-emerald-400 border border-emerald-900'
+      [LoanStatus.CANCELLED]: 'bg-slate-800/50 text-slate-500 border border-slate-700',
+      [LoanStatus.ACTIVE]: 'bg-sky-950/50 text-sky-400 border border-sky-900'
     };
     return classes[status] || 'bg-slate-800 text-slate-400';
   }
 
   getDueDateClass(loan: Loan): string {
-    if (loan.status === LoanStatus.RETURNED) return 'text-slate-400';
+    if (loan.status === LoanStatus.RETURNED || loan.status === LoanStatus.CANCELLED) {
+      return 'text-slate-400';
+    }
     if (loan.status === LoanStatus.OVERDUE) return 'text-red-400 font-medium';
 
     const now = new Date();

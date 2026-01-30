@@ -1,7 +1,13 @@
 export enum LoanStatus {
-  ACTIVE = 'ACTIVE',
-  RETURNED = 'RETURNED',
-  OVERDUE = 'OVERDUE'
+  PENDING = 'PENDING',           // Created, waiting to be sent
+  SENT = 'SENT',                 // Shipped, QR generated for receipt
+  RECEIVED = 'RECEIVED',         // Receiver confirmed receipt
+  RETURN_PENDING = 'RETURN_PENDING', // Return initiated, QR generated
+  RETURNED = 'RETURNED',         // Return confirmed
+  OVERDUE = 'OVERDUE',           // Past due date
+  CANCELLED = 'CANCELLED',       // Loan cancelled
+  // Legacy status for backwards compatibility
+  ACTIVE = 'ACTIVE'
 }
 
 export interface Loan {
@@ -23,6 +29,15 @@ export interface Loan {
   returnDate?: Date;
   // Status
   status: LoanStatus;
+  // QR confirmation fields
+  sendQrCode?: string;
+  returnQrCode?: string;
+  receivedAt?: Date;
+  receivedById?: string;
+  receivedByName?: string;
+  returnConfirmedAt?: Date;
+  returnConfirmedById?: string;
+  returnConfirmedByName?: string;
   // Additional info
   notes?: string;
   // Who created the loan
@@ -58,8 +73,24 @@ export interface LoanFilter {
 }
 
 export interface LoanStats {
-  totalActive: number;
-  totalOverdue: number;
+  totalPending: number;
+  totalSent: number;
+  totalReceived: number;
+  totalReturnPending: number;
   totalReturned: number;
+  totalOverdue: number;
   dueSoon: number; // Due within 7 days
+  totalActive: number; // Legacy: totalPending + totalSent + totalReceived + totalReturnPending
+}
+
+// QR confirmation response
+export interface LoanWithQr extends Loan {
+  qrCodeDataUrl?: string;
+}
+
+// QR scan response
+export interface QrScanResult {
+  type: 'LOAN_SEND' | 'LOAN_RETURN';
+  loan: Loan;
+  message: string;
 }

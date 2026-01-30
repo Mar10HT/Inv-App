@@ -137,6 +137,21 @@
       }
     </a>
 
+    <a
+      routerLink="/transfers"
+      routerLinkActive="active-link"
+      class="nav-link"
+      (click)="closeMobileMenu()"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSFERS' | translate) : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon-container">
+        <lucide-icon name="ArrowLeftRight" class="nav-icon"></lucide-icon>
+      </div>
+      @if (showExpandedContent()) {
+        <span class="nav-text">{{ 'NAV.TRANSFERS' | translate }}</span>
+      }
+    </a>
+
     <!-- Transactions with Submenu -->
     <div class="nav-item-with-submenu">
       <button

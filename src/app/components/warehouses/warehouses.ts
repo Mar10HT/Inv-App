@@ -10,7 +10,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { NotificationService } from '../../services/notification.service';
 import { Warehouse } from '../../interfaces/warehouse.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
-import { WarehouseFormDialog } from './warehouse-form-dialog';
+import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
 
 @Component({
   selector: 'app-warehouses',
@@ -57,7 +57,11 @@ export class Warehouses implements OnInit {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
-      data: { mode: 'add' }
+      data: buildWarehouseDialogData(
+        'add',
+        (data) => this.warehouseService.create(data),
+        (id, data) => this.warehouseService.update(id, data),
+      )
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -72,7 +76,12 @@ export class Warehouses implements OnInit {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
-      data: { mode: 'edit', warehouse }
+      data: buildWarehouseDialogData(
+        'edit',
+        (data) => this.warehouseService.create(data),
+        (id, data) => this.warehouseService.update(id, data),
+        warehouse,
+      )
     });
 
     dialogRef.afterClosed().subscribe(result => {

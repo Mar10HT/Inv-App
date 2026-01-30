@@ -10,7 +10,7 @@ import { CategoryService } from '../../services/category.service';
 import { NotificationService } from '../../services/notification.service';
 import { Category } from '../../interfaces/category.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
-import { CategoryFormDialog } from './category-form-dialog';
+import { CategoryFormDialog, buildCategoryDialogData } from './category-form-dialog';
 import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 
 @Component({
@@ -59,7 +59,11 @@ export class Categories implements OnInit {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
-      data: { mode: 'add' }
+      data: buildCategoryDialogData(
+        'add',
+        (data) => this.categoryService.create(data),
+        (id, data) => this.categoryService.update(id, data),
+      )
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -74,7 +78,12 @@ export class Categories implements OnInit {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
-      data: { mode: 'edit', category }
+      data: buildCategoryDialogData(
+        'edit',
+        (data) => this.categoryService.create(data),
+        (id, data) => this.categoryService.update(id, data),
+        category,
+      )
     });
 
     dialogRef.afterClosed().subscribe(result => {

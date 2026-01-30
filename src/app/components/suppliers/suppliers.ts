@@ -10,7 +10,7 @@ import { SupplierService } from '../../services/supplier.service';
 import { NotificationService } from '../../services/notification.service';
 import { Supplier } from '../../interfaces/supplier.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
-import { SupplierFormDialog } from './supplier-form-dialog';
+import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dialog';
 
 @Component({
   selector: 'app-suppliers',
@@ -56,7 +56,11 @@ export class Suppliers implements OnInit {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
-      data: { mode: 'add' }
+      data: buildSupplierDialogData(
+        'add',
+        (data) => this.supplierService.create(data),
+        (id, data) => this.supplierService.update(id, data),
+      )
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -71,7 +75,12 @@ export class Suppliers implements OnInit {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
-      data: { mode: 'edit', supplier }
+      data: buildSupplierDialogData(
+        'edit',
+        (data) => this.supplierService.create(data),
+        (id, data) => this.supplierService.update(id, data),
+        supplier,
+      )
     });
 
     dialogRef.afterClosed().subscribe(result => {

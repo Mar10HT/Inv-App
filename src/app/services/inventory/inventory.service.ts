@@ -1,6 +1,6 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, map, catchError, of } from 'rxjs';
+import { Observable, tap, map, catchError, of, Subscription } from 'rxjs';
 import {
   InventoryItemInterface,
   CreateInventoryItemDto,
@@ -13,6 +13,7 @@ import {
 } from '../../interfaces/inventory-item.interface';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../logger.service';
+import { WebSocketService } from '../websocket.service';
 
 export interface FilterParams {
   search?: string;
@@ -29,10 +30,12 @@ export interface FilterParams {
 @Injectable({
   providedIn: 'root'
 })
-export class InventoryService {
+export class InventoryService implements OnDestroy {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
+  private wsService = inject(WebSocketService);
   private apiUrl = environment.apiUrl;
+  private wsSub?: Subscription;
   
   private itemsSignal = signal<InventoryItemInterface[]>([]);
   private totalSignal = signal<number>(0);
@@ -58,6 +61,19 @@ export class InventoryService {
 
   constructor() {
     this.loadInitialData();
+    this.setupWebSocket();
+  }
+
+  private setupWebSocket(): void {
+    this.wsService.connect();
+    this.wsSub = this.wsService.onInventoryChange().subscribe((event) => {
+      this.logger.info('WebSocket inventory change:', event);
+      this.loadItems();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.wsSub?.unsubscribe();
   }
 
   private loadInitialData(): void {

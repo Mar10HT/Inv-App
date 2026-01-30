@@ -15,6 +15,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { InventoryService } from '.././../../services/inventory/inventory.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -42,6 +43,7 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
     MatSnackBarModule,
     MatTooltipModule,
     TranslateModule,
+    ScrollingModule,
     SkeletonCardComponent,
     SkeletonTableComponent
   ],
@@ -52,9 +54,10 @@ export class InventoryList implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  // Expose enums to template
+  // Expose enums and utilities to template
   InventoryStatus = InventoryStatus;
   ItemType = ItemType;
+  Math = Math;
 
   // Data source for the table
   dataSource = new MatTableDataSource<InventoryItemInterface>([]);

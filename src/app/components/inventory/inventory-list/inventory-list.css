@@ -49,6 +49,15 @@
   border-radius: 50% !important;
 }
 
+/* Virtual scroll viewport */
+.virtual-scroll-viewport {
+  overflow-y: auto;
+}
+
+.virtual-scroll-viewport .cdk-virtual-scroll-content-wrapper {
+  width: 100%;
+}
+
 /* Ensure select dropdowns render correctly */
 select {
   -webkit-appearance: none;

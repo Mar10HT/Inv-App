@@ -21,6 +21,10 @@
                 "input": "public"
               }
             ],
+            "allowedCommonJsDependencies": [
+              "html2canvas",
+              "core-js"
+            ],
             "styles": [
               "src/custom-theme.scss",
               "src/styles.css"

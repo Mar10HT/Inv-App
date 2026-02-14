@@ -70,16 +70,19 @@ import {
   Receipt,
   CreditCard,
   DollarSign,
+  Banknote,
   ShoppingCart,
 
   // Charts & Analytics
   BarChart2,
   BarChart3,
   LineChart,
+  AreaChart,
   PieChart,
   TrendingUp,
   TrendingDown,
   Activity,
+  CircleDot,
 
   // Layout & Dashboard
   LayoutDashboard,
@@ -144,11 +147,17 @@ import {
   EyeOff,
   Loader2,
   RotateCw,
-  type LucideIconData
+  type LucideIconData,
+  HandCoins,
+  Shield,
 } from 'lucide-angular';
 
 // All icons used in the app
 export const APP_ICONS: Record<string, LucideIconData> = {
+  // Sidebar icons
+  HandCoins,
+  Shield,
+
   // Navigation & UI
   ArrowLeft,
   ArrowRight,
@@ -219,16 +228,19 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   Receipt,
   CreditCard,
   DollarSign,
+  Banknote,
   ShoppingCart,
 
   // Charts & Analytics
   BarChart2,
   BarChart3,
   LineChart,
+  AreaChart,
   PieChart,
   TrendingUp,
   TrendingDown,
   Activity,
+  CircleDot,
 
   // Layout & Dashboard
   LayoutDashboard,

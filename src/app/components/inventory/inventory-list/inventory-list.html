@@ -31,7 +31,6 @@
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
             <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
-            <p class="text-sm text-sky-500 mt-1">+8% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#242424] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="Package" class="!text-slate-500 !w-6 !h-6"></lucide-icon>
@@ -45,7 +44,6 @@
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
             <p class="text-3xl font-bold text-foreground">{{ stats().inStock }}</p>
-            <p class="text-sm text-[#4d7c6f] mt-1">+12% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="CheckCircle2" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
@@ -59,7 +57,6 @@
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
             <p class="text-3xl font-bold text-foreground">{{ stats().lowStock }}</p>
-            <p class="text-sm text-orange-600 mt-1">+5% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="AlertTriangle" class="!text-orange-600 !w-6 !h-6"></lucide-icon>
@@ -73,7 +70,6 @@
           <div>
             <p class="text-sm font-medium text-slate-500">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
             <p class="text-3xl font-bold text-foreground">{{ stats().outOfStock }}</p>
-            <p class="text-sm mt-1" style="color: var(--color-status-error)">-3% {{ 'DASHBOARD.FROM_LAST_MONTH' | translate }}</p>
           </div>
           <div class="p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0" style="background-color: var(--color-error-bg)">
             <lucide-icon name="AlertCircle" class="!w-6 !h-6" style="color: var(--color-status-error)"></lucide-icon>

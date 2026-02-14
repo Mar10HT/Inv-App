@@ -1,114 +1,155 @@
-<div class="min-h-screen bg-surface flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
-    <!-- Logo/Title -->
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#4d7c6f]/20 mb-4">
-        <lucide-icon name="Package" class="!w-10 !h-10 text-[#4d7c6f]"></lucide-icon>
+<div class="flex min-h-screen">
+  <!-- Left Panel - Brand -->
+  <div class="hidden lg:flex w-[54%] bg-[#0f1f1a] flex-col items-center justify-center gap-8 p-16 relative">
+    <!-- Decorative accent line -->
+    <div class="w-24 h-0.5 bg-[#4d7c6f]/40"></div>
+
+    <!-- Brand block -->
+    <div class="flex flex-col items-center gap-6">
+      <div class="w-[72px] h-[72px] rounded-2xl bg-[#4d7c6f] flex items-center justify-center">
+        <lucide-icon name="Package" class="!w-9 !h-9 text-white"></lucide-icon>
       </div>
-      <h1 class="text-3xl font-bold text-foreground mb-2">{{ 'LOGIN.TITLE' | translate }}</h1>
-      <p class="text-slate-400">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
+      <h1 class="text-[42px] font-bold text-white font-[Outfit]">InvApp</h1>
+      <p class="text-lg text-slate-400 text-center leading-relaxed">
+        {{ 'LOGIN.TAGLINE' | translate }}
+      </p>
     </div>
 
-    <!-- Login Form -->
-    <div class="bg-surface-variant rounded-xl border border-theme p-8">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <!-- Email Field -->
-        <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+    <!-- Decorative accent line -->
+    <div class="w-24 h-0.5 bg-[#4d7c6f]/40"></div>
+
+    <!-- Feature pills -->
+    <div class="flex items-center gap-8 mt-4">
+      <div class="flex items-center gap-2">
+        <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[#4d7c6f]"></lucide-icon>
+        <span class="text-[13px] text-slate-500">{{ 'LOGIN.FEAT_WAREHOUSE' | translate }}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <lucide-icon name="TrendingUp" class="!w-4 !h-4 text-[#4d7c6f]"></lucide-icon>
+        <span class="text-[13px] text-slate-500">{{ 'LOGIN.FEAT_ANALYTICS' | translate }}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <lucide-icon name="ShieldCheck" class="!w-4 !h-4 text-[#4d7c6f]"></lucide-icon>
+        <span class="text-[13px] text-slate-500">{{ 'LOGIN.FEAT_SECURE' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel - Form -->
+  <div class="flex-1 bg-surface flex flex-col items-center justify-center p-8 lg:p-16 relative">
+    <!-- Mobile logo (visible only on small screens) -->
+    <div class="flex lg:hidden flex-col items-center gap-4 mb-10">
+      <div class="w-14 h-14 rounded-xl bg-[#4d7c6f] flex items-center justify-center">
+        <lucide-icon name="Package" class="!w-8 !h-8 text-white"></lucide-icon>
+      </div>
+      <h1 class="text-2xl font-bold text-foreground">InvApp</h1>
+    </div>
+
+    <div class="w-full max-w-[380px] flex flex-col gap-8">
+      <!-- Header -->
+      <div class="flex flex-col gap-2">
+        <h2 class="text-[28px] font-bold text-foreground">{{ 'LOGIN.WELCOME_BACK' | translate }}</h2>
+        <p class="text-sm text-slate-400">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+        <!-- Email -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[13px] font-medium text-foreground">
             {{ 'LOGIN.EMAIL' | translate }}
           </label>
-          <div class="relative">
+          <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
+                      focus-within:border-[#4d7c6f] transition-colors">
+            <lucide-icon name="Mail" class="!w-[18px] !h-[18px] !text-slate-400 shrink-0"></lucide-icon>
             <input
               type="email"
               formControlName="email"
-              class="w-full bg-surface border border-theme rounded-lg px-4 py-3 pl-11
-                     text-foreground placeholder-slate-600
-                     focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="flex-1 bg-transparent text-foreground text-sm placeholder-slate-500 outline-none"
               [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
             />
-            <lucide-icon name="Mail" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
           </div>
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
+            <p class="text-rose-400 text-xs mt-0.5">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
           }
         </div>
 
-        <!-- Password Field -->
-        <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
-            {{ 'LOGIN.PASSWORD' | translate }}
-          </label>
-          <div class="relative">
+        <!-- Password -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <label class="text-[13px] font-medium text-foreground">
+              {{ 'LOGIN.PASSWORD' | translate }}
+            </label>
+            <a routerLink="/forgot-password" class="text-xs text-[#4d7c6f] hover:text-[#5d8c7f] transition-colors">
+              {{ 'LOGIN.FORGOT_PASSWORD' | translate }}
+            </a>
+          </div>
+          <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
+                      focus-within:border-[#4d7c6f] transition-colors">
+            <lucide-icon name="Lock" class="!w-[18px] !h-[18px] !text-slate-400 shrink-0"></lucide-icon>
             <input
               [type]="showPassword() ? 'text' : 'password'"
               formControlName="password"
-              class="w-full bg-surface border border-theme rounded-lg px-4 py-3 pl-11 pr-11
-                     text-foreground placeholder-slate-600
-                     focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="flex-1 bg-transparent text-foreground text-sm placeholder-slate-500 outline-none"
               [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
             />
-            <lucide-icon name="Lock" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
             <button
               type="button"
               (click)="togglePasswordVisibility()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-foreground transition-colors"
+              class="text-slate-400 hover:text-foreground transition-colors shrink-0"
             >
-              <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-5 !h-5"></lucide-icon>
+              <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
             </button>
           </div>
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
+            <p class="text-rose-400 text-xs mt-0.5">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
           }
         </div>
 
-        <!-- Remember Me & Forgot Password -->
-        <div class="flex items-center justify-between">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              formControlName="rememberMe"
-              class="w-4 h-4 rounded border-slate-600 bg-surface text-[#4d7c6f]
-                     focus:ring-[#4d7c6f] focus:ring-offset-0 cursor-pointer"
-            />
-            <span class="text-sm text-slate-400">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
-          </label>
-          <a
-            routerLink="/forgot-password"
-            class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] transition-colors"
-          >
-            {{ 'LOGIN.FORGOT_PASSWORD' | translate }}
-          </a>
-        </div>
+        <!-- Remember me -->
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="rememberMe"
+            class="w-[18px] h-[18px] rounded border-slate-600 bg-transparent text-[#4d7c6f]
+                   focus:ring-[#4d7c6f] focus:ring-offset-0 cursor-pointer"
+          />
+          <span class="text-[13px] text-slate-400">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
+        </label>
 
-        <!-- Submit Button -->
+        <!-- Submit -->
         <button
           type="submit"
           [disabled]="loginForm.invalid || loading()"
-          class="w-full px-6 py-3 rounded-lg bg-[#4d7c6f] text-white
+          class="w-full py-3.5 rounded-lg bg-[#4d7c6f] text-white font-semibold text-[15px]
                  hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed
-                 transition-colors font-medium flex items-center justify-center gap-2"
+                 transition-colors flex items-center justify-center gap-2"
         >
           @if (loading()) {
             <mat-spinner diameter="20" class="!w-5 !h-5"></mat-spinner>
             <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
           } @else {
-            <lucide-icon name="LogIn" class="!w-5 !h-5"></lucide-icon>
+            <lucide-icon name="LogIn" class="!w-[18px] !h-[18px]"></lucide-icon>
             <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
           }
         </button>
       </form>
 
-      <!-- Footer -->
-      <div class="mt-6 text-center">
-        <p class="text-sm text-slate-500">
-          {{ 'LOGIN.DEMO_CREDENTIALS' | translate }} <span class="text-slate-400">admin@example.com</span> / <span class="text-slate-400">password123</span>
-        </p>
+      <!-- Divider -->
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-px bg-[var(--border)]"></div>
+        <span class="text-xs text-slate-500">{{ 'LOGIN.OR' | translate }}</span>
+        <div class="flex-1 h-px bg-[var(--border)]"></div>
       </div>
+
+      <!-- Contact admin -->
+      <p class="text-center text-[13px] text-slate-400">
+        {{ 'LOGIN.NEED_ACCESS' | translate }}
+        <span class="text-[#4d7c6f] font-medium">{{ 'LOGIN.CONTACT_ADMIN' | translate }}</span>
+      </p>
     </div>
 
-    <!-- Additional Info -->
-    <div class="mt-6 text-center text-sm text-slate-500">
-      <p>{{ 'LOGIN.VERSION' | translate }}</p>
-    </div>
+    <!-- Version -->
+    <p class="absolute bottom-6 text-[11px] text-slate-600">{{ 'LOGIN.VERSION' | translate }}</p>
   </div>
 </div>

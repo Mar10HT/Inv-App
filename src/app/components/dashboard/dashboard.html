@@ -24,9 +24,6 @@
     @if (loading()) {
       <app-skeleton-dashboard />
     } @else {
-      <!-- Stats Cards Component -->
-      <app-dashboard-stats [stats]="stats()" />
-
     <!-- Charts Section Component - Lazy loaded with @defer -->
     @defer (on viewport; prefetch on idle) {
       <app-dashboard-charts

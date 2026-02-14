@@ -67,31 +67,11 @@ export class Navigation {
   // Computed to show expanded content (desktop expanded OR mobile open)
   showExpandedContent = computed(() => !this.isCollapsed() || this.isMobileMenuOpen());
 
-  // Transactions submenu state
-  private transactionsExpanded = signal<boolean>(false);
-
-  isTransactionsExpanded = computed(() => this.transactionsExpanded());
-
-  isTransactionsActive = computed(() => {
-    const url = this.router.url;
-    return url.startsWith('/transactions') || url.startsWith('/reports');
-  });
-
   toggleSidebar(event: MouseEvent): void {
     this.sidebarService.toggle();
 
     const button = event.currentTarget as HTMLElement;
     setTimeout(() => button.blur(), 3000);
-  }
-
-  toggleTransactions(): void {
-    // If collapsed, expand sidebar first and then open submenu
-    if (this.isCollapsed()) {
-      this.sidebarService.toggle();
-      this.transactionsExpanded.set(true);
-    } else {
-      this.transactionsExpanded.update(v => !v);
-    }
   }
 
   // Toggle between dark and light theme

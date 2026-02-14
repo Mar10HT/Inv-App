@@ -1,33 +1,67 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
+import { environment } from '../../environments/environment';
+
+let isRefreshing = false;
+const refreshDone$ = new BehaviorSubject<boolean>(false);
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
   const authService = inject(AuthService);
+  const http = inject(HttpClient);
   const logger = inject(LoggerService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      // Auto-refresh on 401 (skip auth endpoints to avoid loops)
+      if (
+        error.status === 401 &&
+        !req.url.includes('/auth/login') &&
+        !req.url.includes('/auth/refresh') &&
+        !req.url.includes('/auth/csrf-token')
+      ) {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshDone$.next(false);
+
+          return http.post<any>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
+            switchMap(() => {
+              isRefreshing = false;
+              refreshDone$.next(true);
+              return next(req.clone({ withCredentials: true }));
+            }),
+            catchError((refreshError) => {
+              isRefreshing = false;
+              refreshDone$.next(true);
+              authService.logout().subscribe();
+              return throwError(() => ({
+                status: 401,
+                message: 'Session expired. Please log in again.',
+                originalError: refreshError,
+              }));
+            }),
+          );
+        }
+
+        // Another request got 401 while already refreshing - wait and retry
+        return refreshDone$.pipe(
+          filter((done) => done),
+          take(1),
+          switchMap(() => next(req.clone({ withCredentials: true }))),
+        );
+      }
+
+      // Handle other errors
       let errorMessage = 'An unexpected error occurred';
 
       if (error.error instanceof ErrorEvent) {
-        // Client-side error
         errorMessage = error.error.message;
       } else {
-        // Server-side error
         switch (error.status) {
-          case 401:
-            // Unauthorized - clear auth and redirect to login
-            authService.logout();
-            errorMessage = 'Session expired. Please log in again.';
-            break;
-
           case 403:
-            // Forbidden
             errorMessage = 'You do not have permission to perform this action.';
             break;
 
@@ -36,12 +70,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
 
           case 422:
-            // Validation error
             errorMessage = error.error?.message || 'Validation failed.';
             break;
 
           case 429:
-            // Rate limited
             errorMessage = 'Too many requests. Please wait a moment.';
             break;
 
@@ -63,7 +95,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         url: req.url
       });
 
-      // Re-throw with a cleaner error object
       return throwError(() => ({
         status: error.status,
         message: errorMessage,

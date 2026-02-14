@@ -87,20 +87,17 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .sidebar.mobile-open .sidebar-header {
-    justify-content: space-between;
-    padding: 16px 12px;
-  }
+  /* Hide toggle button on mobile */
+  .sidebar.mobile-open .toggle-btn { display: none; }
 
   .sidebar.mobile-open .nav-link,
-  .sidebar.mobile-open .user-info,
-  .sidebar.mobile-open .theme-toggle-btn {
+  .sidebar.mobile-open .user-row,
+  .sidebar.mobile-open .action-btn {
     justify-content: flex-start;
-    padding: 10px 12px;
   }
 
-  /* Allow scrolling in sidebar-nav */
-  .sidebar.mobile-open .sidebar-nav {
+  /* Allow scrolling in sidebar-top */
+  .sidebar.mobile-open .sidebar-top {
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -108,14 +105,11 @@
     touch-action: pan-y;
   }
 
-  /* Allow scroll gesture on nav items while preserving click */
+  /* Allow scroll gesture on interactive elements while preserving click */
   .sidebar.mobile-open .nav-link,
-  .sidebar.mobile-open .nav-parent,
-  .sidebar.mobile-open .logout-btn,
-  .sidebar.mobile-open .theme-toggle-btn,
-  .sidebar.mobile-open .user-info {
+  .sidebar.mobile-open .action-btn,
+  .sidebar.mobile-open .user-row {
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
   }
 }
-

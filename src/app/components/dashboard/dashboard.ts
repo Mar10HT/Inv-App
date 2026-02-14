@@ -23,7 +23,6 @@ import { InventoryItem } from '../inventory/inventory-item/inventory-item';
 import { CustomChartDialog, CustomChart, CustomChartDialogData, InventoryItemData, ChartCurrency } from './custom-chart-dialog/custom-chart-dialog';
 import { NotificationService } from '../../services/notification.service';
 import {
-  DashboardStatsComponent,
   DashboardChartsComponent,
   DashboardTransactionsComponent,
   DashboardLowStockComponent,
@@ -47,7 +46,6 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
     MatSnackBarModule,
     TranslateModule,
     NgApexchartsModule,
-    DashboardStatsComponent,
     DashboardChartsComponent,
     SkeletonDashboardComponent,
     DashboardTransactionsComponent,

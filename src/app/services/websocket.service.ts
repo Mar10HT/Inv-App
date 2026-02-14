@@ -39,12 +39,12 @@ export class WebSocketService implements OnDestroy {
       this.connected$.next(true);
     });
 
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', (reason: string) => {
       console.log('[WS] Disconnected:', reason);
       this.connected$.next(false);
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', (error: Error) => {
       console.warn('[WS] Connection error:', error.message);
     });
 

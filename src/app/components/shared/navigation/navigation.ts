@@ -6,10 +6,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { AuthService } from '../../../services/auth.service';
 import { SidebarService } from '../../../services/sidebar.service';
 import { ThemeService } from '../../../services/theme.service';
+import { PermissionsService } from '../../../services/permissions.service';
 
 @Component({
   selector: 'app-navigation',
@@ -22,6 +24,7 @@ import { ThemeService } from '../../../services/theme.service';
     MatButtonModule,
     MatTooltipModule,
     TranslateModule,
+    NgxPermissionsModule,
     LanguageSelectorComponent,
   ],
   templateUrl: './navigation.html',
@@ -32,6 +35,7 @@ export class Navigation {
   private sidebarService = inject(SidebarService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  permissions = inject(PermissionsService);
   private isBrowser: boolean;
 
   currentUser = computed(() => this.authService.currentUser());

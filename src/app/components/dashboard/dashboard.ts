@@ -186,9 +186,9 @@ export class Dashboard implements OnInit {
   private getItemsForDialog(): InventoryItemData[] {
     return this.allItems().map(item => ({
       name: item.name,
-      category: item.category || 'Sin Categoría',
-      warehouse: item.warehouse?.name || 'Sin Bodega',
-      supplier: item.supplier?.name || 'Sin Proveedor',
+      category: item.category || this.translate.instant('COMMON.NO_CATEGORY'),
+      warehouse: item.warehouse?.name || this.translate.instant('COMMON.NO_WAREHOUSE'),
+      supplier: item.supplier?.name || this.translate.instant('COMMON.NO_SUPPLIER'),
       status: this.getStatusLabel(item.status),
       price: item.price || 0,
       quantity: item.quantity,
@@ -204,6 +204,8 @@ export class Dashboard implements OnInit {
         return this.translate.instant('DASHBOARD.LOW_STOCK');
       case InventoryStatus.OUT_OF_STOCK:
         return this.translate.instant('DASHBOARD.OUT_OF_STOCK');
+      case InventoryStatus.IN_USE:
+        return this.translate.instant('DASHBOARD.IN_USE');
       default:
         return 'Unknown';
     }
@@ -214,12 +216,13 @@ export class Dashboard implements OnInit {
       chart,
       items: this.getItemsForDialog(),
       availableData: {
-        categories: this.categoryStats().map(c => ({ name: c.category || 'Sin Categoría', count: c.count })),
-        warehouses: this.warehouseStats().map(w => ({ name: w.name || 'Sin Bodega', count: w.itemCount })),
+        categories: this.categoryStats().map(c => ({ name: c.category || this.translate.instant('COMMON.NO_CATEGORY'), count: c.count })),
+        warehouses: this.warehouseStats().map(w => ({ name: w.name || this.translate.instant('COMMON.NO_WAREHOUSE'), count: w.itemCount })),
         status: [
           { name: this.translate.instant('DASHBOARD.IN_STOCK'), count: this.stats()?.inStockItems || 0 },
           { name: this.translate.instant('DASHBOARD.LOW_STOCK'), count: this.stats()?.lowStockItems || 0 },
-          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 }
+          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 },
+          { name: this.translate.instant('DASHBOARD.IN_USE'), count: this.stats()?.inUseItems || 0 }
         ]
       }
     };
@@ -302,13 +305,13 @@ export class Dashboard implements OnInit {
       let key: string;
       switch (groupBy) {
         case 'category':
-          key = item.category || 'Sin Categoría';
+          key = item.category || this.translate.instant('COMMON.NO_CATEGORY');
           break;
         case 'warehouse':
-          key = item.warehouse?.name || 'Sin Bodega';
+          key = item.warehouse?.name || this.translate.instant('COMMON.NO_WAREHOUSE');
           break;
         case 'supplier':
-          key = item.supplier?.name || 'Sin Proveedor';
+          key = item.supplier?.name || this.translate.instant('COMMON.NO_SUPPLIER');
           break;
         case 'status':
           key = this.getStatusLabel(item.status);
@@ -340,16 +343,17 @@ export class Dashboard implements OnInit {
 
     switch (chart.dataSource) {
       case 'categories':
-        data = this.categoryStats().map(c => ({ name: c.category || 'Sin Categoría', count: c.count }));
+        data = this.categoryStats().map(c => ({ name: c.category || this.translate.instant('COMMON.NO_CATEGORY'), count: c.count }));
         break;
       case 'warehouses':
-        data = this.warehouseStats().map(w => ({ name: w.name || 'Sin Bodega', count: w.itemCount }));
+        data = this.warehouseStats().map(w => ({ name: w.name || this.translate.instant('COMMON.NO_WAREHOUSE'), count: w.itemCount }));
         break;
       case 'status':
         data = [
           { name: this.translate.instant('DASHBOARD.IN_STOCK'), count: this.stats()?.inStockItems || 0 },
           { name: this.translate.instant('DASHBOARD.LOW_STOCK'), count: this.stats()?.lowStockItems || 0 },
-          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 }
+          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 },
+          { name: this.translate.instant('DASHBOARD.IN_USE'), count: this.stats()?.inUseItems || 0 }
         ];
         break;
       case 'lowStock':
@@ -467,9 +471,10 @@ export class Dashboard implements OnInit {
       labels: [
         this.translate.instant('DASHBOARD.IN_STOCK'),
         this.translate.instant('DASHBOARD.LOW_STOCK'),
-        this.translate.instant('DASHBOARD.OUT_OF_STOCK')
+        this.translate.instant('DASHBOARD.OUT_OF_STOCK'),
+        this.translate.instant('DASHBOARD.IN_USE')
       ],
-      colors: ['#10b981', '#f97316', '#ef4444'],
+      colors: ['#10b981', '#f97316', '#ef4444', '#3b82f6'],
       legend: {
         position: 'bottom',
         labels: { colors: '#94a3b8' }
@@ -559,7 +564,8 @@ export class Dashboard implements OnInit {
       this.statusChartSeries.set([
         currentStats.inStockItems || 0,
         currentStats.lowStockItems || 0,
-        currentStats.outOfStockItems || 0
+        currentStats.outOfStockItems || 0,
+        currentStats.inUseItems || 0
       ]);
     }
 
@@ -568,7 +574,7 @@ export class Dashboard implements OnInit {
       if (categoryOptions) {
         this.categoryChartOptions.set({
           ...categoryOptions,
-          xaxis: { ...categoryOptions.xaxis, categories: categories.map(c => c.category || 'Sin Categoría') }
+          xaxis: { ...categoryOptions.xaxis, categories: categories.map(c => c.category || this.translate.instant('COMMON.NO_CATEGORY')) }
         });
         this.categoryChartSeries.set([{ name: 'Items', data: categories.map(c => c.count) }]);
       }
@@ -579,7 +585,7 @@ export class Dashboard implements OnInit {
       if (warehouseOptions) {
         this.warehouseChartOptions.set({
           ...warehouseOptions,
-          xaxis: { ...warehouseOptions.xaxis, categories: warehouses.map(w => w.name || 'Sin Bodega') }
+          xaxis: { ...warehouseOptions.xaxis, categories: warehouses.map(w => w.name || this.translate.instant('COMMON.NO_WAREHOUSE')) }
         });
         this.warehouseChartSeries.set([{ name: 'Items', data: warehouses.map(w => w.itemCount) }]);
       }
@@ -611,6 +617,7 @@ export class Dashboard implements OnInit {
           inStockItems: data.inStock || 0,
           lowStockItems: data.lowStock || 0,
           outOfStockItems: data.outOfStock || 0,
+          inUseItems: data.inUse || 0,
           totalValueUSD: data.totalValue || 0,
           totalValueHNL: (data.totalValue || 0) * 25
         };
@@ -666,10 +673,10 @@ export class Dashboard implements OnInit {
   deleteItem(item: InventoryItemInterface): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: 'Delete Item',
-        message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
+        message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'danger'
       },
       panelClass: 'confirm-dialog-container'
@@ -679,17 +686,11 @@ export class Dashboard implements OnInit {
       if (confirmed) {
         this.inventoryService.deleteItem(item.id).subscribe({
           next: () => {
-            this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.ITEM', item.name);
             this.loadDashboardData();
           },
           error: (err) => {
-            this.snackBar.open(`Error deleting item: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.ITEM');
           }
         });
       }
@@ -715,6 +716,7 @@ export class Dashboard implements OnInit {
       case InventoryStatus.IN_STOCK: return 'INVENTORY.STATUS.IN_STOCK';
       case InventoryStatus.LOW_STOCK: return 'INVENTORY.STATUS.LOW_STOCK';
       case InventoryStatus.OUT_OF_STOCK: return 'INVENTORY.STATUS.OUT_OF_STOCK';
+      case InventoryStatus.IN_USE: return 'INVENTORY.STATUS.IN_USE';
       default: return status;
     }
   }

@@ -9,6 +9,7 @@
     "SUPPLIERS": "Suppliers",
     "LOANS": "Loans",
     "TRANSFERS": "Transfers",
+    "DISCHARGES": "Requests",
     "USERS": "Users",
     "AUDIT": "History",
     "TRANSACTIONS": "Transactions",
@@ -38,6 +39,9 @@
     "UPDATE": "Update",
     "NONE": "None",
     "UNASSIGNED": "Unassigned",
+    "NO_CATEGORY": "No Category",
+    "NO_WAREHOUSE": "No Warehouse",
+    "NO_SUPPLIER": "No Supplier",
     "ALL": "All",
     "ACTIONS": "Actions",
     "STATUS": "Status",
@@ -53,7 +57,8 @@
     "USER": "User",
     "CLEAR": "Clear",
     "DONE": "Done",
-    "DATE": "Date"
+    "DATE": "Date",
+    "OPTIONAL": "Optional"
   },
   "IMPORT": {
     "TITLE": "Import Items",
@@ -94,6 +99,7 @@
     "IN_STOCK": "In Stock",
     "LOW_STOCK": "Low Stock",
     "OUT_OF_STOCK": "Out of Stock",
+    "IN_USE": "In Use",
     "RECENT_ITEMS": "Recent Items",
     "MANAGE_ITEMS": "Manage your inventory items",
     "ADD_NEW_ITEM": "Add New Item",
@@ -158,6 +164,7 @@
       "IN_STOCK": "In Stock",
       "LOW_STOCK": "Low Stock",
       "OUT_OF_STOCK": "Out of Stock",
+      "IN_USE": "In Use",
       "AVAILABLE": "Available",
       "NOT_AVAILABLE": "Not Available"
     },
@@ -213,7 +220,8 @@
         "TITLE": "Quantity and Inventory",
         "CURRENT": "Current Quantity",
         "MINIMUM": "Minimum Quantity",
-        "UNIQUE_HINT": "UNIQUE items always have quantity = 1"
+        "UNIQUE_HINT": "For unique items, maximum quantity is 1",
+        "BULK_HINT": "No quantity limit for bulk items"
       },
       "PRICE": {
         "TITLE": "Price and Supplier",
@@ -276,7 +284,11 @@
     "TOTAL": "Total Warehouses",
     "LIST": "Warehouse List",
     "NO_WAREHOUSES": "No warehouses found",
-    "NO_WAREHOUSES_DESC": "Get started by adding your first warehouse"
+    "NO_WAREHOUSES_DESC": "Get started by adding your first warehouse",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete Warehouse",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
   },
   "SUPPLIER": {
     "TITLE": "Suppliers",
@@ -290,7 +302,11 @@
     "TOTAL": "Total Suppliers",
     "LIST": "Supplier List",
     "NO_SUPPLIERS": "No suppliers found",
-    "NO_SUPPLIERS_DESC": "Get started by adding your first supplier"
+    "NO_SUPPLIERS_DESC": "Get started by adding your first supplier",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete Supplier",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
   },
   "CATEGORY": {
     "TITLE": "Categories",
@@ -305,7 +321,11 @@
     "TOTAL": "Total Categories",
     "LIST": "Category List",
     "NO_CATEGORIES": "No categories found",
-    "NO_CATEGORIES_DESC": "Get started by adding your first category"
+    "NO_CATEGORIES_DESC": "Get started by adding your first category",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete Category",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
   },
   "USER": {
     "TITLE": "Users",
@@ -323,6 +343,19 @@
     "LIST": "User List",
     "NO_USERS": "No users found",
     "NO_USERS_DESC": "Get started by adding your first user",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete User",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
+    "RESET_PASSWORD": "Reset Password",
+    "PENDING_RESET": "Pending password reset",
+    "RESET_LINK_DIALOG": {
+      "TITLE": "Password Reset Link",
+      "DESCRIPTION": "Copy this link and send it to the user (via WhatsApp, email, etc.). The link is valid for 1 hour.",
+      "COPY": "Copy Link",
+      "COPIED": "Copied!",
+      "EXPIRES_IN": "Expires in 1 hour"
+    },
     "ROLES": {
       "ADMIN": "Administrator",
       "SYSTEM_ADMIN": "Administrator",
@@ -351,6 +384,10 @@
     "LIST": "Transaction History",
     "NO_TRANSACTIONS": "No transactions found",
     "NO_TRANSACTIONS_DESC": "Get started by creating your first transaction",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete Transaction",
+      "MESSAGE": "Are you sure you want to delete this transaction? This action cannot be undone."
+    },
     "SOURCE_WAREHOUSE": "Source Warehouse",
     "DEST_WAREHOUSE": "Destination Warehouse",
     "WAREHOUSES": "Warehouses",
@@ -399,11 +436,16 @@
     "DATA": "Data Management",
     "EXPORT_DATA": "Export Data",
     "EXPORT_DATA_DESC": "Download all your inventory data",
+    "EXPORT_SUCCESS": "Data exported successfully",
     "DANGER_ZONE": "Danger Zone",
     "RESET_DATA": "Reset All Data",
-    "RESET_DATA_DESC": "This will permanently delete all your data"
+    "RESET_DATA_DESC": "This will permanently delete all your data",
+    "RESET_CONFIRM_TITLE": "Reset All Data",
+    "RESET_CONFIRM_MESSAGE": "Are you sure you want to delete ALL inventory data? This action cannot be undone.",
+    "RESET_SUCCESS": "All data has been reset ({{count}} items deleted)"
   },
   "FORM": {
+    "REQUIRED_FIELDS": "Required fields",
     "VALIDATION": {
       "REQUIRED": "This field is required",
       "MIN_LENGTH": "Minimum {{length}} characters",
@@ -475,6 +517,32 @@
     },
     "SUCCESS": {
       "WELCOME_BACK": "Welcome back, {{name}}!"
+    }
+  },
+  "AUTH": {
+    "FORGOT_PASSWORD": {
+      "TITLE": "Forgot Password",
+      "SUBTITLE": "Enter your email and we'll notify an administrator to send you a reset link.",
+      "EMAIL_PLACEHOLDER": "Enter your email address",
+      "SUBMIT": "Send Request",
+      "SUCCESS_TITLE": "Request Sent",
+      "SUCCESS": "Your request has been sent. An administrator will send you the reset link shortly.",
+      "BACK_TO_LOGIN": "Back to Login"
+    },
+    "RESET_PASSWORD": {
+      "TITLE": "Reset Password",
+      "SUBTITLE": "Enter your new password below.",
+      "NEW_PASSWORD": "New Password",
+      "NEW_PASSWORD_PLACEHOLDER": "Enter new password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Confirm your new password",
+      "SUBMIT": "Reset Password",
+      "PASSWORDS_MISMATCH": "Passwords do not match",
+      "SUCCESS_TITLE": "Password Reset!",
+      "SUCCESS": "Your password has been reset successfully. You will be redirected to login.",
+      "REDIRECTING": "Redirecting to login in 3 seconds...",
+      "ERROR_TITLE": "Invalid Link",
+      "INVALID_TOKEN": "This password reset link is invalid or has expired. Please request a new one."
     }
   },
   "REPORTS": {
@@ -569,7 +637,8 @@
   "STATUS": {
     "IN_STOCK": "In Stock",
     "LOW_STOCK": "Low Stock",
-    "OUT_OF_STOCK": "Out of Stock"
+    "OUT_OF_STOCK": "Out of Stock",
+    "IN_USE": "In Use"
   },
   "TRANSACTIONS": {
     "TYPE": {
@@ -774,6 +843,79 @@
       "SCAN_ERROR": "Error processing QR code",
       "SHOW_QR": "Show QR",
       "ERROR": "Error getting QR code"
+    }
+  },
+  "DISCHARGES": {
+    "TITLE": "Material Requests",
+    "SUBTITLE": "Manage material discharge requests",
+    "SEARCH_PLACEHOLDER": "Search by requester, warehouse or item...",
+    "ALL_STATUS": "All Status",
+    "LIST": "Request List",
+    "REQUESTER": "Requester",
+    "ITEMS": "Items",
+    "ITEMS_COUNT": "item(s)",
+    "WAREHOUSE": "Warehouse",
+    "NO_REQUESTS": "No requests",
+    "NO_REQUESTS_DESC": "Discharge requests will appear here",
+    "NOT_FOUND": "Request not found",
+    "COMPLETE": "Deliver",
+    "COMPLETE_SUCCESS": "Request completed successfully. Inventory updated.",
+    "COMPLETE_ERROR": "Error completing request",
+    "CONFIRM_COMPLETE_TITLE": "Complete Request",
+    "CONFIRM_COMPLETE_MESSAGE": "Confirm delivery of these items? Inventory quantities will be decremented.",
+    "REJECT": "Reject",
+    "REJECT_TITLE": "Reject Request",
+    "REJECT_REASON": "Reason for Rejection",
+    "REJECT_REASON_PLACEHOLDER": "Enter the reason for rejection (optional)",
+    "REJECT_SUCCESS": "Request rejected",
+    "REJECT_ERROR": "Error rejecting request",
+    "STATUS": {
+      "PENDING": "Pending",
+      "COMPLETED": "Completed",
+      "REJECTED": "Rejected"
+    },
+    "PUBLIC_FORM": {
+      "TITLE": "Material Request",
+      "SUBTITLE": "Fill in the form to request materials from the warehouse",
+      "REQUESTER_INFO": "Requester Information",
+      "NAME": "Full Name",
+      "NAME_PLACEHOLDER": "Enter your full name",
+      "POSITION": "Position",
+      "POSITION_PLACEHOLDER": "E.g., Technician, Analyst",
+      "PHONE": "Phone",
+      "PHONE_PLACEHOLDER": "E.g., +504 9999-9999",
+      "NEEDED_BY": "Needed By",
+      "JUSTIFICATION": "Justification",
+      "JUSTIFICATION_PLACEHOLDER": "Briefly explain why you need these materials...",
+      "ITEMS": "Requested Items",
+      "ADD_ITEM": "Add Item",
+      "SELECT_ITEM": "Select an item...",
+      "SEARCH_ITEMS": "Search items by name, category or warehouse...",
+      "AVAILABLE": "available",
+      "QTY": "Qty",
+      "NO_ITEMS": "Click 'Add Item' to select the materials you need",
+      "SUBMIT": "Submit Request",
+      "ERROR": "Error submitting request. Please try again.",
+      "SUCCESS_TITLE": "Request Submitted!",
+      "SUCCESS_MESSAGE": "{{count}} request(s) created successfully.",
+      "SUCCESS_HINT": "A warehouse manager will review your request shortly.",
+      "NEW_REQUEST": "Submit Another Request"
+    },
+    "SHARE_FORM": {
+      "BUTTON": "Share Form",
+      "TITLE": "Request Form Link",
+      "DESCRIPTION": "Share this link or QR code so anyone can submit a material request.",
+      "COPY_URL": "Copy Link",
+      "COPIED": "Copied!",
+      "DOWNLOAD_QR": "Download QR"
+    },
+    "DETAIL": {
+      "TITLE": "Request Detail",
+      "REQUESTER_INFO": "Requester Information",
+      "UNITS": "units",
+      "RESOLUTION": "Resolution",
+      "RESOLVED_BY": "Resolved by",
+      "RESOLVED_AT": "Resolved at"
     }
   },
   "COMMAND_PALETTE": {

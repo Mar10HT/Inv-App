@@ -7,6 +7,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { LoanService } from '../../services/loan.service';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -26,7 +27,8 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     MatDialogModule,
     MatPaginatorModule,
     MatMenuModule,
-    TranslateModule
+    TranslateModule,
+    NgxPermissionsModule
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -51,12 +53,14 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
               </button>
-              <button
-                (click)="openNewLoanDialog()"
-                class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
-                <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
-                <span>{{ 'LOANS.NEW_LOAN' | translate }}</span>
-              </button>
+              <ng-container *ngxPermissionsOnly="['create_loans']">
+                <button
+                  (click)="openNewLoanDialog()"
+                  class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
+                  <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
+                  <span>{{ 'LOANS.NEW_LOAN' | translate }}</span>
+                </button>
+              </ng-container>
             </div>
           </div>
         </div>
@@ -223,17 +227,19 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                       <div class="flex items-center justify-center gap-2">
                         @switch (loan.status) {
                           @case (LoanStatus.PENDING) {
-                            <button
-                              (click)="sendLoan(loan)"
-                              class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
-                              <span>{{ 'LOANS.SEND' | translate }}</span>
-                            </button>
-                            <button
-                              (click)="cancelLoan(loan)"
-                              class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                              <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
-                            </button>
+                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                              <button
+                                (click)="sendLoan(loan)"
+                                class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                                <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.SEND' | translate }}</span>
+                              </button>
+                              <button
+                                (click)="cancelLoan(loan)"
+                                class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
+                                <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                              </button>
+                            </ng-container>
                           }
                           @case (LoanStatus.SENT) {
                             <button
@@ -244,20 +250,24 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                             </button>
                           }
                           @case (LoanStatus.RECEIVED) {
-                            <button
-                              (click)="initiateReturn(loan)"
-                              class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
-                              <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                            </button>
+                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                              <button
+                                (click)="initiateReturn(loan)"
+                                class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                                <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                              </button>
+                            </ng-container>
                           }
                           @case (LoanStatus.OVERDUE) {
-                            <button
-                              (click)="initiateReturn(loan)"
-                              class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
-                              <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                            </button>
+                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                              <button
+                                (click)="initiateReturn(loan)"
+                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                                <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                              </button>
+                            </ng-container>
                           }
                           @case (LoanStatus.RETURN_PENDING) {
                             <button
@@ -274,12 +284,14 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                             <span class="text-slate-500 text-sm">-</span>
                           }
                           @case (LoanStatus.ACTIVE) {
-                            <button
-                              (click)="initiateReturn(loan)"
-                              class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
-                              <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                            </button>
+                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                              <button
+                                (click)="initiateReturn(loan)"
+                                class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                                <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                              </button>
+                            </ng-container>
                           }
                           @default {
                             <span class="text-slate-500 text-sm">-</span>
@@ -336,19 +348,21 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <!-- Mobile Actions -->
                 @switch (loan.status) {
                   @case (LoanStatus.PENDING) {
-                    <div class="flex gap-2">
-                      <button
-                        (click)="sendLoan(loan)"
-                        class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
-                        <span>{{ 'LOANS.SEND' | translate }}</span>
-                      </button>
-                      <button
-                        (click)="cancelLoan(loan)"
-                        class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                        <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
-                      </button>
-                    </div>
+                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                      <div class="flex gap-2">
+                        <button
+                          (click)="sendLoan(loan)"
+                          class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                          <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
+                          <span>{{ 'LOANS.SEND' | translate }}</span>
+                        </button>
+                        <button
+                          (click)="cancelLoan(loan)"
+                          class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
+                          <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                        </button>
+                      </div>
+                    </ng-container>
                   }
                   @case (LoanStatus.SENT) {
                     <button
@@ -359,20 +373,24 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                     </button>
                   }
                   @case (LoanStatus.RECEIVED) {
-                    <button
-                      (click)="initiateReturn(loan)"
-                      class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
-                      <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                    </button>
+                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                      <button
+                        (click)="initiateReturn(loan)"
+                        class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                        <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                      </button>
+                    </ng-container>
                   }
                   @case (LoanStatus.OVERDUE) {
-                    <button
-                      (click)="initiateReturn(loan)"
-                      class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
-                      <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                    </button>
+                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                      <button
+                        (click)="initiateReturn(loan)"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                        <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                      </button>
+                    </ng-container>
                   }
                   @case (LoanStatus.RETURN_PENDING) {
                     <button
@@ -383,12 +401,14 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                     </button>
                   }
                   @case (LoanStatus.ACTIVE) {
-                    <button
-                      (click)="initiateReturn(loan)"
-                      class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
-                      <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                    </button>
+                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                      <button
+                        (click)="initiateReturn(loan)"
+                        class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                        <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                      </button>
+                    </ng-container>
                   }
                 }
               </div>

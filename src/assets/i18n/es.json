@@ -9,6 +9,7 @@
     "SUPPLIERS": "Proveedores",
     "LOANS": "Préstamos",
     "TRANSFERS": "Transferencias",
+    "DISCHARGES": "Solicitudes",
     "USERS": "Usuarios",
     "AUDIT": "Historial",
     "TRANSACTIONS": "Transacciones",
@@ -38,6 +39,9 @@
     "UPDATE": "Actualizar",
     "NONE": "Ninguno",
     "UNASSIGNED": "Sin asignar",
+    "NO_CATEGORY": "Sin Categoría",
+    "NO_WAREHOUSE": "Sin Bodega",
+    "NO_SUPPLIER": "Sin Proveedor",
     "ALL": "Todos",
     "ACTIONS": "Acciones",
     "STATUS": "Estado",
@@ -53,7 +57,8 @@
     "USER": "Usuario",
     "CLEAR": "Limpiar",
     "DONE": "Listo",
-    "DATE": "Fecha"
+    "DATE": "Fecha",
+    "OPTIONAL": "Opcional"
   },
   "IMPORT": {
     "TITLE": "Importar Items",
@@ -94,6 +99,7 @@
     "IN_STOCK": "En Stock",
     "LOW_STOCK": "Stock Bajo",
     "OUT_OF_STOCK": "Sin Stock",
+    "IN_USE": "En Uso",
     "RECENT_ITEMS": "Ítems Recientes",
     "MANAGE_ITEMS": "Administra tus ítems de inventario",
     "ADD_NEW_ITEM": "Agregar Nuevo Ítem",
@@ -158,6 +164,7 @@
       "IN_STOCK": "En Stock",
       "LOW_STOCK": "Stock Bajo",
       "OUT_OF_STOCK": "Agotado",
+      "IN_USE": "En Uso",
       "AVAILABLE": "Disponible",
       "NOT_AVAILABLE": "No Disponible"
     },
@@ -213,7 +220,8 @@
         "TITLE": "Cantidad e Inventario",
         "CURRENT": "Cantidad Actual",
         "MINIMUM": "Cantidad Mínima",
-        "UNIQUE_HINT": "Los ítems UNIQUE siempre tienen cantidad = 1"
+        "UNIQUE_HINT": "Para ítems únicos, la cantidad máxima es 1",
+        "BULK_HINT": "Sin límite de cantidad para ítems por cantidad"
       },
       "PRICE": {
         "TITLE": "Precio y Proveedor",
@@ -276,7 +284,11 @@
     "TOTAL": "Total de Bodegas",
     "LIST": "Lista de Bodegas",
     "NO_WAREHOUSES": "No se encontraron bodegas",
-    "NO_WAREHOUSES_DESC": "Comienza agregando tu primera bodega"
+    "NO_WAREHOUSES_DESC": "Comienza agregando tu primera bodega",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Bodega",
+      "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    }
   },
   "SUPPLIER": {
     "TITLE": "Proveedores",
@@ -290,7 +302,11 @@
     "TOTAL": "Total de Proveedores",
     "LIST": "Lista de Proveedores",
     "NO_SUPPLIERS": "No se encontraron proveedores",
-    "NO_SUPPLIERS_DESC": "Comienza agregando tu primer proveedor"
+    "NO_SUPPLIERS_DESC": "Comienza agregando tu primer proveedor",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Proveedor",
+      "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    }
   },
   "CATEGORY": {
     "TITLE": "Categorías",
@@ -305,7 +321,11 @@
     "TOTAL": "Total de Categorías",
     "LIST": "Lista de Categorías",
     "NO_CATEGORIES": "No se encontraron categorías",
-    "NO_CATEGORIES_DESC": "Comienza agregando tu primera categoría"
+    "NO_CATEGORIES_DESC": "Comienza agregando tu primera categoría",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Categoría",
+      "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    }
   },
   "USER": {
     "TITLE": "Usuarios",
@@ -323,6 +343,19 @@
     "LIST": "Lista de Usuarios",
     "NO_USERS": "No se encontraron usuarios",
     "NO_USERS_DESC": "Comienza agregando tu primer usuario",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Usuario",
+      "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+    "RESET_PASSWORD": "Restablecer Contraseña",
+    "PENDING_RESET": "Restablecimiento de contraseña pendiente",
+    "RESET_LINK_DIALOG": {
+      "TITLE": "Enlace de Restablecimiento",
+      "DESCRIPTION": "Copia este enlace y envíalo al usuario (por WhatsApp, email, etc.). El enlace es válido por 1 hora.",
+      "COPY": "Copiar Enlace",
+      "COPIED": "¡Copiado!",
+      "EXPIRES_IN": "Expira en 1 hora"
+    },
     "ROLES": {
       "ADMIN": "Administrador",
       "SYSTEM_ADMIN": "Administrador",
@@ -351,6 +384,10 @@
     "LIST": "Historial de Transacciones",
     "NO_TRANSACTIONS": "No se encontraron transacciones",
     "NO_TRANSACTIONS_DESC": "Comienza creando tu primera transacción",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Transacción",
+      "MESSAGE": "¿Estás seguro de eliminar esta transacción? Esta acción no se puede deshacer."
+    },
     "SOURCE_WAREHOUSE": "Bodega de Origen",
     "DEST_WAREHOUSE": "Bodega de Destino",
     "WAREHOUSES": "Bodegas",
@@ -399,11 +436,16 @@
     "DATA": "Gestión de Datos",
     "EXPORT_DATA": "Exportar Datos",
     "EXPORT_DATA_DESC": "Descarga todos tus datos de inventario",
+    "EXPORT_SUCCESS": "Datos exportados exitosamente",
     "DANGER_ZONE": "Zona de Peligro",
     "RESET_DATA": "Restablecer Todos los Datos",
-    "RESET_DATA_DESC": "Esto eliminará permanentemente todos tus datos"
+    "RESET_DATA_DESC": "Esto eliminará permanentemente todos tus datos",
+    "RESET_CONFIRM_TITLE": "Restablecer Todos los Datos",
+    "RESET_CONFIRM_MESSAGE": "¿Estás seguro de eliminar TODOS los datos de inventario? Esta acción no se puede deshacer.",
+    "RESET_SUCCESS": "Todos los datos han sido restablecidos ({{count}} ítems eliminados)"
   },
   "FORM": {
+    "REQUIRED_FIELDS": "Campos requeridos",
     "VALIDATION": {
       "REQUIRED": "Este campo es requerido",
       "MIN_LENGTH": "Mínimo {{length}} caracteres",
@@ -475,6 +517,32 @@
     },
     "SUCCESS": {
       "WELCOME_BACK": "Bienvenido de nuevo, {{name}}!"
+    }
+  },
+  "AUTH": {
+    "FORGOT_PASSWORD": {
+      "TITLE": "Recuperar Contraseña",
+      "SUBTITLE": "Ingresa tu correo y notificaremos a un administrador para enviarte un enlace de restablecimiento.",
+      "EMAIL_PLACEHOLDER": "Ingresa tu correo electrónico",
+      "SUBMIT": "Enviar Solicitud",
+      "SUCCESS_TITLE": "Solicitud Enviada",
+      "SUCCESS": "Tu solicitud ha sido enviada. Un administrador te enviará el enlace de restablecimiento pronto.",
+      "BACK_TO_LOGIN": "Volver al Inicio de Sesión"
+    },
+    "RESET_PASSWORD": {
+      "TITLE": "Restablecer Contraseña",
+      "SUBTITLE": "Ingresa tu nueva contraseña a continuación.",
+      "NEW_PASSWORD": "Nueva Contraseña",
+      "NEW_PASSWORD_PLACEHOLDER": "Ingresa nueva contraseña",
+      "CONFIRM_PASSWORD": "Confirmar Contraseña",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Confirma tu nueva contraseña",
+      "SUBMIT": "Restablecer Contraseña",
+      "PASSWORDS_MISMATCH": "Las contraseñas no coinciden",
+      "SUCCESS_TITLE": "¡Contraseña Restablecida!",
+      "SUCCESS": "Tu contraseña ha sido restablecida exitosamente. Serás redirigido al inicio de sesión.",
+      "REDIRECTING": "Redirigiendo al inicio de sesión en 3 segundos...",
+      "ERROR_TITLE": "Enlace Inválido",
+      "INVALID_TOKEN": "Este enlace de restablecimiento es inválido o ha expirado. Por favor solicita uno nuevo."
     }
   },
   "REPORTS": {
@@ -569,7 +637,8 @@
   "STATUS": {
     "IN_STOCK": "En Stock",
     "LOW_STOCK": "Stock Bajo",
-    "OUT_OF_STOCK": "Agotado"
+    "OUT_OF_STOCK": "Agotado",
+    "IN_USE": "En Uso"
   },
   "TRANSACTIONS": {
     "TYPE": {
@@ -774,6 +843,79 @@
       "SCAN_ERROR": "Error al procesar el código QR",
       "SHOW_QR": "Ver QR",
       "ERROR": "Error al obtener el código QR"
+    }
+  },
+  "DISCHARGES": {
+    "TITLE": "Solicitudes de Material",
+    "SUBTITLE": "Gestión de solicitudes de descargo de material",
+    "SEARCH_PLACEHOLDER": "Buscar por solicitante, bodega o item...",
+    "ALL_STATUS": "Todos los Estados",
+    "LIST": "Lista de Solicitudes",
+    "REQUESTER": "Solicitante",
+    "ITEMS": "Items",
+    "ITEMS_COUNT": "item(s)",
+    "WAREHOUSE": "Bodega",
+    "NO_REQUESTS": "No hay solicitudes",
+    "NO_REQUESTS_DESC": "Las solicitudes de descargo aparecerán aquí",
+    "NOT_FOUND": "Solicitud no encontrada",
+    "COMPLETE": "Entregar",
+    "COMPLETE_SUCCESS": "Solicitud completada exitosamente. Inventario actualizado.",
+    "COMPLETE_ERROR": "Error al completar la solicitud",
+    "CONFIRM_COMPLETE_TITLE": "Completar Solicitud",
+    "CONFIRM_COMPLETE_MESSAGE": "¿Confirmar la entrega de estos items? Las cantidades del inventario serán descontadas.",
+    "REJECT": "Rechazar",
+    "REJECT_TITLE": "Rechazar Solicitud",
+    "REJECT_REASON": "Motivo del Rechazo",
+    "REJECT_REASON_PLACEHOLDER": "Ingrese el motivo del rechazo (opcional)",
+    "REJECT_SUCCESS": "Solicitud rechazada",
+    "REJECT_ERROR": "Error al rechazar la solicitud",
+    "STATUS": {
+      "PENDING": "Pendiente",
+      "COMPLETED": "Completada",
+      "REJECTED": "Rechazada"
+    },
+    "PUBLIC_FORM": {
+      "TITLE": "Solicitud de Material",
+      "SUBTITLE": "Complete el formulario para solicitar materiales de la bodega",
+      "REQUESTER_INFO": "Información del Solicitante",
+      "NAME": "Nombre Completo",
+      "NAME_PLACEHOLDER": "Ingrese su nombre completo",
+      "POSITION": "Cargo",
+      "POSITION_PLACEHOLDER": "Ej: Técnico, Analista",
+      "PHONE": "Teléfono",
+      "PHONE_PLACEHOLDER": "Ej: +504 9999-9999",
+      "NEEDED_BY": "Fecha Requerida",
+      "JUSTIFICATION": "Justificación",
+      "JUSTIFICATION_PLACEHOLDER": "Explique brevemente por qué necesita estos materiales...",
+      "ITEMS": "Items Solicitados",
+      "ADD_ITEM": "Agregar Item",
+      "SELECT_ITEM": "Seleccione un item...",
+      "SEARCH_ITEMS": "Buscar items por nombre, categoría o bodega...",
+      "AVAILABLE": "disponibles",
+      "QTY": "Cant.",
+      "NO_ITEMS": "Haga clic en 'Agregar Item' para seleccionar los materiales que necesita",
+      "SUBMIT": "Enviar Solicitud",
+      "ERROR": "Error al enviar la solicitud. Por favor intente de nuevo.",
+      "SUCCESS_TITLE": "¡Solicitud Enviada!",
+      "SUCCESS_MESSAGE": "Se crearon {{count}} solicitud(es) exitosamente.",
+      "SUCCESS_HINT": "Un jefe de bodega revisará su solicitud pronto.",
+      "NEW_REQUEST": "Enviar Otra Solicitud"
+    },
+    "SHARE_FORM": {
+      "BUTTON": "Compartir Formulario",
+      "TITLE": "Enlace del Formulario",
+      "DESCRIPTION": "Comparte este enlace o código QR para que cualquiera pueda enviar una solicitud de material.",
+      "COPY_URL": "Copiar Enlace",
+      "COPIED": "¡Copiado!",
+      "DOWNLOAD_QR": "Descargar QR"
+    },
+    "DETAIL": {
+      "TITLE": "Detalle de Solicitud",
+      "REQUESTER_INFO": "Información del Solicitante",
+      "UNITS": "unidades",
+      "RESOLUTION": "Resolución",
+      "RESOLVED_BY": "Resuelto por",
+      "RESOLVED_AT": "Resuelto el"
     }
   },
   "COMMAND_PALETTE": {

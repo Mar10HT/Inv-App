@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   MoreVertical,
   ExternalLink,
+  Link,
   CornerDownLeft,
 
   // Actions
@@ -135,6 +136,12 @@ import {
   HardDrive,
   Cpu,
   Database,
+
+  // Inventory Form icons
+  Hash,
+  Type,
+  Layers,
+  Scan,
 
   // Location
   MapPin,
@@ -175,6 +182,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   MoreHorizontal,
   MoreVertical,
   ExternalLink,
+  Link,
   CornerDownLeft,
 
   // Actions
@@ -293,6 +301,12 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   HardDrive,
   Cpu,
   Database,
+
+  // Inventory Form icons
+  Hash,
+  Type,
+  Layers,
+  Scan,
 
   // Location
   MapPin,

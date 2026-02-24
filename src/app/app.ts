@@ -6,6 +6,7 @@ import { AuthService } from './services/auth.service';
 import { SidebarService } from './services/sidebar.service';
 import { CommandPaletteService } from './services/command-palette.service';
 import { CsrfService } from './services/csrf.service';
+import { LoggerService } from './services/logger.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -23,6 +24,7 @@ export class App implements OnInit {
   private translate = inject(TranslateService);
   private commandPalette = inject(CommandPaletteService);
   private csrfService = inject(CsrfService);
+  private logger = inject(LoggerService);
   authService = inject(AuthService);
   sidebarService = inject(SidebarService);
   title = 'ICN';
@@ -32,7 +34,7 @@ export class App implements OnInit {
   ngOnInit() {
     // Initialize CSRF token for security
     this.csrfService.fetchCsrfToken().subscribe({
-      error: (err) => console.error('Failed to fetch CSRF token:', err)
+      error: (err) => this.logger.error('Failed to fetch CSRF token', err)
     });
 
     // Initialize command palette keyboard shortcut (Ctrl+K / Cmd+K)

@@ -12,6 +12,7 @@ export interface DashboardStats {
   inStockItems: number;
   lowStockItems: number;
   outOfStockItems: number;
+  inUseItems: number;
   totalValueUSD: number;
   totalValueHNL: number;
 }

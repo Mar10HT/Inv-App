@@ -20,73 +20,53 @@ export class PermissionsService {
   private rolePermissions: Record<UserRole, string[]> = {
     [UserRole.SYSTEM_ADMIN]: [
       // Users
-      'view_users',
-      'create_users',
-      'edit_users',
-      'delete_users',
+      'view_users', 'create_users', 'edit_users', 'delete_users',
       // Inventory
-      'view_inventory',
-      'create_inventory',
-      'edit_inventory',
-      'delete_inventory',
+      'view_inventory', 'create_inventory', 'edit_inventory', 'delete_inventory',
       // Warehouses
-      'view_warehouses',
-      'create_warehouses',
-      'edit_warehouses',
-      'delete_warehouses',
+      'view_warehouses', 'create_warehouses', 'edit_warehouses', 'delete_warehouses',
       // Categories
-      'view_categories',
-      'create_categories',
-      'edit_categories',
-      'delete_categories',
+      'view_categories', 'create_categories', 'edit_categories', 'delete_categories',
       // Suppliers
-      'view_suppliers',
-      'create_suppliers',
-      'edit_suppliers',
-      'delete_suppliers',
+      'view_suppliers', 'create_suppliers', 'edit_suppliers', 'delete_suppliers',
       // Transactions
-      'view_transactions',
-      'create_transactions',
-      'edit_transactions',
-      'delete_transactions',
+      'view_transactions', 'create_transactions', 'edit_transactions', 'delete_transactions',
+      // Loans
+      'view_loans', 'create_loans', 'manage_loans',
+      // Transfers
+      'view_transfers', 'create_transfers', 'manage_transfers',
+      // Discharges
+      'view_discharges', 'manage_discharges',
+      // Audit
+      'view_audit',
       // Settings
-      'view_settings',
-      'edit_settings',
-      // Dashboard
-      'view_dashboard',
-      'view_reports'
+      'view_settings', 'edit_settings',
+      // Dashboard & Reports
+      'view_dashboard', 'view_reports',
     ],
     [UserRole.WAREHOUSE_MANAGER]: [
       // Inventory
-      'view_inventory',
-      'create_inventory',
-      'edit_inventory',
-      'delete_inventory',
+      'view_inventory', 'create_inventory', 'edit_inventory', 'delete_inventory',
       // Warehouses
-      'view_warehouses',
-      'create_warehouses',
-      'edit_warehouses',
+      'view_warehouses', 'create_warehouses', 'edit_warehouses',
       // Categories
-      'view_categories',
-      'create_categories',
-      'edit_categories',
+      'view_categories', 'create_categories', 'edit_categories',
       // Suppliers
-      'view_suppliers',
-      'create_suppliers',
-      'edit_suppliers',
+      'view_suppliers', 'create_suppliers', 'edit_suppliers',
       // Transactions
-      'view_transactions',
-      'create_transactions',
-      'edit_transactions',
-      // Dashboard
-      'view_dashboard',
-      'view_reports'
+      'view_transactions', 'create_transactions', 'edit_transactions',
+      // Loans
+      'view_loans', 'create_loans', 'manage_loans',
+      // Transfers
+      'view_transfers', 'create_transfers', 'manage_transfers',
+      // Discharges
+      'view_discharges', 'manage_discharges',
+      // Dashboard & Reports
+      'view_dashboard', 'view_reports',
     ],
     [UserRole.USER]: [
       // Inventory
-      'view_inventory',
-      'create_inventory',
-      'edit_inventory',
+      'view_inventory', 'create_inventory', 'edit_inventory',
       // Warehouses
       'view_warehouses',
       // Categories
@@ -94,23 +74,23 @@ export class PermissionsService {
       // Suppliers
       'view_suppliers',
       // Transactions
-      'view_transactions',
-      'create_transactions',
+      'view_transactions', 'create_transactions',
+      // Loans
+      'view_loans', 'create_loans',
+      // Transfers
+      'view_transfers', 'create_transfers',
       // Dashboard
-      'view_dashboard'
+      'view_dashboard',
     ],
     [UserRole.VIEWER]: [
       // View only access
-      'view_inventory',
-      'view_warehouses',
-      'view_categories',
-      'view_suppliers',
-      'view_transactions',
-      'view_dashboard'
+      'view_inventory', 'view_warehouses', 'view_categories',
+      'view_suppliers', 'view_transactions', 'view_loans',
+      'view_transfers', 'view_dashboard',
     ],
     [UserRole.EXTERNAL]: [
       // Minimal access - view only their assigned items
-      'view_assigned_items'
+      'view_assigned_items',
     ]
   };
 

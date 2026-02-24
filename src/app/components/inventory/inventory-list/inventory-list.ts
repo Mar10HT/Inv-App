@@ -16,6 +16,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { InventoryService } from '.././../../services/inventory/inventory.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -44,6 +45,7 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
     MatTooltipModule,
     TranslateModule,
     ScrollingModule,
+    NgxPermissionsModule,
     SkeletonCardComponent,
     SkeletonTableComponent
   ],
@@ -125,8 +127,9 @@ export class InventoryList implements OnInit {
       if (item.status === InventoryStatus.IN_STOCK) acc.inStock++;
       else if (item.status === InventoryStatus.LOW_STOCK) acc.lowStock++;
       else if (item.status === InventoryStatus.OUT_OF_STOCK) acc.outOfStock++;
+      else if (item.status === InventoryStatus.IN_USE) acc.inUse++;
       return acc;
-    }, { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 });
+    }, { total: 0, inStock: 0, lowStock: 0, outOfStock: 0, inUse: 0 });
   });
 
   private inventoryService = inject(InventoryService);
@@ -180,7 +183,8 @@ export class InventoryList implements OnInit {
           const statusOrder: Record<string, number> = {
             [InventoryStatus.OUT_OF_STOCK]: 0,
             [InventoryStatus.LOW_STOCK]: 1,
-            [InventoryStatus.IN_STOCK]: 2
+            [InventoryStatus.IN_USE]: 2,
+            [InventoryStatus.IN_STOCK]: 3
           };
           return statusOrder[item.status] ?? 0;
         case 'updatedAt':
@@ -244,10 +248,10 @@ export class InventoryList implements OnInit {
   deleteItem(item: InventoryItemInterface): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: 'Delete Item',
-        message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
+        message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'danger'
       },
       panelClass: 'confirm-dialog-container'
@@ -269,6 +273,10 @@ export class InventoryList implements OnInit {
 
   // Utility methods
   getStatusText(item: InventoryItemInterface): string {
+    // For UNIQUE items with IN_USE status
+    if (item.status === InventoryStatus.IN_USE) {
+      return this.translate.instant('INVENTORY.STATUS.IN_USE');
+    }
     // For UNIQUE items, show "Available" or "Not Available"
     if (item.itemType === ItemType.UNIQUE) {
       return item.status === InventoryStatus.IN_STOCK
@@ -276,7 +284,7 @@ export class InventoryList implements OnInit {
         : this.translate.instant('INVENTORY.STATUS.NOT_AVAILABLE');
     }
     // For BULK items, show translated status
-    const statusKey = `INVENTORY.STATUS.${item.status.replace('_', '_')}`;
+    const statusKey = `INVENTORY.STATUS.${item.status}`;
     return this.translate.instant(statusKey);
   }
 
@@ -285,6 +293,7 @@ export class InventoryList implements OnInit {
       case InventoryStatus.IN_STOCK: return 'primary';
       case InventoryStatus.LOW_STOCK: return 'accent';
       case InventoryStatus.OUT_OF_STOCK: return 'warn';
+      case InventoryStatus.IN_USE: return 'info';
       default: return 'primary';
     }
   }
@@ -294,6 +303,7 @@ export class InventoryList implements OnInit {
       case InventoryStatus.IN_STOCK: return 'check_circle';
       case InventoryStatus.LOW_STOCK: return 'warning';
       case InventoryStatus.OUT_OF_STOCK: return 'error';
+      case InventoryStatus.IN_USE: return 'person';
       default: return 'help';
     }
   }

@@ -4,9 +4,10 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { TransactionService } from '../../services/transaction.service';
+import { NotificationService } from '../../services/notification.service';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { TransactionFormDialog } from './transaction-form-dialog';
@@ -30,6 +31,8 @@ export class Transactions implements OnInit {
   private transactionService = inject(TransactionService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private notifications = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   transactions = computed(() => this.transactionService.transactions());
   loading = computed(() => this.transactionService.loading());
@@ -53,7 +56,9 @@ export class Transactions implements OnInit {
   }
 
   private loadTransactions(): void {
-    this.transactionService.getAll().subscribe();
+    this.transactionService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
   }
 
   addTransaction(): void {
@@ -67,10 +72,7 @@ export class Transactions implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.saved) {
-        this.snackBar.open('Transaction created successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
+        this.notifications.created('NOTIFICATIONS.ENTITIES.TRANSACTION');
       }
     });
   }
@@ -78,10 +80,10 @@ export class Transactions implements OnInit {
   deleteTransaction(transaction: Transaction): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: 'Delete Transaction',
-        message: `Are you sure you want to delete this transaction? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: this.translate.instant('TRANSACTION.DELETE_CONFIRM.TITLE'),
+        message: this.translate.instant('TRANSACTION.DELETE_CONFIRM.MESSAGE'),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'danger'
       },
       panelClass: 'confirm-dialog-container'
@@ -91,16 +93,10 @@ export class Transactions implements OnInit {
       if (confirmed) {
         this.transactionService.delete(transaction.id).subscribe({
           next: () => {
-            this.snackBar.open('Transaction deleted', 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
+            this.notifications.deleted('NOTIFICATIONS.ENTITIES.TRANSACTION');
           },
           error: (err) => {
-            this.snackBar.open(`Error: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
+            this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.TRANSACTION');
           }
         });
       }

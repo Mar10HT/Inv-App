@@ -215,7 +215,7 @@ export class Reports implements OnInit {
   // ============ STATUS REPORT COMPUTED ============
   statusSummary = computed((): StatusSummary[] => {
     const items = this.allItems();
-    const statuses = [InventoryStatus.IN_STOCK, InventoryStatus.LOW_STOCK, InventoryStatus.OUT_OF_STOCK];
+    const statuses = [InventoryStatus.IN_STOCK, InventoryStatus.LOW_STOCK, InventoryStatus.OUT_OF_STOCK, InventoryStatus.IN_USE];
 
     return statuses.map(status => ({
       status,
@@ -451,6 +451,7 @@ export class Reports implements OnInit {
       case InventoryStatus.IN_STOCK: return 'emerald';
       case InventoryStatus.LOW_STOCK: return 'orange';
       case InventoryStatus.OUT_OF_STOCK: return 'rose';
+      case InventoryStatus.IN_USE: return 'blue';
       default: return 'slate';
     }
   }
@@ -460,6 +461,7 @@ export class Reports implements OnInit {
       case InventoryStatus.IN_STOCK: return 'CheckCircle2';
       case InventoryStatus.LOW_STOCK: return 'AlertTriangle';
       case InventoryStatus.OUT_OF_STOCK: return 'XCircle';
+      case InventoryStatus.IN_USE: return 'User';
       default: return 'HelpCircle';
     }
   }
@@ -611,6 +613,7 @@ export class Reports implements OnInit {
       inStockCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_STOCK)?.count || 0,
       lowStockCount: this.statusSummary().find(s => s.status === InventoryStatus.LOW_STOCK)?.count || 0,
       outOfStockCount: this.statusSummary().find(s => s.status === InventoryStatus.OUT_OF_STOCK)?.count || 0,
+      inUseCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_USE)?.count || 0,
       lowStockItems: this.lowStockItems(),
       outOfStockItems: this.outOfStockItems()
     });

@@ -3,6 +3,7 @@ import { Subject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
+import { LoggerService } from './logger.service';
 
 export interface WsEvent {
   entity: string;
@@ -15,6 +16,7 @@ export interface WsEvent {
   providedIn: 'root'
 })
 export class WebSocketService implements OnDestroy {
+  private logger = inject(LoggerService);
   private socket: Socket | null = null;
   private events$ = new Subject<{ event: string; payload: WsEvent }>();
   private connected$ = new Subject<boolean>();
@@ -35,17 +37,17 @@ export class WebSocketService implements OnDestroy {
     });
 
     this.socket.on('connect', () => {
-      console.log('[WS] Connected');
+      this.logger.log('[WS] Connected');
       this.connected$.next(true);
     });
 
     this.socket.on('disconnect', (reason: string) => {
-      console.log('[WS] Disconnected:', reason);
+      this.logger.log('[WS] Disconnected:', reason);
       this.connected$.next(false);
     });
 
     this.socket.on('connect_error', (error: Error) => {
-      console.warn('[WS] Connection error:', error.message);
+      this.logger.warn('[WS] Connection error:', error.message);
     });
 
     // Listen for all known events

@@ -2,14 +2,7 @@ import { Component, OnInit, inject, signal, computed, effect } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -17,11 +10,10 @@ import { InventoryService } from '../../../services/inventory/inventory.service'
 import { WarehouseService } from '../../../services/warehouse.service';
 import { SupplierService } from '../../../services/supplier.service';
 import { UserService } from '../../../services/user.service';
+import { CategoryService } from '../../../services/category.service';
 import { LoggerService } from '../../../services/logger.service';
 import { ItemType, Currency, CreateInventoryItemDto, InventoryStatus } from '../../../interfaces/inventory-item.interface';
-import { Warehouse } from '../../../interfaces/warehouse.interface';
-import { Supplier } from '../../../interfaces/supplier.interface';
-import { User, UserRole } from '../../../interfaces/user.interface';
+import { UserRole } from '../../../interfaces/user.interface';
 
 @Component({
   selector: 'app-inventory-form',
@@ -29,14 +21,7 @@ import { User, UserRole } from '../../../interfaces/user.interface';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatCardModule,
     LucideAngularModule,
-    MatRadioModule,
-    MatDividerModule,
     MatProgressSpinnerModule,
     TranslateModule
   ],
@@ -51,6 +36,7 @@ export class InventoryFormComponent implements OnInit {
   private warehouseService = inject(WarehouseService);
   private supplierService = inject(SupplierService);
   private userService = inject(UserService);
+  private categoryService = inject(CategoryService);
   private translate = inject(TranslateService);
   private logger = inject(LoggerService);
 
@@ -70,16 +56,18 @@ export class InventoryFormComponent implements OnInit {
   warehouses = this.warehouseService.warehouses;
   suppliers = this.supplierService.suppliers;
   users = this.userService.users;
+  categories = this.categoryService.categories;
 
   // Loading states
   loading = signal<boolean>(false);
   warehousesLoading = this.warehouseService.loading;
   suppliersLoading = this.supplierService.loading;
   usersLoading = this.userService.loading;
+  categoriesLoading = this.categoryService.loading;
 
-  // Computed signals
-  isUniqueItem = computed(() => this.itemTypeControl?.value === ItemType.UNIQUE);
-  isBulkItem = computed(() => this.itemTypeControl?.value === ItemType.BULK);
+  // Item type signal (writable so it updates when user toggles)
+  isUniqueItem = signal<boolean>(false);
+  isBulkItem = computed(() => !this.isUniqueItem());
 
   assignableUsers = computed(() =>
     this.users().filter(user =>
@@ -188,6 +176,8 @@ export class InventoryFormComponent implements OnInit {
           supplierId: item.supplierId || '',
           assignedToUserId: item.assignedToUserId || ''
         });
+        // Update signal so conditional sections and validators react
+        this.isUniqueItem.set(item.itemType === ItemType.UNIQUE);
         this.loading.set(false);
       },
       error: (error) => {
@@ -202,7 +192,7 @@ export class InventoryFormComponent implements OnInit {
     this.inventoryForm = this.fb.group({
       // Basic info
       name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
+      description: ['', [Validators.required]],
       category: ['', Validators.required],
       model: [''],
 
@@ -250,9 +240,16 @@ export class InventoryFormComponent implements OnInit {
     this.userService.getAll().subscribe({
       error: (error) => this.logger.error('Error loading users', error)
     });
+
+    // Load categories
+    this.categoryService.getAll().subscribe({
+      error: (error) => this.logger.error('Error loading categories', error)
+    });
   }
 
   onItemTypeChange(type: ItemType): void {
+    // Update the signal so conditional sections and validators react
+    this.isUniqueItem.set(type === ItemType.UNIQUE);
     // Clear fields when switching type
     if (type === ItemType.UNIQUE) {
       this.inventoryForm.patchValue({
@@ -287,13 +284,14 @@ export class InventoryFormComponent implements OnInit {
       name: formValue.name,
       description: formValue.description,
       category: formValue.category,
+      model: formValue.model,
       itemType: formValue.itemType,
-      quantity: formValue.itemType === ItemType.UNIQUE ? 1 : formValue.quantity,
-      minQuantity: formValue.itemType === ItemType.UNIQUE ? 1 : formValue.minQuantity,
+      quantity: formValue.quantity,
+      minQuantity: formValue.minQuantity,
       price: formValue.price,
       currency: formValue.currency,
       warehouseId: formValue.warehouseId,
-      status: this.calculateStatus(formValue.quantity, formValue.minQuantity)
+      status: this.calculateStatus(formValue)
     };
 
     // Add optional fields based on item type
@@ -338,9 +336,12 @@ export class InventoryFormComponent implements OnInit {
     }
   }
 
-  private calculateStatus(quantity: number, minQuantity: number): InventoryStatus {
-    if (quantity === 0) return InventoryStatus.OUT_OF_STOCK;
-    if (quantity <= minQuantity) return InventoryStatus.LOW_STOCK;
+  private calculateStatus(formValue: any): InventoryStatus {
+    if (formValue.itemType === ItemType.UNIQUE && formValue.assignedToUserId) {
+      return InventoryStatus.IN_USE;
+    }
+    if (formValue.quantity === 0) return InventoryStatus.OUT_OF_STOCK;
+    if (formValue.quantity <= formValue.minQuantity) return InventoryStatus.LOW_STOCK;
     return InventoryStatus.IN_STOCK;
   }
 

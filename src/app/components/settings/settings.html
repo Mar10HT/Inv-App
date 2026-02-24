@@ -176,8 +176,13 @@
           </div>
           <button
             (click)="resetData()"
-            class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-            <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+            [disabled]="resetting()"
+            class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors">
+            @if (resetting()) {
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            } @else {
+              <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+            }
             <span>{{ 'SETTINGS.RESET_DATA' | translate }}</span>
           </button>
         </div>

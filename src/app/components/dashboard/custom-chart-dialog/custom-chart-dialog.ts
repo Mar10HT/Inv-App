@@ -400,13 +400,13 @@ export class CustomChartDialog implements OnInit {
       let key: string;
       switch (groupBy) {
         case 'category':
-          key = item.category || 'Sin Categoría';
+          key = item.category || this.translate.instant('COMMON.NO_CATEGORY');
           break;
         case 'warehouse':
-          key = item.warehouse || 'Sin Bodega';
+          key = item.warehouse || this.translate.instant('COMMON.NO_WAREHOUSE');
           break;
         case 'supplier':
-          key = item.supplier || 'Sin Proveedor';
+          key = item.supplier || this.translate.instant('COMMON.NO_SUPPLIER');
           break;
         case 'status':
           key = item.status;

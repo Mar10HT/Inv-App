@@ -26,6 +26,7 @@ interface StatusReportPDFOptions {
   inStockCount: number;
   lowStockCount: number;
   outOfStockCount: number;
+  inUseCount?: number;
   lowStockItems: InventoryItemInterface[];
   outOfStockItems: InventoryItemInterface[];
 }

@@ -31,6 +31,8 @@ export class ImportService {
    * Parse CSV content and return preview with validation
    */
   parseCSV(content: string): ImportPreview {
+    // Strip UTF-8 BOM and normalize line endings
+    content = content.replace(/^\uFEFF/, '').replace(/\r/g, '');
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length < 2) {
       return { rows: [], validCount: 0, invalidCount: 0, totalCount: 0 };

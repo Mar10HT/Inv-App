@@ -4,7 +4,8 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { CategoryService } from '../../services/category.service';
 import { NotificationService } from '../../services/notification.service';
@@ -24,6 +25,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
     MatDialogModule,
     MatSnackBarModule,
     TranslateModule,
+    NgxPermissionsModule,
     SkeletonCardComponent
   ],
   templateUrl: './categories.html',
@@ -33,6 +35,7 @@ export class Categories implements OnInit {
   private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   categories = computed(() => this.categoryService.categories());
   loading = computed(() => this.categoryService.loading());
@@ -51,7 +54,9 @@ export class Categories implements OnInit {
   }
 
   private loadCategories(): void {
-    this.categoryService.getAll().subscribe();
+    this.categoryService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
   }
 
   addCategory(): void {
@@ -96,10 +101,10 @@ export class Categories implements OnInit {
   deleteCategory(category: Category): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: 'Delete Category',
-        message: `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: this.translate.instant('CATEGORY.DELETE_CONFIRM.TITLE'),
+        message: this.translate.instant('CATEGORY.DELETE_CONFIRM.MESSAGE', { name: category.name }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'danger'
       },
       panelClass: 'confirm-dialog-container'

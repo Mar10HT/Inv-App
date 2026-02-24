@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { TransferRequestService } from '../../services/transfer-request.service';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -24,7 +25,8 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     MatButtonModule,
     MatDialogModule,
     MatPaginatorModule,
-    TranslateModule
+    TranslateModule,
+    NgxPermissionsModule
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -49,12 +51,14 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
               </button>
-              <button
-                (click)="openNewRequestDialog()"
-                class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
-                <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
-                <span>{{ 'TRANSFERS.NEW_REQUEST' | translate }}</span>
-              </button>
+              <ng-container *ngxPermissionsOnly="['create_transfers']">
+                <button
+                  (click)="openNewRequestDialog()"
+                  class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
+                  <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
+                  <span>{{ 'TRANSFERS.NEW_REQUEST' | translate }}</span>
+                </button>
+              </ng-container>
             </div>
           </div>
         </div>
@@ -218,30 +222,34 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                       <div class="flex items-center justify-center gap-2">
                         @switch (request.status) {
                           @case (Status.PENDING) {
-                            <button
-                              (click)="approveRequest(request)"
-                              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="Check" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
-                              <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
-                            </button>
-                            <button
-                              (click)="rejectRequest(request)"
-                              class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                              <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
-                            </button>
+                            <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                              <button
+                                (click)="approveRequest(request)"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                                <lucide-icon name="Check" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
+                              </button>
+                              <button
+                                (click)="rejectRequest(request)"
+                                class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
+                                <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                              </button>
+                            </ng-container>
                           }
                           @case (Status.APPROVED) {
-                            <button
-                              (click)="sendTransfer(request)"
-                              class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
-                              <span>{{ 'TRANSFERS.SEND' | translate }}</span>
-                            </button>
-                            <button
-                              (click)="cancelRequest(request)"
-                              class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                              <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
-                            </button>
+                            <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                              <button
+                                (click)="sendTransfer(request)"
+                                class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                                <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <span>{{ 'TRANSFERS.SEND' | translate }}</span>
+                              </button>
+                              <button
+                                (click)="cancelRequest(request)"
+                                class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
+                                <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                              </button>
+                            </ng-container>
                           }
                           @case (Status.SENT) {
                             <button
@@ -309,34 +317,38 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 <!-- Mobile Actions -->
                 @switch (request.status) {
                   @case (Status.PENDING) {
-                    <div class="flex gap-2">
-                      <button
-                        (click)="approveRequest(request)"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="Check" class="!w-4 !h-4 !text-white"></lucide-icon>
-                        <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
-                      </button>
-                      <button
-                        (click)="rejectRequest(request)"
-                        class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                        <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
-                      </button>
-                    </div>
+                    <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                      <div class="flex gap-2">
+                        <button
+                          (click)="approveRequest(request)"
+                          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                          <lucide-icon name="Check" class="!w-4 !h-4 !text-white"></lucide-icon>
+                          <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
+                        </button>
+                        <button
+                          (click)="rejectRequest(request)"
+                          class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
+                          <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                        </button>
+                      </div>
+                    </ng-container>
                   }
                   @case (Status.APPROVED) {
-                    <div class="flex gap-2">
-                      <button
-                        (click)="sendTransfer(request)"
-                        class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
-                        <span>{{ 'TRANSFERS.SEND' | translate }}</span>
-                      </button>
-                      <button
-                        (click)="cancelRequest(request)"
-                        class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                        <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
-                      </button>
-                    </div>
+                    <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                      <div class="flex gap-2">
+                        <button
+                          (click)="sendTransfer(request)"
+                          class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                          <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
+                          <span>{{ 'TRANSFERS.SEND' | translate }}</span>
+                        </button>
+                        <button
+                          (click)="cancelRequest(request)"
+                          class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
+                          <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                        </button>
+                      </div>
+                    </ng-container>
                   }
                   @case (Status.SENT) {
                     <button
@@ -467,6 +479,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                       <button
                         type="button"
                         (click)="removeItem(i)"
+                        [attr.aria-label]="'COMMON.DELETE' | translate"
                         class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
                         <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                       </button>
@@ -684,7 +697,9 @@ export class TransfersComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.warehouseService.getAll().subscribe();
+    this.warehouseService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
     this.inventoryService.loadItems();
     this.transferService.loadRequests();
     setTimeout(() => this.applyFilters(), 100);

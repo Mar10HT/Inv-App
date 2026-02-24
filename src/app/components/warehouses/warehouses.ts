@@ -4,7 +4,8 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { WarehouseService } from '../../services/warehouse.service';
 import { NotificationService } from '../../services/notification.service';
@@ -22,7 +23,8 @@ import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    TranslateModule
+    TranslateModule,
+    NgxPermissionsModule
   ],
   templateUrl: './warehouses.html',
   styleUrl: './warehouses.css'
@@ -31,6 +33,7 @@ export class Warehouses implements OnInit {
   private warehouseService = inject(WarehouseService);
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   warehouses = computed(() => this.warehouseService.warehouses());
   loading = computed(() => this.warehouseService.loading());
@@ -49,7 +52,9 @@ export class Warehouses implements OnInit {
   }
 
   private loadWarehouses(): void {
-    this.warehouseService.getAll().subscribe();
+    this.warehouseService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
   }
 
   addWarehouse(): void {
@@ -94,10 +99,10 @@ export class Warehouses implements OnInit {
   deleteWarehouse(warehouse: Warehouse): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: 'Delete Warehouse',
-        message: `Are you sure you want to delete "${warehouse.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.TITLE'),
+        message: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.MESSAGE', { name: warehouse.name }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'danger'
       },
       panelClass: 'confirm-dialog-container'

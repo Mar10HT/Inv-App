@@ -48,155 +48,194 @@
     <!-- Navigation -->
     <nav class="sidebar-nav">
       <!-- MAIN Section -->
-      @if (showExpandedContent()) {
-        <div class="nav-group-label">{{ 'NAV.MAIN' | translate }}</div>
-      } @else {
-        <div class="nav-divider"></div>
-      }
-
-      <a
-        routerLink="/dashboard"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.DASHBOARD' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="LayoutDashboard" class="nav-icon"></lucide-icon>
+      <ng-container *ngxPermissionsOnly="['view_dashboard']">
         @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
+          <div class="nav-group-label">{{ 'NAV.MAIN' | translate }}</div>
+        } @else {
+          <div class="nav-divider"></div>
         }
-      </a>
+
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.DASHBOARD' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="LayoutDashboard" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
       <!-- INVENTORY Section -->
-      @if (showExpandedContent()) {
-        <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
-      } @else {
-        <div class="nav-divider"></div>
-      }
-
-      <a
-        routerLink="/inventory"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.INVENTORY' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Package" class="nav-icon"></lucide-icon>
+      <ng-container *ngxPermissionsOnly="['view_inventory', 'view_warehouses', 'view_categories', 'view_suppliers', 'view_loans', 'view_transfers', 'view_discharges']">
         @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.INVENTORY' | translate }}</span>
+          <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
+        } @else {
+          <div class="nav-divider"></div>
         }
-      </a>
+      </ng-container>
 
-      <a
-        routerLink="/warehouses"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.WAREHOUSES' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Warehouse" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.WAREHOUSES' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_inventory']">
+        <a
+          routerLink="/inventory"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.INVENTORY' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Package" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.INVENTORY' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
-      <a
-        routerLink="/categories"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.CATEGORIES' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Tag" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.CATEGORIES' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_warehouses']">
+        <a
+          routerLink="/warehouses"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.WAREHOUSES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Warehouse" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.WAREHOUSES' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
-      <a
-        routerLink="/suppliers"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SUPPLIERS' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Truck" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.SUPPLIERS' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_categories']">
+        <a
+          routerLink="/categories"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.CATEGORIES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Tag" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.CATEGORIES' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
-      <a
-        routerLink="/loans"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.LOANS' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="HandCoins" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_suppliers']">
+        <a
+          routerLink="/suppliers"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SUPPLIERS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Truck" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.SUPPLIERS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
-      <a
-        routerLink="/transfers"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSFERS' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="ArrowLeftRight" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.TRANSFERS' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_loans']">
+        <a
+          routerLink="/loans"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.LOANS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="HandCoins" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['view_transfers']">
+        <a
+          routerLink="/transfers"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSFERS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="ArrowLeftRight" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.TRANSFERS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['view_discharges']">
+        <a
+          routerLink="/discharges"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.DISCHARGES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="ClipboardList" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.DISCHARGES' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
       <!-- ADMIN Section -->
-      @if (showExpandedContent()) {
-        <div class="nav-group-label">{{ 'NAV.ADMIN' | translate }}</div>
-      } @else {
-        <div class="nav-divider"></div>
-      }
-
-      <a
-        routerLink="/users"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.USERS' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Users" class="nav-icon"></lucide-icon>
+      <ng-container *ngxPermissionsOnly="['view_users', 'view_audit', 'view_settings']">
         @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
+          <div class="nav-group-label">{{ 'NAV.ADMIN' | translate }}</div>
+        } @else {
+          <div class="nav-divider"></div>
         }
-      </a>
+      </ng-container>
 
-      <a
-        routerLink="/audit"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.AUDIT' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Shield" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.AUDIT' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_users']">
+        <a
+          routerLink="/users"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.USERS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Users" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
 
-      <a
-        routerLink="/settings"
-        routerLinkActive="active-link"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-        [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SETTINGS' | translate) : ''"
-        matTooltipPosition="right">
-        <lucide-icon name="Settings" class="nav-icon"></lucide-icon>
-        @if (showExpandedContent()) {
-          <span class="nav-text">{{ 'NAV.SETTINGS' | translate }}</span>
-        }
-      </a>
+      <ng-container *ngxPermissionsOnly="['view_audit']">
+        <a
+          routerLink="/audit"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.AUDIT' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Shield" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.AUDIT' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['view_settings']">
+        <a
+          routerLink="/settings"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SETTINGS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Settings" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.SETTINGS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
     </nav>
   </div>
 
@@ -214,7 +253,7 @@
         @if (showExpandedContent()) {
           <div class="user-details">
             <p class="user-name">{{ user.name || ('COMMON.USER' | translate) }}</p>
-            <p class="user-role">{{ user.role || 'User' }}</p>
+            <p class="user-role">{{ 'USER.ROLES.' + user.role | translate }}</p>
           </div>
         }
       </div>

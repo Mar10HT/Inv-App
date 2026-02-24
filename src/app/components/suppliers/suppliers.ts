@@ -4,7 +4,8 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { SupplierService } from '../../services/supplier.service';
 import { NotificationService } from '../../services/notification.service';
@@ -22,7 +23,8 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    TranslateModule
+    TranslateModule,
+    NgxPermissionsModule
   ],
   templateUrl: './suppliers.html',
   styleUrl: './suppliers.css'
@@ -31,6 +33,7 @@ export class Suppliers implements OnInit {
   private supplierService = inject(SupplierService);
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   suppliers = computed(() => this.supplierService.suppliers());
   loading = computed(() => this.supplierService.loading());
@@ -48,7 +51,9 @@ export class Suppliers implements OnInit {
   }
 
   private loadSuppliers(): void {
-    this.supplierService.getAll().subscribe();
+    this.supplierService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
   }
 
   addSupplier(): void {
@@ -93,10 +98,10 @@ export class Suppliers implements OnInit {
   deleteSupplier(supplier: Supplier): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       data: {
-        title: 'Delete Supplier',
-        message: `Are you sure you want to delete "${supplier.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: this.translate.instant('SUPPLIER.DELETE_CONFIRM.TITLE'),
+        message: this.translate.instant('SUPPLIER.DELETE_CONFIRM.MESSAGE', { name: supplier.name }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'danger'
       },
       panelClass: 'confirm-dialog-container'

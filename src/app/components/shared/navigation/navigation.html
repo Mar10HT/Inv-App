@@ -184,12 +184,27 @@
       </ng-container>
 
       <!-- ADMIN Section -->
-      <ng-container *ngxPermissionsOnly="['view_users', 'view_audit', 'view_settings']">
+      <ng-container *ngxPermissionsOnly="['view_reports', 'view_users', 'view_audit', 'view_settings']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.ADMIN' | translate }}</div>
         } @else {
           <div class="nav-divider"></div>
         }
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['view_reports']">
+        <a
+          routerLink="/reports"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.REPORTS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="BarChart3" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.REPORTS' | translate }}</span>
+          }
+        </a>
       </ng-container>
 
       <ng-container *ngxPermissionsOnly="['view_users']">

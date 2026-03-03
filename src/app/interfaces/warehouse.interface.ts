@@ -3,6 +3,13 @@ export interface Warehouse {
   name: string;
   location: string;
   description?: string;
+  isActive?: boolean;
+  managerId?: string;
+  manager?: {
+    id: string;
+    name: string;
+    email: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

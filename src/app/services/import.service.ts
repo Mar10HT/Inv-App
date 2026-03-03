@@ -33,7 +33,13 @@ export class ImportService {
   parseCSV(content: string): ImportPreview {
     // Strip UTF-8 BOM and normalize line endings
     content = content.replace(/^\uFEFF/, '').replace(/\r/g, '');
-    const lines = content.split('\n').filter(line => line.trim());
+    let lines = content.split('\n').filter(line => line.trim());
+
+    // Skip Excel separator hint line (e.g. "sep=;")
+    if (lines.length > 0 && /^sep=.$/i.test(lines[0].trim())) {
+      lines = lines.slice(1);
+    }
+
     if (lines.length < 2) {
       return { rows: [], validCount: 0, invalidCount: 0, totalCount: 0 };
     }
@@ -42,7 +48,10 @@ export class ImportService {
     const headerLine = lines[0];
     const delimiter = headerLine.includes(';') ? ';' : ',';
 
-    const headers = this.parseCSVLine(headerLine, delimiter).map(h => h.toLowerCase().trim());
+    // Normalize headers: strip *, remove spaces, lowercase (e.g. "Min Quantity*" → "minquantity")
+    const headers = this.parseCSVLine(headerLine, delimiter).map(h =>
+      h.replace(/\*/g, '').replace(/\s+/g, '').toLowerCase().trim()
+    );
     const rows: ImportRow[] = [];
 
     for (let i = 1; i < lines.length; i++) {
@@ -349,7 +358,7 @@ export class ImportService {
       ''
     ].join(';');
 
-    return `${headers}\n${exampleRow}\n${bulkExample}`;
+    return `sep=;\n${headers}\n${exampleRow}\n${bulkExample}`;
   }
 
   /**

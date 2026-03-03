@@ -303,9 +303,9 @@ export class Reports implements OnInit {
 
     return {
       series: [
-        { name: 'Entradas', data: trends.map(t => t.in) },
-        { name: 'Salidas', data: trends.map(t => t.out) },
-        { name: 'Transferencias', data: trends.map(t => t.transfer) }
+        { name: this.translate.instant('TRANSACTIONS.TYPE.IN'), data: trends.map(t => t.in) },
+        { name: this.translate.instant('TRANSACTIONS.TYPE.OUT'), data: trends.map(t => t.out) },
+        { name: this.translate.instant('TRANSACTIONS.TYPE.TRANSFER'), data: trends.map(t => t.transfer) }
       ],
       chart: {
         type: 'area' as const,

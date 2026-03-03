@@ -46,19 +46,19 @@ export interface ImportPreview {
 }
 
 export const IMPORT_TEMPLATE_HEADERS = [
-  'name',
-  'description',
-  'quantity',
-  'minQuantity',
-  'category',
-  'model',
-  'itemType',
-  'serviceTag',
-  'serialNumber',
-  'sku',
-  'barcode',
-  'price',
-  'currency',
-  'warehouseName',
-  'supplierName'
+  'Name*',
+  'Description',
+  'Quantity*',
+  'Min Quantity',
+  'Category*',
+  'Model',
+  'Item Type',
+  'Service Tag',
+  'Serial Number',
+  'SKU',
+  'Barcode',
+  'Price',
+  'Currency',
+  'Warehouse*',
+  'Supplier'
 ];

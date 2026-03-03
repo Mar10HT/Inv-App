@@ -288,7 +288,10 @@
     "DELETE_CONFIRM": {
       "TITLE": "Delete Warehouse",
       "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
-    }
+    },
+    "MANAGER": "Manager",
+    "NO_MANAGER": "No manager",
+    "SET_MANAGER": "Set Manager"
   },
   "SUPPLIER": {
     "TITLE": "Suppliers",
@@ -363,7 +366,11 @@
       "USER": "User",
       "VIEWER": "Viewer",
       "EXTERNAL": "External"
-    }
+    },
+    "ASSIGNED_WAREHOUSES": "Assigned Warehouses",
+    "ASSIGNED_WAREHOUSES_DESC": "Select warehouses this user can access",
+    "NO_WAREHOUSES": "No warehouses assigned",
+    "ALL_ACCESS": "This role has access to all warehouses"
   },
   "USERS": {
     "TITLE": "Users",

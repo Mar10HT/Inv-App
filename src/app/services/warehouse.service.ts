@@ -118,4 +118,8 @@ export class WarehouseService {
       })
     );
   }
+
+  setManager(warehouseId: string, managerId: string | null): Observable<Warehouse> {
+    return this.http.patch<Warehouse>(`${this.apiUrl}/${warehouseId}/manager`, { managerId });
+  }
 }

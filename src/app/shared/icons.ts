@@ -157,6 +157,7 @@ import {
   type LucideIconData,
   HandCoins,
   Shield,
+  KeyRound,
 } from 'lucide-angular';
 
 // All icons used in the app
@@ -164,6 +165,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   // Sidebar icons
   HandCoins,
   Shield,
+  KeyRound,
 
   // Navigation & UI
   ArrowLeft,

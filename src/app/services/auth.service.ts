@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
@@ -19,6 +19,10 @@ export class AuthService {
   // Current user signal
   currentUser = signal<AuthUser | null>(this.loadUserFromStorage());
   isAuthenticated = signal<boolean>(this.currentUser() !== null);
+
+  // Warehouse access signals
+  userWarehouseIds = computed(() => this.currentUser()?.warehouseIds ?? []);
+  isAdmin = computed(() => this.currentUser()?.role === 'SYSTEM_ADMIN');
 
   private apiUrl = `${environment.apiUrl}/auth`;
 

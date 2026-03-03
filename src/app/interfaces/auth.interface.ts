@@ -22,6 +22,7 @@ export interface AuthUser {
   name?: string;
   role: UserRole;
   createdAt?: Date | string;
+  warehouseIds?: string[];
 }
 
 export interface UpdateProfileResponse {

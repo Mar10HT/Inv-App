@@ -288,7 +288,10 @@
     "DELETE_CONFIRM": {
       "TITLE": "Eliminar Bodega",
       "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
-    }
+    },
+    "MANAGER": "Encargado",
+    "NO_MANAGER": "Sin encargado",
+    "SET_MANAGER": "Asignar Encargado"
   },
   "SUPPLIER": {
     "TITLE": "Proveedores",
@@ -363,7 +366,11 @@
       "USER": "Usuario",
       "VIEWER": "Visor",
       "EXTERNAL": "Externo"
-    }
+    },
+    "ASSIGNED_WAREHOUSES": "Bodegas Asignadas",
+    "ASSIGNED_WAREHOUSES_DESC": "Seleccione las bodegas a las que este usuario tiene acceso",
+    "NO_WAREHOUSES": "Sin bodegas asignadas",
+    "ALL_ACCESS": "Este rol tiene acceso a todas las bodegas"
   },
   "USERS": {
     "TITLE": "Usuarios",

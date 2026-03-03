@@ -7,10 +7,13 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { UserService } from '../../services/user.service';
+import { WarehouseService } from '../../services/warehouse.service';
 import { User, UserRole } from '../../interfaces/user.interface';
+import { Warehouse } from '../../interfaces/warehouse.interface';
 
 export interface UserFormDialogData {
   mode: 'add' | 'edit';
@@ -30,6 +33,7 @@ export interface UserFormDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatCheckboxModule,
     TranslateModule
   ],
   template: `
@@ -127,6 +131,49 @@ export interface UserFormDialogData {
           </select>
         </div>
 
+        <!-- Warehouse Assignment -->
+        @if (selectedRole() !== 'SYSTEM_ADMIN' && selectedRole() !== 'EXTERNAL') {
+          <div>
+            <label class="block text-sm font-medium text-slate-400 mb-1">
+              {{ 'USER.ASSIGNED_WAREHOUSES' | translate }}
+            </label>
+            <p class="text-xs text-slate-600 mb-3">{{ 'USER.ASSIGNED_WAREHOUSES_DESC' | translate }}</p>
+
+            @if (loadingWarehouses()) {
+              <div class="flex items-center gap-2 text-slate-500 text-sm py-2">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#4d7c6f]"></div>
+                {{ 'COMMON.LOADING' | translate }}...
+              </div>
+            } @else if (allWarehouses().length === 0) {
+              <p class="text-slate-600 text-sm py-2">{{ 'USER.NO_WAREHOUSES' | translate }}</p>
+            } @else {
+              <div class="max-h-48 overflow-y-auto space-y-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-3">
+                @for (wh of allWarehouses(); track wh.id) {
+                  <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1a1a1a] cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedWarehouseIds().has(wh.id)"
+                      (change)="toggleWarehouse(wh.id)"
+                      class="w-4 h-4 rounded border-[#2a2a2a] text-[#4d7c6f] focus:ring-[#4d7c6f] bg-[#0a0a0a]"
+                    />
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm text-foreground truncate">{{ wh.name }}</p>
+                      <p class="text-xs text-slate-500 truncate">{{ wh.location }}</p>
+                    </div>
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        } @else if (selectedRole() === 'SYSTEM_ADMIN') {
+          <div class="bg-[#2d4a3f]/30 border border-[#4d7c6f]/30 rounded-lg p-4">
+            <div class="flex items-center gap-3 text-[#4d7c6f]">
+              <lucide-icon name="ShieldCheck" class="!w-5 !h-5"></lucide-icon>
+              <span class="text-sm">{{ 'USER.ALL_ACCESS' | translate }}</span>
+            </div>
+          </div>
+        }
+
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
           <button
@@ -154,10 +201,16 @@ export class UserFormDialog implements OnInit {
   data = inject<UserFormDialogData>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
+  private warehouseService = inject(WarehouseService);
 
   saving = signal(false);
   selectedRole = signal<UserRole>(UserRole.USER);
   roles = Object.values(UserRole);
+
+  // Warehouse assignment
+  allWarehouses = signal<Warehouse[]>([]);
+  loadingWarehouses = signal(false);
+  selectedWarehouseIds = signal<Set<string>>(new Set());
 
   form: FormGroup = this.fb.group({
     name: ['', [Validators.maxLength(100)]],
@@ -191,6 +244,14 @@ export class UserFormDialog implements OnInit {
       this.selectedRole.set(role);
       this.updateValidatorsForRole(role);
     });
+
+    // Load all warehouses for assignment
+    this.loadWarehouses();
+
+    // Load user's current warehouse assignments in edit mode
+    if (this.data.mode === 'edit' && this.data.user) {
+      this.loadUserWarehouses(this.data.user.id);
+    }
   }
 
   isExternalUser(): boolean {
@@ -223,6 +284,47 @@ export class UserFormDialog implements OnInit {
     emailControl?.updateValueAndValidity();
   }
 
+  toggleWarehouse(warehouseId: string): void {
+    this.selectedWarehouseIds.update(ids => {
+      const newSet = new Set(ids);
+      if (newSet.has(warehouseId)) {
+        newSet.delete(warehouseId);
+      } else {
+        newSet.add(warehouseId);
+      }
+      return newSet;
+    });
+  }
+
+  private loadWarehouses(): void {
+    this.loadingWarehouses.set(true);
+    this.warehouseService.getAll().subscribe({
+      next: (warehouses) => {
+        this.allWarehouses.set(warehouses);
+        this.loadingWarehouses.set(false);
+      },
+      error: () => {
+        this.loadingWarehouses.set(false);
+      }
+    });
+  }
+
+  private loadUserWarehouses(userId: string): void {
+    this.userService.getUserWarehouses(userId).subscribe({
+      next: (warehouses) => {
+        this.selectedWarehouseIds.set(new Set(warehouses.map(w => w.id)));
+      }
+    });
+  }
+
+  private saveWarehouseAssignments(userId: string): void {
+    const role = this.selectedRole();
+    if (role === 'SYSTEM_ADMIN' || role === 'EXTERNAL') return;
+
+    const warehouseIds = Array.from(this.selectedWarehouseIds());
+    this.userService.assignWarehouses(userId, warehouseIds).subscribe();
+  }
+
   onSubmit(): void {
     if (this.form.invalid) return;
 
@@ -236,7 +338,8 @@ export class UserFormDialog implements OnInit {
 
     if (this.data.mode === 'add') {
       this.userService.create(formValue).subscribe({
-        next: () => {
+        next: (newUser) => {
+          this.saveWarehouseAssignments(newUser.id);
           this.dialogRef.close({ saved: true });
         },
         error: () => {
@@ -246,6 +349,7 @@ export class UserFormDialog implements OnInit {
     } else if (this.data.user) {
       this.userService.update(this.data.user.id, formValue).subscribe({
         next: () => {
+          this.saveWarehouseAssignments(this.data.user!.id);
           this.dialogRef.close({ saved: true });
         },
         error: () => {

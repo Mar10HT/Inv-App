@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
 import { User, CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
+import { Warehouse } from '../interfaces/warehouse.interface';
 import { environment } from '../../environments/environment';
 
 interface PaginatedResponse<T> {
@@ -124,5 +125,15 @@ export class UserService {
       return this.users();
     }
     return this.users().filter(user => user.role === role);
+  }
+
+  // Warehouse access management
+
+  getUserWarehouses(userId: string): Observable<Warehouse[]> {
+    return this.http.get<Warehouse[]>(`${this.apiUrl}/${userId}/warehouses`);
+  }
+
+  assignWarehouses(userId: string, warehouseIds: string[]): Observable<Warehouse[]> {
+    return this.http.post<Warehouse[]>(`${this.apiUrl}/${userId}/warehouses`, { warehouseIds });
   }
 }

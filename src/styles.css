@@ -84,6 +84,19 @@ table td:nth-child(n+3):not(:last-child) {
     color-scheme: light;
 }
 
+/* Native select option styling for dark theme */
+:root:not([data-theme="light"]) select option,
+[data-theme="dark"] select option {
+    background-color: var(--color-surface-variant, #1a1a1a);
+    color: var(--color-on-surface, #cbd5e1);
+}
+
+/* Native select option styling for light theme */
+[data-theme="light"] select option {
+    background-color: #ffffff;
+    color: #1e293b;
+}
+
 /* Material Dialog Overrides */
 .confirm-dialog-container .mat-mdc-dialog-container,
 .item-detail-dialog .mat-mdc-dialog-container {

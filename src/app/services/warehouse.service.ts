@@ -83,7 +83,7 @@ export class WarehouseService {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.put<Warehouse>(`${this.apiUrl}/${id}`, warehouse).pipe(
+    return this.http.patch<Warehouse>(`${this.apiUrl}/${id}`, warehouse).pipe(
       tap({
         next: (updatedWarehouse) => {
           this.warehouses.update(warehouses =>

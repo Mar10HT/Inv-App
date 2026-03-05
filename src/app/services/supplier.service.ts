@@ -83,7 +83,7 @@ export class SupplierService {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.put<Supplier>(`${this.apiUrl}/${id}`, supplier).pipe(
+    return this.http.patch<Supplier>(`${this.apiUrl}/${id}`, supplier).pipe(
       tap({
         next: (updatedSupplier) => {
           this.suppliers.update(suppliers =>

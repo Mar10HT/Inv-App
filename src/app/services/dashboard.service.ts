@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface DashboardStats {
@@ -59,8 +59,9 @@ export class DashboardService {
   }
 
   getRecentItems(limit: number = 5): Observable<any[]> {
-    // Get all items and return the most recent ones
-    return this.http.get<any[]>(`${this.inventoryUrl}`);
+    return this.http.get<any>(`${this.inventoryUrl}`).pipe(
+      map(res => (res.data || []).slice(0, limit))
+    );
   }
 
   getLowStockItems(limit: number = 10): Observable<any[]> {
@@ -83,32 +84,32 @@ export class DashboardService {
   }
 
   getMonthlyTransactions(): Observable<MonthlyTransactions[]> {
-    // Return empty array for now - transactions module exists but no stats endpoint yet
-    return this.http.get<MonthlyTransactions[]>(`${environment.apiUrl}/transactions`);
+    // No stats endpoint yet - return empty array to avoid breaking the dashboard
+    return of([]);
   }
 
   // Additional methods to get counts for dashboard
   getWarehousesCount(): Observable<number> {
-    return this.http.get<any[]>(this.warehousesUrl).pipe(
-      map(items => items.length)
+    return this.http.get<any>(this.warehousesUrl).pipe(
+      map(res => res.meta?.total ?? res.data?.length ?? 0)
     );
   }
 
   getSuppliersCount(): Observable<number> {
-    return this.http.get<any[]>(this.suppliersUrl).pipe(
-      map(items => items.length)
+    return this.http.get<any>(this.suppliersUrl).pipe(
+      map(res => res.meta?.total ?? res.data?.length ?? 0)
     );
   }
 
   getCategoriesCount(): Observable<number> {
-    return this.http.get<any[]>(this.categoriesUrl).pipe(
-      map(items => items.length)
+    return this.http.get<any>(this.categoriesUrl).pipe(
+      map(res => res.meta?.total ?? res.data?.length ?? 0)
     );
   }
 
   getUsersCount(): Observable<number> {
-    return this.http.get<any[]>(this.usersUrl).pipe(
-      map(items => items.length)
+    return this.http.get<any>(this.usersUrl).pipe(
+      map(res => res.meta?.total ?? res.data?.length ?? 0)
     );
   }
 }

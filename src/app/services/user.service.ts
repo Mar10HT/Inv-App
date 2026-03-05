@@ -84,7 +84,7 @@ export class UserService {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.put<User>(`${this.apiUrl}/${id}`, user).pipe(
+    return this.http.patch<User>(`${this.apiUrl}/${id}`, user).pipe(
       tap({
         next: (updatedUser) => {
           this.users.update(users =>

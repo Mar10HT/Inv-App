@@ -6,6 +6,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { DischargeRequestService } from '../../../services/discharge-request.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -22,6 +23,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
     MatButtonModule,
     MatDialogModule,
     TranslateModule,
+    NgxPermissionsModule,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -52,20 +54,22 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
             </div>
 
             @if (request()!.status === Status.PENDING) {
-              <div class="flex gap-2">
-                <button
-                  (click)="completeRequest()"
-                  class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 font-medium">
-                  <lucide-icon name="Check" class="!w-5 !h-5 !text-white"></lucide-icon>
-                  <span>{{ 'DISCHARGES.COMPLETE' | translate }}</span>
-                </button>
-                <button
-                  (click)="openRejectDialog()"
-                  class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-3 rounded-lg transition-all flex items-center gap-2 border border-red-600/50">
-                  <lucide-icon name="X" class="!w-5 !h-5 !text-current"></lucide-icon>
-                  <span>{{ 'DISCHARGES.REJECT' | translate }}</span>
-                </button>
-              </div>
+              <ng-container *ngxPermissionsOnly="['manage_discharges']">
+                <div class="flex gap-2">
+                  <button
+                    (click)="completeRequest()"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 font-medium">
+                    <lucide-icon name="Check" class="!w-5 !h-5 !text-white"></lucide-icon>
+                    <span>{{ 'DISCHARGES.COMPLETE' | translate }}</span>
+                  </button>
+                  <button
+                    (click)="openRejectDialog()"
+                    class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-3 rounded-lg transition-all flex items-center gap-2 border border-red-600/50">
+                    <lucide-icon name="X" class="!w-5 !h-5 !text-current"></lucide-icon>
+                    <span>{{ 'DISCHARGES.REJECT' | translate }}</span>
+                  </button>
+                </div>
+              </ng-container>
             }
           </div>
 

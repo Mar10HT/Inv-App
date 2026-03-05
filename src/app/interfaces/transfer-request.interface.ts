@@ -2,7 +2,8 @@ export enum TransferRequestStatus {
   PENDING = 'PENDING',       // Created, awaiting approval
   APPROVED = 'APPROVED',     // Approved by manager
   SENT = 'SENT',             // Items shipped, QR generated for receipt
-  COMPLETED = 'COMPLETED',   // Transfer finalized via QR scan
+  RECEIVED = 'RECEIVED',     // Items received, confirmed via QR scan
+  COMPLETED = 'COMPLETED',   // Transfer finalized
   REJECTED = 'REJECTED',     // Rejected by approver
   CANCELLED = 'CANCELLED'    // Cancelled
 }

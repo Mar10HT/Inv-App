@@ -15,12 +15,9 @@ export enum InventoryStatus {
   IN_USE = 'IN_USE'
 }
 
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  VIEWER = 'VIEWER',
-  EXTERNAL = 'EXTERNAL'
-}
+// Import and re-export UserRole from the canonical source
+import { UserRole } from './user.interface';
+export { UserRole };
 
 // Warehouse interface
 export interface Warehouse {

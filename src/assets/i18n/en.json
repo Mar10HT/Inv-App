@@ -58,7 +58,9 @@
     "CLEAR": "Clear",
     "DONE": "Done",
     "DATE": "Date",
-    "OPTIONAL": "Optional"
+    "OPTIONAL": "Optional",
+    "PAGE_NOT_FOUND": "The page you're looking for doesn't exist.",
+    "GO_TO_DASHBOARD": "Go to Dashboard"
   },
   "IMPORT": {
     "TITLE": "Import Items",
@@ -69,7 +71,7 @@
     "DROP_FILE": "Drag and drop your file here",
     "OR": "or",
     "SELECT_FILE": "Select File",
-    "SUPPORTED_FORMATS": "Supported formats: CSV, Excel (.xlsx, .xls)",
+    "SUPPORTED_FORMATS": "Supported format: CSV (.csv)",
     "TOTAL_ROWS": "Total Rows",
     "VALID_ROWS": "Valid Rows",
     "INVALID_ROWS": "Invalid Rows",

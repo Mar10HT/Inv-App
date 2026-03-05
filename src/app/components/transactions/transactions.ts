@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { TransactionService } from '../../services/transaction.service';
 import { NotificationService } from '../../services/notification.service';
@@ -22,7 +23,8 @@ import { TransactionFormDialog } from './transaction-form-dialog';
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    TranslateModule
+    TranslateModule,
+    NgxPermissionsModule
   ],
   templateUrl: './transactions.html',
   styleUrl: './transactions.css'

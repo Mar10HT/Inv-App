@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, map } from 'rxjs';
+import { Observable, tap, map, of } from 'rxjs';
 import { Transaction, CreateTransactionDto } from '../interfaces/transaction.interface';
 import { environment } from '../../environments/environment';
 
@@ -115,6 +115,7 @@ export class TransactionService {
   }
 
   getStats(): Observable<{ totalIn: number; totalOut: number; totalTransfer: number; total: number }> {
-    return this.http.get<{ totalIn: number; totalOut: number; totalTransfer: number; total: number }>(`${this.apiUrl}/stats`);
+    // TODO: Create backend endpoint GET /transactions/stats
+    return of({ totalIn: 0, totalOut: 0, totalTransfer: 0, total: 0 });
   }
 }

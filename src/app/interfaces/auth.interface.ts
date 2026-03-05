@@ -3,6 +3,7 @@ import { UserRole } from './user.interface';
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface RegisterRequest {
@@ -12,8 +13,8 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  access_token: string;
   user: AuthUser;
+  expires_in: number;
 }
 
 export interface AuthUser {

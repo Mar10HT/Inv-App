@@ -72,7 +72,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
               <label class="inline-block">
                 <input
                   type="file"
-                  accept=".csv,.xlsx,.xls"
+                  accept=".csv"
                   class="hidden"
                   (change)="onFileSelect($event)"
                 />
@@ -319,11 +319,10 @@ export class ImportDialog {
   private processFile(file: File): void {
     this.fileError.set(null);
 
-    // Validate file type
-    const validTypes = ['.csv', '.xlsx', '.xls'];
+    // Validate file type (only CSV is supported)
     const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!validTypes.includes(extension)) {
-      this.fileError.set('Invalid file type. Please upload a CSV or Excel file.');
+    if (extension !== '.csv') {
+      this.fileError.set('Invalid file type. Please upload a CSV file.');
       return;
     }
 

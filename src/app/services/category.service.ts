@@ -83,7 +83,7 @@ export class CategoryService {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, category).pipe(
+    return this.http.patch<Category>(`${this.apiUrl}/${id}`, category).pipe(
       tap({
         next: (updatedCategory) => {
           this.categories.update(categories =>

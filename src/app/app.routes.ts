@@ -121,5 +121,11 @@ export const routes: Routes = [
     path: 'discharges/:id',
     loadComponent: () => import('./components/discharge-requests/discharge-detail/discharge-detail').then(m => m.DischargeDetailComponent),
     canActivate: [permissionGuard('view_discharges')]
+  },
+
+  // 404 catch-all
+  {
+    path: '**',
+    loadComponent: () => import('./components/not-found/not-found').then(m => m.NotFoundComponent)
   }
 ];

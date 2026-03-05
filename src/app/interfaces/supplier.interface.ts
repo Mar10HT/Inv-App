@@ -10,7 +10,7 @@ export interface Supplier {
 
 export interface CreateSupplierDto {
   name: string;
-  location?: string;
+  location: string;
   phone?: string;
   email?: string;
 }

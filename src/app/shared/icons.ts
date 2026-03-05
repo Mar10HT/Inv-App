@@ -117,6 +117,7 @@ import {
 
   // Files & Documents
   File,
+  FileQuestion,
   FileText,
   FolderOpen,
   Clipboard,
@@ -284,6 +285,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
 
   // Files & Documents
   File,
+  FileQuestion,
   FileText,
   FolderOpen,
   Clipboard,

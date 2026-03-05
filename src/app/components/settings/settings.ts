@@ -37,18 +37,27 @@ export class Settings implements OnInit {
   resetting = signal<boolean>(false);
 
   ngOnInit(): void {
-    // Load saved preferences
+    // Load saved preferences (local)
     const savedLang = localStorage.getItem('language') || 'en';
     this.currentLang.set(savedLang);
 
     const savedTheme = localStorage.getItem('theme');
     this.darkMode.set(savedTheme !== 'light');
 
-    const savedEmailNotif = localStorage.getItem('emailNotifications');
-    this.emailNotifications.set(savedEmailNotif !== 'false');
-
-    const savedLowStockAlerts = localStorage.getItem('lowStockAlerts');
-    this.lowStockAlerts.set(savedLowStockAlerts !== 'false');
+    // Load notification preferences from backend
+    this.http.get<{ emailNotifications: boolean; lowStockAlerts: boolean }>(
+      `${environment.apiUrl}/users/preferences`
+    ).subscribe({
+      next: (prefs) => {
+        this.emailNotifications.set(prefs.emailNotifications);
+        this.lowStockAlerts.set(prefs.lowStockAlerts);
+      },
+      error: () => {
+        // Keep default values (true) if API fails
+        this.emailNotifications.set(true);
+        this.lowStockAlerts.set(true);
+      }
+    });
   }
 
   changeLang(lang: string): void {
@@ -66,15 +75,35 @@ export class Settings implements OnInit {
   }
 
   toggleEmailNotifications(): void {
-    const newValue = !this.emailNotifications();
-    this.emailNotifications.set(newValue);
-    localStorage.setItem('emailNotifications', String(newValue));
+    const oldValue = this.emailNotifications();
+    const newValue = !oldValue;
+    this.emailNotifications.set(newValue); // Optimistic update
+
+    this.http.patch<{ emailNotifications: boolean; lowStockAlerts: boolean }>(
+      `${environment.apiUrl}/users/preferences`,
+      { emailNotifications: newValue }
+    ).subscribe({
+      error: () => {
+        this.emailNotifications.set(oldValue); // Revert on failure
+        this.notifications.error('SETTINGS.SAVE_ERROR');
+      }
+    });
   }
 
   toggleLowStockAlerts(): void {
-    const newValue = !this.lowStockAlerts();
-    this.lowStockAlerts.set(newValue);
-    localStorage.setItem('lowStockAlerts', String(newValue));
+    const oldValue = this.lowStockAlerts();
+    const newValue = !oldValue;
+    this.lowStockAlerts.set(newValue); // Optimistic update
+
+    this.http.patch<{ emailNotifications: boolean; lowStockAlerts: boolean }>(
+      `${environment.apiUrl}/users/preferences`,
+      { lowStockAlerts: newValue }
+    ).subscribe({
+      error: () => {
+        this.lowStockAlerts.set(oldValue); // Revert on failure
+        this.notifications.error('SETTINGS.SAVE_ERROR');
+      }
+    });
   }
 
   exportData(): void {

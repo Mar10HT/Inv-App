@@ -14,15 +14,12 @@ import {
   CreateInventoryItemDto
 } from '../interfaces/inventory-item.interface';
 import { InventoryService } from './inventory/inventory.service';
-import { AuditService } from './audit.service';
-import { AuditAction, AuditEntity } from '../interfaces/audit.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportService {
   private inventoryService = inject(InventoryService);
-  private auditService = inject(AuditService);
 
   importing = signal(false);
   progress = signal(0);
@@ -286,15 +283,7 @@ export class ImportService {
             message: (r as any).error || 'Unknown error'
           }));
 
-        // Log audit entry for bulk import
-        this.auditService.log({
-          action: AuditAction.CREATE,
-          entity: AuditEntity.INVENTORY_ITEM,
-          entityId: 'bulk-import',
-          entityName: `Bulk Import (${imported} items)`,
-          metadata: { importedCount: imported, totalRows: rows.length }
-        });
-
+        // Audit logging is handled by the backend
         this.importing.set(false);
         this.progress.set(100);
 

@@ -451,7 +451,8 @@
     "RESET_DATA_DESC": "Esto eliminará permanentemente todos tus datos",
     "RESET_CONFIRM_TITLE": "Restablecer Todos los Datos",
     "RESET_CONFIRM_MESSAGE": "¿Estás seguro de eliminar TODOS los datos de inventario? Esta acción no se puede deshacer.",
-    "RESET_SUCCESS": "Todos los datos han sido restablecidos ({{count}} ítems eliminados)"
+    "RESET_SUCCESS": "Todos los datos han sido restablecidos ({{count}} ítems eliminados)",
+    "SAVE_ERROR": "Error al guardar preferencias"
   },
   "FORM": {
     "REQUIRED_FIELDS": "Campos requeridos",
@@ -677,6 +678,10 @@
       "CREATE": "Creado",
       "UPDATE": "Actualizado",
       "DELETE": "Eliminado",
+      "RESTORE": "Restaurado",
+      "LOGIN": "Inicio de sesión",
+      "LOGOUT": "Cierre de sesión",
+      "PASSWORD_CHANGE": "Contraseña cambiada",
       "ASSIGN": "Asignado",
       "UNASSIGN": "Desasignado",
       "TRANSFER": "Transferido",

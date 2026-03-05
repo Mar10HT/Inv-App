@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -118,8 +118,18 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
           </div>
         </div>
 
+        <!-- Loading State -->
+        @if (auditService.loading()) {
+          <div class="flex items-center justify-center py-16">
+            <div class="flex flex-col items-center gap-4">
+              <div class="w-10 h-10 border-4 border-[#4d7c6f]/30 border-t-[#4d7c6f] rounded-full animate-spin"></div>
+              <p class="text-slate-500">{{ 'COMMON.LOADING' | translate }}...</p>
+            </div>
+          </div>
+        }
+
         <!-- Audit Log List -->
-        <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+        <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden" [class.hidden]="auditService.loading()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 class="text-xl font-semibold text-foreground">{{ 'AUDIT.LOG_LIST' | translate }}</h2>
             <p class="text-slate-500 text-sm mt-1">{{ 'AUDIT.SHOWING' | translate:{ count: paginatedLogs().length, total: filteredLogs().length } }}</p>
@@ -220,7 +230,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
   `
 })
 export class AuditLogComponent implements OnInit {
-  private auditService = inject(AuditService);
+  auditService = inject(AuditService);
   private translate = inject(TranslateService);
 
   // Expose enums
@@ -251,8 +261,17 @@ export class AuditLogComponent implements OnInit {
     return logs.slice(start, start + this.pageSize);
   });
 
+  constructor() {
+    // Re-apply filters when logs change (e.g., after API response)
+    effect(() => {
+      this.auditService.logs(); // Track the signal
+      this.applyFilters();
+    });
+  }
+
   ngOnInit(): void {
-    this.applyFilters();
+    // Load logs from backend API
+    this.auditService.loadLogs({ limit: 200 });
   }
 
   applyFilters(): void {
@@ -310,6 +329,10 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.CREATE]: this.translate.instant('AUDIT.ACTION.CREATE'),
       [AuditAction.UPDATE]: this.translate.instant('AUDIT.ACTION.UPDATE'),
       [AuditAction.DELETE]: this.translate.instant('AUDIT.ACTION.DELETE'),
+      [AuditAction.RESTORE]: this.translate.instant('AUDIT.ACTION.RESTORE'),
+      [AuditAction.LOGIN]: this.translate.instant('AUDIT.ACTION.LOGIN'),
+      [AuditAction.LOGOUT]: this.translate.instant('AUDIT.ACTION.LOGOUT'),
+      [AuditAction.PASSWORD_CHANGE]: this.translate.instant('AUDIT.ACTION.PASSWORD_CHANGE'),
       [AuditAction.ASSIGN]: this.translate.instant('AUDIT.ACTION.ASSIGN'),
       [AuditAction.UNASSIGN]: this.translate.instant('AUDIT.ACTION.UNASSIGN'),
       [AuditAction.TRANSFER]: this.translate.instant('AUDIT.ACTION.TRANSFER'),
@@ -337,6 +360,10 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.CREATE]: 'PlusCircle',
       [AuditAction.UPDATE]: 'Pencil',
       [AuditAction.DELETE]: 'Trash2',
+      [AuditAction.RESTORE]: 'RotateCcw',
+      [AuditAction.LOGIN]: 'LogIn',
+      [AuditAction.LOGOUT]: 'LogOut',
+      [AuditAction.PASSWORD_CHANGE]: 'KeyRound',
       [AuditAction.ASSIGN]: 'UserPlus',
       [AuditAction.UNASSIGN]: 'UserMinus',
       [AuditAction.TRANSFER]: 'ArrowLeftRight',
@@ -351,6 +378,10 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.CREATE]: 'bg-emerald-950/50 text-emerald-400',
       [AuditAction.UPDATE]: 'bg-sky-950/50 text-sky-400',
       [AuditAction.DELETE]: 'bg-red-950/50 text-red-400',
+      [AuditAction.RESTORE]: 'bg-indigo-950/50 text-indigo-400',
+      [AuditAction.LOGIN]: 'bg-slate-800 text-slate-400',
+      [AuditAction.LOGOUT]: 'bg-slate-800 text-slate-400',
+      [AuditAction.PASSWORD_CHANGE]: 'bg-yellow-950/50 text-yellow-400',
       [AuditAction.ASSIGN]: 'bg-purple-950/50 text-purple-400',
       [AuditAction.UNASSIGN]: 'bg-orange-950/50 text-orange-400',
       [AuditAction.TRANSFER]: 'bg-cyan-950/50 text-cyan-400',
@@ -365,6 +396,10 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.CREATE]: 'text-emerald-400',
       [AuditAction.UPDATE]: 'text-sky-400',
       [AuditAction.DELETE]: 'text-red-400',
+      [AuditAction.RESTORE]: 'text-indigo-400',
+      [AuditAction.LOGIN]: 'text-slate-400',
+      [AuditAction.LOGOUT]: 'text-slate-400',
+      [AuditAction.PASSWORD_CHANGE]: 'text-yellow-400',
       [AuditAction.ASSIGN]: 'text-purple-400',
       [AuditAction.UNASSIGN]: 'text-orange-400',
       [AuditAction.TRANSFER]: 'text-cyan-400',

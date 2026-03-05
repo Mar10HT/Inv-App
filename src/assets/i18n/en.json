@@ -451,7 +451,8 @@
     "RESET_DATA_DESC": "This will permanently delete all your data",
     "RESET_CONFIRM_TITLE": "Reset All Data",
     "RESET_CONFIRM_MESSAGE": "Are you sure you want to delete ALL inventory data? This action cannot be undone.",
-    "RESET_SUCCESS": "All data has been reset ({{count}} items deleted)"
+    "RESET_SUCCESS": "All data has been reset ({{count}} items deleted)",
+    "SAVE_ERROR": "Failed to save preferences"
   },
   "FORM": {
     "REQUIRED_FIELDS": "Required fields",
@@ -677,6 +678,10 @@
       "CREATE": "Created",
       "UPDATE": "Updated",
       "DELETE": "Deleted",
+      "RESTORE": "Restored",
+      "LOGIN": "Login",
+      "LOGOUT": "Logout",
+      "PASSWORD_CHANGE": "Password Changed",
       "ASSIGN": "Assigned",
       "UNASSIGN": "Unassigned",
       "TRANSFER": "Transferred",

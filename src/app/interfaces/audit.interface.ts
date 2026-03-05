@@ -2,6 +2,10 @@ export enum AuditAction {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+  RESTORE = 'RESTORE',
+  LOGIN = 'LOGIN',
+  LOGOUT = 'LOGOUT',
+  PASSWORD_CHANGE = 'PASSWORD_CHANGE',
   ASSIGN = 'ASSIGN',
   UNASSIGN = 'UNASSIGN',
   TRANSFER = 'TRANSFER',
@@ -55,4 +59,33 @@ export interface CreateAuditLogDto {
   entityName: string;
   changes?: AuditChange[];
   metadata?: Record<string, any>;
+}
+
+// Backend API types
+export interface BackendAuditLog {
+  id: string;
+  action: string;
+  entity: string;
+  entityId: string;
+  changes: {
+    before?: Record<string, any>;
+    after?: Record<string, any>;
+    fields?: string[];
+  } | null;
+  createdAt: string;
+  userId: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+  } | null;
+}
+
+export interface BackendAuditResponse {
+  data: BackendAuditLog[];
+  meta: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
 }

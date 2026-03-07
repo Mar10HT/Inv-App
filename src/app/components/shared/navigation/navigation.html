@@ -70,7 +70,7 @@
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['view_inventory', 'view_warehouses', 'view_categories', 'view_suppliers', 'view_loans', 'view_transfers', 'view_discharges']">
+      <ng-container *ngxPermissionsOnly="['view_inventory', 'view_warehouses', 'view_categories', 'view_suppliers', 'view_loans', 'view_transfers', 'view_discharges', 'view_stock_takes']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -179,6 +179,21 @@
           <lucide-icon name="ClipboardList" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
             <span class="nav-text">{{ 'NAV.DISCHARGES' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['view_stock_takes']">
+        <a
+          routerLink="/stock-take"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.STOCK_TAKE' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="ClipboardCheck" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.STOCK_TAKE' | translate }}</span>
           }
         </a>
       </ng-container>

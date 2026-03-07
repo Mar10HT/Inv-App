@@ -159,6 +159,7 @@ import {
   HandCoins,
   Shield,
   KeyRound,
+  ClipboardCheck,
 } from 'lucide-angular';
 
 // All icons used in the app
@@ -289,6 +290,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   FileText,
   FolderOpen,
   Clipboard,
+  ClipboardCheck,
   ClipboardList,
 
   // Settings & Config

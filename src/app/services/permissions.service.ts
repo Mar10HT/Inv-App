@@ -37,6 +37,8 @@ export class PermissionsService {
       'view_transfers', 'create_transfers', 'manage_transfers',
       // Discharges
       'view_discharges', 'manage_discharges',
+      // Stock Take
+      'view_stock_takes', 'create_stock_takes', 'manage_stock_takes',
       // Audit
       'view_audit',
       // Settings
@@ -61,6 +63,8 @@ export class PermissionsService {
       'view_transfers', 'create_transfers', 'manage_transfers',
       // Discharges
       'view_discharges', 'manage_discharges',
+      // Stock Take
+      'view_stock_takes', 'create_stock_takes', 'manage_stock_takes',
       // Dashboard & Reports
       'view_dashboard', 'view_reports',
     ],

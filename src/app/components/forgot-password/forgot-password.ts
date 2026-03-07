@@ -23,24 +23,24 @@ import { AuthService } from '../../services/auth.service';
     <div class="flex min-h-screen">
       <!-- Left Panel - Brand -->
       <div class="hidden lg:flex w-[54%] bg-[#0f1f1a] flex-col items-center justify-center gap-8 p-16 relative">
-        <div class="w-24 h-0.5 bg-[#4d7c6f]/40"></div>
+        <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>
         <div class="flex flex-col items-center gap-6">
-          <div class="w-[72px] h-[72px] rounded-2xl bg-[#4d7c6f] flex items-center justify-center">
+          <div class="w-[72px] h-[72px] rounded-2xl bg-[var(--color-primary)] flex items-center justify-center">
             <lucide-icon name="Package" class="!w-9 !h-9 text-white"></lucide-icon>
           </div>
           <h1 class="text-[42px] font-bold text-white font-[Outfit]">InvApp</h1>
-          <p class="text-lg text-slate-400 text-center leading-relaxed">
+          <p class="text-lg text-[var(--color-on-surface-variant)] text-center leading-relaxed">
             {{ 'LOGIN.TAGLINE' | translate }}
           </p>
         </div>
-        <div class="w-24 h-0.5 bg-[#4d7c6f]/40"></div>
+        <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>
       </div>
 
       <!-- Right Panel - Form -->
       <div class="flex-1 bg-surface flex flex-col items-center justify-center p-8 lg:p-16 relative">
         <!-- Mobile logo -->
         <div class="flex lg:hidden flex-col items-center gap-4 mb-10">
-          <div class="w-14 h-14 rounded-xl bg-[#4d7c6f] flex items-center justify-center">
+          <div class="w-14 h-14 rounded-xl bg-[var(--color-primary)] flex items-center justify-center">
             <lucide-icon name="Package" class="!w-8 !h-8 text-white"></lucide-icon>
           </div>
           <h1 class="text-2xl font-bold text-foreground">InvApp</h1>
@@ -51,7 +51,7 @@ import { AuthService } from '../../services/auth.service';
             <!-- Header -->
             <div class="flex flex-col gap-2">
               <h2 class="text-[28px] font-bold text-foreground">{{ 'AUTH.FORGOT_PASSWORD.TITLE' | translate }}</h2>
-              <p class="text-sm text-slate-400">{{ 'AUTH.FORGOT_PASSWORD.SUBTITLE' | translate }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUTH.FORGOT_PASSWORD.SUBTITLE' | translate }}</p>
             </div>
 
             <!-- Form -->
@@ -61,25 +61,25 @@ import { AuthService } from '../../services/auth.service';
                   {{ 'LOGIN.EMAIL' | translate }}
                 </label>
                 <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
-                            focus-within:border-[#4d7c6f] transition-colors">
-                  <lucide-icon name="Mail" class="!w-[18px] !h-[18px] !text-slate-400 shrink-0"></lucide-icon>
+                            focus-within:border-[var(--color-primary)] transition-colors">
+                  <lucide-icon name="Mail" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
                   <input
                     type="email"
                     formControlName="email"
-                    class="flex-1 bg-transparent text-foreground text-sm placeholder-slate-500 outline-none"
+                    class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-variant)] outline-none"
                     [placeholder]="'AUTH.FORGOT_PASSWORD.EMAIL_PLACEHOLDER' | translate"
                   />
                 </div>
                 @if (form.get('email')?.invalid && form.get('email')?.touched) {
-                  <p class="text-rose-400 text-xs mt-0.5">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
+                  <p class="text-[var(--color-status-error)] text-xs mt-0.5">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
                 }
               </div>
 
               <button
                 type="submit"
                 [disabled]="form.invalid || loading()"
-                class="w-full py-3.5 rounded-lg bg-[#4d7c6f] text-white font-semibold text-[15px]
-                       hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed
+                class="w-full py-3.5 rounded-lg bg-[var(--color-primary)] text-white font-semibold text-[15px]
+                       hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed
                        transition-colors flex items-center justify-center gap-2">
                 @if (loading()) {
                   <mat-spinner diameter="20" class="!w-5 !h-5"></mat-spinner>
@@ -93,26 +93,26 @@ import { AuthService } from '../../services/auth.service';
           } @else {
             <!-- Success State -->
             <div class="flex flex-col items-center text-center gap-6">
-              <div class="w-16 h-16 rounded-full bg-[#2d4a3f] flex items-center justify-center">
-                <lucide-icon name="CheckCircle" class="!w-8 !h-8 text-[#4d7c6f]"></lucide-icon>
+              <div class="w-16 h-16 rounded-full bg-[var(--color-primary-container)] flex items-center justify-center">
+                <lucide-icon name="CheckCircle" class="!w-8 !h-8 text-[var(--color-primary)]"></lucide-icon>
               </div>
               <div>
                 <h2 class="text-2xl font-bold text-foreground mb-2">{{ 'AUTH.FORGOT_PASSWORD.SUCCESS_TITLE' | translate }}</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">{{ 'AUTH.FORGOT_PASSWORD.SUCCESS' | translate }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-sm leading-relaxed">{{ 'AUTH.FORGOT_PASSWORD.SUCCESS' | translate }}</p>
               </div>
             </div>
           }
 
           <!-- Back to login -->
           <div class="text-center">
-            <a routerLink="/login" class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] transition-colors font-medium flex items-center justify-center gap-1.5">
+            <a routerLink="/login" class="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors font-medium flex items-center justify-center gap-1.5">
               <lucide-icon name="ArrowLeft" class="!w-4 !h-4"></lucide-icon>
               {{ 'AUTH.FORGOT_PASSWORD.BACK_TO_LOGIN' | translate }}
             </a>
           </div>
         </div>
 
-        <p class="absolute bottom-6 text-[11px] text-slate-600">{{ 'LOGIN.VERSION' | translate }}</p>
+        <p class="absolute bottom-6 text-[11px] text-[var(--color-on-surface-muted)]">{{ 'LOGIN.VERSION' | translate }}</p>
       </div>
     </div>
   `

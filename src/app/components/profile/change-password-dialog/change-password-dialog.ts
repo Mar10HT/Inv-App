@@ -18,13 +18,13 @@ import { AuthService } from '../../../services/auth.service';
     TranslateModule
   ],
   template: `
-    <div class="bg-[#1a1a1a] rounded-xl w-full max-w-md">
+    <div class="bg-[var(--color-surface-variant)] rounded-xl w-full max-w-md">
       <!-- Header -->
-      <div class="flex items-center justify-between p-6 border-b border-[#2a2a2a]">
+      <div class="flex items-center justify-between p-6 border-b border-[var(--color-border-subtle)]">
         <h2 class="text-xl font-semibold text-foreground">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h2>
         <button
           (click)="close()"
-          class="text-slate-500 hover:text-foreground transition-colors">
+          class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors">
           <lucide-icon name="X"></lucide-icon>
         </button>
       </div>
@@ -34,75 +34,75 @@ import { AuthService } from '../../../services/auth.service';
         <div class="space-y-4">
           <!-- Current Password -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'PROFILE.CURRENT_PASSWORD' | translate }} *
             </label>
             <input
               type="password"
               formControlName="currentPassword"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [class.!border-rose-500]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched"
             />
             @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
               @if (passwordForm.get('currentPassword')?.errors?.['required']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
               } @else if (passwordForm.get('currentPassword')?.errors?.['minlength']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
               }
             }
           </div>
 
           <!-- New Password -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'PROFILE.NEW_PASSWORD' | translate }} *
             </label>
             <input
               type="password"
               formControlName="newPassword"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [class.!border-rose-500]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
             />
             @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
               @if (passwordForm.get('newPassword')?.errors?.['required']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
               } @else if (passwordForm.get('newPassword')?.errors?.['minlength']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
               }
             }
           </div>
 
           <!-- Confirm Password -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'PROFILE.CONFIRM_PASSWORD' | translate }} *
             </label>
             <input
               type="password"
               formControlName="confirmPassword"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [class.!border-rose-500]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched"
             />
             @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
               @if (passwordForm.get('confirmPassword')?.errors?.['required']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
               }
             }
           </div>
         </div>
 
         <!-- Actions -->
-        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#2a2a2a]">
+        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--color-border-subtle)]">
           <button
             type="button"
             (click)="close()"
-            class="px-4 py-2.5 text-slate-400 hover:text-foreground transition-colors font-medium">
+            class="px-4 py-2.5 text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors font-medium">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             [disabled]="passwordForm.invalid || saving()"
-            class="flex items-center gap-2 px-6 py-2.5 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
+            class="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
             @if (saving()) {
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             }

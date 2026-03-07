@@ -2,7 +2,9 @@
 <button
   class="mobile-menu-btn"
   (click)="toggleMobileMenu()"
-  [style.display]="isMobileMenuOpen() ? 'none' : null">
+  [style.display]="isMobileMenuOpen() ? 'none' : null"
+  [attr.aria-label]="'NAV.MENU' | translate"
+  [attr.aria-expanded]="isMobileMenuOpen()">
   <lucide-icon name="Menu"></lucide-icon>
 </button>
 
@@ -15,6 +17,8 @@
 
 <aside
   class="sidebar"
+  role="navigation"
+  [attr.aria-label]="'NAV.MENU' | translate"
   [class.collapsed]="isCollapsed()"
   [class.mobile-open]="isMobileMenuOpen()">
 
@@ -40,7 +44,7 @@
     <button
       class="toggle-btn"
       (click)="isMobileMenuOpen() ? closeMobileMenu() : toggleSidebar($event)"
-      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? 'Expand' : ''"
+      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('COMMON.EXPAND' | translate) : ''"
       matTooltipPosition="right">
       <lucide-icon [name]="isMobileMenuOpen() ? 'X' : (isCollapsed() ? 'ChevronRight' : 'ChevronLeft')"></lucide-icon>
     </button>

@@ -95,6 +95,25 @@ export class Dashboard implements OnInit {
   // Signal to track when dashboard data is ready for custom charts
   dataReady = signal<boolean>(false);
 
+  // Memoized custom chart configs - avoids recalculation on every change detection
+  customChartConfigs = computed(() => {
+    const charts = this.customCharts();
+    const configs = new Map<string, { data: { labels: string[]; series: any }; options: any }>();
+    // Access reactive dependencies to track changes
+    this.categoryStats();
+    this.warehouseStats();
+    this.stats();
+    this.lowStockItems();
+    this.allItems();
+    for (const chart of charts) {
+      configs.set(chart.id, {
+        data: this.getCustomChartData(chart),
+        options: this.getCustomChartOptions(chart)
+      });
+    }
+    return configs;
+  });
+
   // Value calculations from inventory items
   allItems = signal<InventoryItemInterface[]>([]);
 
@@ -116,6 +135,23 @@ export class Dashboard implements OnInit {
     '#4d7c6f', '#5d8c7f', '#6d9c8f', '#7dac9f', '#8dbcaf',
     '#9dcdbf', '#3d6c5f', '#2d5c4f', '#1d4c3f', '#0d3c2f'
   ];
+
+  // Resolve CSS variable to hex for ApexCharts (which needs resolved values)
+  private getCssVar(name: string, fallback: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  }
+
+  private get chartForeColor(): string {
+    return this.getCssVar('--color-on-surface-variant', '#94a3b8');
+  }
+
+  private get chartGridColor(): string {
+    return this.getCssVar('--color-border-subtle', '#2a2a2a');
+  }
+
+  private get chartTextColor(): string {
+    return this.getCssVar('--color-on-surface', '#e2e8f0');
+  }
 
   constructor() {
     this.initChartOptions();
@@ -424,18 +460,21 @@ export class Dashboard implements OnInit {
       return val.toLocaleString('en-US');
     };
 
+    const foreColor = this.chartForeColor;
+    const gridColor = this.chartGridColor;
+
     return {
       chart: {
         type: chart.chartType,
         height: 250,
         background: 'transparent',
-        foreColor: '#94a3b8',
+        foreColor,
         toolbar: { show: false }
       },
       colors: colors,
-      grid: { borderColor: '#2a2a2a', strokeDashArray: 4 },
+      grid: { borderColor: gridColor, strokeDashArray: 4 },
       dataLabels: { enabled: false },
-      legend: { show: true, position: 'bottom', labels: { colors: '#94a3b8' } },
+      legend: { show: true, position: 'bottom', labels: { colors: foreColor } },
       plotOptions: isPieType ? {
         pie: { donut: { size: chart.chartType === 'donut' ? '60%' : '0%' } },
         radialBar: { hollow: { size: '50%' } }
@@ -443,11 +482,11 @@ export class Dashboard implements OnInit {
         bar: { borderRadius: 4, columnWidth: '60%' }
       },
       xaxis: isPieType ? {} : {
-        labels: { style: { colors: '#94a3b8', fontSize: '10px' }, rotate: -45 }
+        labels: { style: { colors: foreColor, fontSize: '10px' }, rotate: -45 }
       },
       yaxis: {
         labels: {
-          style: { colors: '#94a3b8' },
+          style: { colors: foreColor },
           formatter: (val: number) => formatValue(val)
         }
       },
@@ -461,12 +500,16 @@ export class Dashboard implements OnInit {
   }
 
   private initChartOptions(): void {
+    const foreColor = this.chartForeColor;
+    const gridColor = this.chartGridColor;
+    const textColor = this.chartTextColor;
+
     this.statusChartOptions.set({
       chart: {
         type: 'donut',
         height: 280,
         background: 'transparent',
-        foreColor: '#94a3b8'
+        foreColor
       },
       labels: [
         this.translate.instant('DASHBOARD.IN_STOCK'),
@@ -477,7 +520,7 @@ export class Dashboard implements OnInit {
       colors: ['#10b981', '#f97316', '#ef4444', '#3b82f6'],
       legend: {
         position: 'bottom',
-        labels: { colors: '#94a3b8' }
+        labels: { colors: foreColor }
       },
       dataLabels: {
         enabled: true,
@@ -490,13 +533,13 @@ export class Dashboard implements OnInit {
             size: '65%',
             labels: {
               show: true,
-              name: { show: true, fontSize: '14px', color: '#94a3b8' },
-              value: { show: true, fontSize: '20px', fontWeight: 700, color: '#e2e8f0' },
+              name: { show: true, fontSize: '14px', color: foreColor },
+              value: { show: true, fontSize: '20px', fontWeight: 700, color: textColor },
               total: {
                 show: true,
                 label: this.translate.instant('DASHBOARD.TOTAL_ITEMS'),
                 fontSize: '12px',
-                color: '#94a3b8',
+                color: foreColor,
                 formatter: (w: any) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0)
               }
             }
@@ -514,21 +557,21 @@ export class Dashboard implements OnInit {
         type: 'bar',
         height: 280,
         background: 'transparent',
-        foreColor: '#94a3b8',
+        foreColor,
         toolbar: { show: false }
       },
       xaxis: {
         categories: [],
-        labels: { style: { colors: '#94a3b8', fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
+        labels: { style: { colors: foreColor, fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
         axisBorder: { show: false },
         axisTicks: { show: false }
       },
-      yaxis: { labels: { style: { colors: '#94a3b8' } } },
+      yaxis: { labels: { style: { colors: foreColor } } },
       colors: this.chartColors,
-      grid: { borderColor: '#2a2a2a', strokeDashArray: 4 },
+      grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%', distributed: true } },
       dataLabels: { enabled: false },
-      tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} items` } }
+      tooltip: { theme: 'dark', y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } }
     });
 
     this.warehouseChartOptions.set({
@@ -536,21 +579,21 @@ export class Dashboard implements OnInit {
         type: 'bar',
         height: 280,
         background: 'transparent',
-        foreColor: '#94a3b8',
+        foreColor,
         toolbar: { show: false }
       },
       xaxis: {
         categories: [],
-        labels: { style: { colors: '#94a3b8', fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
+        labels: { style: { colors: foreColor, fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
         axisBorder: { show: false },
         axisTicks: { show: false }
       },
-      yaxis: { labels: { style: { colors: '#94a3b8' } } },
+      yaxis: { labels: { style: { colors: foreColor } } },
       colors: ['#06b6d4'],
-      grid: { borderColor: '#2a2a2a', strokeDashArray: 4 },
+      grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
       dataLabels: { enabled: false },
-      tooltip: { theme: 'dark', y: { formatter: (val: number) => `${val} items` } },
+      tooltip: { theme: 'dark', y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } },
       fill: { type: 'gradient', gradient: { shade: 'dark', type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.8 } }
     });
   }
@@ -648,7 +691,7 @@ export class Dashboard implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading dashboard data', err);
-        this.error.set('Error loading dashboard data: ' + (err.message || 'Unknown error'));
+        this.error.set(this.translate.instant('ERRORS.LOADING_DATA') + ': ' + (err.message || ''));
         this.loading.set(false);
       }
     });

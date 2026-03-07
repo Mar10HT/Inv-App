@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -26,7 +26,8 @@ import { UserRole } from '../../../interfaces/user.interface';
     TranslateModule
   ],
   templateUrl: './inventory-form.component.html',
-  styleUrl: './inventory-form.component.css'
+  styleUrl: './inventory-form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InventoryFormComponent implements OnInit {
   private fb = inject(FormBuilder);

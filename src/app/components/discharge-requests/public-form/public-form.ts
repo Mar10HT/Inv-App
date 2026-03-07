@@ -16,27 +16,27 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
       <div class="w-full max-w-2xl">
         <!-- Header -->
         <div class="text-center mb-8">
-          <div class="inline-flex items-center justify-center w-16 h-16 bg-[#4d7c6f]/20 rounded-2xl mb-4">
-            <lucide-icon name="ClipboardList" class="!w-8 !h-8 !text-[#4d7c6f]"></lucide-icon>
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-primary)]/20 rounded-2xl mb-4">
+            <lucide-icon name="ClipboardList" class="!w-8 !h-8 !text-[var(--color-primary)]"></lucide-icon>
           </div>
           <h1 class="text-3xl font-bold text-foreground mb-2">{{ 'DISCHARGES.PUBLIC_FORM.TITLE' | translate }}</h1>
-          <p class="text-slate-500">{{ 'DISCHARGES.PUBLIC_FORM.SUBTITLE' | translate }}</p>
+          <p class="text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.PUBLIC_FORM.SUBTITLE' | translate }}</p>
         </div>
 
         @if (submitted()) {
           <!-- Success State -->
           <div class="bg-surface-variant border border-theme rounded-xl p-8 text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-950/50 rounded-full mb-4">
-              <lucide-icon name="CheckCircle2" class="!w-8 !h-8 !text-emerald-400"></lucide-icon>
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-success-bg)] rounded-full mb-4">
+              <lucide-icon name="CheckCircle2" class="!w-8 !h-8 !text-[var(--color-status-success)]"></lucide-icon>
             </div>
             <h2 class="text-2xl font-bold text-foreground mb-2">{{ 'DISCHARGES.PUBLIC_FORM.SUCCESS_TITLE' | translate }}</h2>
-            <p class="text-slate-400 mb-2">
+            <p class="text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DISCHARGES.PUBLIC_FORM.SUCCESS_MESSAGE' | translate:{ count: requestsCreated() } }}
             </p>
-            <p class="text-slate-500 text-sm mb-6">{{ 'DISCHARGES.PUBLIC_FORM.SUCCESS_HINT' | translate }}</p>
+            <p class="text-[var(--color-on-surface-variant)] text-sm mb-6">{{ 'DISCHARGES.PUBLIC_FORM.SUCCESS_HINT' | translate }}</p>
             <button
               (click)="resetForm()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all font-medium">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all font-medium">
               {{ 'DISCHARGES.PUBLIC_FORM.NEW_REQUEST' | translate }}
             </button>
           </div>
@@ -48,50 +48,50 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
               <h2 class="text-lg font-semibold text-foreground mb-4">{{ 'DISCHARGES.PUBLIC_FORM.REQUESTER_INFO' | translate }}</h2>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NAME' | translate }} *</label>
+                  <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NAME' | translate }} *</label>
                   <input
                     type="text"
                     [(ngModel)]="requesterName"
-                    class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                    class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     [placeholder]="'DISCHARGES.PUBLIC_FORM.NAME_PLACEHOLDER' | translate"
                   />
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'DISCHARGES.PUBLIC_FORM.POSITION' | translate }}</label>
+                    <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.POSITION' | translate }}</label>
                     <input
                       type="text"
                       [(ngModel)]="requesterPosition"
-                      class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                      class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                       [placeholder]="'DISCHARGES.PUBLIC_FORM.POSITION_PLACEHOLDER' | translate"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'DISCHARGES.PUBLIC_FORM.PHONE' | translate }}</label>
+                    <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.PHONE' | translate }}</label>
                     <input
                       type="tel"
                       [(ngModel)]="requesterPhone"
-                      class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                      class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                       [placeholder]="'DISCHARGES.PUBLIC_FORM.PHONE_PLACEHOLDER' | translate"
                     />
                   </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</label>
+                    <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</label>
                     <input
                       type="date"
                       [(ngModel)]="neededByDate"
-                      class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                      class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     />
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'DISCHARGES.PUBLIC_FORM.JUSTIFICATION' | translate }}</label>
+                  <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.JUSTIFICATION' | translate }}</label>
                   <textarea
                     [(ngModel)]="justification"
                     rows="2"
-                    class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] resize-none transition-all"
+                    class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none transition-all"
                     [placeholder]="'DISCHARGES.PUBLIC_FORM.JUSTIFICATION_PLACEHOLDER' | translate"
                   ></textarea>
                 </div>
@@ -105,7 +105,7 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
                 <button
                   type="button"
                   (click)="addItem()"
-                  class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] flex items-center gap-1 font-medium">
+                  class="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] flex items-center gap-1 font-medium">
                   <lucide-icon name="Plus" class="!w-4 !h-4"></lucide-icon>
                   {{ 'DISCHARGES.PUBLIC_FORM.ADD_ITEM' | translate }}
                 </button>
@@ -118,22 +118,22 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
                     type="text"
                     [(ngModel)]="itemSearch"
                     [placeholder]="'DISCHARGES.PUBLIC_FORM.SEARCH_ITEMS' | translate"
-                    class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                    class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                   />
-                  <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
+                  <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
                 </div>
               }
 
               <!-- Selected Items -->
               <div class="space-y-3">
                 @for (item of selectedItems(); track $index; let i = $index) {
-                  <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4">
+                  <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
                     <div class="flex items-start gap-3">
                       <div class="flex-1 space-y-3">
                         <select
                           [ngModel]="item.inventoryItemId"
                           (ngModelChange)="updateItemId(i, $event)"
-                          class="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
+                          class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
                           <option value="">{{ 'DISCHARGES.PUBLIC_FORM.SELECT_ITEM' | translate }}</option>
                           @for (avItem of filteredAvailableItems(); track avItem.id) {
                             <option [value]="avItem.id" [disabled]="isItemAlreadySelected(avItem.id, i)">
@@ -148,18 +148,18 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
                             (ngModelChange)="updateItemQuantity(i, $event)"
                             min="1"
                             [max]="getMaxQuantity(item.inventoryItemId)"
-                            class="w-28 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                            class="w-28 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'DISCHARGES.PUBLIC_FORM.QTY' | translate"
                           />
                           @if (getSelectedItemName(item.inventoryItemId)) {
-                            <span class="text-slate-500 text-sm">{{ getSelectedItemName(item.inventoryItemId) }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ getSelectedItemName(item.inventoryItemId) }}</span>
                           }
                         </div>
                       </div>
                       <button
                         type="button"
                         (click)="removeItem(i)"
-                        class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
                         <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                       </button>
                     </div>
@@ -169,15 +169,15 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
 
               @if (selectedItems().length === 0) {
                 <div class="text-center py-8">
-                  <lucide-icon name="Package" class="!w-12 !h-12 !text-slate-700 mb-3 mx-auto"></lucide-icon>
-                  <p class="text-slate-500 text-sm">{{ 'DISCHARGES.PUBLIC_FORM.NO_ITEMS' | translate }}</p>
+                  <lucide-icon name="Package" class="!w-12 !h-12 !text-[var(--color-on-surface-muted)] mb-3 mx-auto"></lucide-icon>
+                  <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'DISCHARGES.PUBLIC_FORM.NO_ITEMS' | translate }}</p>
                 </div>
               }
             </div>
 
             <!-- Error Message -->
             @if (errorMessage()) {
-              <div class="mx-6 mb-4 p-3 bg-red-950/50 border border-red-900 rounded-lg text-red-400 text-sm">
+              <div class="mx-6 mb-4 p-3 bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-lg text-[var(--color-status-error)] text-sm">
                 {{ errorMessage() }}
               </div>
             }
@@ -187,7 +187,7 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
               <button
                 (click)="submitRequest()"
                 [disabled]="!canSubmit() || submitting()"
-                class="bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 disabled:text-slate-500 text-white px-8 py-3 rounded-lg transition-all font-medium flex items-center gap-2">
+                class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-8 py-3 rounded-lg transition-all font-medium flex items-center gap-2">
                 @if (submitting()) {
                   <lucide-icon name="Loader2" class="!w-5 !h-5 !text-current animate-spin"></lucide-icon>
                 }

@@ -5,12 +5,12 @@
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'TRANSACTION.TITLE' | translate }}</h1>
-          <p class="text-slate-500 text-lg">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
+          <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
         </div>
         <ng-container *ngxPermissionsOnly="['create_transactions']">
           <button
             (click)="addTransaction()"
-            class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
+            class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
             <lucide-icon name="Plus" class="!w-5 !h-5"></lucide-icon>
             {{ 'TRANSACTION.ADD' | translate }}
           </button>
@@ -20,44 +20,44 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TOTAL' | translate }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TOTAL' | translate }}</p>
             <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Receipt" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
+          <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <lucide-icon name="Receipt" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TYPES.IN' | translate }}</p>
-            <p class="text-3xl font-bold text-emerald-400">{{ stats().inCount }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TYPES.IN' | translate }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ stats().inCount }}</p>
           </div>
           <div class="bg-emerald-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="ArrowDown" class="!text-emerald-400 !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TYPES.OUT' | translate }}</p>
-            <p class="text-3xl font-bold text-rose-400">{{ stats().outCount }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TYPES.OUT' | translate }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-error)]">{{ stats().outCount }}</p>
           </div>
           <div class="bg-rose-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="ArrowUp" class="!text-rose-400 !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-slate-500">{{ 'TRANSACTION.TYPES.TRANSFER' | translate }}</p>
-            <p class="text-3xl font-bold text-blue-400">{{ stats().transferCount }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TYPES.TRANSFER' | translate }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ stats().transferCount }}</p>
           </div>
           <div class="bg-blue-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="ArrowLeftRight" class="!text-blue-400 !w-6 !h-6"></lucide-icon>
@@ -69,17 +69,17 @@
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
 
     <!-- Error State -->
     @if (error()) {
-      <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
+      <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
           <lucide-icon name="Info" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
-          <span class="text-rose-400">{{ error() }}</span>
+          <span class="text-[var(--color-status-error)]">{{ error() }}</span>
         </div>
       </div>
     }
@@ -93,13 +93,13 @@
       @if (transactions().length === 0 && !loading()) {
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Receipt" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
-          <p class="text-slate-500 text-lg mb-2">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
-          <p class="text-slate-600 text-sm mb-6">{{ 'TRANSACTION.NO_TRANSACTIONS_DESC' | translate }}</p>
+          <lucide-icon name="Receipt" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
+          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'TRANSACTION.NO_TRANSACTIONS_DESC' | translate }}</p>
           <ng-container *ngxPermissionsOnly="['create_transactions']">
             <button
               (click)="addTransaction()"
-              class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
+              class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
               {{ 'TRANSACTION.ADD' | translate }}
             </button>
           </ng-container>
@@ -109,18 +109,18 @@
         <div class="hidden lg:block overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="bg-[#141414]">
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSACTION.TYPE' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSACTION.DATE' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSACTION.WAREHOUSES' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSACTION.USER' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSACTION.ITEMS' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
+              <tr class="bg-[var(--color-surface)]">
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSACTION.TYPE' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSACTION.DATE' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSACTION.WAREHOUSES' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSACTION.USER' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSACTION.ITEMS' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#1e1e1e]">
+            <tbody class="divide-y divide-[var(--color-border-subtle)]">
               @for (transaction of transactions(); track trackByFn($index, transaction)) {
-                <tr class="hover:bg-[#1e1e1e] transition-colors">
+                <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                   <!-- Type Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-2">
@@ -140,13 +140,13 @@
                   <td class="px-6 py-4">
                     <div class="text-sm">
                       @if (transaction.sourceWarehouse) {
-                        <div class="text-slate-400">
-                          <span class="text-slate-500">{{ 'TRANSACTION.FROM' | translate }}:</span> {{ transaction.sourceWarehouse.name }}
+                        <div class="text-[var(--color-on-surface-variant)]">
+                          <span class="text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.FROM' | translate }}:</span> {{ transaction.sourceWarehouse.name }}
                         </div>
                       }
                       @if (transaction.destinationWarehouse) {
-                        <div class="text-slate-400">
-                          <span class="text-slate-500">{{ 'TRANSACTION.TO' | translate }}:</span> {{ transaction.destinationWarehouse.name }}
+                        <div class="text-[var(--color-on-surface-variant)]">
+                          <span class="text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TO' | translate }}:</span> {{ transaction.destinationWarehouse.name }}
                         </div>
                       }
                     </div>
@@ -154,12 +154,12 @@
 
                   <!-- User Column -->
                   <td class="px-6 py-4">
-                    <span class="text-slate-400">{{ transaction.user?.name || transaction.user?.email || '-' }}</span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ transaction.user?.name || transaction.user?.email || '-' }}</span>
                   </td>
 
                   <!-- Items Column -->
                   <td class="px-6 py-4">
-                    <span class="text-slate-400">{{ transaction.items.length }} {{ 'TRANSACTION.ITEMS_COUNT' | translate }}</span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ transaction.items.length }} {{ 'TRANSACTION.ITEMS_COUNT' | translate }}</span>
                   </td>
 
                   <!-- Actions Column -->
@@ -168,7 +168,7 @@
                       <button
                         type="button"
                         (click)="deleteTransaction(transaction)"
-                        class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-rose-950/30 transition-colors flex items-center justify-center">
                         <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                       </button>
                     </ng-container>
@@ -183,46 +183,46 @@
         <div class="lg:hidden p-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             @for (transaction of transactions(); track trackByFn($index, transaction)) {
-              <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+              <div class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors">
                 <!-- Type Badge & Date -->
                 <div class="flex justify-between items-start mb-2">
                   <div class="flex items-center gap-1">
                     <lucide-icon [name]="getTypeIcon(transaction.type)" class="!w-3 !h-3" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'"></lucide-icon>
-                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium" [class]="transaction.type === 'IN' ? 'bg-emerald-950/50 text-emerald-400' : transaction.type === 'OUT' ? 'bg-rose-950/50 text-rose-400' : 'bg-blue-950/50 text-blue-400'">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium" [class]="transaction.type === 'IN' ? 'bg-[var(--color-success-bg)] text-[var(--color-status-success)]' : transaction.type === 'OUT' ? 'bg-[var(--color-error-bg)] text-[var(--color-status-error)]' : 'bg-[var(--color-info-bg)] text-[var(--color-status-info)]'">
                       {{ 'TRANSACTION.TYPES.' + transaction.type | translate }}
                     </span>
                   </div>
                 </div>
 
                 <!-- Date -->
-                <p class="text-slate-400 text-xs mb-2">{{ formatDate(transaction.date) }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ formatDate(transaction.date) }}</p>
 
                 <!-- Warehouses -->
                 <div class="text-xs space-y-0.5 mb-2">
                   @if (transaction.sourceWarehouse) {
-                    <div class="text-slate-500 truncate">
-                      <span class="text-slate-600">De:</span> {{ transaction.sourceWarehouse.name }}
+                    <div class="text-[var(--color-on-surface-variant)] truncate">
+                      <span class="text-[var(--color-on-surface-muted)]">De:</span> {{ transaction.sourceWarehouse.name }}
                     </div>
                   }
                   @if (transaction.destinationWarehouse) {
-                    <div class="text-slate-500 truncate">
-                      <span class="text-slate-600">A:</span> {{ transaction.destinationWarehouse.name }}
+                    <div class="text-[var(--color-on-surface-variant)] truncate">
+                      <span class="text-[var(--color-on-surface-muted)]">A:</span> {{ transaction.destinationWarehouse.name }}
                     </div>
                   }
                 </div>
 
                 <!-- Items count -->
                 <div class="flex items-center justify-between text-xs mb-2">
-                  <span class="text-slate-400">Items: <span class="text-foreground font-medium">{{ transaction.items.length }}</span></span>
+                  <span class="text-[var(--color-on-surface-variant)]">Items: <span class="text-foreground font-medium">{{ transaction.items.length }}</span></span>
                 </div>
 
                 <!-- Actions -->
                 <ng-container *ngxPermissionsOnly="['delete_transactions']">
-                  <div class="flex justify-end pt-2 border-t border-[#1e1e1e]">
+                  <div class="flex justify-end pt-2 border-t border-[var(--color-border-subtle)]">
                     <button
                       type="button"
                       (click)="deleteTransaction(transaction)"
-                      class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-rose-950/30 transition-colors">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </div>

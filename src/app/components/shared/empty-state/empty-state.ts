@@ -2,21 +2,22 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-empty-state',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, MatButtonModule],
+  imports: [CommonModule, LucideAngularModule, MatButtonModule, TranslateModule],
   template: `
     <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div class="rounded-full bg-slate-800 p-6 mb-4">
-        <lucide-icon [name]="icon" class="!w-12 !h-12 text-slate-500"></lucide-icon>
+      <div class="rounded-full bg-[var(--color-surface-elevated)] p-6 mb-4">
+        <lucide-icon [name]="icon" class="!w-12 !h-12 text-[var(--color-on-surface-variant)]"></lucide-icon>
       </div>
 
-      <h3 class="text-xl font-semibold text-white mb-2">{{ title }}</h3>
+      <h3 class="text-xl font-semibold text-white mb-2">{{ title || ('COMMON.NO_DATA_FOUND' | translate) }}</h3>
 
       @if (description) {
-        <p class="text-slate-400 mb-6 max-w-md">{{ description }}</p>
+        <p class="text-[var(--color-on-surface-variant)] mb-6 max-w-md">{{ description }}</p>
       }
 
       @if (actionLabel) {
@@ -35,7 +36,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class EmptyState {
   @Input() icon = 'Inbox';
-  @Input() title = 'No data found';
+  @Input() title?: string;
   @Input() description?: string;
   @Input() actionLabel?: string;
   @Input() actionIcon?: string;

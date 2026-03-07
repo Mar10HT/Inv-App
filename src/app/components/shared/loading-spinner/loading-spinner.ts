@@ -8,11 +8,11 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="flex flex-col items-center justify-center gap-3" [ngClass]="containerClass">
       <div
-        class="animate-spin rounded-full border-4 border-slate-700 border-t-blue-500"
+        class="animate-spin rounded-full border-4 border-[var(--color-border)] border-t-[var(--color-primary)]"
         [ngClass]="sizeClass">
       </div>
       @if (message) {
-        <p class="text-slate-400 text-sm">{{ message }}</p>
+        <p class="text-[var(--color-on-surface-variant)] text-sm">{{ message }}</p>
       }
     </div>
   `

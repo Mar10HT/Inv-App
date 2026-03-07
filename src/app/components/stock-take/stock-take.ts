@@ -44,12 +44,12 @@ import {
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
                 <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'STOCK_TAKE.TITLE' | translate }}</h1>
-                <p class="text-slate-500 text-lg">{{ 'STOCK_TAKE.SUBTITLE' | translate }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'STOCK_TAKE.SUBTITLE' | translate }}</p>
               </div>
               <ng-container *ngxPermissionsOnly="['create_stock_takes']">
                 <button
                   (click)="openNewDialog()"
-                  class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
+                  class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
                   <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
                   <span>{{ 'STOCK_TAKE.NEW' | translate }}</span>
                 </button>
@@ -62,44 +62,44 @@ import {
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.STATS.TOTAL' | translate }}</p>
+                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.TOTAL' | translate }}</p>
                   <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
                 </div>
-                <div class="bg-slate-800/50 p-3 rounded-lg">
-                  <lucide-icon name="ClipboardCheck" class="!text-slate-400 !w-5 !h-5"></lucide-icon>
+                <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
+                  <lucide-icon name="ClipboardCheck" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
                 </div>
               </div>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.STATS.IN_PROGRESS' | translate }}</p>
-                  <p class="text-2xl font-bold text-blue-400">{{ stats().inProgress }}</p>
+                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.IN_PROGRESS' | translate }}</p>
+                  <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ stats().inProgress }}</p>
                 </div>
-                <div class="bg-blue-950/50 p-3 rounded-lg">
-                  <lucide-icon name="Clock" class="!text-blue-400 !w-5 !h-5"></lucide-icon>
-                </div>
-              </div>
-            </div>
-            <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.STATS.COMPLETED' | translate }}</p>
-                  <p class="text-2xl font-bold text-emerald-400">{{ stats().completed }}</p>
-                </div>
-                <div class="bg-emerald-950/50 p-3 rounded-lg">
-                  <lucide-icon name="CheckCircle2" class="!text-emerald-400 !w-5 !h-5"></lucide-icon>
+                <div class="bg-[var(--color-info-bg)] p-3 rounded-lg">
+                  <lucide-icon name="Clock" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
                 </div>
               </div>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.STATS.CANCELLED' | translate }}</p>
-                  <p class="text-2xl font-bold text-red-400">{{ stats().cancelled }}</p>
+                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.COMPLETED' | translate }}</p>
+                  <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().completed }}</p>
                 </div>
-                <div class="bg-red-950/50 p-3 rounded-lg">
-                  <lucide-icon name="XCircle" class="!text-red-400 !w-5 !h-5"></lucide-icon>
+                <div class="bg-[var(--color-success-bg)] p-3 rounded-lg">
+                  <lucide-icon name="CheckCircle2" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
+                </div>
+              </div>
+            </div>
+            <div class="bg-surface-variant border border-theme rounded-xl p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.CANCELLED' | translate }}</p>
+                  <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().cancelled }}</p>
+                </div>
+                <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
+                  <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
                 </div>
               </div>
             </div>
@@ -115,17 +115,16 @@ import {
                     [(ngModel)]="searchQuery"
                     (ngModelChange)="applyFilters()"
                     [placeholder]="'STOCK_TAKE.SEARCH_PLACEHOLDER' | translate"
-                    class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                    class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                   />
-                  <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
+                  <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
                 </div>
               </div>
               <div class="lg:w-56">
                 <select
                   [(ngModel)]="selectedStatus"
                   (ngModelChange)="applyFilters()"
-                  class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
-                  style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
+                  class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
                 >
                   <option value="all">{{ 'STOCK_TAKE.ALL_STATUS' | translate }}</option>
                   <option [value]="Status.IN_PROGRESS">{{ 'STOCK_TAKE.STATUS.IN_PROGRESS' | translate }}</option>
@@ -136,7 +135,7 @@ import {
               @if (hasFilters()) {
                 <button
                   (click)="clearFilters()"
-                  class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                  class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
                   <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                   {{ 'COMMON.CLEAR' | translate }}
                 </button>
@@ -154,25 +153,25 @@ import {
             <div class="hidden lg:block overflow-x-auto">
               <table class="w-full">
                 <thead>
-                  <tr class="bg-[#141414]">
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.WAREHOUSE' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.CREATED_BY' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.DATE' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.STATUS' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.WAREHOUSE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.CREATED_BY' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.DATE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.STATUS' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#1e1e1e]">
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
                   @for (st of paginatedItems(); track st.id) {
-                    <tr class="hover:bg-[#1e1e1e] transition-colors">
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                       <td class="px-6 py-4">
                         <div>
                           <div class="flex items-center gap-2">
-                            <lucide-icon name="Warehouse" class="!text-slate-500 !w-4 !h-4"></lucide-icon>
+                            <lucide-icon name="Warehouse" class="!text-[var(--color-on-surface-variant)] !w-4 !h-4"></lucide-icon>
                             <p class="text-foreground font-medium">{{ st.warehouseName }}</p>
                           </div>
                           @if (st.notes) {
-                            <p class="text-slate-500 text-sm truncate max-w-xs mt-1 ml-6">{{ st.notes }}</p>
+                            <p class="text-[var(--color-on-surface-variant)] text-sm truncate max-w-xs mt-1 ml-6">{{ st.notes }}</p>
                           }
                         </div>
                       </td>
@@ -187,7 +186,7 @@ import {
                         <div class="flex items-center gap-2">
                           <button
                             (click)="openDetail(st)"
-                            class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                            class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
                             <lucide-icon name="Eye" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
                             <span>{{ 'COMMON.VIEW' | translate }}</span>
                           </button>
@@ -204,9 +203,9 @@ import {
                   } @empty {
                     <tr>
                       <td colspan="5" class="px-6 py-16 text-center">
-                        <lucide-icon name="ClipboardCheck" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
-                        <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'STOCK_TAKE.NO_STOCK_TAKES' | translate }}</h3>
-                        <p class="text-slate-600">{{ 'STOCK_TAKE.NO_STOCK_TAKES_DESC' | translate }}</p>
+                        <lucide-icon name="ClipboardCheck" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+                        <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.NO_STOCK_TAKES' | translate }}</h3>
+                        <p class="text-[var(--color-on-surface-muted)]">{{ 'STOCK_TAKE.NO_STOCK_TAKES_DESC' | translate }}</p>
                       </td>
                     </tr>
                   }
@@ -215,14 +214,14 @@ import {
             </div>
 
             <!-- Mobile Cards -->
-            <div class="lg:hidden divide-y divide-[#1e1e1e]">
+            <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
               @for (st of paginatedItems(); track st.id) {
                 <div class="p-4 cursor-pointer" (click)="openDetail(st)">
                   <div class="flex justify-between items-start mb-3">
                     <div>
                       <p class="text-foreground font-medium">{{ st.warehouseName }}</p>
                       @if (st.notes) {
-                        <p class="text-slate-500 text-sm truncate">{{ st.notes }}</p>
+                        <p class="text-[var(--color-on-surface-variant)] text-sm truncate">{{ st.notes }}</p>
                       }
                     </div>
                     <span [class]="getStatusClass(st.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
@@ -230,14 +229,14 @@ import {
                     </span>
                   </div>
                   <div class="flex justify-between text-sm">
-                    <span class="text-slate-500">{{ st.startedByName }}</span>
-                    <span class="text-slate-500">{{ formatDate(st.createdAt) }}</span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ st.startedByName }}</span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ formatDate(st.createdAt) }}</span>
                   </div>
                 </div>
               } @empty {
                 <div class="p-8 text-center">
-                  <lucide-icon name="ClipboardCheck" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
-                  <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'STOCK_TAKE.NO_STOCK_TAKES' | translate }}</h3>
+                  <lucide-icon name="ClipboardCheck" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+                  <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.NO_STOCK_TAKES' | translate }}</h3>
                 </div>
               }
             </div>
@@ -266,7 +265,7 @@ import {
           <div class="mb-8">
             <button
               (click)="backToList()"
-              class="text-slate-400 hover:text-foreground transition-colors flex items-center gap-2 mb-4">
+              class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors flex items-center gap-2 mb-4">
               <lucide-icon name="ArrowLeft" class="!w-4 !h-4"></lucide-icon>
               {{ 'STOCK_TAKE.DETAIL.BACK' | translate }}
             </button>
@@ -279,7 +278,7 @@ import {
                   </span>
                 </div>
                 @if (selectedStockTake()!.notes) {
-                  <p class="text-slate-500">{{ selectedStockTake()!.notes }}</p>
+                  <p class="text-[var(--color-on-surface-variant)]">{{ selectedStockTake()!.notes }}</p>
                 }
               </div>
               @if (selectedStockTake()!.status === Status.IN_PROGRESS) {
@@ -287,13 +286,13 @@ import {
                   <ng-container *ngxPermissionsOnly="['manage_stock_takes']">
                     <button
                       (click)="cancelStockTake()"
-                      class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm border border-red-600/50 font-medium">
+                      class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm border border-red-600/50 font-medium">
                       <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
                       <span>{{ 'STOCK_TAKE.CANCEL.BUTTON' | translate }}</span>
                     </button>
                     <button
                       (click)="completeStockTake()"
-                      class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
+                      class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
                       <lucide-icon name="CheckCircle2" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
                       <span>{{ 'STOCK_TAKE.COMPLETE.BUTTON' | translate }}</span>
                     </button>
@@ -314,13 +313,13 @@ import {
           <!-- Progress Bar -->
           <div class="bg-surface-variant border border-theme rounded-xl p-6 mb-8">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm text-slate-400">{{ 'STOCK_TAKE.DETAIL.PROGRESS_LABEL' | translate }}</span>
+              <span class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.DETAIL.PROGRESS_LABEL' | translate }}</span>
               <span class="text-sm text-foreground font-medium">
                 {{ selectedStockTake()!.countedItems }} {{ 'STOCK_TAKE.DETAIL.ITEMS_OF' | translate }} {{ selectedStockTake()!.totalItems }} {{ 'STOCK_TAKE.DETAIL.ITEMS_COUNTED' | translate }}
               </span>
             </div>
-            <div class="w-full bg-slate-800 rounded-full h-3">
-              <div class="bg-[#4d7c6f] h-3 rounded-full transition-all" [style.width.%]="getProgress(selectedStockTake()!)"></div>
+            <div class="w-full bg-[var(--color-surface-elevated)] rounded-full h-3">
+              <div class="bg-[var(--color-primary)] h-3 rounded-full transition-all" [style.width.%]="getProgress(selectedStockTake()!)"></div>
             </div>
           </div>
 
@@ -334,25 +333,25 @@ import {
             <div class="hidden lg:block overflow-x-auto">
               <table class="w-full">
                 <thead>
-                  <tr class="bg-[#141414]">
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.ITEM' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.EXPECTED_QTY' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.COUNTED_QTY' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.VARIANCE' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.NOTES' | translate }}</th>
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.ITEM' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.EXPECTED_QTY' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.COUNTED_QTY' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.VARIANCE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.DETAIL.NOTES' | translate }}</th>
                     @if (selectedStockTake()!.status === Status.IN_PROGRESS) {
-                      <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
+                      <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
                     }
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#1e1e1e]">
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
                   @for (item of selectedStockTake()!.items; track item.id) {
-                    <tr class="hover:bg-[#1e1e1e] transition-colors">
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                       <td class="px-6 py-4">
                         <div>
                           <p class="text-foreground font-medium">{{ item.itemName }}</p>
                           @if (item.warehouseName) {
-                            <p class="text-slate-500 text-sm">{{ item.warehouseName }}</p>
+                            <p class="text-[var(--color-on-surface-variant)] text-sm">{{ item.warehouseName }}</p>
                           }
                         </div>
                       </td>
@@ -365,10 +364,10 @@ import {
                             (ngModelChange)="onCountChange(item, $event)"
                             min="0"
                             [placeholder]="'STOCK_TAKE.DETAIL.ENTER_QTY' | translate"
-                            class="w-24 bg-[#242424] border border-theme rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                            class="w-24 bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           />
                         } @else {
-                          <span [class]="item.countedQty !== null ? 'text-foreground' : 'text-slate-600'">
+                          <span [class]="item.countedQty !== null ? 'text-foreground' : 'text-[var(--color-on-surface-muted)]'">
                             {{ item.countedQty !== null ? item.countedQty : ('STOCK_TAKE.DETAIL.NOT_COUNTED' | translate) }}
                           </span>
                         }
@@ -379,7 +378,7 @@ import {
                             {{ (item.variance ?? 0) > 0 ? '+' : '' }}{{ item.variance }}
                           </span>
                         } @else {
-                          <span class="text-slate-600">-</span>
+                          <span class="text-[var(--color-on-surface-muted)]">-</span>
                         }
                       </td>
                       <td class="px-6 py-4">
@@ -389,10 +388,10 @@ import {
                             [ngModel]="editingItems[item.id]?.notes ?? item.notes ?? ''"
                             (ngModelChange)="onNotesChange(item, $event)"
                             [placeholder]="'STOCK_TAKE.DETAIL.ENTER_NOTES' | translate"
-                            class="w-full max-w-[200px] bg-[#242424] border border-theme rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                            class="w-full max-w-[200px] bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           />
                         } @else {
-                          <span class="text-slate-400 text-sm">{{ item.notes || '-' }}</span>
+                          <span class="text-[var(--color-on-surface-variant)] text-sm">{{ item.notes || '-' }}</span>
                         }
                       </td>
                       @if (selectedStockTake()!.status === Status.IN_PROGRESS) {
@@ -401,7 +400,7 @@ import {
                             <button
                               (click)="saveItemCount(item)"
                               [disabled]="savingItem() === item.id"
-                              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
                               @if (savingItem() === item.id) {
                                 <lucide-icon name="Loader2" class="!w-4 !h-4 !text-white animate-spin shrink-0"></lucide-icon>
                               } @else {
@@ -419,14 +418,14 @@ import {
             </div>
 
             <!-- Mobile Cards -->
-            <div class="lg:hidden divide-y divide-[#1e1e1e]">
+            <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
               @for (item of selectedStockTake()!.items; track item.id) {
                 <div class="p-4">
                   <div class="flex justify-between items-start mb-3">
                     <div>
                       <p class="text-foreground font-medium">{{ item.itemName }}</p>
                       @if (item.warehouseName) {
-                        <p class="text-slate-500 text-sm">{{ item.warehouseName }}</p>
+                        <p class="text-[var(--color-on-surface-variant)] text-sm">{{ item.warehouseName }}</p>
                       }
                     </div>
                     @if (item.countedQty !== null) {
@@ -437,11 +436,11 @@ import {
                   </div>
                   <div class="grid grid-cols-2 gap-3 text-sm mb-3">
                     <div>
-                      <p class="text-slate-500">{{ 'STOCK_TAKE.DETAIL.EXPECTED_QTY' | translate }}</p>
+                      <p class="text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.DETAIL.EXPECTED_QTY' | translate }}</p>
                       <p class="text-foreground">{{ item.expectedQty }}</p>
                     </div>
                     <div>
-                      <p class="text-slate-500">{{ 'STOCK_TAKE.DETAIL.COUNTED_QTY' | translate }}</p>
+                      <p class="text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.DETAIL.COUNTED_QTY' | translate }}</p>
                       @if (selectedStockTake()!.status === Status.IN_PROGRESS) {
                         <input
                           type="number"
@@ -449,10 +448,10 @@ import {
                           (ngModelChange)="onCountChange(item, $event)"
                           min="0"
                           [placeholder]="'STOCK_TAKE.DETAIL.ENTER_QTY' | translate"
-                          class="w-20 bg-[#242424] border border-theme rounded-lg px-2 py-1 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                          class="w-20 bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-2 py-1 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                         />
                       } @else {
-                        <p [class]="item.countedQty !== null ? 'text-foreground' : 'text-slate-600'">
+                        <p [class]="item.countedQty !== null ? 'text-foreground' : 'text-[var(--color-on-surface-muted)]'">
                           {{ item.countedQty !== null ? item.countedQty : '-' }}
                         </p>
                       }
@@ -462,7 +461,7 @@ import {
                     <button
                       (click)="saveItemCount(item)"
                       [disabled]="savingItem() === item.id"
-                      class="w-full bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                      class="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
                       <lucide-icon name="Save" class="!w-4 !h-4 !text-white"></lucide-icon>
                       <span>{{ 'STOCK_TAKE.DETAIL.SAVE_COUNT' | translate }}</span>
                     </button>
@@ -480,31 +479,31 @@ import {
           <div class="mb-8">
             <button
               (click)="backFromVariance()"
-              class="text-slate-400 hover:text-foreground transition-colors flex items-center gap-2 mb-4">
+              class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors flex items-center gap-2 mb-4">
               <lucide-icon name="ArrowLeft" class="!w-4 !h-4"></lucide-icon>
               {{ 'STOCK_TAKE.VARIANCE.BACK' | translate }}
             </button>
             <h1 class="text-3xl font-bold text-foreground mb-2">{{ 'STOCK_TAKE.VARIANCE.TITLE' | translate }}</h1>
-            <p class="text-slate-500">{{ varianceReport()!.stockTake.warehouse.name }}</p>
+            <p class="text-[var(--color-on-surface-variant)]">{{ varianceReport()!.stockTake.warehouse.name }}</p>
           </div>
 
           <!-- Summary Cards -->
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.VARIANCE.TOTAL_ITEMS' | translate }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.TOTAL_ITEMS' | translate }}</p>
               <p class="text-2xl font-bold text-foreground">{{ varianceReport()!.summary.totalItems }}</p>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.VARIANCE.ITEMS_COUNTED' | translate }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.ITEMS_COUNTED' | translate }}</p>
               <p class="text-2xl font-bold text-foreground">{{ varianceReport()!.summary.countedItems }}</p>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.VARIANCE.TOTAL_SURPLUS' | translate }}</p>
-              <p class="text-2xl font-bold text-emerald-400">+{{ varianceReport()!.summary.totalPositiveVariance }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.TOTAL_SURPLUS' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-success)]">+{{ varianceReport()!.summary.totalPositiveVariance }}</p>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500">{{ 'STOCK_TAKE.VARIANCE.TOTAL_SHORTAGE' | translate }}</p>
-              <p class="text-2xl font-bold text-red-400">{{ varianceReport()!.summary.totalNegativeVariance }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.TOTAL_SHORTAGE' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ varianceReport()!.summary.totalNegativeVariance }}</p>
             </div>
           </div>
 
@@ -518,17 +517,17 @@ import {
             <div class="hidden lg:block overflow-x-auto">
               <table class="w-full">
                 <thead>
-                  <tr class="bg-[#141414]">
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.ITEM' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.EXPECTED' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.COUNTED' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.DIFFERENCE' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.STATUS' | translate }}</th>
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.ITEM' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.EXPECTED' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.COUNTED' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'STOCK_TAKE.VARIANCE.DIFFERENCE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.STATUS' | translate }}</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#1e1e1e]">
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
                   @for (item of varianceReport()!.items; track item.id) {
-                    <tr class="hover:bg-[#1e1e1e] transition-colors">
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                       <td class="px-6 py-4">
                         <p class="text-foreground font-medium">{{ item.itemName }}</p>
                       </td>
@@ -541,15 +540,15 @@ import {
                       </td>
                       <td class="px-6 py-4">
                         @if ((item.variance ?? 0) > 0) {
-                          <span class="bg-emerald-950/50 text-emerald-400 border border-emerald-900 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          <span class="bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)] inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                             {{ 'STOCK_TAKE.VARIANCE.SURPLUS' | translate }}
                           </span>
                         } @else if ((item.variance ?? 0) < 0) {
-                          <span class="bg-red-950/50 text-red-400 border border-red-900 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          <span class="bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)] inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                             {{ 'STOCK_TAKE.VARIANCE.SHORTAGE' | translate }}
                           </span>
                         } @else {
-                          <span class="bg-slate-800/50 text-slate-400 border border-slate-700 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          <span class="bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)] inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                             {{ 'STOCK_TAKE.VARIANCE.MATCH' | translate }}
                           </span>
                         }
@@ -558,7 +557,7 @@ import {
                   } @empty {
                     <tr>
                       <td colspan="5" class="px-6 py-16 text-center">
-                        <p class="text-slate-500">{{ 'STOCK_TAKE.VARIANCE.NO_VARIANCE' | translate }}</p>
+                        <p class="text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.NO_VARIANCE' | translate }}</p>
                       </td>
                     </tr>
                   }
@@ -567,7 +566,7 @@ import {
             </div>
 
             <!-- Mobile Cards -->
-            <div class="lg:hidden divide-y divide-[#1e1e1e]">
+            <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
               @for (item of varianceReport()!.items; track item.id) {
                 <div class="p-4">
                   <div class="flex justify-between items-start mb-2">
@@ -578,11 +577,11 @@ import {
                   </div>
                   <div class="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <p class="text-slate-500">{{ 'STOCK_TAKE.VARIANCE.EXPECTED' | translate }}</p>
+                      <p class="text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.EXPECTED' | translate }}</p>
                       <p class="text-foreground">{{ item.expectedQty }}</p>
                     </div>
                     <div>
-                      <p class="text-slate-500">{{ 'STOCK_TAKE.VARIANCE.COUNTED' | translate }}</p>
+                      <p class="text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.VARIANCE.COUNTED' | translate }}</p>
                       <p class="text-foreground">{{ item.countedQty ?? '-' }}</p>
                     </div>
                   </div>
@@ -600,14 +599,14 @@ import {
         <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg" (click)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 class="text-xl font-semibold text-foreground">{{ 'STOCK_TAKE.NEW' | translate }}</h2>
-            <p class="text-slate-500 text-sm mt-1">{{ 'STOCK_TAKE.NEW_DESC' | translate }}</p>
+            <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'STOCK_TAKE.NEW_DESC' | translate }}</p>
           </div>
           <div class="p-6 space-y-4">
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'STOCK_TAKE.WAREHOUSE' | translate }} *</label>
+              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.WAREHOUSE' | translate }} *</label>
               <select
                 [(ngModel)]="newWarehouseId"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f]"
+                class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
               >
                 <option value="">{{ 'STOCK_TAKE.SELECT_WAREHOUSE' | translate }}</option>
                 @for (warehouse of warehouses(); track warehouse.id) {
@@ -616,11 +615,11 @@ import {
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'STOCK_TAKE.DESCRIPTION' | translate }}</label>
+              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.DESCRIPTION' | translate }}</label>
               <textarea
                 [(ngModel)]="newNotes"
                 rows="2"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] resize-none"
+                class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none"
                 [placeholder]="'STOCK_TAKE.DESCRIPTION_PLACEHOLDER' | translate"
               ></textarea>
             </div>
@@ -628,13 +627,13 @@ import {
           <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
             <button
               (click)="closeNewDialog()"
-              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
+              class="px-4 py-2 text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors">
               {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
               (click)="createStockTake()"
               [disabled]="!newWarehouseId"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 disabled:text-slate-500 text-white px-6 py-2 rounded-lg transition-all">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all">
               {{ 'COMMON.CREATE' | translate }}
             </button>
           </div>
@@ -650,28 +649,28 @@ import {
             <h2 class="text-xl font-semibold text-foreground">{{ 'STOCK_TAKE.COMPLETE.TITLE' | translate }}</h2>
           </div>
           <div class="p-6 space-y-4">
-            <p class="text-slate-400">{{ 'STOCK_TAKE.COMPLETE.MESSAGE' | translate }}</p>
+            <p class="text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.COMPLETE.MESSAGE' | translate }}</p>
             <label class="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 [(ngModel)]="applyToInventory"
-                class="mt-1 w-4 h-4 rounded border-slate-600 bg-[#242424] text-[#4d7c6f] focus:ring-[#4d7c6f] cursor-pointer"
+                class="mt-1 w-4 h-4 rounded border-[var(--color-border)] bg-[var(--color-surface-elevated)] text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer"
               />
               <div>
                 <p class="text-foreground font-medium">{{ 'STOCK_TAKE.COMPLETE.APPLY_INVENTORY' | translate }}</p>
-                <p class="text-slate-500 text-sm">{{ 'STOCK_TAKE.COMPLETE.APPLY_HINT' | translate }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'STOCK_TAKE.COMPLETE.APPLY_HINT' | translate }}</p>
               </div>
             </label>
           </div>
           <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
             <button
               (click)="closeCompleteDialog()"
-              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
+              class="px-4 py-2 text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors">
               {{ 'COMMON.CANCEL' | translate }}
             </button>
             <button
               (click)="confirmComplete()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-2 rounded-lg transition-all">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-2 rounded-lg transition-all">
               {{ 'STOCK_TAKE.COMPLETE.BUTTON' | translate }}
             </button>
           </div>
@@ -972,17 +971,17 @@ export class StockTakeComponent implements OnInit {
 
   getStatusClass(status: StockTakeStatus): string {
     const classes: Record<string, string> = {
-      [StockTakeStatus.IN_PROGRESS]: 'bg-blue-950/50 text-blue-400 border border-blue-900',
-      [StockTakeStatus.COMPLETED]: 'bg-emerald-950/50 text-emerald-400 border border-emerald-900',
-      [StockTakeStatus.CANCELLED]: 'bg-red-950/50 text-red-400 border border-red-900',
+      [StockTakeStatus.IN_PROGRESS]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]',
+      [StockTakeStatus.COMPLETED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
+      [StockTakeStatus.CANCELLED]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
     };
-    return classes[status] || 'bg-slate-800 text-slate-400';
+    return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
   getVarianceClass(variance: number): string {
-    if (variance > 0) return 'text-emerald-400';
-    if (variance < 0) return 'text-red-400';
-    return 'text-slate-400';
+    if (variance > 0) return 'text-[var(--color-status-success)]';
+    if (variance < 0) return 'text-[var(--color-status-error)]';
+    return 'text-[var(--color-on-surface-variant)]';
   }
 
   formatDate(date: Date): string {

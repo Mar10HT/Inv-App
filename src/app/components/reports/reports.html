@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-[#2d4a3f] rounded-xl flex items-center justify-center flex-shrink-0">
-          <lucide-icon name="BarChart3" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
+        <div class="w-12 h-12 bg-[var(--color-primary-container)] rounded-xl flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="BarChart3" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
         </div>
         <div>
           <h1 class="text-4xl font-bold text-foreground mb-1">{{ 'REPORTS.TITLE' | translate }}</h1>
-          <p class="text-slate-500 text-lg">{{ 'REPORTS.SUBTITLE' | translate }}</p>
+          <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'REPORTS.SUBTITLE' | translate }}</p>
         </div>
       </div>
     </div>
@@ -18,35 +18,35 @@
       <div class="flex flex-wrap gap-2 border-b border-theme pb-2">
         <button
           (click)="onTabChange(0)"
-          [class]="activeTab() === 0 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
+          [class]="activeTab() === 0 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_VALUE' | translate }}
         </button>
         <button
           (click)="onTabChange(1)"
-          [class]="activeTab() === 1 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
+          [class]="activeTab() === 1 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="ArrowLeftRight" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_TRANSACTIONS' | translate }}
         </button>
         <button
           (click)="onTabChange(2)"
-          [class]="activeTab() === 2 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
+          [class]="activeTab() === 2 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="Package" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_STATUS' | translate }}
         </button>
         <button
           (click)="onTabChange(3)"
-          [class]="activeTab() === 3 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
+          [class]="activeTab() === 3 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="UserCheck" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_ASSIGNMENTS' | translate }}
         </button>
         <button
           (click)="onTabChange(4)"
-          [class]="activeTab() === 4 ? 'bg-[#4d7c6f] text-white' : 'bg-surface-elevated text-slate-400 hover:text-foreground'"
+          [class]="activeTab() === 4 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="TrendingUp" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_TRENDS' | translate }}
@@ -57,8 +57,8 @@
     <!-- Loading State -->
     @if (loading() && activeTab() !== 1) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     } @else {
       <!-- ========== TAB 0: VALUE REPORT ========== -->
@@ -69,7 +69,7 @@
             <select
               [value]="selectedCurrency()"
               (change)="onCurrencyChange($any($event.target).value)"
-              class="bg-[#1a1a1a] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-all cursor-pointer">
+              class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer">
               @for (option of currencyOptions; track option.value) {
                 <option [value]="option.value">
                   {{ option.label.includes('.') ? (option.label | translate) : option.label }}
@@ -80,13 +80,13 @@
           <div class="flex items-center gap-2">
             <button
               (click)="exportReport()"
-              class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+              class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
               <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
               CSV
             </button>
             <button
               (click)="exportValueReportPDF()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
               <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
               PDF
             </button>
@@ -95,32 +95,32 @@
 
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-500">{{ 'REPORTS.TOTAL_VALUE' | translate }}</p>
-                <p class="text-3xl font-bold text-[#4d7c6f]">{{ formatCurrency(totalValue()) }}</p>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_VALUE' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-primary)]">{{ formatCurrency(totalValue()) }}</p>
               </div>
-              <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-                <lucide-icon name="DollarSign" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
+              <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <lucide-icon name="DollarSign" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-500">{{ 'REPORTS.TOTAL_ITEMS' | translate }}</p>
-                <p class="text-3xl font-bold text-sky-400">{{ totalItemsCount() }}</p>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_ITEMS' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ totalItemsCount() }}</p>
               </div>
-              <div class="bg-sky-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+              <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
                 <lucide-icon name="Package" class="!text-sky-500 !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-500">{{ 'REPORTS.CATEGORIES' | translate }}</p>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.CATEGORIES' | translate }}</p>
                 <p class="text-3xl font-bold text-purple-400">{{ valueByCategory().length }}</p>
               </div>
               <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -128,13 +128,13 @@
               </div>
             </div>
           </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-slate-700 transition-all">
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-slate-500">{{ 'REPORTS.WAREHOUSES' | translate }}</p>
-                <p class="text-3xl font-bold text-orange-400">{{ valueByWarehouse().length }}</p>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.WAREHOUSES' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-status-warning)]">{{ valueByWarehouse().length }}</p>
               </div>
-              <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+              <div class="bg-[var(--color-warning-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
                 <lucide-icon name="Warehouse" class="!text-orange-500 !w-6 !h-6"></lucide-icon>
               </div>
             </div>
@@ -146,23 +146,23 @@
           @for (section of [{title: 'REPORTS.BY_CATEGORY', icon: 'Tag', data: valueByCategory()}, {title: 'REPORTS.BY_WAREHOUSE', icon: 'Warehouse', data: valueByWarehouse()}, {title: 'REPORTS.BY_SUPPLIER', icon: 'Truck', data: valueBySupplier()}]; track section.title) {
             <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
               <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-                <lucide-icon [name]="section.icon" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
+                <lucide-icon [name]="section.icon" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
                 <h2 class="text-lg font-semibold text-foreground">{{ section.title | translate }}</h2>
               </div>
               <div class="p-4 max-h-[400px] overflow-y-auto">
-                <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-theme">
+                <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-2 text-xs font-semibold text-[var(--color-on-surface-variant)] uppercase tracking-wider border-b border-theme">
                   <span>{{ 'REPORTS.TABLE.NAME' | translate }}</span>
                   <span class="text-center">{{ 'REPORTS.TABLE.ITEMS' | translate }}</span>
                   <span class="text-right">{{ 'REPORTS.TABLE.VALUE' | translate }}</span>
                 </div>
                 @for (item of section.data; track item.label) {
-                  <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-3 text-sm hover:bg-[#1e1e1e] rounded-lg transition-colors">
+                  <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-3 text-sm hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
                     <span class="text-foreground truncate">{{ item.label }}</span>
-                    <span class="text-center text-slate-500">{{ item.count }}</span>
-                    <span class="text-right text-[#4d7c6f] font-semibold">{{ formatCurrency(item.value) }}</span>
+                    <span class="text-center text-[var(--color-on-surface-variant)]">{{ item.count }}</span>
+                    <span class="text-right text-[var(--color-primary)] font-semibold">{{ formatCurrency(item.value) }}</span>
                   </div>
                 } @empty {
-                  <div class="py-8 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</div>
+                  <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
                 }
               </div>
             </div>
@@ -172,7 +172,7 @@
         <!-- Top Items -->
         <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
           <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-            <lucide-icon name="TrendingUp" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
+            <lucide-icon name="TrendingUp" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
             <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TOP_ITEMS' | translate }}</h2>
           </div>
 
@@ -180,31 +180,31 @@
           <div class="hidden lg:block overflow-x-auto">
             <table class="w-full">
               <thead>
-                <tr class="bg-[#141414]">
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.ITEM' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.CATEGORY' | translate }}</th>
-                  <th class="text-center px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.QTY' | translate }}</th>
-                  <th class="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.UNIT_PRICE' | translate }}</th>
-                  <th class="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.TOTAL' | translate }}</th>
+                <tr class="bg-[var(--color-surface)]">
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.ITEM' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.CATEGORY' | translate }}</th>
+                  <th class="text-center px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.QTY' | translate }}</th>
+                  <th class="text-right px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.UNIT_PRICE' | translate }}</th>
+                  <th class="text-right px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TOTAL' | translate }}</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#1e1e1e]">
+              <tbody class="divide-y divide-[var(--color-border-subtle)]">
                 @for (item of topItems(); track item.id; let i = $index) {
-                  <tr class="hover:bg-[#1e1e1e] transition-colors">
+                  <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-3">
-                        <span class="w-6 h-6 bg-[#1a1a1a] rounded-md flex items-center justify-center text-xs font-bold text-[#4d7c6f]">{{ i + 1 }}</span>
+                        <span class="w-6 h-6 bg-[var(--color-surface-variant)] rounded-md flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">{{ i + 1 }}</span>
                         <span class="text-foreground font-medium">{{ item.name }}</span>
                       </div>
                     </td>
-                    <td class="px-6 py-4 text-slate-500">{{ item.category }}</td>
+                    <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ item.category }}</td>
                     <td class="px-6 py-4 text-center text-foreground">{{ item.quantity }}</td>
-                    <td class="px-6 py-4 text-right text-slate-500">{{ formatCurrency(item.price || 0) }}</td>
-                    <td class="px-6 py-4 text-right text-[#4d7c6f] font-bold">{{ formatCurrency(item.totalValue) }}</td>
+                    <td class="px-6 py-4 text-right text-[var(--color-on-surface-variant)]">{{ formatCurrency(item.price || 0) }}</td>
+                    <td class="px-6 py-4 text-right text-[var(--color-primary)] font-bold">{{ formatCurrency(item.totalValue) }}</td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</td>
+                    <td colspan="5" class="px-6 py-12 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</td>
                   </tr>
                 }
               </tbody>
@@ -215,25 +215,25 @@
           <div class="lg:hidden p-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               @for (item of topItems(); track item.id; let i = $index) {
-                <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+                <div class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors">
                   <!-- Rank Badge -->
                   <div class="flex justify-between items-start mb-2">
-                    <span class="w-6 h-6 bg-[#2d4a3f] rounded-md flex items-center justify-center text-xs font-bold text-[#4d7c6f]">{{ i + 1 }}</span>
-                    <span class="text-[#4d7c6f] font-bold text-sm">{{ formatCurrency(item.totalValue) }}</span>
+                    <span class="w-6 h-6 bg-[var(--color-primary-container)] rounded-md flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">{{ i + 1 }}</span>
+                    <span class="text-[var(--color-primary)] font-bold text-sm">{{ formatCurrency(item.totalValue) }}</span>
                   </div>
 
                   <!-- Item Name -->
                   <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
-                  <p class="text-slate-500 text-xs truncate mb-2">{{ item.category }}</p>
+                  <p class="text-[var(--color-on-surface-variant)] text-xs truncate mb-2">{{ item.category }}</p>
 
                   <!-- Quick Info -->
                   <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-400">Cant: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
-                    <span class="text-slate-500">{{ formatCurrency(item.price || 0) }}/u</span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.QTY_SHORT' | translate }}: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ formatCurrency(item.price || 0) }}/u</span>
                   </div>
                 </div>
               } @empty {
-                <div class="col-span-2 py-8 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</div>
+                <div class="col-span-2 py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
               }
             </div>
           </div>
@@ -244,8 +244,8 @@
       @if (activeTab() === 1) {
         @if (transactionsLoading()) {
           <div class="flex items-center justify-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-            <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+            <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
           </div>
         } @else {
           <!-- Filters -->
@@ -255,18 +255,18 @@
                 type="date"
                 [value]="dateFrom()"
                 (change)="onDateFromChange($any($event.target).value)"
-                class="bg-[#1a1a1a] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-all"
+                class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all"
                 placeholder="Desde">
               <input
                 type="date"
                 [value]="dateTo()"
                 (change)="onDateToChange($any($event.target).value)"
-                class="bg-[#1a1a1a] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-all"
+                class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all"
                 placeholder="Hasta">
               <select
                 [value]="transactionTypeFilter()"
                 (change)="onTransactionTypeChange($any($event.target).value)"
-                class="bg-[#1a1a1a] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-all cursor-pointer">
+                class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer">
                 <option value="ALL">{{ 'REPORTS.ALL_TYPES' | translate }}</option>
                 <option value="IN">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</option>
                 <option value="OUT">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</option>
@@ -275,7 +275,7 @@
               @if (dateFrom() || dateTo() || transactionTypeFilter() !== 'ALL') {
                 <button
                   (click)="clearTransactionFilters()"
-                  class="text-slate-400 hover:text-foreground transition-colors flex items-center gap-1">
+                  class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors flex items-center gap-1">
                   <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                   {{ 'COMMON.CLEAR' | translate }}
                 </button>
@@ -284,13 +284,13 @@
             <div class="flex items-center gap-2">
               <button
                 (click)="exportTransactions()"
-                class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+                class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
                 <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
                 CSV
               </button>
               <button
                 (click)="exportTransactionsPDF()"
-                class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+                class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
                 <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
                 PDF
               </button>
@@ -300,20 +300,20 @@
           <!-- Transaction Stats -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500 mb-1">{{ 'REPORTS.TOTAL_TRANSACTIONS' | translate }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'REPORTS.TOTAL_TRANSACTIONS' | translate }}</p>
               <p class="text-2xl font-bold text-foreground">{{ transactionStats().total }}</p>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500 mb-1">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</p>
-              <p class="text-2xl font-bold text-emerald-400">{{ transactionStats().inCount }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ transactionStats().inCount }}</p>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500 mb-1">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</p>
-              <p class="text-2xl font-bold text-rose-400">{{ transactionStats().outCount }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ transactionStats().outCount }}</p>
             </div>
             <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <p class="text-sm text-slate-500 mb-1">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</p>
-              <p class="text-2xl font-bold text-blue-400">{{ transactionStats().transferCount }}</p>
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ transactionStats().transferCount }}</p>
             </div>
           </div>
 
@@ -323,34 +323,34 @@
             <div class="hidden lg:block overflow-x-auto max-h-[600px] overflow-y-auto">
               <table class="w-full">
                 <thead class="sticky top-0 z-10">
-                  <tr class="bg-[#141414]">
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.TYPE' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.FROM' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.TO' | translate }}</th>
-                    <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.USER' | translate }}</th>
-                    <th class="text-center px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'REPORTS.TABLE.ITEMS' | translate }}</th>
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TYPE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.FROM' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TO' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.USER' | translate }}</th>
+                    <th class="text-center px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.ITEMS' | translate }}</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#1e1e1e]">
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
                   @for (tx of filteredTransactions(); track tx.id) {
-                    <tr class="hover:bg-[#1e1e1e] transition-colors">
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                       <td class="px-6 py-4 text-foreground">{{ formatDateTime(tx.date) }}</td>
                       <td class="px-6 py-4">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                          [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-emerald-400' : tx.type === 'OUT' ? 'bg-rose-500/20 text-rose-400' : 'bg-blue-500/20 text-blue-400'">
+                          [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-[var(--color-status-success)]' : tx.type === 'OUT' ? 'bg-rose-500/20 text-[var(--color-status-error)]' : 'bg-blue-500/20 text-[var(--color-status-info)]'">
                           <lucide-icon [name]="getTransactionIcon(tx.type)" class="!text-sm !w-4 !h-4"></lucide-icon>
                           {{ tx.type }}
                         </span>
                       </td>
-                      <td class="px-6 py-4 text-slate-400">{{ tx.sourceWarehouse?.name || '-' }}</td>
-                      <td class="px-6 py-4 text-slate-400">{{ tx.destinationWarehouse?.name || '-' }}</td>
-                      <td class="px-6 py-4 text-slate-400">{{ tx.user?.name || tx.user?.email || '-' }}</td>
+                      <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.sourceWarehouse?.name || '-' }}</td>
+                      <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.destinationWarehouse?.name || '-' }}</td>
+                      <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.user?.name || tx.user?.email || '-' }}</td>
                       <td class="px-6 py-4 text-center text-foreground">{{ tx.items.length }}</td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="6" class="px-6 py-12 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</td>
+                      <td colspan="6" class="px-6 py-12 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</td>
                     </tr>
                   }
                 </tbody>
@@ -361,11 +361,11 @@
             <div class="lg:hidden p-4 max-h-[600px] overflow-y-auto">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @for (tx of filteredTransactions(); track tx.id) {
-                  <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+                  <div class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors">
                     <!-- Type Badge -->
                     <div class="flex justify-between items-start mb-2">
                       <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium"
-                        [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-emerald-400' : tx.type === 'OUT' ? 'bg-rose-500/20 text-rose-400' : 'bg-blue-500/20 text-blue-400'">
+                        [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-[var(--color-status-success)]' : tx.type === 'OUT' ? 'bg-rose-500/20 text-[var(--color-status-error)]' : 'bg-blue-500/20 text-[var(--color-status-info)]'">
                         <lucide-icon [name]="getTransactionIcon(tx.type)" class="!w-3 !h-3"></lucide-icon>
                         {{ tx.type }}
                       </span>
@@ -373,27 +373,27 @@
                     </div>
 
                     <!-- Date -->
-                    <p class="text-slate-400 text-xs mb-2">{{ formatDateTime(tx.date) }}</p>
+                    <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ formatDateTime(tx.date) }}</p>
 
                     <!-- Warehouses -->
                     <div class="text-xs space-y-0.5 mb-1">
                       @if (tx.sourceWarehouse) {
-                        <div class="text-slate-500 truncate">
-                          <span class="text-slate-600">De:</span> {{ tx.sourceWarehouse.name }}
+                        <div class="text-[var(--color-on-surface-variant)] truncate">
+                          <span class="text-[var(--color-on-surface-muted)]">De:</span> {{ tx.sourceWarehouse.name }}
                         </div>
                       }
                       @if (tx.destinationWarehouse) {
-                        <div class="text-slate-500 truncate">
-                          <span class="text-slate-600">A:</span> {{ tx.destinationWarehouse.name }}
+                        <div class="text-[var(--color-on-surface-variant)] truncate">
+                          <span class="text-[var(--color-on-surface-muted)]">A:</span> {{ tx.destinationWarehouse.name }}
                         </div>
                       }
                     </div>
 
                     <!-- User -->
-                    <p class="text-slate-600 text-[10px] truncate">{{ tx.user?.name || tx.user?.email || '-' }}</p>
+                    <p class="text-[var(--color-on-surface-muted)] text-[10px] truncate">{{ tx.user?.name || tx.user?.email || '-' }}</p>
                   </div>
                 } @empty {
-                  <div class="col-span-2 py-8 text-center text-slate-500">{{ 'COMMON.NO_DATA' | translate }}</div>
+                  <div class="col-span-2 py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
                 }
               </div>
             </div>
@@ -408,13 +408,13 @@
           <div class="flex items-center gap-2">
             <button
               (click)="exportStatusReport()"
-              class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+              class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
               <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
               CSV
             </button>
             <button
               (click)="exportStatusReportPDF()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
               <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
               PDF
             </button>
@@ -431,13 +431,13 @@
                   [class]="summary.status === InventoryStatus.IN_STOCK ? 'bg-emerald-500/20' : summary.status === InventoryStatus.LOW_STOCK ? 'bg-orange-500/20' : 'bg-rose-500/20'">
                   <lucide-icon
                     [name]="getStatusIcon(summary.status)"
-                    [class]="summary.status === InventoryStatus.IN_STOCK ? '!text-emerald-400' : summary.status === InventoryStatus.LOW_STOCK ? '!text-orange-400' : '!text-rose-400'"
+                    [class]="summary.status === InventoryStatus.IN_STOCK ? '!text-[var(--color-status-success)]' : summary.status === InventoryStatus.LOW_STOCK ? '!text-[var(--color-status-warning)]' : '!text-[var(--color-status-error)]'"
                     class="!w-6 !h-6"></lucide-icon>
                 </div>
                 <div>
-                  <p class="text-sm text-slate-500">{{ 'STATUS.' + summary.status | translate }}</p>
+                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STATUS.' + summary.status | translate }}</p>
                   <p class="text-3xl font-bold"
-                    [class]="summary.status === InventoryStatus.IN_STOCK ? 'text-emerald-400' : summary.status === InventoryStatus.LOW_STOCK ? 'text-orange-400' : 'text-rose-400'">
+                    [class]="summary.status === InventoryStatus.IN_STOCK ? 'text-[var(--color-status-success)]' : summary.status === InventoryStatus.LOW_STOCK ? 'text-[var(--color-status-warning)]' : 'text-[var(--color-status-error)]'">
                     {{ summary.count }}
                   </p>
                 </div>
@@ -451,21 +451,21 @@
           <!-- Out of Stock -->
           <div class="bg-surface-variant border border-rose-900/50 rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-rose-950/20">
-              <lucide-icon name="XCircle" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
-              <h2 class="text-lg font-semibold text-rose-400">{{ 'REPORTS.OUT_OF_STOCK_ITEMS' | translate }}</h2>
-              <span class="ml-auto bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded text-sm font-medium">{{ outOfStockItems().length }}</span>
+              <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-[var(--color-status-error)]">{{ 'REPORTS.OUT_OF_STOCK_ITEMS' | translate }}</h2>
+              <span class="ml-auto bg-rose-500/20 text-[var(--color-status-error)] px-2 py-0.5 rounded text-sm font-medium">{{ outOfStockItems().length }}</span>
             </div>
             <div class="p-4 max-h-[400px] overflow-y-auto">
               @for (item of outOfStockItems(); track item.id) {
-                <div class="flex items-center justify-between px-3 py-3 hover:bg-[#1e1e1e] rounded-lg transition-colors">
+                <div class="flex items-center justify-between px-3 py-3 hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
                   <div class="flex-1 min-w-0">
                     <p class="text-foreground font-medium truncate">{{ item.name }}</p>
-                    <p class="text-sm text-slate-500">{{ item.category }} - {{ item.warehouse?.name || '-' }}</p>
+                    <p class="text-sm text-[var(--color-on-surface-variant)]">{{ item.category }} - {{ item.warehouse?.name || '-' }}</p>
                   </div>
-                  <span class="text-sm text-slate-500 ml-4">Min: {{ item.minQuantity }}</span>
+                  <span class="text-sm text-[var(--color-on-surface-variant)] ml-4">Min: {{ item.minQuantity }}</span>
                 </div>
               } @empty {
-                <div class="py-8 text-center text-slate-500">{{ 'REPORTS.NO_OUT_OF_STOCK' | translate }}</div>
+                <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'REPORTS.NO_OUT_OF_STOCK' | translate }}</div>
               }
             </div>
           </div>
@@ -473,23 +473,23 @@
           <!-- Low Stock -->
           <div class="bg-surface-variant border border-orange-900/50 rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-orange-950/20">
-              <lucide-icon name="AlertTriangle" class="!text-orange-400 !w-5 !h-5"></lucide-icon>
-              <h2 class="text-lg font-semibold text-orange-400">{{ 'REPORTS.LOW_STOCK_ITEMS' | translate }}</h2>
-              <span class="ml-auto bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded text-sm font-medium">{{ lowStockItems().length }}</span>
+              <lucide-icon name="AlertTriangle" class="!text-[var(--color-status-warning)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-[var(--color-status-warning)]">{{ 'REPORTS.LOW_STOCK_ITEMS' | translate }}</h2>
+              <span class="ml-auto bg-orange-500/20 text-[var(--color-status-warning)] px-2 py-0.5 rounded text-sm font-medium">{{ lowStockItems().length }}</span>
             </div>
             <div class="p-4 max-h-[400px] overflow-y-auto">
               @for (item of lowStockItems(); track item.id) {
-                <div class="flex items-center justify-between px-3 py-3 hover:bg-[#1e1e1e] rounded-lg transition-colors">
+                <div class="flex items-center justify-between px-3 py-3 hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
                   <div class="flex-1 min-w-0">
                     <p class="text-foreground font-medium truncate">{{ item.name }}</p>
-                    <p class="text-sm text-slate-500">{{ item.category }} - {{ item.warehouse?.name || '-' }}</p>
+                    <p class="text-sm text-[var(--color-on-surface-variant)]">{{ item.category }} - {{ item.warehouse?.name || '-' }}</p>
                   </div>
                   <div class="text-right ml-4">
-                    <p class="text-orange-400 font-medium">{{ item.quantity }} / {{ item.minQuantity }}</p>
+                    <p class="text-[var(--color-status-warning)] font-medium">{{ item.quantity }} / {{ item.minQuantity }}</p>
                   </div>
                 </div>
               } @empty {
-                <div class="py-8 text-center text-slate-500">{{ 'REPORTS.NO_LOW_STOCK' | translate }}</div>
+                <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'REPORTS.NO_LOW_STOCK' | translate }}</div>
               }
             </div>
           </div>
@@ -503,13 +503,13 @@
           <div class="flex items-center gap-2">
             <button
               (click)="exportAssignments()"
-              class="bg-surface-elevated hover:bg-[#2a2a2a] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+              class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
               <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
               CSV
             </button>
             <button
               (click)="exportAssignmentsReportPDF()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
               <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
               PDF
             </button>
@@ -520,11 +520,11 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
           <div class="bg-surface-variant border border-theme rounded-xl p-6">
             <div class="flex items-center gap-4">
-              <div class="bg-[#2d4a3f] p-3 rounded-lg">
-                <lucide-icon name="Monitor" class="!text-[#4d7c6f] !w-6 !h-6"></lucide-icon>
+              <div class="bg-[var(--color-primary-container)] p-3 rounded-lg">
+                <lucide-icon name="Monitor" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
               </div>
               <div>
-                <p class="text-sm text-slate-500">{{ 'REPORTS.TOTAL_UNIQUE_ITEMS' | translate }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_UNIQUE_ITEMS' | translate }}</p>
                 <p class="text-3xl font-bold text-foreground">{{ assignedItems().length + unassignedUniqueItems().length }}</p>
               </div>
             </div>
@@ -532,22 +532,22 @@
           <div class="bg-surface-variant border border-theme rounded-xl p-6">
             <div class="flex items-center gap-4">
               <div class="bg-emerald-500/20 p-3 rounded-lg">
-                <lucide-icon name="UserCheck" class="!text-emerald-400 !w-6 !h-6"></lucide-icon>
+                <lucide-icon name="UserCheck" class="!text-[var(--color-status-success)] !w-6 !h-6"></lucide-icon>
               </div>
               <div>
-                <p class="text-sm text-slate-500">{{ 'REPORTS.ASSIGNED' | translate }}</p>
-                <p class="text-3xl font-bold text-emerald-400">{{ assignedItems().length }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'REPORTS.ASSIGNED' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ assignedItems().length }}</p>
               </div>
             </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-6">
             <div class="flex items-center gap-4">
-              <div class="bg-slate-500/20 p-3 rounded-lg">
-                <lucide-icon name="UserX" class="!text-slate-400 !w-6 !h-6"></lucide-icon>
+              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
+                <lucide-icon name="UserX" class="!text-[var(--color-on-surface-variant)] !w-6 !h-6"></lucide-icon>
               </div>
               <div>
-                <p class="text-sm text-slate-500">{{ 'REPORTS.UNASSIGNED' | translate }}</p>
-                <p class="text-3xl font-bold text-slate-400">{{ unassignedUniqueItems().length }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'REPORTS.UNASSIGNED' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-on-surface-variant)]">{{ unassignedUniqueItems().length }}</p>
               </div>
             </div>
           </div>
@@ -556,57 +556,57 @@
         <!-- Assignments by User -->
         <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden mb-6">
           <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-            <lucide-icon name="Users" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
+            <lucide-icon name="Users" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
             <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.ASSIGNMENTS_BY_USER' | translate }}</h2>
           </div>
-          <div class="divide-y divide-[#1e1e1e]">
+          <div class="divide-y divide-[var(--color-border-subtle)]">
             @for (user of assignmentsByUser(); track user.userId) {
               <div class="p-4">
                 <div class="flex items-center justify-between mb-3">
                   <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-[#4d7c6f] flex items-center justify-center text-white font-bold">
+                    <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-bold">
                       {{ user.userName.charAt(0).toUpperCase() }}
                     </div>
                     <div>
                       <p class="text-foreground font-medium">{{ user.userName }}</p>
-                      <p class="text-sm text-slate-500">{{ user.userEmail }}</p>
+                      <p class="text-sm text-[var(--color-on-surface-variant)]">{{ user.userEmail }}</p>
                     </div>
                   </div>
-                  <span class="bg-[#2d4a3f] text-[#4d7c6f] px-3 py-1 rounded-full text-sm font-medium">
+                  <span class="bg-[var(--color-primary-container)] text-[var(--color-primary)] px-3 py-1 rounded-full text-sm font-medium">
                     {{ user.itemCount }} {{ 'REPORTS.ITEMS' | translate }}
                   </span>
                 </div>
                 <div class="flex flex-wrap gap-2 ml-13">
                   @for (item of user.items.slice(0, 5); track item.id) {
-                    <span class="bg-[#1a1a1a] text-slate-400 px-2 py-1 rounded text-xs">
+                    <span class="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] px-2 py-1 rounded text-xs">
                       {{ item.name }}
                     </span>
                   }
                   @if (user.items.length > 5) {
-                    <span class="text-slate-500 text-xs py-1">+{{ user.items.length - 5 }} {{ 'REPORTS.MORE' | translate }}</span>
+                    <span class="text-[var(--color-on-surface-variant)] text-xs py-1">+{{ user.items.length - 5 }} {{ 'REPORTS.MORE' | translate }}</span>
                   }
                 </div>
               </div>
             } @empty {
-              <div class="p-8 text-center text-slate-500">{{ 'REPORTS.NO_ASSIGNMENTS' | translate }}</div>
+              <div class="p-8 text-center text-[var(--color-on-surface-variant)]">{{ 'REPORTS.NO_ASSIGNMENTS' | translate }}</div>
             }
           </div>
         </div>
 
         <!-- Unassigned Items -->
         @if (unassignedUniqueItems().length > 0) {
-          <div class="bg-surface-variant border border-slate-700/50 rounded-xl overflow-hidden">
+          <div class="bg-surface-variant border border-[var(--color-border)] rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-              <lucide-icon name="UserX" class="!text-slate-400 !w-5 !h-5"></lucide-icon>
-              <h2 class="text-lg font-semibold text-slate-400">{{ 'REPORTS.UNASSIGNED_ITEMS' | translate }}</h2>
-              <span class="ml-auto bg-slate-500/20 text-slate-400 px-2 py-0.5 rounded text-sm font-medium">{{ unassignedUniqueItems().length }}</span>
+              <lucide-icon name="UserX" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-[var(--color-on-surface-variant)]">{{ 'REPORTS.UNASSIGNED_ITEMS' | translate }}</h2>
+              <span class="ml-auto bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] px-2 py-0.5 rounded text-sm font-medium">{{ unassignedUniqueItems().length }}</span>
             </div>
             <div class="p-4 max-h-[300px] overflow-y-auto">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 @for (item of unassignedUniqueItems(); track item.id) {
-                  <div class="bg-[#1a1a1a] rounded-lg p-3">
+                  <div class="bg-[var(--color-surface-variant)] rounded-lg p-3">
                     <p class="text-foreground font-medium truncate">{{ item.name }}</p>
-                    <p class="text-xs text-slate-500">{{ item.serviceTag || item.serialNumber || '-' }}</p>
+                    <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.serviceTag || item.serialNumber || '-' }}</p>
                   </div>
                 }
               </div>
@@ -619,14 +619,14 @@
       @if (activeTab() === 4) {
         @if (transactionsLoading()) {
           <div class="flex items-center justify-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-            <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+            <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
           </div>
         } @else {
           <!-- Trend Chart -->
           <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-              <lucide-icon name="LineChart" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
+              <lucide-icon name="LineChart" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TRANSACTIONS_LAST_30_DAYS' | translate }}</h2>
             </div>
             <div class="p-6">
@@ -649,32 +649,32 @@
           <!-- Daily Summary -->
           <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
-              <lucide-icon name="Calendar" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
+              <lucide-icon name="Calendar" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.DAILY_SUMMARY' | translate }}</h2>
             </div>
             <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
               <table class="w-full">
                 <thead class="sticky top-0 z-10">
-                  <tr class="bg-[#141414]">
-                    <th class="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-3 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
                     <th class="text-center px-6 py-3 text-xs font-medium text-emerald-500 uppercase">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</th>
                     <th class="text-center px-6 py-3 text-xs font-medium text-rose-500 uppercase">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</th>
                     <th class="text-center px-6 py-3 text-xs font-medium text-blue-500 uppercase">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</th>
-                    <th class="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase">Total</th>
+                    <th class="text-center px-6 py-3 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase">Total</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#1e1e1e]">
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
                   @for (day of transactionTrends().slice().reverse(); track day.date) {
-                    <tr class="hover:bg-[#1e1e1e] transition-colors">
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                       <td class="px-6 py-3 text-foreground">{{ formatDate(day.date) }}</td>
                       <td class="px-6 py-3 text-center">
-                        <span class="text-emerald-400 font-medium">{{ day.in }}</span>
+                        <span class="text-[var(--color-status-success)] font-medium">{{ day.in }}</span>
                       </td>
                       <td class="px-6 py-3 text-center">
-                        <span class="text-rose-400 font-medium">{{ day.out }}</span>
+                        <span class="text-[var(--color-status-error)] font-medium">{{ day.out }}</span>
                       </td>
                       <td class="px-6 py-3 text-center">
-                        <span class="text-blue-400 font-medium">{{ day.transfer }}</span>
+                        <span class="text-[var(--color-status-info)] font-medium">{{ day.transfer }}</span>
                       </td>
                       <td class="px-6 py-3 text-center text-foreground font-medium">{{ day.in + day.out + day.transfer }}</td>
                     </tr>

@@ -33,9 +33,9 @@ export interface TransactionFormDialogData {
     TranslateModule
   ],
   template: `
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
+    <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div>
           <h2 class="text-xl font-semibold text-foreground">
             {{ 'TRANSACTION.ADD' | translate }}
@@ -44,7 +44,7 @@ export interface TransactionFormDialogData {
         <button
           type="button"
           (click)="dialogRef.close()"
-          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
           <lucide-icon name="X"></lucide-icon>
         </button>
       </div>
@@ -53,12 +53,12 @@ export interface TransactionFormDialogData {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 space-y-6 overflow-y-auto flex-1">
         <!-- Type -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.TYPE' | translate }} *
           </label>
           <select
             formControlName="type"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
             <option value="IN">{{ 'TRANSACTION.TYPES.IN' | translate }}</option>
             <option value="OUT">{{ 'TRANSACTION.TYPES.OUT' | translate }}</option>
             <option value="TRANSFER">{{ 'TRANSACTION.TYPES.TRANSFER' | translate }}</option>
@@ -68,12 +68,12 @@ export interface TransactionFormDialogData {
         <!-- Source Warehouse (for OUT and TRANSFER) -->
         @if (form.get('type')?.value === 'OUT' || form.get('type')?.value === 'TRANSFER') {
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'TRANSACTION.SOURCE_WAREHOUSE' | translate }} *
             </label>
             <select
               formControlName="sourceWarehouseId"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
               [class.!border-rose-500]="form.get('sourceWarehouseId')?.invalid && form.get('sourceWarehouseId')?.touched">
               <option value="">{{ 'COMMON.NONE' | translate }}</option>
               @for (warehouse of warehouses(); track warehouse.id) {
@@ -81,7 +81,7 @@ export interface TransactionFormDialogData {
               }
             </select>
             @if (form.get('sourceWarehouseId')?.invalid && form.get('sourceWarehouseId')?.touched) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+              <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
             }
           </div>
         }
@@ -89,12 +89,12 @@ export interface TransactionFormDialogData {
         <!-- Destination Warehouse (for IN and TRANSFER) -->
         @if (form.get('type')?.value === 'IN' || form.get('type')?.value === 'TRANSFER') {
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'TRANSACTION.DEST_WAREHOUSE' | translate }} *
             </label>
             <select
               formControlName="destinationWarehouseId"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
               [class.!border-rose-500]="form.get('destinationWarehouseId')?.invalid && form.get('destinationWarehouseId')?.touched">
               <option value="">{{ 'COMMON.NONE' | translate }}</option>
               @for (warehouse of warehouses(); track warehouse.id) {
@@ -102,19 +102,19 @@ export interface TransactionFormDialogData {
               }
             </select>
             @if (form.get('destinationWarehouseId')?.invalid && form.get('destinationWarehouseId')?.touched) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+              <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
             }
           </div>
         }
 
         <!-- User -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.USER' | translate }} *
           </label>
           <select
             formControlName="userId"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer"
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
             [class.!border-rose-500]="form.get('userId')?.invalid && form.get('userId')?.touched">
             <option value="">{{ 'COMMON.NONE' | translate }}</option>
             @for (user of users(); track user.id) {
@@ -122,35 +122,35 @@ export interface TransactionFormDialogData {
             }
           </select>
           @if (form.get('userId')?.invalid && form.get('userId')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
           }
         </div>
 
         <!-- Date -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.DATE' | translate }} *
           </label>
           <input
             type="datetime-local"
             formControlName="date"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [class.!border-rose-500]="form.get('date')?.invalid && form.get('date')?.touched"
           />
           @if (form.get('date')?.invalid && form.get('date')?.touched) {
-            <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+            <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
           }
         </div>
 
         <!-- Notes -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.NOTES' | translate }}
           </label>
           <textarea
             formControlName="notes"
             rows="2"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors resize-none"
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
             [placeholder]="'TRANSACTION.NOTES' | translate"
           ></textarea>
         </div>
@@ -158,13 +158,13 @@ export interface TransactionFormDialogData {
         <!-- Items -->
         <div>
           <div class="flex items-center justify-between mb-3">
-            <label class="text-sm font-medium text-slate-400">
+            <label class="text-sm font-medium text-[var(--color-on-surface-variant)]">
               {{ 'TRANSACTION.ITEMS' | translate }} *
             </label>
             <button
               type="button"
               (click)="addItem()"
-              class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] flex items-center gap-1">
+              class="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] flex items-center gap-1">
               <lucide-icon name="Plus" class="!w-4 !h-4"></lucide-icon>
               {{ 'TRANSACTION.ADD_ITEM' | translate }}
             </button>
@@ -172,12 +172,12 @@ export interface TransactionFormDialogData {
 
           <div formArrayName="items" class="space-y-3">
             @for (item of itemsArray.controls; track $index; let i = $index) {
-              <div [formGroupName]="i" class="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4">
+              <div [formGroupName]="i" class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
                 <div class="flex items-start gap-3">
                   <div class="flex-1 space-y-3">
                     <select
                       formControlName="inventoryItemId"
-                      class="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
+                      class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
                       <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
                       @for (invItem of inventoryItems(); track invItem.id) {
                         <option [value]="invItem.id">{{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})</option>
@@ -188,13 +188,13 @@ export interface TransactionFormDialogData {
                         type="number"
                         formControlName="quantity"
                         min="1"
-                        class="w-24 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                        class="w-24 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                         [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                       />
                       <input
                         type="text"
                         formControlName="notes"
-                        class="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                        class="flex-1 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                         [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                       />
                     </div>
@@ -202,7 +202,7 @@ export interface TransactionFormDialogData {
                   <button
                     type="button"
                     (click)="removeItem(i)"
-                    class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-rose-950/30 transition-colors">
                     <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                   </button>
                 </div>
@@ -211,22 +211,22 @@ export interface TransactionFormDialogData {
           </div>
 
           @if (itemsArray.length === 0) {
-            <p class="text-slate-500 text-sm text-center py-4">{{ 'TRANSACTION.NO_ITEMS' | translate }}</p>
+            <p class="text-[var(--color-on-surface-variant)] text-sm text-center py-4">{{ 'TRANSACTION.NO_ITEMS' | translate }}</p>
           }
         </div>
 
         <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
+        <div class="flex justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
           <button
             type="button"
             (click)="dialogRef.close()"
-            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-foreground transition-colors font-medium">
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground transition-colors font-medium">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             [disabled]="form.invalid || itemsArray.length === 0 || saving()"
-            class="px-6 py-2.5 rounded-lg bg-[#4d7c6f] text-white hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             }

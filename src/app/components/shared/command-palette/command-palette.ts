@@ -34,20 +34,20 @@ interface CommandItem {
       </div>
 
       <!-- Command Palette -->
-      <div class="relative w-full max-w-2xl mx-4 bg-[#1a1a1a] rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden">
+      <div class="relative w-full max-w-2xl mx-4 bg-[var(--color-surface-variant)] rounded-xl shadow-2xl border border-[var(--color-border)] overflow-hidden">
         <!-- Search Input -->
-        <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-700/50">
-          <lucide-icon name="Search" class="text-slate-400"></lucide-icon>
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-[var(--color-border)]">
+          <lucide-icon name="Search" class="text-[var(--color-on-surface-variant)]"></lucide-icon>
           <input
             #searchInput
             type="text"
             [(ngModel)]="searchQuery"
             (ngModelChange)="onSearchChange($event)"
             [placeholder]="'COMMAND_PALETTE.PLACEHOLDER' | translate"
-            class="flex-1 bg-transparent text-white text-lg placeholder-slate-500 focus:outline-none"
+            class="flex-1 bg-transparent text-white text-lg placeholder-[var(--color-on-surface-muted)] focus:outline-none"
             autocomplete="off"
           />
-          <kbd class="hidden sm:flex items-center gap-1 px-2 py-1 text-xs text-slate-400 bg-slate-800 rounded border border-slate-700">
+          <kbd class="hidden sm:flex items-center gap-1 px-2 py-1 text-xs text-[var(--color-on-surface-variant)] bg-[var(--color-surface-elevated)] rounded border border-[var(--color-border)]">
             ESC
           </kbd>
         </div>
@@ -55,7 +55,7 @@ interface CommandItem {
         <!-- Results -->
         <div class="max-h-[60vh] overflow-y-auto">
           @if (filteredItems().length === 0 && searchQuery.length > 0) {
-            <div class="px-4 py-8 text-center text-slate-500">
+            <div class="px-4 py-8 text-center text-[var(--color-on-surface-variant)]">
               <lucide-icon name="SearchX" class="!w-10 !h-10 mb-2"></lucide-icon>
               <p>{{ 'COMMAND_PALETTE.NO_RESULTS' | translate }}</p>
             </div>
@@ -64,26 +64,26 @@ interface CommandItem {
           <!-- Navigation Section -->
           @if (navigationItems().length > 0) {
             <div class="px-3 py-2">
-              <p class="px-2 py-1 text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <p class="px-2 py-1 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">
                 {{ 'COMMAND_PALETTE.NAVIGATION' | translate }}
               </p>
               @for (item of navigationItems(); track item.id; let i = $index) {
                 <button
                   (click)="executeCommand(item)"
                   (mouseenter)="selectedIndex.set(getGlobalIndex('navigation', i))"
-                  [ngClass]="{'bg-slate-700/50': selectedIndex() === getGlobalIndex('navigation', i)}"
-                  class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
-                  <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-teal-500/20">
-                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-slate-400 group-hover:text-teal-500"></lucide-icon>
+                  [ngClass]="{'bg-[var(--color-surface-elevated)]': selectedIndex() === getGlobalIndex('navigation', i)}"
+                  class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-colors group">
+                  <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center group-hover:bg-teal-500/20">
+                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-teal-500"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
                     <p class="text-sm text-white">{{ item.label }}</p>
                     @if (item.description) {
-                      <p class="text-xs text-slate-500">{{ item.description }}</p>
+                      <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.description }}</p>
                     }
                   </div>
                   @if (item.shortcut) {
-                    <kbd class="px-2 py-0.5 text-xs text-slate-400 bg-slate-800 rounded">{{ item.shortcut }}</kbd>
+                    <kbd class="px-2 py-0.5 text-xs text-[var(--color-on-surface-variant)] bg-[var(--color-surface-elevated)] rounded">{{ item.shortcut }}</kbd>
                   }
                 </button>
               }
@@ -92,18 +92,18 @@ interface CommandItem {
 
           <!-- Actions Section -->
           @if (actionItems().length > 0) {
-            <div class="px-3 py-2 border-t border-slate-700/30">
-              <p class="px-2 py-1 text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <div class="px-3 py-2 border-t border-[var(--color-border)]">
+              <p class="px-2 py-1 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">
                 {{ 'COMMAND_PALETTE.ACTIONS' | translate }}
               </p>
               @for (item of actionItems(); track item.id; let i = $index) {
                 <button
                   (click)="executeCommand(item)"
                   (mouseenter)="selectedIndex.set(getGlobalIndex('action', i))"
-                  [ngClass]="{'bg-slate-700/50': selectedIndex() === getGlobalIndex('action', i)}"
-                  class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
-                  <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-blue-500/20">
-                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-slate-400 group-hover:text-blue-400"></lucide-icon>
+                  [ngClass]="{'bg-[var(--color-surface-elevated)]': selectedIndex() === getGlobalIndex('action', i)}"
+                  class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-colors group">
+                  <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center group-hover:bg-blue-500/20">
+                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-blue-400"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
                     <p class="text-sm text-white">{{ item.label }}</p>
@@ -115,23 +115,23 @@ interface CommandItem {
 
           <!-- Inventory Items Section -->
           @if (inventoryItems().length > 0) {
-            <div class="px-3 py-2 border-t border-slate-700/30">
-              <p class="px-2 py-1 text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <div class="px-3 py-2 border-t border-[var(--color-border)]">
+              <p class="px-2 py-1 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">
                 {{ 'COMMAND_PALETTE.INVENTORY' | translate }}
               </p>
               @for (item of inventoryItems(); track item.id; let i = $index) {
                 <button
                   (click)="executeCommand(item)"
                   (mouseenter)="selectedIndex.set(getGlobalIndex('item', i))"
-                  [ngClass]="{'bg-slate-700/50': selectedIndex() === getGlobalIndex('item', i)}"
-                  class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors group">
-                  <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-emerald-500/20">
-                    <lucide-icon name="Package" class="!w-4 !h-4 text-slate-400 group-hover:text-emerald-400"></lucide-icon>
+                  [ngClass]="{'bg-[var(--color-surface-elevated)]': selectedIndex() === getGlobalIndex('item', i)}"
+                  class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-colors group">
+                  <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center group-hover:bg-emerald-500/20">
+                    <lucide-icon name="Package" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-emerald-400"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left min-w-0">
                     <p class="text-sm text-white truncate">{{ item.label }}</p>
                     @if (item.description) {
-                      <p class="text-xs text-slate-500 truncate">{{ item.description }}</p>
+                      <p class="text-xs text-[var(--color-on-surface-variant)] truncate">{{ item.description }}</p>
                     }
                   </div>
                 </button>
@@ -141,19 +141,19 @@ interface CommandItem {
         </div>
 
         <!-- Footer -->
-        <div class="px-4 py-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-500">
+        <div class="px-4 py-2 border-t border-[var(--color-border)] flex items-center justify-between text-xs text-[var(--color-on-surface-variant)]">
           <div class="flex items-center gap-4">
             <span class="flex items-center gap-1">
-              <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">↑↓</kbd>
+              <kbd class="px-1.5 py-0.5 bg-[var(--color-surface-elevated)] rounded">↑↓</kbd>
               {{ 'COMMAND_PALETTE.NAVIGATE' | translate }}
             </span>
             <span class="flex items-center gap-1">
-              <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">↵</kbd>
+              <kbd class="px-1.5 py-0.5 bg-[var(--color-surface-elevated)] rounded">↵</kbd>
               {{ 'COMMAND_PALETTE.SELECT' | translate }}
             </span>
           </div>
           <span class="flex items-center gap-1">
-            <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">ESC</kbd>
+            <kbd class="px-1.5 py-0.5 bg-[var(--color-surface-elevated)] rounded">ESC</kbd>
             {{ 'COMMAND_PALETTE.CLOSE' | translate }}
           </span>
         </div>

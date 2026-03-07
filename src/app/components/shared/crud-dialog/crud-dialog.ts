@@ -25,9 +25,9 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
     TranslateModule
   ],
   template: `
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+    <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div>
           <h2 class="text-xl font-semibold text-foreground">
             {{ (data.mode === 'add' ? data.config.titleAddKey : data.config.titleEditKey) | translate }}
@@ -36,7 +36,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
         <button
           type="button"
           (click)="dialogRef.close()"
-          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
           <lucide-icon name="X"></lucide-icon>
         </button>
       </div>
@@ -45,7 +45,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
         @for (field of data.config.fields; track field.key) {
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ field.labelKey | translate }}{{ field.required ? ' *' : '' }}
             </label>
 
@@ -53,14 +53,14 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
               <textarea
                 [formControlName]="field.key"
                 [rows]="field.rows || 3"
-                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors resize-none"
+                class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched"
                 [placeholder]="(field.placeholderKey || field.labelKey) | translate"
               ></textarea>
             } @else if (field.type === 'select') {
               <select
                 [formControlName]="field.key"
-                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer appearance-none"
+                class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer appearance-none"
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched">
                 <option value="">{{ (field.placeholderKey || field.labelKey) | translate }}</option>
                 @for (opt of field.options; track opt.value) {
@@ -71,7 +71,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
               <input
                 [type]="field.type"
                 [formControlName]="field.key"
-                class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+                class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched"
                 [placeholder]="(field.placeholderKey || field.labelKey) | translate"
               />
@@ -100,17 +100,17 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
         }
 
         <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
+        <div class="flex justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
           <button
             type="button"
             (click)="dialogRef.close()"
-            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-foreground transition-colors font-medium">
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground transition-colors font-medium">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             [disabled]="form.invalid || saving()"
-            class="px-6 py-2.5 rounded-lg bg-[#4d7c6f] text-white hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             }

@@ -73,12 +73,16 @@
   /* Status Colors (for badges/indicators) */
   --color-status-success: #10b981;
   --color-status-success-bg: rgba(16, 185, 129, 0.15);
+  --color-status-success-border: rgba(16, 185, 129, 0.3);
   --color-status-warning: #f59e0b;
   --color-status-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-status-warning-border: rgba(245, 158, 11, 0.3);
   --color-status-error: #ef4444;
   --color-status-error-bg: rgba(239, 68, 68, 0.15);
+  --color-status-error-border: rgba(239, 68, 68, 0.3);
   --color-status-info: #3b82f6;
   --color-status-info-bg: rgba(59, 130, 246, 0.15);
+  --color-status-info-border: rgba(59, 130, 246, 0.3);
 
   /* Focus ring */
   --color-focus-ring: rgba(77, 124, 111, 0.5);
@@ -153,12 +157,16 @@
   /* Status Colors (for badges/indicators) */
   --color-status-success: #059669;
   --color-status-success-bg: #d1fae5;
+  --color-status-success-border: #a7f3d0;
   --color-status-warning: #c2410c;
   --color-status-warning-bg: #fff7ed;
+  --color-status-warning-border: #fed7aa;
   --color-status-error: #be123c;
   --color-status-error-bg: #ffe4e6;
+  --color-status-error-border: #fecdd3;
   --color-status-info: #1d4ed8;
   --color-status-info-bg: #dbeafe;
+  --color-status-info-border: #bfdbfe;
 
   /* Focus ring */
   --color-focus-ring: rgba(45, 90, 78, 0.4);

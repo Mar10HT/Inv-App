@@ -27,7 +27,7 @@ export interface LowStockItem {
     <div cdkDragHandle class="px-6 py-4 border-b border-theme flex items-center justify-between cursor-grab active:cursor-grabbing">
       <div>
         <h2 class="text-lg font-semibold text-foreground">{{ 'DASHBOARD.LOW_STOCK' | translate }}</h2>
-        <p class="text-slate-500 text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
+        <p class="text-[var(--color-on-surface-variant)] text-xs mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
       </div>
       <button
         (click)="$event.stopPropagation(); viewAll.emit()"
@@ -39,25 +39,25 @@ export interface LowStockItem {
     @if (items().length === 0) {
       <div class="flex flex-col items-center justify-center py-12">
         <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-emerald-500 mb-3"></lucide-icon>
-        <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+        <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
       </div>
     } @else {
-      <div class="divide-y divide-[#242424] max-h-[500px] overflow-y-auto">
+      <div class="divide-y divide-[var(--color-border-subtle)] max-h-[500px] overflow-y-auto">
         @for (item of items().slice(0, 10); track item.id) {
           <div
             (click)="itemClick.emit(item)"
-            class="px-6 py-4 hover:bg-[#1e1e1e] transition-colors cursor-pointer">
+            class="px-6 py-4 hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer">
             <div class="flex items-center gap-4">
-              <div class="w-10 h-10 bg-orange-950/50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div class="w-10 h-10 bg-[var(--color-warning-bg)] rounded-lg flex items-center justify-center flex-shrink-0">
                 <lucide-icon name="AlertTriangle" class="!w-5 !h-5 text-orange-500"></lucide-icon>
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
-                <p class="text-xs text-slate-500">{{ item.category?.name || '-' }}</p>
+                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.category?.name || '-' }}</p>
               </div>
               <div class="text-right">
-                <p class="text-lg font-bold text-orange-400">{{ item.quantity }}</p>
-                <p class="text-xs text-slate-500">min: {{ item.minQuantity }}</p>
+                <p class="text-lg font-bold text-[var(--color-status-warning)]">{{ item.quantity }}</p>
+                <p class="text-xs text-[var(--color-on-surface-variant)]">min: {{ item.minQuantity }}</p>
               </div>
             </div>
           </div>
@@ -65,7 +65,7 @@ export interface LowStockItem {
       </div>
       @if (items().length > 10) {
         <div class="px-6 py-3 bg-surface-container border-t border-theme text-center">
-          <p class="text-xs text-slate-500">
+          <p class="text-xs text-[var(--color-on-surface-variant)]">
             Showing 10 of {{ items().length }} low stock items
           </p>
         </div>
@@ -73,7 +73,7 @@ export interface LowStockItem {
     }
 
     <!-- Drag Placeholder -->
-    <div *cdkDragPlaceholder class="bg-[#2a2a2a] rounded-xl border-2 border-dashed border-[#4d7c6f] h-full min-h-[300px]"></div>
+    <div *cdkDragPlaceholder class="bg-[var(--color-surface-elevated)] rounded-xl border-2 border-dashed border-[var(--color-primary)] h-full min-h-[300px]"></div>
   `
 })
 export class DashboardLowStockComponent {

@@ -13,9 +13,9 @@ import { ThemeService } from '../../../services/theme.service';
     <button
       (click)="toggleTheme()"
       [matTooltip]="tooltipText()"
-      class="relative p-2 rounded-lg bg-surface-elevated hover:bg-slate-700/50 transition-all duration-300 group"
+      class="relative p-2 rounded-lg bg-surface-elevated hover:bg-[var(--color-surface-variant)] transition-all duration-300 group"
       [class.text-amber-400]="!isDark()"
-      [class.text-slate-400]="isDark()">
+      [class.text-on-surface-variant]="isDark()">
       <!-- Sun icon -->
       <lucide-icon
         name="Sun"

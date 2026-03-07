@@ -74,11 +74,11 @@ export class ErrorAlert {
 
   get iconClass(): string {
     switch (this.type) {
-      case 'error': return 'text-red-400';
+      case 'error': return 'text-[var(--color-status-error)]';
       case 'warning': return 'text-amber-400';
-      case 'info': return 'text-blue-400';
+      case 'info': return 'text-[var(--color-status-info)]';
       case 'success': return 'text-green-400';
-      default: return 'text-red-400';
+      default: return 'text-[var(--color-status-error)]';
     }
   }
 

@@ -25,12 +25,12 @@ export interface CustomSnackbarData {
       </div>
 
       <!-- Content Section -->
-      <div class="flex-1 flex items-center justify-between bg-[#0a0a0a] px-5 py-4 gap-4">
+      <div class="flex-1 flex items-center justify-between bg-[var(--color-surface)] px-5 py-4 gap-4">
         <span class="text-white text-sm font-medium">{{ data.message }}</span>
 
         <button
           (click)="dismiss()"
-          class="text-slate-500 hover:text-white transition-colors flex-shrink-0 p-1">
+          class="text-[var(--color-on-surface-variant)] hover:text-white transition-colors flex-shrink-0 p-1">
           <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
         </button>
       </div>
@@ -58,21 +58,21 @@ export class CustomSnackbar {
 
   get iconBgClass(): string {
     switch (this.data.type) {
-      case 'success': return 'bg-[#4d7c6f]';
-      case 'error': return 'bg-[#b91c1c]';
-      case 'warning': return 'bg-[#b45309]';
-      case 'info': return 'bg-[#1d4ed8]';
-      default: return 'bg-[#1d4ed8]';
+      case 'success': return 'bg-[var(--color-primary)]';
+      case 'error': return 'bg-red-700';
+      case 'warning': return 'bg-amber-700';
+      case 'info': return 'bg-blue-700';
+      default: return 'bg-blue-700';
     }
   }
 
   get borderClass(): string {
     switch (this.data.type) {
-      case 'success': return 'border-[#4d7c6f]';
-      case 'error': return 'border-[#b91c1c]';
-      case 'warning': return 'border-[#b45309]';
-      case 'info': return 'border-[#1d4ed8]';
-      default: return 'border-[#1d4ed8]';
+      case 'success': return 'border-[var(--color-primary)]';
+      case 'error': return 'border-red-700';
+      case 'warning': return 'border-amber-700';
+      case 'info': return 'border-blue-700';
+      default: return 'border-blue-700';
     }
   }
 

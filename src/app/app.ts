@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navigation } from './components/shared/navigation/navigation';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from './services/auth.service';
 import { SidebarService } from './services/sidebar.service';
 import { CommandPaletteService } from './services/command-palette.service';
@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     RouterOutlet,
     Navigation,
+    TranslateModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

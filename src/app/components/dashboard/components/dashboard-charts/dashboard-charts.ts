@@ -62,18 +62,18 @@ export interface BarChartOptions {
       (cdkDropListDropped)="onDrop($event)"
       class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       @for (widget of widgets(); track widget) {
-        <div cdkDrag class="bg-surface-variant rounded-xl border border-theme p-6 cursor-move hover:border-[#3a3a3a] transition-colors">
+        <div cdkDrag class="bg-surface-variant rounded-xl border border-theme p-6 cursor-move hover:border-[var(--color-border)] transition-colors">
           <!-- Drag Handle -->
           <div cdkDragHandle class="flex items-center justify-between mb-4">
             @if (widget === 'status') {
               <h3 class="text-lg font-semibold text-foreground">{{ 'COMMON.STATUS' | translate }}</h3>
-              <lucide-icon name="PieChart" class="!w-4 !h-4 text-slate-600"></lucide-icon>
+              <lucide-icon name="PieChart" class="!w-4 !h-4 text-[var(--color-on-surface-muted)]"></lucide-icon>
             } @else if (widget === 'categories') {
               <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.CATEGORIES' | translate }}</h3>
-              <lucide-icon name="FolderOpen" class="!w-4 !h-4 text-slate-600"></lucide-icon>
+              <lucide-icon name="FolderOpen" class="!w-4 !h-4 text-[var(--color-on-surface-muted)]"></lucide-icon>
             } @else if (widget === 'warehouses') {
               <h3 class="text-lg font-semibold text-foreground">{{ 'NAV.WAREHOUSES' | translate }}</h3>
-              <lucide-icon name="Warehouse" class="!w-4 !h-4 text-slate-600"></lucide-icon>
+              <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[var(--color-on-surface-muted)]"></lucide-icon>
             }
           </div>
 
@@ -92,8 +92,8 @@ export interface BarChartOptions {
               </apx-chart>
             } @else {
               <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="PieChart" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+                <lucide-icon name="PieChart" class="!w-8 !h-8 text-[var(--color-on-surface-muted)] mb-2"></lucide-icon>
+                <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
           } @else if (widget === 'categories') {
@@ -111,8 +111,8 @@ export interface BarChartOptions {
               </apx-chart>
             } @else {
               <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-[var(--color-on-surface-muted)] mb-2"></lucide-icon>
+                <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
           } @else if (widget === 'warehouses') {
@@ -131,14 +131,14 @@ export interface BarChartOptions {
               </apx-chart>
             } @else {
               <div class="flex flex-col items-center justify-center py-12">
-                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-slate-700 mb-2"></lucide-icon>
-                <p class="text-slate-500 text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+                <lucide-icon name="BarChart2" class="!w-8 !h-8 text-[var(--color-on-surface-muted)] mb-2"></lucide-icon>
+                <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
               </div>
             }
           }
 
           <!-- Drag Placeholder -->
-          <div *cdkDragPlaceholder class="bg-[#2a2a2a] rounded-xl border-2 border-dashed border-[#4d7c6f] h-full min-h-[320px]"></div>
+          <div *cdkDragPlaceholder class="bg-[var(--color-surface-elevated)] rounded-xl border-2 border-dashed border-[var(--color-primary)] h-full min-h-[320px]"></div>
         </div>
       }
     </div>

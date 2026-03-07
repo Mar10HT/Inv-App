@@ -14,6 +14,8 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { TransferRequest, TransferRequestStatus, TransferRequestWithQr } from '../../interfaces/transfer-request.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { TransferFormDialog, TransferFormResult } from './transfer-form-dialog';
+import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRejectDialog, TransferRejectResult } from './transfer-qr-dialog';
 
 @Component({
   selector: 'app-transfers',
@@ -26,7 +28,11 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
     MatDialogModule,
     MatPaginatorModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    TransferFormDialog,
+    TransferQrDialog,
+    TransferScanDialog,
+    TransferRejectDialog
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -36,25 +42,25 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'TRANSFERS.TITLE' | translate }}</h1>
-              <p class="text-slate-500 text-lg">{{ 'TRANSFERS.SUBTITLE' | translate }}</p>
+              <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'TRANSFERS.SUBTITLE' | translate }}</p>
             </div>
             <div class="flex gap-2">
               <button
                 (click)="openScanDialog()"
-                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
+                class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
                 <lucide-icon name="ScanLine" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'TRANSFERS.QR.SCAN' | translate }}</span>
               </button>
               <button
                 (click)="exportToCSV()"
-                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
+                class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
               </button>
               <ng-container *ngxPermissionsOnly="['create_transfers']">
                 <button
                   (click)="openNewRequestDialog()"
-                  class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
+                  class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
                   <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
                   <span>{{ 'TRANSFERS.NEW_REQUEST' | translate }}</span>
                 </button>
@@ -68,55 +74,55 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-500">{{ 'TRANSFERS.PENDING' | translate }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.PENDING' | translate }}</p>
                 <p class="text-2xl font-bold text-foreground">{{ stats().byStatus.pending }}</p>
               </div>
-              <div class="bg-slate-800/50 p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-slate-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
+                <lucide-icon name="Clock" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-500">{{ 'TRANSFERS.APPROVED' | translate }}</p>
-                <p class="text-2xl font-bold text-blue-400">{{ stats().byStatus.approved }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.APPROVED' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ stats().byStatus.approved }}</p>
               </div>
-              <div class="bg-blue-950/50 p-3 rounded-lg">
-                <lucide-icon name="CheckCircle2" class="!text-blue-400 !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-slate-500">{{ 'TRANSFERS.SENT' | translate }}</p>
-                <p class="text-2xl font-bold text-sky-400">{{ stats().byStatus.sent }}</p>
-              </div>
-              <div class="bg-sky-950/50 p-3 rounded-lg">
-                <lucide-icon name="Send" class="!text-sky-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-info-bg)] p-3 rounded-lg">
+                <lucide-icon name="CheckCircle2" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-500">{{ 'TRANSFERS.COMPLETED' | translate }}</p>
-                <p class="text-2xl font-bold text-emerald-400">{{ stats().byStatus.completed }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.SENT' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ stats().byStatus.sent }}</p>
               </div>
-              <div class="bg-emerald-950/50 p-3 rounded-lg">
-                <lucide-icon name="PackageCheck" class="!text-emerald-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-info-bg)] p-3 rounded-lg">
+                <lucide-icon name="Send" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm text-slate-500">{{ 'TRANSFERS.REJECTED' | translate }}</p>
-                <p class="text-2xl font-bold text-red-400">{{ stats().byStatus.rejected }}</p>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.COMPLETED' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().byStatus.completed }}</p>
               </div>
-              <div class="bg-red-950/50 p-3 rounded-lg">
-                <lucide-icon name="XCircle" class="!text-red-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-success-bg)] p-3 rounded-lg">
+                <lucide-icon name="PackageCheck" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.REJECTED' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().byStatus.rejected }}</p>
+              </div>
+              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
+                <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -133,9 +139,9 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                   [(ngModel)]="searchQuery"
                   (ngModelChange)="applyFilters()"
                   [placeholder]="'TRANSFERS.SEARCH_PLACEHOLDER' | translate"
-                  class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                  class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
-                <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-500 !w-5 !h-5"></lucide-icon>
+                <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 !text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
 
@@ -144,8 +150,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
               <select
                 [(ngModel)]="selectedStatus"
                 (ngModelChange)="applyFilters()"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
-                style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
+                class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'TRANSFERS.ALL_STATUS' | translate }}</option>
                 <option [value]="Status.PENDING">{{ 'TRANSFERS.STATUS.PENDING' | translate }}</option>
@@ -160,7 +165,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
             @if (hasFilters()) {
               <button
                 (click)="clearFilters()"
-                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
                 <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                 {{ 'COMMON.CLEAR' | translate }}
               </button>
@@ -178,36 +183,36 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
           <div class="hidden lg:block overflow-x-auto">
             <table class="w-full">
               <thead>
-                <tr class="bg-[#141414]">
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSFERS.ITEMS' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSFERS.SOURCE' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSFERS.DESTINATION' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'TRANSFERS.REQUESTED_BY' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.DATE' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.STATUS' | translate }}</th>
-                  <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
+                <tr class="bg-[var(--color-surface)]">
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSFERS.ITEMS' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSFERS.SOURCE' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSFERS.DESTINATION' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSFERS.REQUESTED_BY' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.DATE' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.STATUS' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#1e1e1e]">
+              <tbody class="divide-y divide-[var(--color-border-subtle)]">
                 @for (request of paginatedRequests(); track request.id) {
-                  <tr class="hover:bg-[#1e1e1e] transition-colors">
+                  <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
                         <p class="text-foreground font-medium">{{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }}</p>
-                        <p class="text-slate-500 text-sm truncate max-w-xs">
+                        <p class="text-[var(--color-on-surface-variant)] text-sm truncate max-w-xs">
                           {{ getItemsPreview(request) }}
                         </p>
                       </div>
                     </td>
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-2">
-                        <lucide-icon name="Warehouse" class="!text-slate-500 !w-4 !h-4"></lucide-icon>
+                        <lucide-icon name="Warehouse" class="!text-[var(--color-on-surface-variant)] !w-4 !h-4"></lucide-icon>
                         <span class="text-foreground">{{ request.sourceWarehouseName }}</span>
                       </div>
                     </td>
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-2">
-                        <lucide-icon name="Warehouse" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
+                        <lucide-icon name="Warehouse" class="!text-[var(--color-primary)] !w-4 !h-4"></lucide-icon>
                         <span class="text-foreground">{{ request.destinationWarehouseName }}</span>
                       </div>
                     </td>
@@ -231,7 +236,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                               </button>
                               <button
                                 (click)="rejectRequest(request)"
-                                class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
+                                class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
                                 <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
                               </button>
                             </ng-container>
@@ -246,7 +251,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                               </button>
                               <button
                                 (click)="cancelRequest(request)"
-                                class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
+                                class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
                                 <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
                               </button>
                             </ng-container>
@@ -260,15 +265,15 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                             </button>
                           }
                           @case (Status.COMPLETED) {
-                            <span class="text-slate-500 text-sm">{{ formatDate(request.receivedAt!) }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ formatDate(request.receivedAt!) }}</span>
                           }
                           @case (Status.REJECTED) {
-                            <span class="text-red-400 text-sm truncate max-w-[150px]" [title]="request.rejectedReason">
+                            <span class="text-[var(--color-status-error)] text-sm truncate max-w-[150px]" [title]="request.rejectedReason">
                               {{ request.rejectedReason || '-' }}
                             </span>
                           }
                           @default {
-                            <span class="text-slate-500 text-sm">-</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>
                           }
                         }
                       </div>
@@ -277,9 +282,9 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 } @empty {
                   <tr>
                     <td colspan="7" class="px-6 py-16 text-center">
-                      <lucide-icon name="ArrowLeftRight" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
-                      <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'TRANSFERS.NO_REQUESTS' | translate }}</h3>
-                      <p class="text-slate-600">{{ 'TRANSFERS.NO_REQUESTS_DESC' | translate }}</p>
+                      <lucide-icon name="ArrowLeftRight" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+                      <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NO_REQUESTS' | translate }}</h3>
+                      <p class="text-[var(--color-on-surface-muted)]">{{ 'TRANSFERS.NO_REQUESTS_DESC' | translate }}</p>
                     </td>
                   </tr>
                 }
@@ -288,13 +293,13 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
           </div>
 
           <!-- Mobile Cards -->
-          <div class="lg:hidden divide-y divide-[#1e1e1e]">
+          <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
             @for (request of paginatedRequests(); track request.id) {
               <div class="p-4">
                 <div class="flex justify-between items-start mb-3">
                   <div>
                     <p class="text-foreground font-medium">{{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }}</p>
-                    <p class="text-slate-500 text-sm">{{ getItemsPreview(request) }}</p>
+                    <p class="text-[var(--color-on-surface-variant)] text-sm">{{ getItemsPreview(request) }}</p>
                   </div>
                   <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                     {{ getStatusLabel(request.status) }}
@@ -302,15 +307,15 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                 </div>
                 <div class="grid grid-cols-2 gap-3 text-sm mb-3">
                   <div>
-                    <p class="text-slate-500">{{ 'TRANSFERS.SOURCE' | translate }}</p>
+                    <p class="text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.SOURCE' | translate }}</p>
                     <p class="text-foreground">{{ request.sourceWarehouseName }}</p>
                   </div>
                   <div>
-                    <p class="text-slate-500">{{ 'TRANSFERS.DESTINATION' | translate }}</p>
+                    <p class="text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.DESTINATION' | translate }}</p>
                     <p class="text-foreground">{{ request.destinationWarehouseName }}</p>
                   </div>
                   <div>
-                    <p class="text-slate-500">{{ 'COMMON.DATE' | translate }}</p>
+                    <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
                     <p class="text-foreground">{{ formatDate(request.createdAt) }}</p>
                   </div>
                 </div>
@@ -327,7 +332,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                         </button>
                         <button
                           (click)="rejectRequest(request)"
-                          class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
+                          class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
                           <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
                         </button>
                       </div>
@@ -344,7 +349,7 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
                         </button>
                         <button
                           (click)="cancelRequest(request)"
-                          class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
+                          class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
                           <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
                         </button>
                       </div>
@@ -362,8 +367,8 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
               </div>
             } @empty {
               <div class="p-8 text-center">
-                <lucide-icon name="ArrowLeftRight" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
-                <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'TRANSFERS.NO_REQUESTS' | translate }}</h3>
+                <lucide-icon name="ArrowLeftRight" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+                <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NO_REQUESTS' | translate }}</h3>
               </div>
             }
           </div>
@@ -388,236 +393,36 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 
     <!-- New Request Dialog -->
     @if (showNewRequestDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeNewRequestDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
-          <div class="px-6 py-4 border-b border-theme">
-            <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.NEW_REQUEST' | translate }}</h2>
-            <p class="text-slate-500 text-sm mt-1">{{ 'TRANSFERS.NEW_REQUEST_DESC' | translate }}</p>
-          </div>
-          <div class="p-6 space-y-4">
-            <!-- Source Warehouse -->
-            <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'TRANSFERS.SOURCE' | translate }} *</label>
-              <select
-                [ngModel]="selectedSourceWarehouseId()"
-                (ngModelChange)="onSourceWarehouseChange($event)"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f]"
-              >
-                <option value="">{{ 'TRANSFERS.SELECT_SOURCE' | translate }}</option>
-                @for (warehouse of warehouses(); track warehouse.id) {
-                  <option [value]="warehouse.id">{{ warehouse.name }} - {{ warehouse.location }}</option>
-                }
-              </select>
-            </div>
-
-            <!-- Destination Warehouse -->
-            <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'TRANSFERS.DESTINATION' | translate }} *</label>
-              <select
-                [ngModel]="selectedDestWarehouseId()"
-                (ngModelChange)="selectedDestWarehouseId.set($event)"
-                [disabled]="!selectedSourceWarehouseId()"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] disabled:opacity-50"
-              >
-                <option value="">{{ 'TRANSFERS.SELECT_DESTINATION' | translate }}</option>
-                @for (warehouse of destinationWarehouses(); track warehouse.id) {
-                  <option [value]="warehouse.id">{{ warehouse.name }} - {{ warehouse.location }}</option>
-                }
-              </select>
-            </div>
-
-            <!-- Notes -->
-            <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'TRANSFERS.NOTES' | translate }}</label>
-              <textarea
-                [ngModel]="selectedNotes()"
-                (ngModelChange)="selectedNotes.set($event)"
-                rows="2"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] resize-none"
-                [placeholder]="'TRANSFERS.NOTES_PLACEHOLDER' | translate"
-              ></textarea>
-            </div>
-
-            <!-- Items Section -->
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <label class="text-sm font-medium text-slate-400">{{ 'TRANSFERS.ITEMS' | translate }} *</label>
-                <button
-                  type="button"
-                  (click)="addItem()"
-                  class="text-sm text-[#4d7c6f] hover:text-[#5d8c7f] flex items-center gap-1">
-                  <lucide-icon name="Plus" class="!w-4 !h-4"></lucide-icon>
-                  {{ 'TRANSACTION.ADD_ITEM' | translate }}
-                </button>
-              </div>
-
-              <div class="space-y-3">
-                @for (item of requestItems(); track $index; let i = $index) {
-                  <div class="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4">
-                    <div class="flex items-start gap-3">
-                      <div class="flex-1 space-y-3">
-                        <select
-                          [ngModel]="item.inventoryItemId"
-                          (ngModelChange)="updateItemId(i, $event)"
-                          class="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
-                          <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
-                          @for (invItem of availableItems(); track invItem.id) {
-                            <option [value]="invItem.id" [disabled]="isItemAlreadySelected(invItem.id, i)">
-                              {{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})
-                            </option>
-                          }
-                        </select>
-                        <input
-                          type="number"
-                          [ngModel]="item.quantity"
-                          (ngModelChange)="updateItemQuantity(i, $event)"
-                          min="1"
-                          class="w-24 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[#4d7c6f] transition-colors"
-                          [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        (click)="removeItem(i)"
-                        [attr.aria-label]="'COMMON.DELETE' | translate"
-                        class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
-                        <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
-                      </button>
-                    </div>
-                  </div>
-                }
-              </div>
-
-              @if (requestItems().length === 0) {
-                <p class="text-slate-500 text-sm text-center py-4">{{ 'TRANSACTION.NO_ITEMS' | translate }}</p>
-              }
-            </div>
-          </div>
-          <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
-            <button
-              (click)="closeNewRequestDialog()"
-              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
-              {{ 'COMMON.CANCEL' | translate }}
-            </button>
-            <button
-              (click)="createRequest()"
-              [disabled]="!canCreateRequest()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 disabled:text-slate-500 text-white px-6 py-2 rounded-lg transition-all">
-              {{ 'TRANSFERS.CREATE_REQUEST' | translate }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-transfer-form-dialog
+        (closed)="closeNewRequestDialog()"
+        (created)="onRequestCreated($event)"
+      />
     }
 
     <!-- QR Code Dialog -->
     @if (showQrDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeQrDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
-          <div class="px-6 py-4 border-b border-theme">
-            <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.TITLE' | translate }}</h2>
-            <p class="text-slate-500 text-sm mt-1">{{ 'TRANSFERS.QR.INSTRUCTIONS' | translate }}</p>
-          </div>
-          <div class="p-6 flex flex-col items-center">
-            @if (currentQrDataUrl) {
-              <div class="bg-white p-4 rounded-lg mb-4">
-                <img [src]="currentQrDataUrl" alt="QR Code" class="w-56 h-56 block" />
-              </div>
-              <p class="text-foreground font-medium text-center mb-1">{{ currentRequest?.items?.length }} Items</p>
-              <p class="text-slate-500 text-sm text-center">
-                {{ currentRequest?.sourceWarehouseName }} -> {{ currentRequest?.destinationWarehouseName }}
-              </p>
-            } @else {
-              <div class="w-64 h-64 flex items-center justify-center bg-slate-800 rounded-lg mb-4">
-                <lucide-icon name="Loader2" class="!w-8 !h-8 !text-slate-500 animate-spin"></lucide-icon>
-              </div>
-              <p class="text-slate-500 text-sm">Cargando QR...</p>
-            }
-          </div>
-          <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
-            <button
-              (click)="printQrCode()"
-              class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-2 rounded-lg transition-all flex items-center gap-2">
-              <lucide-icon name="Printer" class="!w-4 !h-4 !text-current"></lucide-icon>
-              <span>{{ 'TRANSFERS.QR.PRINT' | translate }}</span>
-            </button>
-            <button
-              (click)="downloadQrCode()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2">
-              <lucide-icon name="Download" class="!w-4 !h-4 !text-white"></lucide-icon>
-              <span>{{ 'TRANSFERS.QR.DOWNLOAD' | translate }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-transfer-qr-dialog
+        [request]="currentRequest"
+        [qrDataUrl]="currentQrDataUrl"
+        (closed)="closeQrDialog()"
+      />
     }
 
     <!-- Scan QR Dialog -->
     @if (showScanDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeScanDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
-          <div class="px-6 py-4 border-b border-theme">
-            <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.SCAN_TITLE' | translate }}</h2>
-            <p class="text-slate-500 text-sm mt-1">{{ 'TRANSFERS.QR.SCAN_INSTRUCTIONS' | translate }}</p>
-          </div>
-          <div class="p-6">
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-slate-400 mb-2">QR Code Data</label>
-              <textarea
-                [(ngModel)]="scannedQrData"
-                rows="4"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] resize-none font-mono text-sm"
-                placeholder="Paste QR code data here..."
-              ></textarea>
-            </div>
-          </div>
-          <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
-            <button
-              (click)="closeScanDialog()"
-              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
-              {{ 'COMMON.CANCEL' | translate }}
-            </button>
-            <button
-              (click)="processScannedQr()"
-              [disabled]="!scannedQrData"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] disabled:bg-slate-700 disabled:text-slate-500 text-white px-6 py-2 rounded-lg transition-all">
-              {{ 'COMMON.CONFIRM' | translate }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-transfer-scan-dialog
+        (closed)="closeScanDialog()"
+        (scanned)="onQrScanned($event)"
+      />
     }
 
     <!-- Reject Dialog -->
     @if (showRejectDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeRejectDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
-          <div class="px-6 py-4 border-b border-theme">
-            <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.REJECT_TITLE' | translate }}</h2>
-          </div>
-          <div class="p-6">
-            <label class="block text-sm font-medium text-slate-400 mb-2">{{ 'TRANSFERS.REJECT_REASON' | translate }}</label>
-            <textarea
-              [(ngModel)]="rejectReason"
-              rows="3"
-              class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] resize-none"
-              [placeholder]="'TRANSFERS.REJECT_REASON_PLACEHOLDER' | translate"
-            ></textarea>
-          </div>
-          <div class="px-6 py-4 border-t border-theme flex justify-end gap-3">
-            <button
-              (click)="closeRejectDialog()"
-              class="px-4 py-2 text-slate-400 hover:text-foreground transition-colors">
-              {{ 'COMMON.CANCEL' | translate }}
-            </button>
-            <button
-              (click)="confirmReject()"
-              class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-all">
-              {{ 'TRANSFERS.REJECT' | translate }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-transfer-reject-dialog
+        [request]="requestToReject"
+        (closed)="closeRejectDialog()"
+        (rejected)="onRejectConfirmed($event)"
+      />
     }
   `
 })
@@ -650,40 +455,11 @@ export class TransfersComponent implements OnInit {
   currentQrDataUrl: string | null = null;
   currentRequest: TransferRequest | null = null;
 
-  // Scan Dialog state
-  scannedQrData = '';
-
   // Reject Dialog state
-  rejectReason = '';
   requestToReject: TransferRequest | null = null;
-
-  // Form signals
-  selectedSourceWarehouseId = signal('');
-  selectedDestWarehouseId = signal('');
-  selectedNotes = signal('');
-
-  // Items array
-  requestItems = signal<{ inventoryItemId: string; quantity: number }[]>([]);
 
   // Computed
   stats = computed(() => this.transferService.stats());
-  warehouses = computed(() => this.warehouseService.warehouses());
-
-  // Destination warehouses (excludes source)
-  destinationWarehouses = computed(() => {
-    const all = this.warehouseService.warehouses();
-    const sourceId = this.selectedSourceWarehouseId();
-    return all.filter(w => w.id !== sourceId);
-  });
-
-  // Available items for transfer
-  availableItems = computed(() => {
-    const sourceId = this.selectedSourceWarehouseId();
-    const items = this.inventoryService.items();
-
-    if (!sourceId) return items;
-    return items.filter(item => item.warehouseId === sourceId && item.quantity > 0);
-  });
 
   // Filtered requests
   private filteredRequestsSignal = signal<TransferRequest[]>([]);
@@ -749,10 +525,6 @@ export class TransfersComponent implements OnInit {
   // ==================== New Request Dialog ====================
 
   openNewRequestDialog(): void {
-    this.selectedSourceWarehouseId.set('');
-    this.selectedDestWarehouseId.set('');
-    this.selectedNotes.set('');
-    this.requestItems.set([]);
     this.showNewRequestDialog = true;
   }
 
@@ -760,69 +532,9 @@ export class TransfersComponent implements OnInit {
     this.showNewRequestDialog = false;
   }
 
-  onSourceWarehouseChange(warehouseId: string): void {
-    this.selectedSourceWarehouseId.set(warehouseId);
-    this.requestItems.set([]);
-    this.selectedDestWarehouseId.set('');
-  }
-
-  addItem(): void {
-    this.requestItems.update(items => [...items, { inventoryItemId: '', quantity: 1 }]);
-  }
-
-  updateItemId(index: number, itemId: string): void {
-    this.requestItems.update(items => {
-      const newItems = [...items];
-      newItems[index] = { ...newItems[index], inventoryItemId: itemId };
-      return newItems;
-    });
-  }
-
-  updateItemQuantity(index: number, quantity: number): void {
-    this.requestItems.update(items => {
-      const newItems = [...items];
-      newItems[index] = { ...newItems[index], quantity: quantity || 1 };
-      return newItems;
-    });
-  }
-
-  removeItem(index: number): void {
-    this.requestItems.update(items => items.filter((_, i) => i !== index));
-  }
-
-  isItemAlreadySelected(itemId: string, currentIndex: number): boolean {
-    return this.requestItems().some((item, i) => i !== currentIndex && item.inventoryItemId === itemId);
-  }
-
-  canCreateRequest(): boolean {
-    const items = this.requestItems();
-    const hasValidItems = items.length > 0 && items.every(item => item.inventoryItemId && item.quantity > 0);
-    return hasValidItems &&
-           !!this.selectedSourceWarehouseId() &&
-           !!this.selectedDestWarehouseId() &&
-           this.selectedSourceWarehouseId() !== this.selectedDestWarehouseId();
-  }
-
-  createRequest(): void {
-    if (!this.canCreateRequest()) return;
-
-    this.transferService.createRequest({
-      sourceWarehouseId: this.selectedSourceWarehouseId(),
-      destinationWarehouseId: this.selectedDestWarehouseId(),
-      items: this.requestItems().filter(i => i.inventoryItemId),
-      notes: this.selectedNotes() || undefined
-    }).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.REQUEST_CREATED'));
-          this.closeNewRequestDialog();
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.REQUEST_ERROR'));
-      }
-    });
+  onRequestCreated(result: TransferFormResult): void {
+    this.closeNewRequestDialog();
+    this.applyFilters();
   }
 
   // ==================== Actions ====================
@@ -858,22 +570,20 @@ export class TransfersComponent implements OnInit {
 
   rejectRequest(request: TransferRequest): void {
     this.requestToReject = request;
-    this.rejectReason = '';
     this.showRejectDialog = true;
   }
 
   closeRejectDialog(): void {
     this.showRejectDialog = false;
     this.requestToReject = null;
-    this.rejectReason = '';
   }
 
-  confirmReject(): void {
+  onRejectConfirmed(result: TransferRejectResult): void {
     if (!this.requestToReject) return;
 
-    this.transferService.rejectRequest(this.requestToReject.id, this.rejectReason || undefined).subscribe({
-      next: (result) => {
-        if (result) {
+    this.transferService.rejectRequest(this.requestToReject.id, result.reason).subscribe({
+      next: (response) => {
+        if (response) {
           this.notifications.success(this.translate.instant('TRANSFERS.REJECT_SUCCESS'));
           this.closeRejectDialog();
           this.applyFilters();
@@ -972,71 +682,19 @@ export class TransfersComponent implements OnInit {
     this.currentRequest = null;
   }
 
-  printQrCode(): void {
-    if (!this.currentQrDataUrl || !this.currentRequest) return;
-
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>QR Code - Transfer</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-              img { max-width: 300px; }
-              h2 { margin-bottom: 5px; }
-              p { color: #666; margin: 5px 0; }
-            </style>
-          </head>
-          <body>
-            <img src="${this.currentQrDataUrl}" alt="QR Code" />
-            <h2>Transfer: ${this.currentRequest.items.length} Items</h2>
-            <p>${this.currentRequest.sourceWarehouseName} -> ${this.currentRequest.destinationWarehouseName}</p>
-            <p>Scan to confirm receipt</p>
-            <script>window.onload = function() { window.print(); }</script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
-  }
-
-  downloadQrCode(): void {
-    if (!this.currentQrDataUrl || !this.currentRequest) return;
-
-    const link = document.createElement('a');
-    link.href = this.currentQrDataUrl;
-    link.download = `qr-transfer-${this.currentRequest.id}.png`;
-    link.click();
-  }
-
   // ==================== Scan QR Dialog ====================
 
   openScanDialog(): void {
-    this.scannedQrData = '';
     this.showScanDialog = true;
   }
 
   closeScanDialog(): void {
     this.showScanDialog = false;
-    this.scannedQrData = '';
   }
 
-  processScannedQr(): void {
-    if (!this.scannedQrData) return;
-
-    this.transferService.scanQr(this.scannedQrData).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.QR.SCAN_SUCCESS'));
-          this.closeScanDialog();
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.QR.SCAN_ERROR'));
-      }
-    });
+  onQrScanned(result: TransferScanQrResult): void {
+    this.closeScanDialog();
+    this.applyFilters();
   }
 
   // ==================== Helper Methods ====================
@@ -1053,14 +711,14 @@ export class TransfersComponent implements OnInit {
 
   getStatusClass(status: TransferRequestStatus): string {
     const classes: Record<string, string> = {
-      [TransferRequestStatus.PENDING]: 'bg-slate-800/50 text-slate-400 border border-slate-700',
-      [TransferRequestStatus.APPROVED]: 'bg-blue-950/50 text-blue-400 border border-blue-900',
-      [TransferRequestStatus.SENT]: 'bg-sky-950/50 text-sky-400 border border-sky-900',
-      [TransferRequestStatus.COMPLETED]: 'bg-emerald-950/50 text-emerald-400 border border-emerald-900',
-      [TransferRequestStatus.REJECTED]: 'bg-red-950/50 text-red-400 border border-red-900',
-      [TransferRequestStatus.CANCELLED]: 'bg-slate-800/50 text-slate-500 border border-slate-700'
+      [TransferRequestStatus.PENDING]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
+      [TransferRequestStatus.APPROVED]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]',
+      [TransferRequestStatus.SENT]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]',
+      [TransferRequestStatus.COMPLETED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
+      [TransferRequestStatus.REJECTED]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
+      [TransferRequestStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]'
     };
-    return classes[status] || 'bg-slate-800 text-slate-400';
+    return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
   formatDate(date: Date): string {

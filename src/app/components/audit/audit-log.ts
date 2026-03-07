@@ -28,11 +28,11 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'AUDIT.TITLE' | translate }}</h1>
-              <p class="text-slate-500 text-lg">{{ 'AUDIT.SUBTITLE' | translate }}</p>
+              <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'AUDIT.SUBTITLE' | translate }}</p>
             </div>
             <button
               (click)="exportToCSV()"
-              class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
               <lucide-icon name="Download" class="!w-5 !h-5"></lucide-icon>
               {{ 'COMMON.EXPORT' | translate }}
             </button>
@@ -50,9 +50,9 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
                   [(ngModel)]="searchQuery"
                   (ngModelChange)="applyFilters()"
                   [placeholder]="'AUDIT.SEARCH_PLACEHOLDER' | translate"
-                  class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-slate-500 focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all"
+                  class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
-                <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 !w-5 !h-5"></lucide-icon>
+                <lucide-icon name="Search" class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
 
@@ -61,8 +61,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
               <select
                 [(ngModel)]="selectedAction"
                 (ngModelChange)="applyFilters()"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
-                style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
+                class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'AUDIT.ALL_ACTIONS' | translate }}</option>
                 @for (action of actions; track action) {
@@ -76,8 +75,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
               <select
                 [(ngModel)]="selectedEntity"
                 (ngModelChange)="applyFilters()"
-                class="w-full bg-[#242424] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] focus:ring-1 focus:ring-[#4d7c6f] transition-all cursor-pointer appearance-none"
-                style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgb(148 163 184)%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; padding-right: 2.5rem;"
+                class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'AUDIT.ALL_ENTITIES' | translate }}</option>
                 @for (entity of entities; track entity) {
@@ -90,7 +88,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
             @if (hasFilters()) {
               <button
                 (click)="clearFilters()"
-                class="bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
                 <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
                 {{ 'COMMON.CLEAR' | translate }}
               </button>
@@ -101,20 +99,20 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-slate-500">{{ 'AUDIT.TOTAL_LOGS' | translate }}</p>
+            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.TOTAL_LOGS' | translate }}</p>
             <p class="text-2xl font-bold text-foreground">{{ filteredLogs().length }}</p>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-slate-500">{{ 'AUDIT.CREATES' | translate }}</p>
-            <p class="text-2xl font-bold text-emerald-400">{{ countByAction(AuditAction.CREATE) }}</p>
+            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.CREATES' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ countByAction(AuditAction.CREATE) }}</p>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-slate-500">{{ 'AUDIT.UPDATES' | translate }}</p>
-            <p class="text-2xl font-bold text-sky-400">{{ countByAction(AuditAction.UPDATE) }}</p>
+            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.UPDATES' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ countByAction(AuditAction.UPDATE) }}</p>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-slate-500">{{ 'AUDIT.DELETES' | translate }}</p>
-            <p class="text-2xl font-bold text-red-400">{{ countByAction(AuditAction.DELETE) }}</p>
+            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DELETES' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ countByAction(AuditAction.DELETE) }}</p>
           </div>
         </div>
 
@@ -122,8 +120,8 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
         @if (auditService.loading()) {
           <div class="flex items-center justify-center py-16">
             <div class="flex flex-col items-center gap-4">
-              <div class="w-10 h-10 border-4 border-[#4d7c6f]/30 border-t-[#4d7c6f] rounded-full animate-spin"></div>
-              <p class="text-slate-500">{{ 'COMMON.LOADING' | translate }}...</p>
+              <div class="w-10 h-10 border-4 border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin"></div>
+              <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</p>
             </div>
           </div>
         }
@@ -132,13 +130,13 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
         <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden" [class.hidden]="auditService.loading()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 class="text-xl font-semibold text-foreground">{{ 'AUDIT.LOG_LIST' | translate }}</h2>
-            <p class="text-slate-500 text-sm mt-1">{{ 'AUDIT.SHOWING' | translate:{ count: paginatedLogs().length, total: filteredLogs().length } }}</p>
+            <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'AUDIT.SHOWING' | translate:{ count: paginatedLogs().length, total: filteredLogs().length } }}</p>
           </div>
 
           <!-- Log Items -->
-          <div class="divide-y divide-[#1e1e1e]">
+          <div class="divide-y divide-[var(--color-border-subtle)]">
             @for (log of paginatedLogs(); track log.id) {
-              <div class="p-4 hover:bg-[#1e1e1e] transition-colors">
+              <div class="p-4 hover:bg-[var(--color-surface-variant)] transition-colors">
                 <div class="flex items-start gap-4">
                   <!-- Icon -->
                   <div [class]="getActionIconClass(log.action)" class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -151,36 +149,36 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
                       <div>
                         <p class="text-foreground font-medium">
                           <span [class]="getActionTextClass(log.action)">{{ getActionLabel(log.action) }}</span>
-                          <span class="text-slate-400"> - </span>
-                          <span class="text-slate-400">{{ getEntityLabel(log.entity) }}</span>
+                          <span class="text-[var(--color-on-surface-variant)]"> - </span>
+                          <span class="text-[var(--color-on-surface-variant)]">{{ getEntityLabel(log.entity) }}</span>
                         </p>
-                        <p class="text-slate-400 text-sm">{{ log.entityName }}</p>
+                        <p class="text-[var(--color-on-surface-variant)] text-sm">{{ log.entityName }}</p>
                       </div>
-                      <div class="text-sm text-slate-500">
+                      <div class="text-sm text-[var(--color-on-surface-variant)]">
                         {{ formatDate(log.createdAt) }}
                       </div>
                     </div>
 
                     <!-- User Info -->
-                    <div class="flex items-center gap-2 mt-2 text-sm text-slate-500">
+                    <div class="flex items-center gap-2 mt-2 text-sm text-[var(--color-on-surface-variant)]">
                       <lucide-icon name="User" class="!w-3.5 !h-3.5"></lucide-icon>
                       <span>{{ log.userName }}</span>
                       @if (log.userEmail) {
-                        <span class="text-slate-600">({{ log.userEmail }})</span>
+                        <span class="text-[var(--color-on-surface-muted)]">({{ log.userEmail }})</span>
                       }
                     </div>
 
                     <!-- Changes -->
                     @if (log.changes && log.changes.length > 0) {
-                      <div class="mt-3 bg-[#1a1a1a] rounded-lg p-3">
-                        <p class="text-xs text-slate-500 mb-2">{{ 'AUDIT.CHANGES' | translate }}:</p>
+                      <div class="mt-3 bg-[var(--color-surface-variant)] rounded-lg p-3">
+                        <p class="text-xs text-[var(--color-on-surface-variant)] mb-2">{{ 'AUDIT.CHANGES' | translate }}:</p>
                         <div class="space-y-1">
                           @for (change of log.changes; track change.field) {
                             <div class="text-xs">
-                              <span class="text-slate-400">{{ change.field }}:</span>
-                              <span class="text-red-400 line-through ml-2">{{ change.oldValue ?? 'null' }}</span>
-                              <span class="text-slate-600 mx-1">&rarr;</span>
-                              <span class="text-emerald-400">{{ change.newValue ?? 'null' }}</span>
+                              <span class="text-[var(--color-on-surface-variant)]">{{ change.field }}:</span>
+                              <span class="text-[var(--color-status-error)] line-through ml-2">{{ change.oldValue ?? 'null' }}</span>
+                              <span class="text-[var(--color-on-surface-muted)] mx-1">&rarr;</span>
+                              <span class="text-[var(--color-status-success)]">{{ change.newValue ?? 'null' }}</span>
                             </div>
                           }
                         </div>
@@ -189,7 +187,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
 
                     <!-- Metadata -->
                     @if (log.metadata) {
-                      <div class="mt-2 text-xs text-slate-500">
+                      <div class="mt-2 text-xs text-[var(--color-on-surface-variant)]">
                         @if (log.metadata['assignedTo']) {
                           <span>{{ 'AUDIT.ASSIGNED_TO' | translate }}: {{ log.metadata['assignedTo'] }}</span>
                         }
@@ -203,9 +201,9 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
               </div>
             } @empty {
               <div class="p-12 text-center">
-                <lucide-icon name="History" class="!w-14 !h-14 text-slate-700 mb-4"></lucide-icon>
-                <h3 class="text-lg font-semibold text-slate-400 mb-2">{{ 'AUDIT.NO_LOGS' | translate }}</h3>
-                <p class="text-slate-600">{{ 'AUDIT.NO_LOGS_DESC' | translate }}</p>
+                <lucide-icon name="History" class="!w-14 !h-14 text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+                <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'AUDIT.NO_LOGS' | translate }}</h3>
+                <p class="text-[var(--color-on-surface-muted)]">{{ 'AUDIT.NO_LOGS_DESC' | translate }}</p>
               </div>
             }
           </div>
@@ -375,38 +373,38 @@ export class AuditLogComponent implements OnInit {
 
   getActionIconClass(action: AuditAction): string {
     const classes: Record<AuditAction, string> = {
-      [AuditAction.CREATE]: 'bg-emerald-950/50 text-emerald-400',
-      [AuditAction.UPDATE]: 'bg-sky-950/50 text-sky-400',
-      [AuditAction.DELETE]: 'bg-red-950/50 text-red-400',
+      [AuditAction.CREATE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)]',
+      [AuditAction.UPDATE]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)]',
+      [AuditAction.DELETE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)]',
       [AuditAction.RESTORE]: 'bg-indigo-950/50 text-indigo-400',
-      [AuditAction.LOGIN]: 'bg-slate-800 text-slate-400',
-      [AuditAction.LOGOUT]: 'bg-slate-800 text-slate-400',
+      [AuditAction.LOGIN]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]',
+      [AuditAction.LOGOUT]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]',
       [AuditAction.PASSWORD_CHANGE]: 'bg-yellow-950/50 text-yellow-400',
       [AuditAction.ASSIGN]: 'bg-purple-950/50 text-purple-400',
-      [AuditAction.UNASSIGN]: 'bg-orange-950/50 text-orange-400',
+      [AuditAction.UNASSIGN]: 'bg-[var(--color-warning-bg)] text-[var(--color-status-warning)]',
       [AuditAction.TRANSFER]: 'bg-cyan-950/50 text-cyan-400',
       [AuditAction.LOAN]: 'bg-amber-950/50 text-amber-400',
       [AuditAction.RETURN]: 'bg-teal-950/50 text-teal-400'
     };
-    return classes[action] || 'bg-slate-800 text-slate-400';
+    return classes[action] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
   getActionTextClass(action: AuditAction): string {
     const classes: Record<AuditAction, string> = {
-      [AuditAction.CREATE]: 'text-emerald-400',
-      [AuditAction.UPDATE]: 'text-sky-400',
-      [AuditAction.DELETE]: 'text-red-400',
+      [AuditAction.CREATE]: 'text-[var(--color-status-success)]',
+      [AuditAction.UPDATE]: 'text-[var(--color-status-info)]',
+      [AuditAction.DELETE]: 'text-[var(--color-status-error)]',
       [AuditAction.RESTORE]: 'text-indigo-400',
-      [AuditAction.LOGIN]: 'text-slate-400',
-      [AuditAction.LOGOUT]: 'text-slate-400',
+      [AuditAction.LOGIN]: 'text-[var(--color-on-surface-variant)]',
+      [AuditAction.LOGOUT]: 'text-[var(--color-on-surface-variant)]',
       [AuditAction.PASSWORD_CHANGE]: 'text-yellow-400',
       [AuditAction.ASSIGN]: 'text-purple-400',
-      [AuditAction.UNASSIGN]: 'text-orange-400',
+      [AuditAction.UNASSIGN]: 'text-[var(--color-status-warning)]',
       [AuditAction.TRANSFER]: 'text-cyan-400',
       [AuditAction.LOAN]: 'text-amber-400',
       [AuditAction.RETURN]: 'text-teal-400'
     };
-    return classes[action] || 'text-slate-400';
+    return classes[action] || 'text-[var(--color-on-surface-variant)]';
   }
 
   formatDate(date: Date): string {

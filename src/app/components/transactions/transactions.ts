@@ -114,7 +114,7 @@ export class Transactions implements OnInit {
       case TransactionType.TRANSFER:
         return 'bg-blue-950/50 text-blue-400 border-blue-900';
       default:
-        return 'bg-slate-800/50 text-slate-400 border-slate-700';
+        return 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border-[var(--color-border)]';
     }
   }
 

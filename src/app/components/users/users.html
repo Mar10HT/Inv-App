@@ -5,12 +5,12 @@
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'USER.TITLE' | translate }}</h1>
-          <p class="text-slate-500 text-lg">{{ 'USER.SUBTITLE' | translate }}</p>
+          <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'USER.SUBTITLE' | translate }}</p>
         </div>
         <ng-container *ngxPermissionsOnly="['create_users']">
           <button
             (click)="addUser()"
-            class="bg-[#4d7c6f] hover:bg-[#5d8c7f] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
+            class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
             <lucide-icon name="Plus" class="!w-5 !h-5"></lucide-icon>
             {{ 'USER.ADD' | translate }}
           </button>
@@ -20,32 +20,32 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-medium text-slate-500">{{ 'USER.TOTAL' | translate }}</p>
+            <p class="text-xs font-medium text-[var(--color-on-surface-variant)]">{{ 'USER.TOTAL' | translate }}</p>
             <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <lucide-icon name="Users" class="!text-[#4d7c6f] !w-5 !h-5"></lucide-icon>
+          <div class="bg-[var(--color-primary-container)] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <lucide-icon name="Users" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.ADMIN' | translate }}</p>
-            <p class="text-2xl font-bold text-rose-400">{{ stats().admins }}</p>
+            <p class="text-xs font-medium text-[var(--color-on-surface-variant)]">{{ 'USER.ROLES.ADMIN' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().admins }}</p>
           </div>
           <div class="bg-rose-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <lucide-icon name="ShieldCheck" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
+            <lucide-icon name="ShieldCheck" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.WAREHOUSE_MANAGER' | translate }}</p>
+            <p class="text-xs font-medium text-[var(--color-on-surface-variant)]">{{ 'USER.ROLES.WAREHOUSE_MANAGER' | translate }}</p>
             <p class="text-2xl font-bold text-amber-400">{{ stats().managers }}</p>
           </div>
           <div class="bg-amber-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
@@ -53,36 +53,36 @@
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.USER' | translate }}</p>
-            <p class="text-2xl font-bold text-emerald-400">{{ stats().users }}</p>
+            <p class="text-xs font-medium text-[var(--color-on-surface-variant)]">{{ 'USER.ROLES.USER' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().users }}</p>
           </div>
           <div class="bg-emerald-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <lucide-icon name="User" class="!text-emerald-400 !w-5 !h-5"></lucide-icon>
+            <lucide-icon name="User" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.VIEWER' | translate }}</p>
-            <p class="text-2xl font-bold text-blue-400">{{ stats().viewers }}</p>
+            <p class="text-xs font-medium text-[var(--color-on-surface-variant)]">{{ 'USER.ROLES.VIEWER' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ stats().viewers }}</p>
           </div>
           <div class="bg-blue-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <lucide-icon name="Eye" class="!text-blue-400 !w-5 !h-5"></lucide-icon>
+            <lucide-icon name="Eye" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
-      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.EXTERNAL' | translate }}</p>
-            <p class="text-2xl font-bold text-orange-400">{{ stats().external }}</p>
+            <p class="text-xs font-medium text-[var(--color-on-surface-variant)]">{{ 'USER.ROLES.EXTERNAL' | translate }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-warning)]">{{ stats().external }}</p>
           </div>
           <div class="bg-orange-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
-            <lucide-icon name="BadgeCheck" class="!text-orange-400 !w-5 !h-5"></lucide-icon>
+            <lucide-icon name="BadgeCheck" class="!text-[var(--color-status-warning)] !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>
@@ -91,17 +91,17 @@
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4d7c6f]"></div>
-        <span class="ml-3 text-slate-400">{{ 'COMMON.LOADING' | translate }}...</span>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
 
     <!-- Error State -->
     @if (error()) {
-      <div class="bg-rose-950/30 border border-rose-900 rounded-xl p-4 mb-6">
+      <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
-          <lucide-icon name="CircleAlert" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
-          <span class="text-rose-400">{{ error() }}</span>
+          <lucide-icon name="CircleAlert" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
+          <span class="text-[var(--color-status-error)]">{{ error() }}</span>
         </div>
       </div>
     }
@@ -115,13 +115,13 @@
       @if (users().length === 0 && !loading()) {
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Users" class="!w-14 !h-14 !text-slate-700 mb-4"></lucide-icon>
-          <p class="text-slate-500 text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
-          <p class="text-slate-600 text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
+          <lucide-icon name="Users" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
+          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
           <ng-container *ngxPermissionsOnly="['create_users']">
             <button
               (click)="addUser()"
-              class="bg-[#4d7c6f] text-white px-6 py-2 rounded-lg hover:bg-[#5d8c7f] transition-all font-medium">
+              class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
               {{ 'USER.ADD' | translate }}
             </button>
           </ng-container>
@@ -131,23 +131,23 @@
         <div class="hidden lg:block overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="bg-[#141414]">
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[200px]">{{ 'USER.NAME' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[200px]">{{ 'USER.EMAIL' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'USER.ROLE' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
+              <tr class="bg-[var(--color-surface)]">
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[200px]">{{ 'USER.NAME' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[200px]">{{ 'USER.EMAIL' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'USER.ROLE' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#1e1e1e]">
+            <tbody class="divide-y divide-[var(--color-border-subtle)]">
               @for (user of users(); track trackByFn($index, user)) {
-                <tr class="hover:bg-[#1e1e1e] transition-colors">
+                <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                   <!-- Name Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                      <div class="relative w-10 h-10 bg-[#2d4a3f] rounded-full flex items-center justify-center flex-shrink-0">
-                        <lucide-icon name="User" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
+                      <div class="relative w-10 h-10 bg-[var(--color-primary-container)] rounded-full flex items-center justify-center flex-shrink-0">
+                        <lucide-icon name="User" class="!text-[var(--color-primary)] !w-4 !h-4"></lucide-icon>
                         @if (hasPendingReset(user.id)) {
-                          <span class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-amber-500 rounded-full border-2 border-[#1a1a1a]" [title]="'USER.PENDING_RESET' | translate"></span>
+                          <span class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-amber-500 rounded-full border-2 border-[var(--color-surface-variant)]" [title]="'USER.PENDING_RESET' | translate"></span>
                         }
                       </div>
                       <div>
@@ -158,8 +158,8 @@
 
                   <!-- Email Column -->
                   <td class="px-6 py-4">
-                    <div class="flex items-center gap-2 text-slate-400">
-                      <lucide-icon name="Mail" class="!w-3.5 !h-3.5 !text-slate-500"></lucide-icon>
+                    <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)]">
+                      <lucide-icon name="Mail" class="!w-3.5 !h-3.5 !text-[var(--color-on-surface-variant)]"></lucide-icon>
                       <span>{{ user.email }}</span>
                     </div>
                   </td>
@@ -178,7 +178,7 @@
                         <button
                           type="button"
                           (click)="editUser(user)"
-                          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors flex items-center justify-center"
+                          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors flex items-center justify-center"
                           [title]="'USER.EDIT' | translate"
                           [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + (user.name || user.email)">
                           <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
@@ -186,7 +186,7 @@
                         <button
                           type="button"
                           (click)="resetPassword(user)"
-                          class="p-2 rounded-lg text-slate-500 hover:text-amber-400 hover:bg-amber-950/30 transition-colors flex items-center justify-center"
+                          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-amber-400 hover:bg-amber-950/30 transition-colors flex items-center justify-center"
                           [title]="'USER.RESET_PASSWORD' | translate"
                           [attr.aria-label]="('USER.RESET_PASSWORD' | translate) + ' ' + (user.name || user.email)">
                           <lucide-icon name="KeyRound" class="!w-5 !h-5"></lucide-icon>
@@ -196,7 +196,7 @@
                         <button
                           type="button"
                           (click)="deleteUser(user)"
-                          class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center"
+                          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center"
                           [title]="'COMMON.DELETE' | translate"
                           [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + (user.name || user.email)">
                           <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
@@ -214,13 +214,13 @@
         <div class="lg:hidden p-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             @for (user of users(); track trackByFn($index, user)) {
-              <div class="bg-[#141414] border border-theme rounded-xl p-3 hover:border-slate-600 transition-colors">
+              <div class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors">
                 <!-- Avatar & Role -->
                 <div class="flex justify-between items-start mb-2">
-                  <div class="relative w-8 h-8 bg-[#2d4a3f] rounded-full flex items-center justify-center flex-shrink-0">
-                    <lucide-icon name="User" class="!text-[#4d7c6f] !w-4 !h-4"></lucide-icon>
+                  <div class="relative w-8 h-8 bg-[var(--color-primary-container)] rounded-full flex items-center justify-center flex-shrink-0">
+                    <lucide-icon name="User" class="!text-[var(--color-primary)] !w-4 !h-4"></lucide-icon>
                     @if (hasPendingReset(user.id)) {
-                      <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[#141414]"></span>
+                      <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[var(--color-surface)]"></span>
                     }
                   </div>
                   <span class="px-1.5 py-0.5 rounded text-[10px] font-medium border" [class]="getRoleBadgeClass(user.role)">
@@ -230,26 +230,26 @@
 
                 <!-- User Info -->
                 <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ user.name || 'No name' }}</h3>
-                <div class="flex items-center gap-1 text-slate-500 text-xs truncate mb-2">
+                <div class="flex items-center gap-1 text-[var(--color-on-surface-variant)] text-xs truncate mb-2">
                   <lucide-icon name="Mail" class="!w-3 !h-3 flex-shrink-0"></lucide-icon>
                   <span class="truncate">{{ user.email }}</span>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex justify-end gap-1 pt-2 border-t border-[#1e1e1e]">
+                <div class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]">
                   <ng-container *ngxPermissionsOnly="['edit_users']">
                     <button
                       type="button"
                       (click)="editUser(user)"
                       [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + (user.name || user.email)"
-                      class="p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
                       <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                     </button>
                     <button
                       type="button"
                       (click)="resetPassword(user)"
                       [attr.aria-label]="('USER.RESET_PASSWORD' | translate) + ' ' + (user.name || user.email)"
-                      class="p-1.5 rounded-lg text-slate-500 hover:text-amber-400 hover:bg-amber-950/30 transition-colors">
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-amber-400 hover:bg-amber-950/30 transition-colors">
                       <lucide-icon name="KeyRound" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>
@@ -258,7 +258,7 @@
                       type="button"
                       (click)="deleteUser(user)"
                       [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + (user.name || user.email)"
-                      class="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>

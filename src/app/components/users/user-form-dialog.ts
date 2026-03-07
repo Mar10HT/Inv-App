@@ -37,9 +37,9 @@ export interface UserFormDialogData {
     TranslateModule
   ],
   template: `
-    <div class="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
+    <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-subtle)]">
         <div>
           <h2 class="text-xl font-semibold text-foreground">
             {{ (data.mode === 'add' ? 'USER.ADD' : 'USER.EDIT') | translate }}
@@ -48,7 +48,7 @@ export interface UserFormDialogData {
         <button
           type="button"
           (click)="dialogRef.close()"
-          class="p-2 rounded-lg text-slate-500 hover:text-foreground hover:bg-[#2a2a2a] transition-colors">
+          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
           <lucide-icon name="X"></lucide-icon>
         </button>
       </div>
@@ -57,33 +57,33 @@ export interface UserFormDialogData {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
         <!-- Name -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'USER.NAME' | translate }}
           </label>
           <input
             type="text"
             formControlName="name"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [placeholder]="'USER.NAME' | translate"
           />
         </div>
 
         <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'USER.EMAIL' | translate }} {{ isExternalUser() ? '' : '*' }}
           </label>
           <input
             type="email"
             formControlName="email"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [placeholder]="isExternalUser() ? ('USER.EMAIL_OPTIONAL' | translate) : ('USER.EMAIL' | translate)"
           />
           @if (form.get('email')?.invalid && form.get('email')?.touched) {
             @if (form.get('email')?.errors?.['required']) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+              <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
             } @else if (form.get('email')?.errors?.['email']) {
-              <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
+              <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
             }
           }
         </div>
@@ -91,26 +91,26 @@ export interface UserFormDialogData {
         <!-- Password (hidden for EXTERNAL users) -->
         @if (!isExternalUser()) {
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'USER.PASSWORD' | translate }} {{ data.mode === 'add' ? '*' : '' }}
             </label>
             <input
               type="password"
               formControlName="password"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground placeholder-slate-600 focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [placeholder]="data.mode === 'edit' ? ('USER.PASSWORD_HINT' | translate) : ('USER.PASSWORD' | translate)"
             />
             @if (form.get('password')?.invalid && form.get('password')?.touched) {
               @if (form.get('password')?.errors?.['required']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
               } @else if (form.get('password')?.errors?.['minlength']) {
-                <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 6} }}</p>
               }
             }
           </div>
         } @else {
-          <div class="bg-[#2d4a3f]/30 border border-[#4d7c6f]/30 rounded-lg p-4">
-            <div class="flex items-center gap-3 text-[#4d7c6f]">
+          <div class="bg-[var(--color-primary-container)]/30 border border-[var(--color-primary)]/30 rounded-lg p-4">
+            <div class="flex items-center gap-3 text-[var(--color-primary)]">
               <lucide-icon name="Info" class="!w-5 !h-5"></lucide-icon>
               <span class="text-sm">{{ 'USER.EXTERNAL_NO_LOGIN' | translate }}</span>
             </div>
@@ -119,12 +119,12 @@ export interface UserFormDialogData {
 
         <!-- Role -->
         <div>
-          <label class="block text-sm font-medium text-slate-400 mb-2">
+          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'USER.ROLE' | translate }}
           </label>
           <select
             formControlName="role"
-            class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors cursor-pointer">
+            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
             @for (role of roles; track role) {
               <option [value]="role">{{ 'USER.ROLES.' + role | translate }}</option>
             }
@@ -134,31 +134,31 @@ export interface UserFormDialogData {
         <!-- Warehouse Assignment -->
         @if (selectedRole() !== 'SYSTEM_ADMIN' && selectedRole() !== 'EXTERNAL') {
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-1">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'USER.ASSIGNED_WAREHOUSES' | translate }}
             </label>
-            <p class="text-xs text-slate-600 mb-3">{{ 'USER.ASSIGNED_WAREHOUSES_DESC' | translate }}</p>
+            <p class="text-xs text-[var(--color-on-surface-muted)] mb-3">{{ 'USER.ASSIGNED_WAREHOUSES_DESC' | translate }}</p>
 
             @if (loadingWarehouses()) {
-              <div class="flex items-center gap-2 text-slate-500 text-sm py-2">
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#4d7c6f]"></div>
+              <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm py-2">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--color-primary)]"></div>
                 {{ 'COMMON.LOADING' | translate }}...
               </div>
             } @else if (allWarehouses().length === 0) {
-              <p class="text-slate-600 text-sm py-2">{{ 'USER.NO_WAREHOUSES' | translate }}</p>
+              <p class="text-[var(--color-on-surface-muted)] text-sm py-2">{{ 'USER.NO_WAREHOUSES' | translate }}</p>
             } @else {
-              <div class="max-h-48 overflow-y-auto space-y-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-3">
+              <div class="max-h-48 overflow-y-auto space-y-1 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-3">
                 @for (wh of allWarehouses(); track wh.id) {
-                  <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1a1a1a] cursor-pointer transition-colors">
+                  <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--color-surface-variant)] cursor-pointer transition-colors">
                     <input
                       type="checkbox"
                       [checked]="selectedWarehouseIds().has(wh.id)"
                       (change)="toggleWarehouse(wh.id)"
-                      class="w-4 h-4 rounded border-[#2a2a2a] text-[#4d7c6f] focus:ring-[#4d7c6f] bg-[#0a0a0a]"
+                      class="w-4 h-4 rounded border-[var(--color-border-subtle)] text-[var(--color-primary)] focus:ring-[var(--color-primary)] bg-[var(--color-surface)]"
                     />
                     <div class="flex-1 min-w-0">
                       <p class="text-sm text-foreground truncate">{{ wh.name }}</p>
-                      <p class="text-xs text-slate-500 truncate">{{ wh.location }}</p>
+                      <p class="text-xs text-[var(--color-on-surface-variant)] truncate">{{ wh.location }}</p>
                     </div>
                   </label>
                 }
@@ -166,8 +166,8 @@ export interface UserFormDialogData {
             }
           </div>
         } @else if (selectedRole() === 'SYSTEM_ADMIN') {
-          <div class="bg-[#2d4a3f]/30 border border-[#4d7c6f]/30 rounded-lg p-4">
-            <div class="flex items-center gap-3 text-[#4d7c6f]">
+          <div class="bg-[var(--color-primary-container)]/30 border border-[var(--color-primary)]/30 rounded-lg p-4">
+            <div class="flex items-center gap-3 text-[var(--color-primary)]">
               <lucide-icon name="ShieldCheck" class="!w-5 !h-5"></lucide-icon>
               <span class="text-sm">{{ 'USER.ALL_ACCESS' | translate }}</span>
             </div>
@@ -175,17 +175,17 @@ export interface UserFormDialogData {
         }
 
         <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-[#2a2a2a]">
+        <div class="flex justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
           <button
             type="button"
             (click)="dialogRef.close()"
-            class="px-6 py-2.5 rounded-lg bg-[#2a2a2a] text-slate-400 hover:bg-[#3a3a3a] hover:text-foreground transition-colors font-medium">
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground transition-colors font-medium">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             [disabled]="form.invalid || saving()"
-            class="px-6 py-2.5 rounded-lg bg-[#4d7c6f] text-white hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             }

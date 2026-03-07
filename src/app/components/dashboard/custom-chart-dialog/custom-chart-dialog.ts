@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -60,15 +60,15 @@ export interface CustomChartDialogData {
     NgApexchartsModule
   ],
   template: `
-    <div class="bg-[#1a1a1a] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div class="bg-[var(--color-surface-variant)] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
       <!-- Header -->
-      <div class="flex items-center justify-between p-6 border-b border-[#2a2a2a] flex-shrink-0">
+      <div class="flex items-center justify-between p-6 border-b border-[var(--color-border-subtle)] flex-shrink-0">
         <h2 class="text-xl font-semibold text-foreground">
           {{ isEditing ? ('DASHBOARD.CUSTOM_CHART.EDIT' | translate) : ('DASHBOARD.CUSTOM_CHART.CREATE' | translate) }}
         </h2>
         <button
           (click)="close()"
-          class="text-slate-500 hover:text-foreground transition-colors">
+          class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors">
           <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
         </button>
       </div>
@@ -78,23 +78,23 @@ export interface CustomChartDialogData {
         <form [formGroup]="chartForm" class="space-y-6">
           <!-- Title -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.TITLE' | translate }} *
             </label>
             <input
               type="text"
               formControlName="title"
-              class="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[#4d7c6f] transition-colors"
+              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [placeholder]="'DASHBOARD.CUSTOM_CHART.TITLE_PLACEHOLDER' | translate"
             />
           </div>
 
           <!-- Data Source - Quantity -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.DATA_SOURCE' | translate }} *
             </label>
-            <p class="text-xs text-slate-500 mb-2">{{ 'DASHBOARD.CUSTOM_CHART.BY_QUANTITY' | translate }}</p>
+            <p class="text-xs text-[var(--color-on-surface-variant)] mb-2">{{ 'DASHBOARD.CUSTOM_CHART.BY_QUANTITY' | translate }}</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               @for (source of quantitySources; track source.value) {
                 <button
@@ -102,8 +102,8 @@ export interface CustomChartDialogData {
                   (click)="selectDataSource(source.value)"
                   class="p-3 rounded-lg border transition-all text-center"
                   [class]="chartForm.get('dataSource')?.value === source.value
-                    ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
-                    : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
+                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/20 text-[var(--color-primary)]'
+                    : 'border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:border-[var(--color-border)]'">
                   <lucide-icon [name]="source.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                   <p class="text-xs">{{ source.label | translate }}</p>
                 </button>
@@ -113,7 +113,7 @@ export interface CustomChartDialogData {
 
           <!-- Data Source - Value -->
           <div>
-            <p class="text-xs text-slate-500 mb-2">{{ 'DASHBOARD.CUSTOM_CHART.BY_VALUE' | translate }}</p>
+            <p class="text-xs text-[var(--color-on-surface-variant)] mb-2">{{ 'DASHBOARD.CUSTOM_CHART.BY_VALUE' | translate }}</p>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               @for (source of valueSources; track source.value) {
                 <button
@@ -121,8 +121,8 @@ export interface CustomChartDialogData {
                   (click)="selectDataSource(source.value)"
                   class="p-3 rounded-lg border transition-all text-center"
                   [class]="chartForm.get('dataSource')?.value === source.value
-                    ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
-                    : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
+                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/20 text-[var(--color-primary)]'
+                    : 'border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:border-[var(--color-border)]'">
                   <lucide-icon [name]="source.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                   <p class="text-xs">{{ source.label | translate }}</p>
                 </button>
@@ -133,7 +133,7 @@ export interface CustomChartDialogData {
           <!-- Currency Selector (only for value sources) -->
           @if (isValueSource(chartForm.get('dataSource')?.value)) {
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">
+              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'DASHBOARD.CUSTOM_CHART.CURRENCY' | translate }} *
               </label>
               <div class="grid grid-cols-3 gap-3">
@@ -143,8 +143,8 @@ export interface CustomChartDialogData {
                     (click)="selectCurrency(curr.value)"
                     class="p-3 rounded-lg border transition-all text-center"
                     [class]="chartForm.get('currency')?.value === curr.value
-                      ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
-                      : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
+                      ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/20 text-[var(--color-primary)]'
+                      : 'border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:border-[var(--color-border)]'">
                     <lucide-icon [name]="curr.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                     <p class="text-xs">{{ curr.label | translate }}</p>
                   </button>
@@ -155,7 +155,7 @@ export interface CustomChartDialogData {
 
           <!-- Chart Type -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.CHART_TYPE' | translate }} *
             </label>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -165,8 +165,8 @@ export interface CustomChartDialogData {
                   (click)="selectChartType(type.value)"
                   class="p-3 rounded-lg border transition-all text-center"
                   [class]="chartForm.get('chartType')?.value === type.value
-                    ? 'border-[#4d7c6f] bg-[#4d7c6f]/20 text-[#4d7c6f]'
-                    : 'border-[#2a2a2a] bg-[#0a0a0a] text-slate-400 hover:border-[#3a3a3a]'">
+                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/20 text-[var(--color-primary)]'
+                    : 'border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:border-[var(--color-border)]'">
                   <lucide-icon [name]="type.icon" class="!w-6 !h-6 mb-1"></lucide-icon>
                   <p class="text-xs">{{ type.label }}</p>
                 </button>
@@ -176,7 +176,7 @@ export interface CustomChartDialogData {
 
           <!-- Color -->
           <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.COLOR' | translate }}
             </label>
             <div class="flex flex-wrap gap-2">
@@ -197,10 +197,10 @@ export interface CustomChartDialogData {
           <!-- Preview -->
           @if (chartForm.valid && previewData().length > 0) {
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-2">
+              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'DASHBOARD.CUSTOM_CHART.PREVIEW' | translate }}
               </label>
-              <div class="bg-[#0a0a0a] rounded-lg p-4 border border-[#2a2a2a]">
+              <div class="bg-[var(--color-surface)] rounded-lg p-4 border border-[var(--color-border-subtle)]">
                 <apx-chart
                   [series]="previewSeries()"
                   [chart]="previewChartOptions()"
@@ -211,8 +211,8 @@ export interface CustomChartDialogData {
                   [plotOptions]="previewPlotOptions()"
                   [tooltip]="previewTooltip()"
                   [dataLabels]="{ enabled: false }"
-                  [legend]="{ show: true, position: 'bottom', labels: { colors: '#94a3b8' } }"
-                  [grid]="{ borderColor: '#2a2a2a', strokeDashArray: 4 }">
+                  [legend]="previewLegend()"
+                  [grid]="previewGrid()">
                 </apx-chart>
               </div>
             </div>
@@ -221,18 +221,18 @@ export interface CustomChartDialogData {
       </div>
 
       <!-- Actions -->
-      <div class="flex justify-end gap-3 p-6 border-t border-[#2a2a2a] flex-shrink-0">
+      <div class="flex justify-end gap-3 p-6 border-t border-[var(--color-border-subtle)] flex-shrink-0">
         <button
           type="button"
           (click)="close()"
-          class="px-4 py-2.5 text-slate-400 hover:text-foreground transition-colors font-medium">
+          class="px-4 py-2.5 text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors font-medium">
           {{ 'COMMON.CANCEL' | translate }}
         </button>
         <button
           type="button"
           (click)="save()"
           [disabled]="chartForm.invalid"
-          class="flex items-center gap-2 px-6 py-2.5 bg-[#4d7c6f] text-white rounded-lg hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
+          class="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
           <lucide-icon [name]="isEditing ? 'Save' : 'Plus'" class="!w-4 !h-4"></lucide-icon>
           {{ isEditing ? ('COMMON.SAVE' | translate) : ('COMMON.CREATE' | translate) }}
         </button>
@@ -307,6 +307,18 @@ export class CustomChartDialog implements OnInit {
   previewTooltip = signal<any>({});
   previewColor = signal<string>('#4d7c6f');
   previewColors = signal<string[]>(['#4d7c6f']);
+
+  // Resolve CSS variables for ApexCharts
+  private getCssVar(name: string, fallback: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  }
+  private get chartForeColor(): string { return this.getCssVar('--color-on-surface-variant', '#94a3b8'); }
+  private get chartGridColor(): string { return this.getCssVar('--color-border-subtle', '#2a2a2a'); }
+  private get chartTextColor(): string { return this.getCssVar('--color-on-surface', '#e2e8f0'); }
+
+  // Template-accessible chart legend and grid
+  previewLegend = computed(() => ({ show: true, position: 'bottom' as const, labels: { colors: this.chartForeColor } }));
+  previewGrid = computed(() => ({ borderColor: this.chartGridColor, strokeDashArray: 4 }));
 
   // Format number with thousands separator and 2 decimals
   private formatNumber(value: number): string {
@@ -491,11 +503,13 @@ export class CustomChartDialog implements OnInit {
     }
 
     // Update chart options
+    const foreColor = this.chartForeColor;
+
     this.previewChartOptions.set({
       type: chartType,
       height: 200,
       background: 'transparent',
-      foreColor: '#94a3b8',
+      foreColor,
       toolbar: { show: false }
     });
 
@@ -506,7 +520,7 @@ export class CustomChartDialog implements OnInit {
       this.previewXAxis.set({
         categories: data.map(d => d.name),
         labels: {
-          style: { colors: '#94a3b8', fontSize: '10px' },
+          style: { colors: foreColor, fontSize: '10px' },
           rotate: -45
         }
       });
@@ -524,7 +538,7 @@ export class CustomChartDialog implements OnInit {
 
     this.previewYAxis.set({
       labels: {
-        style: { colors: '#94a3b8' },
+        style: { colors: foreColor },
         formatter: formatValue
       }
     });
@@ -550,8 +564,8 @@ export class CustomChartDialog implements OnInit {
         radialBar: {
           hollow: { size: '50%' },
           dataLabels: {
-            name: { fontSize: '12px', color: '#94a3b8' },
-            value: { fontSize: '16px', color: '#e2e8f0' }
+            name: { fontSize: '12px', color: foreColor },
+            value: { fontSize: '16px', color: this.chartTextColor }
           }
         }
       });

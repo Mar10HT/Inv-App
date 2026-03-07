@@ -163,17 +163,17 @@ export class Users implements OnInit {
   getRoleBadgeClass(role: UserRole): string {
     switch (role) {
       case UserRole.SYSTEM_ADMIN:
-        return 'bg-rose-950/50 text-rose-400 border-rose-900';
+        return 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border-[var(--color-error-border)]';
       case UserRole.WAREHOUSE_MANAGER:
         return 'bg-purple-950/50 text-purple-400 border-purple-900';
       case UserRole.USER:
-        return 'bg-emerald-950/50 text-emerald-400 border-emerald-900';
+        return 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border-[var(--color-success-border)]';
       case UserRole.VIEWER:
-        return 'bg-blue-950/50 text-blue-400 border-blue-900';
+        return 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border-[var(--color-info-border)]';
       case UserRole.EXTERNAL:
-        return 'bg-orange-950/50 text-orange-400 border-orange-900';
+        return 'bg-[var(--color-warning-bg)] text-[var(--color-status-warning)] border-[var(--color-warning-border)]';
       default:
-        return 'bg-slate-800/50 text-slate-400 border-slate-700';
+        return 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border-[var(--color-border)]';
     }
   }
 

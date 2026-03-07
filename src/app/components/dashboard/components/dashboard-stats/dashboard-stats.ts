@@ -13,14 +13,14 @@ import { DashboardStats } from '../../../../services/dashboard.service';
     <!-- Primary Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Total Items Card -->
-      <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-slate-700 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-[var(--color-border)] transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
             <p class="text-3xl font-bold text-foreground">{{ stats()?.totalItems || 0 }}</p>
           </div>
           <div class="bg-surface-elevated p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Package" class="!w-6 !h-6 text-slate-500"></lucide-icon>
+            <lucide-icon name="Package" class="!w-6 !h-6 text-[var(--color-on-surface-variant)]"></lucide-icon>
           </div>
         </div>
       </div>
@@ -29,10 +29,10 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-emerald-400">{{ stats()?.inStockItems || 0 }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ stats()?.inStockItems || 0 }}</p>
           </div>
-          <div class="bg-[#2d4a3f] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="CheckCircle2" class="!w-6 !h-6 text-emerald-500"></lucide-icon>
           </div>
         </div>
@@ -42,10 +42,10 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-orange-900/50 p-6 hover:border-orange-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-orange-400">{{ stats()?.lowStockItems || 0 }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-warning)]">{{ stats()?.lowStockItems || 0 }}</p>
           </div>
-          <div class="bg-orange-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-warning-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="AlertTriangle" class="!w-6 !h-6 text-orange-500"></lucide-icon>
           </div>
         </div>
@@ -55,10 +55,10 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-sky-900/50 p-6 hover:border-sky-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
-            <p class="text-3xl font-bold text-sky-400">{{ formatCurrency(stats()?.totalValueUSD || 0) }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ formatCurrency(stats()?.totalValueUSD || 0) }}</p>
           </div>
-          <div class="bg-sky-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="DollarSign" class="!w-6 !h-6 text-sky-500"></lucide-icon>
           </div>
         </div>
@@ -70,7 +70,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-theme p-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
             <p class="text-3xl font-bold text-purple-400">{{ stats()?.totalUsers || 0 }}</p>
           </div>
           <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -81,7 +81,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-theme p-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'NAV.WAREHOUSES' | translate }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'NAV.WAREHOUSES' | translate }}</p>
             <p class="text-3xl font-bold text-cyan-400">{{ stats()?.totalWarehouses || 0 }}</p>
           </div>
           <div class="bg-cyan-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -92,7 +92,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-theme p-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'NAV.CATEGORIES' | translate }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'NAV.CATEGORIES' | translate }}</p>
             <p class="text-3xl font-bold text-amber-400">{{ stats()?.totalCategories || 0 }}</p>
           </div>
           <div class="bg-amber-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
@@ -103,7 +103,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       <div class="bg-surface-variant rounded-xl border border-theme p-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-slate-500 mb-1">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
+            <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
             <p class="text-3xl font-bold" style="color: var(--color-status-error)">{{ stats()?.outOfStockItems || 0 }}</p>
           </div>
           <div class="ds-icon-container--error p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">

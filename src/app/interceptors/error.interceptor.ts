@@ -21,7 +21,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         error.status === 401 &&
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh') &&
-        !req.url.includes('/auth/csrf-token')
+        !req.url.includes('/auth/csrf-token') &&
+        !req.url.includes('/public/')
       ) {
         if (!isRefreshing) {
           isRefreshing = true;

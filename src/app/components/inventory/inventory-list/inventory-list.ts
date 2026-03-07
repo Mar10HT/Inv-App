@@ -204,17 +204,17 @@ export class InventoryList implements OnInit {
 
   // Filter change handlers
   onCategoryChange(category: string): void {
-    this.selectedCategory.set(category);
+    this.selectedCategory.set(category || 'all');
     this.pageIndex.set(0);
   }
 
   onLocationChange(location: string): void {
-    this.selectedLocation.set(location);
+    this.selectedLocation.set(location || 'all');
     this.pageIndex.set(0);
   }
 
   onStatusChange(status: string): void {
-    this.selectedStatus.set(status);
+    this.selectedStatus.set(status || 'all');
     this.pageIndex.set(0);
   }
 

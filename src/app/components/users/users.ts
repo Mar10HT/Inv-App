@@ -52,7 +52,8 @@ export class Users implements OnInit {
     const all = this.users();
     return {
       total: all.length,
-      admins: all.filter(u => u.role === UserRole.SYSTEM_ADMIN || u.role === UserRole.WAREHOUSE_MANAGER).length,
+      admins: all.filter(u => u.role === UserRole.SYSTEM_ADMIN).length,
+      managers: all.filter(u => u.role === UserRole.WAREHOUSE_MANAGER).length,
       users: all.filter(u => u.role === UserRole.USER).length,
       viewers: all.filter(u => u.role === UserRole.VIEWER).length,
       external: all.filter(u => u.role === UserRole.EXTERNAL).length

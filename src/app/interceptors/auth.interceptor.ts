@@ -8,8 +8,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Check if request is to our API
   const isApiRequest = req.url.startsWith(environment.apiUrl);
+  const isPublicEndpoint = req.url.includes('/public/');
 
-  if (!isApiRequest) {
+  if (!isApiRequest || isPublicEndpoint) {
     return next(req);
   }
 

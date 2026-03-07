@@ -19,7 +19,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
       <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
         <div class="flex items-center justify-between">
           <div>
@@ -39,6 +39,17 @@
           </div>
           <div class="bg-rose-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
             <lucide-icon name="ShieldCheck" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
+          </div>
+        </div>
+      </div>
+      <div class="bg-surface-variant border border-theme rounded-xl p-5 hover:border-slate-700 transition-all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-slate-500">{{ 'USER.ROLES.WAREHOUSE_MANAGER' | translate }}</p>
+            <p class="text-2xl font-bold text-amber-400">{{ stats().managers }}</p>
+          </div>
+          <div class="bg-amber-950/30 p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+            <lucide-icon name="Settings" class="!text-amber-400 !w-5 !h-5"></lucide-icon>
           </div>
         </div>
       </div>

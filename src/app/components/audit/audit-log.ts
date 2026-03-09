@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit, effect } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -12,6 +12,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
 @Component({
   selector: 'app-audit-log',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,
@@ -104,15 +105,15 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.CREATES' | translate }}</p>
-            <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ countByAction(AuditAction.CREATE) }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ actionCounts().create }}</p>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.UPDATES' | translate }}</p>
-            <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ countByAction(AuditAction.UPDATE) }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ actionCounts().update }}</p>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DELETES' | translate }}</p>
-            <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ countByAction(AuditAction.DELETE) }}</p>
+            <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ actionCounts().delete }}</p>
           </div>
         </div>
 
@@ -155,7 +156,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
                         <p class="text-[var(--color-on-surface-variant)] text-sm">{{ log.entityName }}</p>
                       </div>
                       <div class="text-sm text-[var(--color-on-surface-variant)]">
-                        {{ formatDate(log.createdAt) }}
+                        {{ log.createdAt | date:'medium' }}
                       </div>
                     </div>
 
@@ -259,6 +260,18 @@ export class AuditLogComponent implements OnInit {
     return logs.slice(start, start + this.pageSize);
   });
 
+  // Memoized action counts - single pass instead of 3 separate filters
+  actionCounts = computed(() => {
+    const logs = this.auditService.logs();
+    const counts = { create: 0, update: 0, delete: 0 };
+    for (const log of logs) {
+      if (log.action === AuditAction.CREATE) counts.create++;
+      else if (log.action === AuditAction.UPDATE) counts.update++;
+      else if (log.action === AuditAction.DELETE) counts.delete++;
+    }
+    return counts;
+  });
+
   constructor() {
     // Re-apply filters when logs change (e.g., after API response)
     effect(() => {
@@ -318,10 +331,6 @@ export class AuditLogComponent implements OnInit {
     this.pageSize = event.pageSize;
   }
 
-  countByAction(action: AuditAction): number {
-    return this.auditService.logs().filter(log => log.action === action).length;
-  }
-
   getActionLabel(action: AuditAction): string {
     const labels: Record<AuditAction, string> = {
       [AuditAction.CREATE]: this.translate.instant('AUDIT.ACTION.CREATE'),
@@ -376,15 +385,15 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.CREATE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)]',
       [AuditAction.UPDATE]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)]',
       [AuditAction.DELETE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)]',
-      [AuditAction.RESTORE]: 'bg-indigo-950/50 text-indigo-400',
+      [AuditAction.RESTORE]: 'bg-[var(--color-accent-indigo-bg)] text-[var(--color-accent-indigo)]',
       [AuditAction.LOGIN]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]',
       [AuditAction.LOGOUT]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]',
-      [AuditAction.PASSWORD_CHANGE]: 'bg-yellow-950/50 text-yellow-400',
-      [AuditAction.ASSIGN]: 'bg-purple-950/50 text-purple-400',
+      [AuditAction.PASSWORD_CHANGE]: 'bg-[var(--color-accent-yellow-bg)] text-[var(--color-accent-yellow)]',
+      [AuditAction.ASSIGN]: 'bg-[var(--color-accent-purple-bg)] text-[var(--color-accent-purple)]',
       [AuditAction.UNASSIGN]: 'bg-[var(--color-warning-bg)] text-[var(--color-status-warning)]',
-      [AuditAction.TRANSFER]: 'bg-cyan-950/50 text-cyan-400',
-      [AuditAction.LOAN]: 'bg-amber-950/50 text-amber-400',
-      [AuditAction.RETURN]: 'bg-teal-950/50 text-teal-400'
+      [AuditAction.TRANSFER]: 'bg-[var(--color-accent-cyan-bg)] text-[var(--color-accent-cyan)]',
+      [AuditAction.LOAN]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)]',
+      [AuditAction.RETURN]: 'bg-[var(--color-accent-teal-bg)] text-[var(--color-accent-teal)]'
     };
     return classes[action] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
@@ -405,10 +414,6 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.RETURN]: 'text-teal-400'
     };
     return classes[action] || 'text-[var(--color-on-surface-variant)]';
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleString();
   }
 
   exportToCSV(): void {

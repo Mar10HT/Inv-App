@@ -43,7 +43,7 @@
 
     <!-- Error State -->
     @if (error()) {
-      <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
+      <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
           <lucide-icon name="Info" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
           <span class="text-[var(--color-status-error)]">{{ error() }}</span>
@@ -74,7 +74,7 @@
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
-          <table class="w-full">
+          <table class="w-full" [attr.aria-label]="'WAREHOUSE.TITLE' | translate">
             <thead>
               <tr class="bg-[var(--color-surface)]">
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[200px]">{{ 'WAREHOUSE.NAME' | translate }}</th>
@@ -133,6 +133,7 @@
                         <button
                           type="button"
                           (click)="editWarehouse(warehouse)"
+                          [attr.aria-label]="'COMMON.EDIT' | translate"
                           class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors flex items-center justify-center">
                           <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
                         </button>
@@ -141,7 +142,8 @@
                         <button
                           type="button"
                           (click)="deleteWarehouse(warehouse)"
-                          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                          [attr.aria-label]="'COMMON.DELETE' | translate"
+                          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors flex items-center justify-center">
                           <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                         </button>
                       </ng-container>
@@ -195,7 +197,7 @@
                     <button
                       type="button"
                       (click)="deleteWarehouse(warehouse)"
-                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>

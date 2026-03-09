@@ -97,6 +97,7 @@
               type="button"
               (click)="togglePasswordVisibility()"
               class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors shrink-0"
+              [attr.aria-label]="(showPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
             >
               <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
             </button>

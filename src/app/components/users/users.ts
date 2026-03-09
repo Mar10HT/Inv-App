@@ -165,7 +165,7 @@ export class Users implements OnInit {
       case UserRole.SYSTEM_ADMIN:
         return 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border-[var(--color-error-border)]';
       case UserRole.WAREHOUSE_MANAGER:
-        return 'bg-purple-950/50 text-purple-400 border-purple-900';
+        return 'bg-[var(--color-accent-purple-bg)] text-[var(--color-accent-purple)] border-[var(--color-accent-purple-bg)]';
       case UserRole.USER:
         return 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border-[var(--color-success-border)]';
       case UserRole.VIEWER:

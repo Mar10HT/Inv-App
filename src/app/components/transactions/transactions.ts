@@ -108,11 +108,11 @@ export class Transactions implements OnInit {
   getTypeBadgeClass(type: TransactionType): string {
     switch (type) {
       case TransactionType.IN:
-        return 'bg-emerald-950/50 text-emerald-400 border-emerald-900';
+        return 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border-[var(--color-success-border)]';
       case TransactionType.OUT:
-        return 'bg-rose-950/50 text-rose-400 border-rose-900';
+        return 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border-[var(--color-error-border)]';
       case TransactionType.TRANSFER:
-        return 'bg-blue-950/50 text-blue-400 border-blue-900';
+        return 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border-[var(--color-info-border)]';
       default:
         return 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border-[var(--color-border)]';
     }

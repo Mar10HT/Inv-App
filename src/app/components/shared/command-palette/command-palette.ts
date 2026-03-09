@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, ElementRef, ViewChild, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ interface CommandItem {
 @Component({
   selector: 'app-command-palette',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
   template: `
     <div class="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">

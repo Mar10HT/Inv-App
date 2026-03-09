@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -21,6 +21,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
 @Component({
   selector: 'app-loans',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,
@@ -98,10 +99,10 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOANS.RECEIVED' | translate }}</p>
-                <p class="text-2xl font-bold text-violet-400">{{ stats().totalReceived }}</p>
+                <p class="text-2xl font-bold text-[var(--color-accent-violet)]">{{ stats().totalReceived }}</p>
               </div>
-              <div class="bg-violet-950/50 p-3 rounded-lg">
-                <lucide-icon name="PackageCheck" class="!text-violet-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-accent-violet-bg)] p-3 rounded-lg">
+                <lucide-icon name="PackageCheck" class="!text-[var(--color-accent-violet)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -220,7 +221,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       </div>
                     </td>
                     <td class="px-6 py-4">
-                      <span [class]="getDueDateClass(loan)">{{ formatDate(loan.dueDate) }}</span>
+                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</span>
                     </td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(loan.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
@@ -282,7 +283,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </button>
                           }
                           @case (LoanStatus.RETURNED) {
-                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ formatDate(loan.returnDate!) }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | date:'mediumDate' }}</span>
                           }
                           @case (LoanStatus.CANCELLED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>
@@ -346,7 +347,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                   </div>
                   <div>
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.DUE_DATE' | translate }}</p>
-                    <p [class]="getDueDateClass(loan)">{{ formatDate(loan.dueDate) }}</p>
+                    <p [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</p>
                   </div>
                 </div>
                 <!-- Mobile Actions -->
@@ -740,8 +741,8 @@ export class LoansComponent implements OnInit {
     const classes: Record<string, string> = {
       [LoanStatus.PENDING]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
       [LoanStatus.SENT]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]',
-      [LoanStatus.RECEIVED]: 'bg-violet-950/50 text-violet-400 border border-violet-900',
-      [LoanStatus.RETURN_PENDING]: 'bg-amber-950/50 text-amber-400 border border-amber-900',
+      [LoanStatus.RECEIVED]: 'bg-[var(--color-accent-violet-bg)] text-[var(--color-accent-violet)] border border-[var(--color-accent-violet-bg)]',
+      [LoanStatus.RETURN_PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-accent-amber-bg)]',
       [LoanStatus.RETURNED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
       [LoanStatus.OVERDUE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
       [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
@@ -763,10 +764,6 @@ export class LoansComponent implements OnInit {
     if (daysUntilDue <= 3) return 'text-amber-400 font-medium';
     if (daysUntilDue <= 7) return 'text-yellow-400';
     return 'text-foreground';
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString();
   }
 
   exportToCSV(): void {

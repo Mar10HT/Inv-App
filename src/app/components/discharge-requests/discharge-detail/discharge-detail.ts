@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +16,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 @Component({
   selector: 'app-discharge-detail',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,
@@ -323,9 +324,9 @@ export class DischargeDetailComponent implements OnInit {
 
   getStatusClass(status: DischargeRequestStatus): string {
     const classes: Record<string, string> = {
-      [DischargeRequestStatus.PENDING]: 'bg-amber-950/50 text-amber-400 border border-amber-900',
-      [DischargeRequestStatus.COMPLETED]: 'bg-emerald-950/50 text-emerald-400 border border-emerald-900',
-      [DischargeRequestStatus.REJECTED]: 'bg-red-950/50 text-red-400 border border-red-900',
+      [DischargeRequestStatus.PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-accent-amber-bg)]',
+      [DischargeRequestStatus.COMPLETED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
+      [DischargeRequestStatus.REJECTED]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }

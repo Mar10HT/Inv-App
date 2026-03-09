@@ -286,7 +286,7 @@
                       type="button"
                       (click)="$event.stopPropagation(); viewItem(item)"
                       [attr.aria-label]="('COMMON.VIEW' | translate) + ' ' + item.name"
-                      class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-sky-400 hover:bg-sky-950/30 transition-colors flex items-center justify-center">
+                      class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors flex items-center justify-center">
                       <lucide-icon name="Eye" class="!w-5 !h-5"></lucide-icon>
                     </button>
                     <ng-container *ngxPermissionsOnly="['edit_inventory']">
@@ -303,7 +303,7 @@
                         type="button"
                         (click)="$event.stopPropagation(); deleteItem(item)"
                         [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + item.name"
-                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors flex items-center justify-center">
                         <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                       </button>
                     </ng-container>
@@ -372,7 +372,7 @@
                   type="button"
                   (click)="$event.stopPropagation(); viewItem(item)"
                   [attr.aria-label]="('COMMON.VIEW' | translate) + ' ' + item.name"
-                  class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-sky-400 hover:bg-sky-950/30 transition-colors">
+                  class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors">
                   <lucide-icon name="Eye" class="!w-4 !h-4"></lucide-icon>
                 </button>
                 <ng-container *ngxPermissionsOnly="['edit_inventory']">
@@ -389,7 +389,7 @@
                     type="button"
                     (click)="$event.stopPropagation(); deleteItem(item)"
                     [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + item.name"
-                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
                     <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                   </button>
                 </ng-container>

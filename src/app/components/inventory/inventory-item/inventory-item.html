@@ -10,7 +10,7 @@
   <!-- Error State -->
   @if (error()) {
     <div class="p-6">
-      <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-xl p-6">
+      <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-6">
         <div class="flex items-center gap-3 mb-4">
           <lucide-icon name="AlertCircle" class="!w-8 !h-8 text-[var(--color-status-error)]"></lucide-icon>
           <span class="text-[var(--color-status-error)] text-lg">{{ error() }}</span>
@@ -66,6 +66,7 @@
       <!-- Close Button -->
       <button
         (click)="close()"
+        [attr.aria-label]="'COMMON.CLOSE' | translate"
         class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors flex-shrink-0">
         <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
       </button>
@@ -254,7 +255,7 @@
       </button>
       <button
         (click)="deleteItem()"
-        class="px-4 py-2 rounded-lg text-[var(--color-status-error)] border border-[var(--color-error-border)] hover:bg-rose-950/30 transition-colors flex items-center gap-2">
+        class="px-4 py-2 rounded-lg text-[var(--color-status-error)] border border-[var(--color-error-border)] hover:bg-[var(--color-error-bg)] transition-colors flex items-center gap-2">
         <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
         {{ 'COMMON.DELETE' | translate }}
       </button>

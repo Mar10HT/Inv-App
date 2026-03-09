@@ -57,7 +57,7 @@ import { Transaction, TransactionType } from '../../../../interfaces/transaction
                 </p>
               </div>
               <div class="text-right">
-                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ formatDateTime(tx.date) }}</p>
+                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ tx.date | date:'MMM d, h:mm a' }}</p>
               </div>
             </div>
           </div>
@@ -76,13 +76,6 @@ export class DashboardTransactionsComponent {
 
   TransactionType = TransactionType;
 
-  private readonly dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
   getTransactionTypeIcon(type: TransactionType): string {
     switch (type) {
       case TransactionType.IN: return 'ArrowDown';
@@ -99,11 +92,6 @@ export class DashboardTransactionsComponent {
       case TransactionType.TRANSFER: return '!text-[var(--color-status-info)]';
       default: return '!text-[var(--color-on-surface-variant)]';
     }
-  }
-
-  formatDateTime(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateTimeFormatter.format(d);
   }
 
   trackByTransaction(index: number, transaction: Transaction): string {

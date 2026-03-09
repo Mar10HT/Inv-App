@@ -15,9 +15,11 @@
 
     <!-- Tabs -->
     <div class="mb-6">
-      <div class="flex flex-wrap gap-2 border-b border-theme pb-2">
+      <div class="flex flex-wrap gap-2 border-b border-theme pb-2" role="tablist" [attr.aria-label]="'REPORTS.TITLE' | translate">
         <button
           (click)="onTabChange(0)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 0"
           [class]="activeTab() === 0 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
@@ -25,6 +27,8 @@
         </button>
         <button
           (click)="onTabChange(1)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 1"
           [class]="activeTab() === 1 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="ArrowLeftRight" class="!w-4 !h-4"></lucide-icon>
@@ -32,6 +36,8 @@
         </button>
         <button
           (click)="onTabChange(2)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 2"
           [class]="activeTab() === 2 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="Package" class="!w-4 !h-4"></lucide-icon>
@@ -39,6 +45,8 @@
         </button>
         <button
           (click)="onTabChange(3)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 3"
           [class]="activeTab() === 3 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="UserCheck" class="!w-4 !h-4"></lucide-icon>
@@ -46,6 +54,8 @@
         </button>
         <button
           (click)="onTabChange(4)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 4"
           [class]="activeTab() === 4 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
           class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
           <lucide-icon name="TrendingUp" class="!w-4 !h-4"></lucide-icon>
@@ -121,10 +131,10 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.CATEGORIES' | translate }}</p>
-                <p class="text-3xl font-bold text-purple-400">{{ valueByCategory().length }}</p>
+                <p class="text-3xl font-bold text-[var(--color-accent-purple)]">{{ valueByCategory().length }}</p>
               </div>
-              <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-                <lucide-icon name="Tag" class="!text-purple-500 !w-6 !h-6"></lucide-icon>
+              <div class="bg-[var(--color-accent-purple-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <lucide-icon name="Tag" class="!text-[var(--color-accent-purple)] !w-6 !h-6"></lucide-icon>
               </div>
             </div>
           </div>
@@ -379,12 +389,12 @@
                     <div class="text-xs space-y-0.5 mb-1">
                       @if (tx.sourceWarehouse) {
                         <div class="text-[var(--color-on-surface-variant)] truncate">
-                          <span class="text-[var(--color-on-surface-muted)]">De:</span> {{ tx.sourceWarehouse.name }}
+                          <span class="text-[var(--color-on-surface-muted)]">{{ 'TRANSACTION.FROM' | translate }}:</span> {{ tx.sourceWarehouse.name }}
                         </div>
                       }
                       @if (tx.destinationWarehouse) {
                         <div class="text-[var(--color-on-surface-variant)] truncate">
-                          <span class="text-[var(--color-on-surface-muted)]">A:</span> {{ tx.destinationWarehouse.name }}
+                          <span class="text-[var(--color-on-surface-muted)]">{{ 'TRANSACTION.TO' | translate }}:</span> {{ tx.destinationWarehouse.name }}
                         </div>
                       }
                     </div>
@@ -449,11 +459,11 @@
         <!-- Low Stock & Out of Stock Tables -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Out of Stock -->
-          <div class="bg-surface-variant border border-rose-900/50 rounded-xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-rose-950/20">
+          <div class="bg-surface-variant border border-[var(--color-error-border)] rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-[var(--color-error-bg)]">
               <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-[var(--color-status-error)]">{{ 'REPORTS.OUT_OF_STOCK_ITEMS' | translate }}</h2>
-              <span class="ml-auto bg-rose-500/20 text-[var(--color-status-error)] px-2 py-0.5 rounded text-sm font-medium">{{ outOfStockItems().length }}</span>
+              <span class="ml-auto bg-[var(--color-error-bg)] text-[var(--color-status-error)] px-2 py-0.5 rounded text-sm font-medium">{{ outOfStockItems().length }}</span>
             </div>
             <div class="p-4 max-h-[400px] overflow-y-auto">
               @for (item of outOfStockItems(); track item.id) {
@@ -471,11 +481,11 @@
           </div>
 
           <!-- Low Stock -->
-          <div class="bg-surface-variant border border-orange-900/50 rounded-xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-orange-950/20">
+          <div class="bg-surface-variant border border-[var(--color-warning-border)] rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-[var(--color-warning-bg)]">
               <lucide-icon name="AlertTriangle" class="!text-[var(--color-status-warning)] !w-5 !h-5"></lucide-icon>
               <h2 class="text-lg font-semibold text-[var(--color-status-warning)]">{{ 'REPORTS.LOW_STOCK_ITEMS' | translate }}</h2>
-              <span class="ml-auto bg-orange-500/20 text-[var(--color-status-warning)] px-2 py-0.5 rounded text-sm font-medium">{{ lowStockItems().length }}</span>
+              <span class="ml-auto bg-[var(--color-warning-bg)] text-[var(--color-status-warning)] px-2 py-0.5 rounded text-sm font-medium">{{ lowStockItems().length }}</span>
             </div>
             <div class="p-4 max-h-[400px] overflow-y-auto">
               @for (item of lowStockItems(); track item.id) {

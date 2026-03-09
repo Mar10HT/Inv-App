@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SkeletonComponent } from './skeleton';
 import { SkeletonCardComponent } from './skeleton-card';
@@ -8,6 +8,7 @@ import { SkeletonChartComponent } from './skeleton-chart';
 @Component({
   selector: 'app-skeleton-dashboard',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, SkeletonComponent, SkeletonCardComponent, SkeletonTableComponent, SkeletonChartComponent],
   template: `
     <!-- Primary Stats Cards -->

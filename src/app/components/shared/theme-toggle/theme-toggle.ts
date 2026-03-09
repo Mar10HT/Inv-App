@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -8,6 +8,7 @@ import { ThemeService } from '../../../services/theme.service';
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, LucideAngularModule, MatTooltipModule, TranslateModule],
   template: `
     <button

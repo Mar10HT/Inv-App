@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragPlaceholder, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
@@ -43,7 +43,7 @@ export interface LowStockItem {
       </div>
     } @else {
       <div class="divide-y divide-[var(--color-border-subtle)] max-h-[500px] overflow-y-auto">
-        @for (item of items().slice(0, 10); track item.id) {
+        @for (item of displayItems(); track item.id) {
           <div
             (click)="itemClick.emit(item)"
             class="px-6 py-4 hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer">
@@ -66,7 +66,7 @@ export interface LowStockItem {
       @if (items().length > 10) {
         <div class="px-6 py-3 bg-surface-container border-t border-theme text-center">
           <p class="text-xs text-[var(--color-on-surface-variant)]">
-            Showing 10 of {{ items().length }} low stock items
+            {{ 'DASHBOARD.SHOWING_LOW_STOCK' | translate:{ count: 10, total: items().length } }}
           </p>
         </div>
       }
@@ -81,4 +81,6 @@ export class DashboardLowStockComponent {
 
   viewAll = output<void>();
   itemClick = output<LowStockItem>();
+
+  displayItems = computed(() => this.items().slice(0, 10));
 }

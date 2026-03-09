@@ -73,6 +73,7 @@ import { AuthService } from '../../services/auth.service';
                   <button
                     type="button"
                     (click)="togglePassword()"
+                    [attr.aria-label]="(showPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
                     class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors shrink-0">
                     <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
                   </button>
@@ -99,6 +100,7 @@ import { AuthService } from '../../services/auth.service';
                   <button
                     type="button"
                     (click)="toggleConfirmPassword()"
+                    [attr.aria-label]="(showConfirmPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
                     class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors shrink-0">
                     <lucide-icon [name]="showConfirmPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
                   </button>

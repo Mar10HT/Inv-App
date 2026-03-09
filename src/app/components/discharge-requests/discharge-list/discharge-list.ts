@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,6 +17,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 @Component({
   selector: 'app-discharge-list',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,
@@ -65,10 +66,10 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.PENDING' | translate }}</p>
-                <p class="text-2xl font-bold text-amber-400">{{ stats().byStatus.pending }}</p>
+                <p class="text-2xl font-bold text-[var(--color-accent-amber)]">{{ stats().byStatus.pending }}</p>
               </div>
-              <div class="bg-amber-950/50 p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-amber-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-accent-amber-bg)] p-3 rounded-lg">
+                <lucide-icon name="Clock" class="!text-[var(--color-accent-amber)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -87,10 +88,10 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.REJECTED' | translate }}</p>
-                <p class="text-2xl font-bold text-red-400">{{ stats().byStatus.rejected }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().byStatus.rejected }}</p>
               </div>
-              <div class="bg-red-950/50 p-3 rounded-lg">
-                <lucide-icon name="XCircle" class="!text-red-400 !w-5 !h-5"></lucide-icon>
+              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
+                <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
               </div>
             </div>
           </div>
@@ -175,7 +176,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                         <span class="text-foreground">{{ request.warehouseName }}</span>
                       </div>
                     </td>
-                    <td class="px-6 py-4 text-foreground">{{ formatDate(request.createdAt) }}</td>
+                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | date:'mediumDate' }}</td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                         {{ getStatusLabel(request.status) }}
@@ -199,7 +200,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                           }
                         </ng-container>
                         @if (request.status === Status.COMPLETED) {
-                          <span class="text-[var(--color-on-surface-variant)] text-sm">{{ formatDate(request.resolvedAt!) }}</span>
+                          <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.resolvedAt | date:'mediumDate' }}</span>
                         }
                         @if (request.status === Status.REJECTED) {
                           <span class="text-red-400 text-sm truncate max-w-[150px]" [title]="request.rejectedReason || ''">
@@ -242,7 +243,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                   </div>
                   <div>
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
-                    <p class="text-foreground">{{ formatDate(request.createdAt) }}</p>
+                    <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
                   </div>
                 </div>
                 <ng-container *ngxPermissionsOnly="['manage_discharges']">
@@ -533,15 +534,11 @@ export class DischargeListComponent implements OnInit {
 
   getStatusClass(status: DischargeRequestStatus): string {
     const classes: Record<string, string> = {
-      [DischargeRequestStatus.PENDING]: 'bg-amber-950/50 text-amber-400 border border-amber-900',
-      [DischargeRequestStatus.COMPLETED]: 'bg-emerald-950/50 text-emerald-400 border border-emerald-900',
-      [DischargeRequestStatus.REJECTED]: 'bg-red-950/50 text-red-400 border border-red-900',
+      [DischargeRequestStatus.PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-warning-border)]',
+      [DischargeRequestStatus.COMPLETED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
+      [DischargeRequestStatus.REJECTED]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString();
   }
 
   openShareDialog(): void {

@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, effect, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, inject, computed, signal, effect, PLATFORM_ID, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +16,7 @@ import { PermissionsService } from '../../../services/permissions.service';
 @Component({
   selector: 'app-navigation',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,

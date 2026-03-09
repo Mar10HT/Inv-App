@@ -41,7 +41,7 @@
 
     <!-- Error State -->
     @if (error()) {
-      <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
+      <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
           <lucide-icon name="Info" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
           <span class="text-[var(--color-status-error)]">{{ error() }}</span>
@@ -102,6 +102,7 @@
                     <button
                       type="button"
                       (click)="editCategory(category)"
+                      [attr.aria-label]="'COMMON.EDIT' | translate"
                       class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors flex items-center justify-center">
                       <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                     </button>
@@ -110,7 +111,8 @@
                     <button
                       type="button"
                       (click)="deleteCategory(category)"
-                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                      [attr.aria-label]="'COMMON.DELETE' | translate"
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors flex items-center justify-center">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>

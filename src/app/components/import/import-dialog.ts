@@ -84,7 +84,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             </div>
 
             @if (fileError()) {
-              <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-lg p-4">
+              <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-lg p-4">
                 <div class="flex items-center gap-2 text-[var(--color-status-error)]">
                   <lucide-icon name="AlertCircle" class="!w-5 !h-5"></lucide-icon>
                   <span>{{ fileError() }}</span>
@@ -130,7 +130,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
                   </thead>
                   <tbody class="divide-y divide-[var(--color-border-subtle)]">
                     @for (row of preview()!.rows; track row.rowNumber) {
-                      <tr [class]="row.isValid ? '' : 'bg-rose-950/10'">
+                      <tr [class]="row.isValid ? '' : 'bg-[var(--color-error-bg)]'">
                         <td class="px-4 py-3 text-[var(--color-on-surface-variant)]">{{ row.rowNumber }}</td>
                         <td class="px-4 py-3">
                           @if (row.isValid) {
@@ -154,7 +154,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             </div>
 
             @if (preview()!.invalidCount > 0) {
-              <div class="bg-amber-950/30 border border-amber-900/50 rounded-lg p-4">
+              <div class="bg-[var(--color-accent-amber-bg)] border border-[var(--color-warning-border)] rounded-lg p-4">
                 <div class="flex items-start gap-2 text-amber-400">
                   <lucide-icon name="AlertTriangle" class="mt-0.5 !w-5 !h-5"></lucide-icon>
                   <p class="text-sm">{{ 'IMPORT.INVALID_WARNING' | translate }}</p>
@@ -184,12 +184,12 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
             <!-- Success/Error Icon -->
             <div class="text-center">
               @if (result()!.success) {
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-950/30 rounded-full mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-success-bg)] rounded-full mb-4">
                   <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-[var(--color-status-success)]"></lucide-icon>
                 </div>
                 <h3 class="text-xl font-semibold text-[var(--color-status-success)]">{{ 'IMPORT.SUCCESS' | translate }}</h3>
               } @else {
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-amber-950/30 rounded-full mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-accent-amber-bg)] rounded-full mb-4">
                   <lucide-icon name="AlertTriangle" class="!w-10 !h-10 text-amber-400"></lucide-icon>
                 </div>
                 <h3 class="text-xl font-semibold text-amber-400">{{ 'IMPORT.PARTIAL_SUCCESS' | translate }}</h3>
@@ -198,11 +198,11 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
 
             <!-- Stats -->
             <div class="grid grid-cols-2 gap-4">
-              <div class="bg-emerald-950/20 border border-emerald-900/30 rounded-lg p-4 text-center">
+              <div class="bg-[var(--color-success-bg)] border border-[var(--color-success-border)] rounded-lg p-4 text-center">
                 <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ result()!.importedCount }}</p>
                 <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'IMPORT.ITEMS_IMPORTED' | translate }}</p>
               </div>
-              <div class="bg-rose-950/20 border border-[var(--color-error-border)] rounded-lg p-4 text-center">
+              <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-lg p-4 text-center">
                 <p class="text-3xl font-bold text-[var(--color-status-error)]">{{ result()!.errors.length }}</p>
                 <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'IMPORT.ERRORS' | translate }}</p>
               </div>
@@ -265,10 +265,6 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
       display: block;
       width: 700px;
       max-width: 95vw;
-    }
-    ::ng-deep .mat-mdc-progress-bar {
-      --mdc-linear-progress-active-indicator-color: #4d7c6f;
-      --mdc-linear-progress-track-color: #2a2a2a;
     }
   `]
 })

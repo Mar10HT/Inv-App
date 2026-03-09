@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -56,7 +56,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
-            <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ formatCurrency(stats()?.totalValueUSD || 0) }}</p>
+            <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ formattedTotalValue() }}</p>
           </div>
           <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="DollarSign" class="!w-6 !h-6 text-sky-500"></lucide-icon>
@@ -73,7 +73,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
             <p class="text-3xl font-bold text-purple-400">{{ stats()?.totalUsers || 0 }}</p>
           </div>
-          <div class="bg-purple-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-accent-purple-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="Users" class="!w-6 !h-6 text-purple-500"></lucide-icon>
           </div>
         </div>
@@ -84,7 +84,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'NAV.WAREHOUSES' | translate }}</p>
             <p class="text-3xl font-bold text-cyan-400">{{ stats()?.totalWarehouses || 0 }}</p>
           </div>
-          <div class="bg-cyan-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-accent-cyan-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="Warehouse" class="!w-6 !h-6 text-cyan-500"></lucide-icon>
           </div>
         </div>
@@ -95,7 +95,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'NAV.CATEGORIES' | translate }}</p>
             <p class="text-3xl font-bold text-amber-400">{{ stats()?.totalCategories || 0 }}</p>
           </div>
-          <div class="bg-amber-950/50 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-accent-amber-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="FolderOpen" class="!w-6 !h-6 text-amber-500"></lucide-icon>
           </div>
         </div>
@@ -117,12 +117,13 @@ import { DashboardStats } from '../../../../services/dashboard.service';
 export class DashboardStatsComponent {
   stats = input<DashboardStats | null>(null);
 
-  formatCurrency(value: number, currency: string = 'USD'): string {
+  formattedTotalValue = computed(() => {
+    const value = this.stats()?.totalValueUSD || 0;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 2
     }).format(value);
-  }
+  });
 }

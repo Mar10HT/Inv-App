@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
@@ -12,6 +12,7 @@ export interface CustomSnackbarData {
 @Component({
   selector: 'app-custom-snackbar',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, LucideAngularModule],
   template: `
     <div
@@ -26,7 +27,7 @@ export interface CustomSnackbarData {
 
       <!-- Content Section -->
       <div class="flex-1 flex items-center justify-between bg-[var(--color-surface)] px-5 py-4 gap-4">
-        <span class="text-white text-sm font-medium">{{ data.message }}</span>
+        <span class="text-[var(--color-on-surface)] text-sm font-medium">{{ data.message }}</span>
 
         <button
           (click)="dismiss()"

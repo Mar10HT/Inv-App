@@ -84,6 +84,22 @@
   --color-status-info-bg: rgba(59, 130, 246, 0.15);
   --color-status-info-border: rgba(59, 130, 246, 0.3);
 
+  /* Accent Colors (for distinct action icons) */
+  --color-accent-violet: #a78bfa;
+  --color-accent-violet-bg: rgba(167, 139, 250, 0.15);
+  --color-accent-indigo: #818cf8;
+  --color-accent-indigo-bg: rgba(129, 140, 248, 0.15);
+  --color-accent-purple: #c084fc;
+  --color-accent-purple-bg: rgba(192, 132, 252, 0.15);
+  --color-accent-cyan: #22d3ee;
+  --color-accent-cyan-bg: rgba(34, 211, 238, 0.15);
+  --color-accent-teal: #2dd4bf;
+  --color-accent-teal-bg: rgba(45, 212, 191, 0.15);
+  --color-accent-amber: #fbbf24;
+  --color-accent-amber-bg: rgba(251, 191, 36, 0.15);
+  --color-accent-yellow: #facc15;
+  --color-accent-yellow-bg: rgba(250, 204, 21, 0.15);
+
   /* Focus ring */
   --color-focus-ring: rgba(77, 124, 111, 0.5);
 }
@@ -107,7 +123,7 @@
   /* Surfaces */
   --color-surface: #f8fafc;
   --color-surface-variant: #ffffff;
-  --color-surface-elevated: #ffffff;
+  --color-surface-elevated: #f1f5f9;
   --color-surface-overlay: rgba(0, 0, 0, 0.3);
 
   /* Text */
@@ -133,25 +149,25 @@
   /* Semantic - Success */
   --color-success: #059669;
   --color-success-on: #ffffff;
-  --color-success-bg: #ecfdf5;
+  --color-success-bg: #d1fae5;
   --color-success-border: #a7f3d0;
 
   /* Semantic - Warning */
   --color-warning: #d97706;
   --color-warning-on: #ffffff;
-  --color-warning-bg: #fffbeb;
+  --color-warning-bg: #fef3c7;
   --color-warning-border: #fcd34d;
 
   /* Semantic - Error */
   --color-error: #dc2626;
   --color-error-on: #ffffff;
-  --color-error-bg: #fecaca;  /* rose-200 - more visible */
+  --color-error-bg: #fecaca;
   --color-error-border: #fda4af;
 
   /* Semantic - Info */
   --color-info: #2563eb;
   --color-info-on: #ffffff;
-  --color-info-bg: #eff6ff;
+  --color-info-bg: #dbeafe;
   --color-info-border: #bfdbfe;
 
   /* Status Colors (for badges/indicators) */
@@ -167,6 +183,22 @@
   --color-status-info: #1d4ed8;
   --color-status-info-bg: #dbeafe;
   --color-status-info-border: #bfdbfe;
+
+  /* Accent Colors (for distinct action icons) */
+  --color-accent-violet: #7c3aed;
+  --color-accent-violet-bg: #ede9fe;
+  --color-accent-indigo: #4f46e5;
+  --color-accent-indigo-bg: #e0e7ff;
+  --color-accent-purple: #9333ea;
+  --color-accent-purple-bg: #f3e8ff;
+  --color-accent-cyan: #0891b2;
+  --color-accent-cyan-bg: #cffafe;
+  --color-accent-teal: #0d9488;
+  --color-accent-teal-bg: #ccfbf1;
+  --color-accent-amber: #d97706;
+  --color-accent-amber-bg: #fef3c7;
+  --color-accent-yellow: #ca8a04;
+  --color-accent-yellow-bg: #fef9c3;
 
   /* Focus ring */
   --color-focus-ring: rgba(45, 90, 78, 0.4);

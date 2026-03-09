@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -10,6 +10,7 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
 @Component({
   selector: 'app-public-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
   template: `
     <div class="min-h-screen bg-surface flex items-center justify-center p-4">
@@ -159,7 +160,7 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
                       <button
                         type="button"
                         (click)="removeItem(i)"
-                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
                         <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                       </button>
                     </div>

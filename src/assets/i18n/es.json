@@ -67,7 +67,15 @@
     "ITEMS_COUNT": "{{count}} ítems",
     "NO_DATA_FOUND": "No se encontraron datos",
     "NO_DATA_DESC": "No hay elementos para mostrar",
-    "SKIP_NAV": "Saltar al contenido principal"
+    "SKIP_NAV": "Saltar al contenido principal",
+    "NO_NAME": "Sin nombre",
+    "SHOW_PASSWORD": "Mostrar contraseña",
+    "HIDE_PASSWORD": "Ocultar contraseña",
+    "TOGGLE_SIDEBAR": "Alternar barra lateral",
+    "TOGGLE_THEME": "Cambiar tema",
+    "CHANGE_LANGUAGE": "Cambiar idioma",
+    "DELETE_ITEM": "Eliminar {{item}}",
+    "EDIT_ITEM": "Editar {{item}}"
   },
   "IMPORT": {
     "TITLE": "Importar Items",
@@ -111,6 +119,7 @@
     "IN_USE": "En Uso",
     "RECENT_ITEMS": "Ítems Recientes",
     "MANAGE_ITEMS": "Administra tus ítems de inventario",
+    "SHOWING_LOW_STOCK": "Mostrando {{count}} de {{total}} artículos con stock bajo",
     "ADD_NEW_ITEM": "Agregar Nuevo Ítem",
     "EXPORT_DATA": "Exportar Datos",
     "VIEW_REPORTS": "Ver Reportes",

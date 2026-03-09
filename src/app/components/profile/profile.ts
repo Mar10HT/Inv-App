@@ -41,6 +41,18 @@ export class Profile implements OnInit {
   saving = signal(false);
   editMode = signal(false);
 
+  // Memoized computed - avoids re-evaluation on every change detection
+  userInitials = computed(() => {
+    const userData = this.user();
+    if (!userData?.name) return '?';
+    return userData.name
+      .split(' ')
+      .map((n: string) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  });
+
   ngOnInit(): void {
     this.loadUserData();
   }
@@ -103,14 +115,8 @@ export class Profile implements OnInit {
     }).format(d);
   }
 
+  // Kept for backwards compatibility but prefer userInitials computed signal
   getUserInitials(): string {
-    const userData = this.user();
-    if (!userData?.name) return '?';
-    return userData.name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
+    return this.userInitials();
   }
 }

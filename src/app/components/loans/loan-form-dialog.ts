@@ -147,7 +147,7 @@ export interface LoanFormResult {
                     <button
                       type="button"
                       (click)="removeLoanItem(i)"
-                      class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-rose-400 hover:bg-rose-950/30 transition-colors">
+                      class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </div>

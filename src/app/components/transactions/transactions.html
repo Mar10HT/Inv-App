@@ -37,7 +37,7 @@
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TYPES.IN' | translate }}</p>
             <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ stats().inCount }}</p>
           </div>
-          <div class="bg-emerald-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-success-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="ArrowDown" class="!text-emerald-400 !w-6 !h-6"></lucide-icon>
           </div>
         </div>
@@ -48,7 +48,7 @@
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TYPES.OUT' | translate }}</p>
             <p class="text-3xl font-bold text-[var(--color-status-error)]">{{ stats().outCount }}</p>
           </div>
-          <div class="bg-rose-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-error-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="ArrowUp" class="!text-rose-400 !w-6 !h-6"></lucide-icon>
           </div>
         </div>
@@ -59,7 +59,7 @@
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.TYPES.TRANSFER' | translate }}</p>
             <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ stats().transferCount }}</p>
           </div>
-          <div class="bg-blue-950/30 p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+          <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="ArrowLeftRight" class="!text-blue-400 !w-6 !h-6"></lucide-icon>
           </div>
         </div>
@@ -76,7 +76,7 @@
 
     <!-- Error State -->
     @if (error()) {
-      <div class="bg-rose-950/30 border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
+      <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
           <lucide-icon name="Info" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
           <span class="text-[var(--color-status-error)]">{{ error() }}</span>
@@ -107,7 +107,7 @@
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
-          <table class="w-full">
+          <table class="w-full" [attr.aria-label]="'TRANSACTION.TITLE' | translate">
             <thead>
               <tr class="bg-[var(--color-surface)]">
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'TRANSACTION.TYPE' | translate }}</th>
@@ -133,7 +133,7 @@
 
                   <!-- Date Column -->
                   <td class="px-6 py-4">
-                    <span class="text-foreground">{{ formatDate(transaction.date) }}</span>
+                    <span class="text-foreground">{{ transaction.date | date:'MMM d, y, hh:mm a' }}</span>
                   </td>
 
                   <!-- Warehouses Column -->
@@ -168,7 +168,8 @@
                       <button
                         type="button"
                         (click)="deleteTransaction(transaction)"
-                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-rose-950/30 transition-colors flex items-center justify-center">
+                        [attr.aria-label]="'COMMON.DELETE' | translate"
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors flex items-center justify-center">
                         <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
                       </button>
                     </ng-container>
@@ -195,25 +196,25 @@
                 </div>
 
                 <!-- Date -->
-                <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ formatDate(transaction.date) }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ transaction.date | date:'MMM d, y, hh:mm a' }}</p>
 
                 <!-- Warehouses -->
                 <div class="text-xs space-y-0.5 mb-2">
                   @if (transaction.sourceWarehouse) {
                     <div class="text-[var(--color-on-surface-variant)] truncate">
-                      <span class="text-[var(--color-on-surface-muted)]">De:</span> {{ transaction.sourceWarehouse.name }}
+                      <span class="text-[var(--color-on-surface-muted)]">{{ 'TRANSACTION.FROM' | translate }}:</span> {{ transaction.sourceWarehouse.name }}
                     </div>
                   }
                   @if (transaction.destinationWarehouse) {
                     <div class="text-[var(--color-on-surface-variant)] truncate">
-                      <span class="text-[var(--color-on-surface-muted)]">A:</span> {{ transaction.destinationWarehouse.name }}
+                      <span class="text-[var(--color-on-surface-muted)]">{{ 'TRANSACTION.TO' | translate }}:</span> {{ transaction.destinationWarehouse.name }}
                     </div>
                   }
                 </div>
 
                 <!-- Items count -->
                 <div class="flex items-center justify-between text-xs mb-2">
-                  <span class="text-[var(--color-on-surface-variant)]">Items: <span class="text-foreground font-medium">{{ transaction.items.length }}</span></span>
+                  <span class="text-[var(--color-on-surface-variant)]">{{ 'TRANSACTION.ITEMS' | translate }}: <span class="text-foreground font-medium">{{ transaction.items.length }}</span></span>
                 </div>
 
                 <!-- Actions -->
@@ -222,7 +223,8 @@
                     <button
                       type="button"
                       (click)="deleteTransaction(transaction)"
-                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-rose-950/30 transition-colors">
+                      [attr.aria-label]="'COMMON.DELETE' | translate"
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </div>

@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -20,6 +20,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
 @Component({
   selector: 'app-transfers',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,
@@ -217,7 +218,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       </div>
                     </td>
                     <td class="px-6 py-4 text-foreground">{{ request.requestedByName }}</td>
-                    <td class="px-6 py-4 text-foreground">{{ formatDate(request.createdAt) }}</td>
+                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | date:'mediumDate' }}</td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                         {{ getStatusLabel(request.status) }}
@@ -265,7 +266,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             </button>
                           }
                           @case (Status.COMPLETED) {
-                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ formatDate(request.receivedAt!) }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | date:'mediumDate' }}</span>
                           }
                           @case (Status.REJECTED) {
                             <span class="text-[var(--color-status-error)] text-sm truncate max-w-[150px]" [title]="request.rejectedReason">
@@ -316,7 +317,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                   </div>
                   <div>
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
-                    <p class="text-foreground">{{ formatDate(request.createdAt) }}</p>
+                    <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
                   </div>
                 </div>
                 <!-- Mobile Actions -->
@@ -719,10 +720,6 @@ export class TransfersComponent implements OnInit {
       [TransferRequestStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]'
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString();
   }
 
   exportToCSV(): void {

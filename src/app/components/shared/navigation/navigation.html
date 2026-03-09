@@ -45,7 +45,9 @@
       class="toggle-btn"
       (click)="isMobileMenuOpen() ? closeMobileMenu() : toggleSidebar($event)"
       [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('COMMON.EXPAND' | translate) : ''"
-      matTooltipPosition="right">
+      matTooltipPosition="right"
+      [attr.aria-label]="'COMMON.TOGGLE_SIDEBAR' | translate"
+      [attr.aria-expanded]="!isCollapsed()">
       <lucide-icon [name]="isMobileMenuOpen() ? 'X' : (isCollapsed() ? 'ChevronRight' : 'ChevronLeft')"></lucide-icon>
     </button>
 
@@ -299,7 +301,8 @@
           class="action-btn"
           (click)="toggleTheme()"
           [matTooltip]="isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate)"
-          matTooltipPosition="above">
+          matTooltipPosition="above"
+          [attr.aria-label]="'COMMON.TOGGLE_THEME' | translate">
           <lucide-icon [name]="isDarkMode() ? 'Moon' : 'Sun'" class="action-icon"></lucide-icon>
         </button>
 
@@ -309,7 +312,8 @@
           class="action-btn logout-action"
           (click)="logout()"
           [matTooltip]="'NAV.LOGOUT' | translate"
-          matTooltipPosition="above">
+          matTooltipPosition="above"
+          [attr.aria-label]="'NAV.LOGOUT' | translate">
           <lucide-icon name="LogOut" class="action-icon"></lucide-icon>
         </button>
       </div>
@@ -318,14 +322,16 @@
         class="action-btn collapsed-action"
         (click)="toggleTheme()"
         [matTooltip]="isDarkMode() ? ('SETTINGS.DARK_MODE' | translate) : ('SETTINGS.LIGHT_MODE' | translate)"
-        matTooltipPosition="right">
+        matTooltipPosition="right"
+        [attr.aria-label]="'COMMON.TOGGLE_THEME' | translate">
         <lucide-icon [name]="isDarkMode() ? 'Moon' : 'Sun'" class="action-icon"></lucide-icon>
       </button>
       <button
         class="action-btn collapsed-action logout-action"
         (click)="logout()"
         [matTooltip]="'NAV.LOGOUT' | translate"
-        matTooltipPosition="right">
+        matTooltipPosition="right"
+        [attr.aria-label]="'NAV.LOGOUT' | translate">
         <lucide-icon name="LogOut" class="action-icon"></lucide-icon>
       </button>
     }

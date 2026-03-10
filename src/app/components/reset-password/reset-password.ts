@@ -25,10 +25,8 @@ import { AuthService } from '../../services/auth.service';
       <div class="hidden lg:flex w-[54%] bg-[#0f1f1a] flex-col items-center justify-center gap-8 p-16 relative">
         <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>
         <div class="flex flex-col items-center gap-6">
-          <div class="w-[72px] h-[72px] rounded-2xl bg-[var(--color-primary)] flex items-center justify-center">
-            <lucide-icon name="Package" class="!w-9 !h-9 text-white"></lucide-icon>
-          </div>
-          <h1 class="text-[42px] font-bold text-white font-[Outfit]">InvApp</h1>
+          <img src="brand/icon-mono-white.svg" alt="Obsid" class="w-20 h-20">
+          <h1 class="text-[42px] font-bold text-white font-[Outfit]">Obsid</h1>
           <p class="text-lg text-[var(--color-on-surface-variant)] text-center leading-relaxed">
             {{ 'LOGIN.TAGLINE' | translate }}
           </p>
@@ -40,10 +38,8 @@ import { AuthService } from '../../services/auth.service';
       <div class="flex-1 bg-surface flex flex-col items-center justify-center p-8 lg:p-16 relative">
         <!-- Mobile logo -->
         <div class="flex lg:hidden flex-col items-center gap-4 mb-10">
-          <div class="w-14 h-14 rounded-xl bg-[var(--color-primary)] flex items-center justify-center">
-            <lucide-icon name="Package" class="!w-8 !h-8 text-white"></lucide-icon>
-          </div>
-          <h1 class="text-2xl font-bold text-foreground">InvApp</h1>
+          <img src="brand/icon-primary.svg" alt="Obsid" class="w-16 h-16">
+          <h1 class="text-2xl font-bold text-foreground">Obsid</h1>
         </div>
 
         <div class="w-full max-w-[380px] flex flex-col gap-8">

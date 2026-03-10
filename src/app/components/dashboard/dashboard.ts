@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -16,6 +16,7 @@ import { DashboardService, DashboardStats, CategoryStats, WarehouseStats } from 
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../services/logger.service';
+import { ThemeService } from '../../services/theme.service';
 import { InventoryItemInterface, InventoryStatus, Currency } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
@@ -65,6 +66,7 @@ export class Dashboard implements OnInit {
   private translate = inject(TranslateService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggerService);
+  private themeService = inject(ThemeService);
 
   userName = computed(() => this.authService.currentUser()?.name || 'User');
 
@@ -153,10 +155,26 @@ export class Dashboard implements OnInit {
     return this.getCssVar('--color-on-surface', '#e2e8f0');
   }
 
+  private get chartTooltipTheme(): string {
+    return this.themeService.isDark() ? 'dark' : 'light';
+  }
+
   constructor() {
     this.initChartOptions();
     this.loadSavedLayout();
     this.loadCustomCharts();
+
+    // Re-render charts when theme changes
+    let initialized = false;
+    effect(() => {
+      this.themeService.isDark();
+      if (!initialized) { initialized = true; return; }
+      // Wait for CSS variables to update
+      setTimeout(() => {
+        this.initChartOptions();
+        this.updateCharts();
+      }, 50);
+    });
   }
 
   ngOnInit(): void {
@@ -491,7 +509,7 @@ export class Dashboard implements OnInit {
         }
       },
       tooltip: {
-        theme: 'dark',
+        theme: this.chartTooltipTheme,
         y: {
           formatter: (val: number) => formatValue(val)
         }
@@ -571,7 +589,7 @@ export class Dashboard implements OnInit {
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%', distributed: true } },
       dataLabels: { enabled: false },
-      tooltip: { theme: 'dark', y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } }
+      tooltip: { theme: this.chartTooltipTheme, y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } }
     });
 
     this.warehouseChartOptions.set({
@@ -593,7 +611,7 @@ export class Dashboard implements OnInit {
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
       dataLabels: { enabled: false },
-      tooltip: { theme: 'dark', y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } },
+      tooltip: { theme: this.chartTooltipTheme, y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } },
       fill: { type: 'gradient', gradient: { shade: 'dark', type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.8 } }
     });
   }

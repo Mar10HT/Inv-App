@@ -8,6 +8,8 @@ export class SidebarService {
 
   toggle(): void {
     this.isCollapsed.update(v => !v);
+    // Trigger resize after CSS transition (300ms) so charts reflow
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 320);
   }
 
   collapse(): void {

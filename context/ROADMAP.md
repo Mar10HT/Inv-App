@@ -1,146 +1,45 @@
-# INV-APP - Development Roadmap
+# Roadmap
 
-## Current State
-The base application is complete with the following features:
-- Inventory management (BULK and UNIQUE items)
-- Warehouses, Categories, Suppliers
-- Users (with EXTERNAL role for assignments only)
-- Transactions (Entry, Exit, Transfer)
-- Reports (Value, Transactions, Status, Assignments, Trends)
-- PDF and CSV export
-- Multi-language (ES/EN)
-- Dark theme
+## Current State (v0.4.5)
 
----
-
-## Upcoming Features
-
-### 1. Bulk Import (CSV/Excel)
-**Priority:** High
-**Status:** Pending
-
-Allow uploading multiple items from a CSV or Excel file.
-- Downloadable template with correct format
-- Data validation before import
-- Preview of items to import
-- Error and duplicate handling
-- Support for BULK and UNIQUE items
+The application includes:
+- Inventory management (bulk and serialized items)
+- Warehouses, categories, and suppliers
+- User management with role-based access
+- Transactions (entry, exit, transfer)
+- Inter-warehouse loans with due dates
+- Reports with PDF and CSV export
+- Internationalization (English and Spanish)
+- Dark and light themes
 
 ---
 
-### 2. Change History / Audit Log
-**Priority:** High
-**Status:** Pending
+## Planned Features
 
-Record all changes made in the system.
-- Who made the change
-- What was changed (old value → new value)
-- When it was made
-- Filters by date, user, entity type
-- Exportable to PDF/CSV
+### Bulk Import (CSV/Excel)
+Upload multiple items from CSV or Excel files with template download, data validation, preview, and error handling.
 
----
+### Audit Log Viewer
+Browse the full history of system changes — who changed what, when, with before/after values. Filterable and exportable.
 
-### 3. Temporary Loans
-**Priority:** Medium
-**Status:** ✅ COMPLETED (v1.4.0)
+### Warranty Tracking
+Track equipment warranties with purchase dates, expiration alerts (30/15/7 days), and attached documents.
 
-Warehouse-to-warehouse loan system with return date.
-- ✅ Loan items from one warehouse to another with due date
-- ✅ Support for multiple items per loan (quantity + notes per item)
-- ✅ Expiration alerts (automatic overdue detection)
-- ✅ Loan history with filters and search
-- ✅ States: ACTIVE, RETURNED, OVERDUE
-- ✅ Active loans dashboard with statistics
-- ✅ Return loan functionality
-- ✅ CSV export
-- ✅ Full i18n (ES/EN)
+### Purchase Orders
+Create purchase requests when stock is low, with draft/pending/approved/received workflow and supplier history.
+
+### Customizable Dashboard
+Drag-and-drop dashboard widgets with user-saved configurations. Available widgets include stock summary, custom charts, alerts, and recent activity.
 
 ---
 
-### 4. Warranty Control
-**Priority:** Medium
-**Status:** Pending
-
-Equipment warranty tracking.
-- Purchase date
-- Warranty duration
-- Expiration date
-- Alerts before expiring (30, 15, 7 days)
-- Attached documents (invoice, certificate)
-- Expiring warranties report
-
----
-
-### 5. Purchase Orders
-**Priority:** Medium
-**Status:** Pending
-
-Purchase request management.
-- Create order when stock is low
-- States: Draft, Pending, Approved, Received
-- Approval by role (WAREHOUSE_MANAGER+)
-- Convert received order to entry transaction
-- Order history by supplier
-
----
-
-### 6. Customizable Dashboard
-**Priority:** Low
-**Status:** Pending
-
-Draggable widgets on dashboard.
-- Choose which metrics to display
-- Rearrange widget positions
-- Save configuration per user
-- Available widgets:
-  - Stock summary
-  - Custom charts
-  - Recent transactions
-  - Low stock alerts
-  - Loans expiring soon
-  - Warranties expiring soon
-
----
-
-## Future Features (Backlog)
+## Backlog
 
 | Feature | Description |
 |---------|-------------|
 | Email Alerts | Automatic low stock notifications |
-| QR Codes | Generate and print QR for UNIQUE items |
-| Item Photos | Attach images to products |
-| Digital Signature | On-screen signature when assigning equipment |
-| Depreciation | Current asset value calculation |
-| Granular Location | Shelf, row, position in warehouse |
-| REST API | Endpoints for external integration |
-| Offline Mode | Sync when connection is available |
-
----
-
-## Changelog
-
-### v0.4.5 (Current)
-- [x] CSRF protection (Double Submit Cookie Pattern)
-- [x] Secure HttpOnly cookies for JWT tokens
-- [x] Warehouse-to-warehouse loans system
-- [x] Multiple items per loan with quantity
-- [x] Loan statistics and filtering
-- [x] Theme-aware design system classes
-
-### v0.5.0 (Next)
-- [ ] Bulk CSV import
-- [ ] Change history / Audit log
-- [ ] Security: Input validation and sanitization
-- [ ] Security: Rate limiting enhancements
-
-### v0.4.0
-- [x] Complete base system
-- [x] Reports with PDF/CSV export
-- [x] EXTERNAL role for users without access
-- [x] Full migration to Tailwind CSS
-- [x] Trend charts with ApexCharts
-
----
-
-*Last updated: January 19, 2026*
+| QR Codes | Generate and print QR labels for items |
+| Item Photos | Attach images to inventory items |
+| Depreciation | Asset value calculation over time |
+| Granular Locations | Shelf/row/position tracking within warehouses |
+| Offline Mode | Work offline with sync on reconnect |

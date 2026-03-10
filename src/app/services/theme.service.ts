@@ -40,15 +40,10 @@ export class ThemeService {
    * Get initial theme from storage or system preference
    */
   private getInitialTheme(): Theme {
-    // Check localStorage first
+    // Check localStorage first, default to dark
     const stored = localStorage.getItem(this.STORAGE_KEY) as Theme | null;
     if (stored === 'light' || stored === 'dark') {
       return stored;
-    }
-
-    // Fall back to system preference
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     }
 
     return 'dark';

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Obsid Brand Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; box-sizing: border-box; }
+    body { font-family: Outfit, system-ui, sans-serif; padding: 40px; }
+
+    /* Dark section */
+    .section-dark { background: #0a0a0a; color: #e0e0e0; padding: 48px; border-radius: 16px; margin-bottom: 32px; }
+    /* Light section */
+    .section-light { background: #f5f5f5; color: #1a1a1a; padding: 48px; border-radius: 16px; margin-bottom: 32px; }
+    /* Checkerboard for transparent preview */
+    .section-checker {
+      background: repeating-conic-gradient(#e0e0e0 0% 25%, #fff 0% 50%) 0 0 / 20px 20px;
+      padding: 48px; border-radius: 16px; margin-bottom: 32px; color: #333;
+    }
+
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    h2 { font-size: 20px; font-weight: 600; margin-bottom: 24px; opacity: 0.7; }
+    h3 { font-size: 14px; font-weight: 500; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; }
+
+    .row { display: flex; flex-wrap: wrap; gap: 32px; align-items: end; margin-bottom: 40px; }
+    .item { text-align: center; }
+    .item span { display: block; margin-top: 8px; font-size: 12px; opacity: 0.5; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .card {
+      background: rgba(128,128,128,0.1); border-radius: 12px; padding: 24px; text-align: center;
+      border: 1px solid rgba(128,128,128,0.15);
+    }
+    .card img { max-width: 100%; height: auto; margin-bottom: 12px; }
+    .card .label { font-size: 13px; font-weight: 500; }
+    .card .meta { font-size: 11px; opacity: 0.4; margin-top: 4px; }
+
+    .divider { border: none; border-top: 1px solid rgba(128,128,128,0.2); margin: 32px 0; }
+  </style>
+</head>
+<body>
+
+<!-- MASTERS ON DARK -->
+<div class="section-dark">
+  <h1>Obsid Brand Assets</h1>
+  <h2>Master files on dark surface</h2>
+
+  <h3>Icon (isotipo)</h3>
+  <div class="row">
+    <div class="item"><img src="master/logo-icon.svg" width="128" height="128"><span>128px</span></div>
+    <div class="item"><img src="master/logo-icon.svg" width="64" height="64"><span>64px</span></div>
+    <div class="item"><img src="master/logo-icon.svg" width="48" height="48"><span>48px</span></div>
+    <div class="item"><img src="master/logo-icon.svg" width="32" height="32"><span>32px</span></div>
+    <div class="item"><img src="master/logo-icon.svg" width="16" height="16"><span>16px</span></div>
+  </div>
+
+  <h3>Full logo (isotipo + wordmark)</h3>
+  <div class="row">
+    <div class="item"><img src="master/logo-full.svg" width="410" height="150"><span>410px</span></div>
+    <div class="item"><img src="master/logo-full.svg" width="240" height="88"><span>240px</span></div>
+    <div class="item"><img src="master/logo-full.svg" width="160" height="58"><span>160px</span></div>
+  </div>
+
+  <h3>Wordmark</h3>
+  <div class="row">
+    <div class="item"><img src="master/logo-wordmark.svg" width="320" height="67"><span>320px</span></div>
+    <div class="item"><img src="master/logo-wordmark.svg" width="200" height="42"><span>200px</span></div>
+    <div class="item"><img src="master/logo-wordmark.svg" width="120" height="25"><span>120px</span></div>
+  </div>
+</div>
+
+<!-- ICON VARIANTS -->
+<div class="section-dark">
+  <h2>Icon variants on dark</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="variants/icon-primary.svg" width="128" height="128">
+      <div class="label">Primary</div>
+      <div class="meta">#4d7c6f on transparent</div>
+    </div>
+    <div class="card">
+      <img src="variants/icon-mono-white.svg" width="128" height="128">
+      <div class="label">Mono White</div>
+      <div class="meta">#ffffff on transparent</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-light">
+  <h2>Icon variants on light</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="variants/icon-light.svg" width="128" height="128">
+      <div class="label">Light</div>
+      <div class="meta">#4d7c6f on transparent</div>
+    </div>
+    <div class="card">
+      <img src="variants/icon-mono-dark.svg" width="128" height="128">
+      <div class="label">Mono Dark</div>
+      <div class="meta">#1a1a1a on transparent</div>
+    </div>
+  </div>
+</div>
+
+<!-- FULL LOGO VARIANTS -->
+<div class="section-dark">
+  <h2>Full logo variants on dark</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="variants/full-primary.svg" height="80">
+      <div class="label">Primary</div>
+      <div class="meta">icon #4d7c6f + text #4d7c6f</div>
+    </div>
+    <div class="card">
+      <img src="variants/full-mono-white.svg" height="80">
+      <div class="label">Mono White</div>
+      <div class="meta">icon #fff + text #fff</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-light">
+  <h2>Full logo variants on light</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="variants/full-light.svg" height="80">
+      <div class="label">Light</div>
+      <div class="meta">icon #4d7c6f + text #1a1a1a</div>
+    </div>
+    <div class="card">
+      <img src="variants/full-mono-dark.svg" height="80">
+      <div class="label">Mono Dark</div>
+      <div class="meta">icon #1a1a1a + text #1a1a1a</div>
+    </div>
+  </div>
+</div>
+
+<!-- WORDMARK VARIANTS -->
+<div class="section-dark">
+  <h2>Wordmark variants on dark</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="variants/wordmark-primary.svg" height="48">
+      <div class="label">Primary</div>
+    </div>
+    <div class="card">
+      <img src="variants/wordmark-mono-white.svg" height="48">
+      <div class="label">Mono White</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-light">
+  <h2>Wordmark variants on light</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="variants/wordmark-light.svg" height="48">
+      <div class="label">Light</div>
+    </div>
+    <div class="card">
+      <img src="variants/wordmark-mono-dark.svg" height="48">
+      <div class="label">Mono Dark</div>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSPARENCY CHECK -->
+<div class="section-checker">
+  <h2>Transparency check</h2>
+  <div class="row">
+    <div class="item"><img src="variants/icon-primary.svg" width="96" height="96"><span>icon-primary</span></div>
+    <div class="item"><img src="variants/icon-mono-dark.svg" width="96" height="96"><span>icon-mono-dark</span></div>
+    <div class="item"><img src="variants/icon-mono-white.svg" width="96" height="96"><span>icon-mono-white</span></div>
+  </div>
+</div>
+
+</body>
+</html>

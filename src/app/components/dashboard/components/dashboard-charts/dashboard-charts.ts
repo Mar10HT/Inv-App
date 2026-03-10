@@ -60,7 +60,7 @@ export interface BarChartOptions {
       cdkDropList
       cdkDropListOrientation="horizontal"
       (cdkDropListDropped)="onDrop($event)"
-      class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 mb-8">
       @for (widget of widgets(); track widget) {
         <div cdkDrag class="bg-surface-variant rounded-xl border border-theme p-6 cursor-move hover:border-[var(--color-border)] transition-colors">
           <!-- Drag Handle -->

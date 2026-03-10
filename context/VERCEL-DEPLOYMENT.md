@@ -108,9 +108,7 @@ git push origin main
 ## Step 4: Verify Deployment
 
 1. **Open your Vercel URL:** `https://your-app.vercel.app`
-2. **Test Login:**
-   - Email: `admin@example.com`
-   - Password: `password123`
+2. **Test Login:** Use your configured admin credentials
 3. **Check Network Tab:** Verify API calls are going to your Railway URL
 4. **Test Key Features:**
    - Dashboard loads stats

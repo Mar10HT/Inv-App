@@ -100,6 +100,10 @@
   --color-accent-yellow: #facc15;
   --color-accent-yellow-bg: rgba(250, 204, 21, 0.15);
 
+  /* Navigation */
+  --nav-hover-bg: rgba(255, 255, 255, 0.05);
+  --nav-active-bg: rgba(77, 124, 111, 0.15);
+
   /* Focus ring */
   --color-focus-ring: rgba(77, 124, 111, 0.5);
 }
@@ -199,6 +203,10 @@
   --color-accent-amber-bg: #fef3c7;
   --color-accent-yellow: #ca8a04;
   --color-accent-yellow-bg: #fef9c3;
+
+  /* Navigation */
+  --nav-hover-bg: rgba(0, 0, 0, 0.05);
+  --nav-active-bg: rgba(45, 90, 78, 0.12);
 
   /* Focus ring */
   --color-focus-ring: rgba(45, 90, 78, 0.4);

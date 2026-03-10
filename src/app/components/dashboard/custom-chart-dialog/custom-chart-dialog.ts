@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../../services/theme.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 export type ChartType = 'bar' | 'line' | 'area' | 'pie' | 'donut' | 'radialBar';
@@ -316,6 +317,7 @@ export class CustomChartDialog implements OnInit {
   private get chartForeColor(): string { return this.getCssVar('--color-on-surface-variant', '#94a3b8'); }
   private get chartGridColor(): string { return this.getCssVar('--color-border-subtle', '#2a2a2a'); }
   private get chartTextColor(): string { return this.getCssVar('--color-on-surface', '#e2e8f0'); }
+  private themeService = inject(ThemeService);
 
   // Template-accessible chart legend and grid
   previewLegend = computed(() => ({ show: true, position: 'bottom' as const, labels: { colors: this.chartForeColor } }));
@@ -545,7 +547,7 @@ export class CustomChartDialog implements OnInit {
     });
 
     this.previewTooltip.set({
-      theme: 'dark',
+      theme: this.themeService.isDark() ? 'dark' : 'light',
       y: {
         formatter: formatValue
       }

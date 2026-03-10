@@ -35,17 +35,11 @@
   padding: 12px 0 20px 0;
 }
 .logo-section.collapsed { justify-content: center; padding: 12px 0; }
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  background-color: var(--primary);
-  border-radius: var(--radius-sm, 8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo-img {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
 }
-.logo-icon lucide-icon { color: white !important; width: 20px !important; height: 20px !important; }
 .logo-text { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 700; color: var(--on-surface); }
 
 /* Toggle Button */
@@ -103,10 +97,10 @@
   white-space: nowrap;
 }
 .sidebar.collapsed .nav-link { justify-content: center; padding: 10px; }
-.nav-link:hover { background-color: rgba(255, 255, 255, 0.05); }
+.nav-link:hover { background-color: var(--nav-hover-bg, rgba(255, 255, 255, 0.05)); }
 
 /* Active State - translucent primary bg */
-.nav-link.active-link { background-color: rgba(77, 124, 111, 0.15); }
+.nav-link.active-link { background-color: var(--nav-active-bg, rgba(77, 124, 111, 0.15)); }
 
 /* Icons - no container, direct icons */
 .nav-icon {

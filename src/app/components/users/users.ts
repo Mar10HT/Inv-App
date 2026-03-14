@@ -29,8 +29,7 @@ import { ResetLinkDialog } from './reset-link-dialog';
     TranslateModule,
     NgxPermissionsModule
   ],
-  templateUrl: './users.html',
-  styleUrl: './users.css'
+  templateUrl: './users.html'
 })
 export class Users implements OnInit {
   private userService = inject(UserService);

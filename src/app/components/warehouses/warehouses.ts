@@ -26,8 +26,7 @@ import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-
     TranslateModule,
     NgxPermissionsModule
   ],
-  templateUrl: './warehouses.html',
-  styleUrl: './warehouses.css'
+  templateUrl: './warehouses.html'
 })
 export class Warehouses implements OnInit {
   private warehouseService = inject(WarehouseService);

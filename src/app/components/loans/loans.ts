@@ -241,7 +241,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                               </button>
                               <button
                                 (click)="cancelLoan(loan)"
-                                aria-label="Cancel loan"
+                                [attr.aria-label]="'COMMON.CANCEL' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
                               </button>
@@ -364,7 +364,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                         </button>
                         <button
                           (click)="cancelLoan(loan)"
-                          aria-label="Cancel loan"
+                          [attr.aria-label]="'COMMON.CANCEL' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
                         </button>

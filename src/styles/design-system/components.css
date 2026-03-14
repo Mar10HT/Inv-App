@@ -187,6 +187,7 @@
 .ds-btn--qr:hover:not(:disabled) {
   background: var(--color-accent-violet);
   color: #ffffff;
+  border-color: var(--color-accent-violet);
 }
 
 /* Return/Warning Button (return, undo actions) */

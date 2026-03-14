@@ -194,7 +194,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                             </button>
                             <button
                               (click)="rejectRequest(request)"
-                              aria-label="Reject discharge request"
+                              [attr.aria-label]="'DISCHARGES.REJECT' | translate"
                               class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                               <lucide-icon name="X" class="shrink-0"></lucide-icon>
                             </button>
@@ -258,7 +258,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                       </button>
                       <button
                         (click)="rejectRequest(request)"
-                        aria-label="Reject discharge request"
+                        [attr.aria-label]="'DISCHARGES.REJECT' | translate"
                         class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                         <lucide-icon name="X" class="shrink-0"></lucide-icon>
                       </button>

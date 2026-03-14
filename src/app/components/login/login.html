@@ -1,24 +1,25 @@
-<div class="min-h-screen flex bg-[#080808]">
+<div class="min-h-screen flex bg-[var(--color-surface)]">
 
   <!-- ═══════════════════════════════════════
        LEFT — Brand panel (hidden on mobile)
   ═══════════════════════════════════════ -->
+  <!-- bg-[#050505]: intentionally darker than surface — always-dark brand panel -->
   <div class="hidden lg:flex flex-col w-[58%] relative overflow-hidden bg-[#050505]">
 
     <!-- Hard vertical separator — more present -->
-    <div class="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[rgba(77,124,111,0.45)] to-transparent z-10"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[color-mix(in_srgb,var(--color-primary)_45%,transparent)] to-transparent z-10"></div>
 
     <!-- Primary glow — large, strong, centered -->
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full pointer-events-none"
-         style="background: radial-gradient(ellipse at center, rgba(77,124,111,0.38) 0%, rgba(77,124,111,0.18) 30%, rgba(77,124,111,0.06) 55%, transparent 72%);"></div>
+         style="background: radial-gradient(ellipse at center, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, color-mix(in srgb, var(--color-primary) 18%, transparent) 30%, color-mix(in srgb, var(--color-primary) 6%, transparent) 55%, transparent 72%);"></div>
 
     <!-- Secondary glow — top-left corner -->
     <div class="absolute -top-48 -left-48 w-[640px] h-[640px] rounded-full pointer-events-none"
-         style="background: radial-gradient(ellipse at center, rgba(77,124,111,0.2) 0%, transparent 65%);"></div>
+         style="background: radial-gradient(ellipse at center, color-mix(in srgb, var(--color-primary) 20%, transparent) 0%, transparent 65%);"></div>
 
     <!-- Floor glow — bottom atmosphere -->
     <div class="absolute bottom-0 left-0 right-0 h-[320px] pointer-events-none"
-         style="background: linear-gradient(to top, rgba(77,124,111,0.09) 0%, transparent 100%);"></div>
+         style="background: linear-gradient(to top, color-mix(in srgb, var(--color-primary) 9%, transparent) 0%, transparent 100%);"></div>
 
     <!-- Grid texture — visible but not dominant -->
     <div class="absolute inset-0 pointer-events-none opacity-[0.045]"
@@ -30,28 +31,26 @@
       <!-- Logo badge -->
       <div class="w-[88px] h-[88px] rounded-[22px] bg-gradient-to-br from-[#4d7c6f] to-[#2d5247] mb-5 flex items-center justify-center
                   shadow-[0_0_0_1px_rgba(77,124,111,0.35),0_8px_32px_rgba(77,124,111,0.55),0_24px_80px_rgba(77,124,111,0.25),0_2px_8px_rgba(0,0,0,0.8)]">
-        <img src="brand/icon-primary.svg" alt="Obsid" class="w-12 h-12" style="filter: brightness(0) invert(1);" />
+        <img src="brand/icon-mono-white.svg" alt="Obsid" class="w-12 h-12" />
       </div>
 
       <!-- Wordmark — fills the panel -->
       <div class="mb-4">
-        <span class="block text-[128px] xl:text-[152px] font-bold text-white leading-none tracking-[-0.035em]"
-              style="font-family: Outfit, sans-serif;">Obsid</span>
+        <span class="block text-[128px] xl:text-[152px] font-bold text-white leading-none tracking-[-0.035em]">Obsid</span>
       </div>
 
       <!-- Teal accent rule -->
       <div class="w-14 h-[3px] bg-[var(--color-primary)] rounded-full mb-5 opacity-90"></div>
 
       <!-- Tagline -->
-      <p class="text-[15px] text-[rgba(255,255,255,0.48)] leading-relaxed max-w-[280px]"
-         style="font-family: Outfit, sans-serif;">
+      <p class="text-[15px] text-[rgba(255,255,255,0.48)] leading-relaxed max-w-[280px]">
         {{ 'LOGIN.TAGLINE' | translate }}
       </p>
     </div>
 
     <!-- Features — anchored to bottom -->
     <div class="px-16 xl:px-20 pb-12 relative z-10 flex flex-col gap-3.5">
-      <span class="text-[10px] font-semibold text-[rgba(77,124,111,0.7)] uppercase tracking-[0.14em] mb-0.5">Capabilities</span>
+      <span class="text-[10px] font-semibold text-[rgba(77,124,111,0.7)] uppercase tracking-[0.14em] mb-0.5">{{ 'LOGIN.CAPABILITIES' | translate }}</span>
       <div class="flex items-center gap-3.5">
         <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
           <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
@@ -85,15 +84,15 @@
 
     <!-- Right-panel ambient glow — more present -->
     <div class="absolute bottom-0 right-0 w-[600px] h-[600px] pointer-events-none"
-         style="background: radial-gradient(ellipse at bottom right, rgba(77,124,111,0.09) 0%, transparent 65%);"></div>
+         style="background: radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--color-primary) 9%, transparent) 0%, transparent 65%);"></div>
 
     <!-- Mobile brand header (hidden on desktop) -->
     <div class="flex lg:hidden items-center gap-3 mb-12 self-start">
       <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#4d7c6f] to-[#2d5247] flex items-center justify-center
                   shadow-[0_4px_20px_rgba(77,124,111,0.5)]">
-        <img src="brand/icon-primary.svg" alt="Obsid" class="w-5 h-5" style="filter: brightness(0) invert(1);" />
+        <img src="brand/icon-mono-white.svg" alt="Obsid" class="w-5 h-5" />
       </div>
-      <span class="text-[22px] font-bold text-white tracking-[-0.01em]" style="font-family: Outfit, sans-serif;">Obsid</span>
+      <span class="text-[22px] font-bold text-white tracking-[-0.01em]">Obsid</span>
     </div>
 
     <!-- Form container -->
@@ -101,8 +100,7 @@
 
       <!-- Heading block — more typographic presence -->
       <div class="mb-10">
-        <h1 class="text-[40px] font-black text-white leading-tight tracking-[-0.03em] mb-2.5"
-            style="font-family: Outfit, sans-serif;">
+        <h1 class="text-[40px] font-black text-white leading-tight tracking-[-0.03em] mb-2.5">
           {{ 'LOGIN.WELCOME_BACK' | translate }}
         </h1>
         <p class="text-[14px] text-[rgba(255,255,255,0.44)]">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
@@ -185,8 +183,7 @@
                  shadow-[0_4px_24px_rgba(77,124,111,0.55),0_1px_2px_rgba(0,0,0,0.4)]
                  hover:shadow-[0_6px_40px_rgba(77,124,111,0.75),0_1px_2px_rgba(0,0,0,0.4)]
                  disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                 transition-all duration-200 flex items-center justify-center gap-2.5"
-          style="font-family: Outfit, sans-serif; letter-spacing: 0.01em;"
+                 transition-all duration-200 flex items-center justify-center gap-2.5 tracking-[0.01em]"
         >
           @if (loading()) {
             <mat-spinner diameter="18" class="!w-[18px] !h-[18px]"></mat-spinner>

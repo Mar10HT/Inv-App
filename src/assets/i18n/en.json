@@ -544,7 +544,8 @@
     },
     "SUCCESS": {
       "WELCOME_BACK": "Welcome back, {{name}}!"
-    }
+    },
+    "CAPABILITIES": "Capabilities"
   },
   "AUTH": {
     "FORGOT_PASSWORD": {

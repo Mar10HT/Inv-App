@@ -237,7 +237,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                               </button>
                               <button
                                 (click)="rejectRequest(request)"
-                                aria-label="Reject transfer"
+                                [attr.aria-label]="'TRANSFERS.REJECT' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
                               </button>
@@ -253,7 +253,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                               </button>
                               <button
                                 (click)="cancelRequest(request)"
-                                aria-label="Cancel transfer"
+                                [attr.aria-label]="'COMMON.CANCEL' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
                               </button>
@@ -335,7 +335,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                         </button>
                         <button
                           (click)="rejectRequest(request)"
-                          aria-label="Reject transfer"
+                          [attr.aria-label]="'TRANSFERS.REJECT' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
                         </button>
@@ -353,7 +353,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                         </button>
                         <button
                           (click)="cancelRequest(request)"
-                          aria-label="Cancel transfer"
+                          [attr.aria-label]="'COMMON.CANCEL' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
                         </button>

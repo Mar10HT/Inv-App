@@ -22,8 +22,7 @@ import { NotificationService } from '../../services/notification.service';
     MatProgressSpinnerModule,
     TranslateModule
   ],
-  templateUrl: './login.html',
-  styleUrl: './login.css'
+  templateUrl: './login.html'
 })
 export class Login {
   private fb = inject(FormBuilder);

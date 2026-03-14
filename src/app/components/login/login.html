@@ -1,152 +1,220 @@
-<div class="flex min-h-screen">
-  <!-- Left Panel - Brand -->
-  <div class="hidden lg:flex w-[54%] bg-[#0f1f1a] flex-col items-center justify-center gap-8 p-16 relative">
-    <!-- Decorative accent line -->
-    <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>
+<div class="min-h-screen flex bg-[#080808]">
 
-    <!-- Brand block -->
-    <div class="flex flex-col items-center gap-6">
-      <img src="brand/icon-mono-white.svg" alt="Obsid" class="w-20 h-20">
-      <h1 class="text-[42px] font-bold text-white font-[Outfit]">Obsid</h1>
-      <p class="text-lg text-[var(--color-on-surface-variant)] text-center leading-relaxed">
+  <!-- ═══════════════════════════════════════
+       LEFT — Brand panel (hidden on mobile)
+  ═══════════════════════════════════════ -->
+  <div class="hidden lg:flex flex-col w-[58%] relative overflow-hidden bg-[#050505]">
+
+    <!-- Hard vertical separator — more present -->
+    <div class="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[rgba(77,124,111,0.45)] to-transparent z-10"></div>
+
+    <!-- Primary glow — large, strong, centered -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full pointer-events-none"
+         style="background: radial-gradient(ellipse at center, rgba(77,124,111,0.38) 0%, rgba(77,124,111,0.18) 30%, rgba(77,124,111,0.06) 55%, transparent 72%);"></div>
+
+    <!-- Secondary glow — top-left corner -->
+    <div class="absolute -top-48 -left-48 w-[640px] h-[640px] rounded-full pointer-events-none"
+         style="background: radial-gradient(ellipse at center, rgba(77,124,111,0.2) 0%, transparent 65%);"></div>
+
+    <!-- Floor glow — bottom atmosphere -->
+    <div class="absolute bottom-0 left-0 right-0 h-[320px] pointer-events-none"
+         style="background: linear-gradient(to top, rgba(77,124,111,0.09) 0%, transparent 100%);"></div>
+
+    <!-- Grid texture — visible but not dominant -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.045]"
+         style="background-image: linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px); background-size: 48px 48px;"></div>
+
+    <!-- Brand core — vertically centered in its own space -->
+    <div class="flex-1 flex flex-col items-start justify-center px-16 xl:px-20 relative z-10">
+
+      <!-- Logo badge -->
+      <div class="w-[88px] h-[88px] rounded-[22px] bg-gradient-to-br from-[#4d7c6f] to-[#2d5247] mb-5 flex items-center justify-center
+                  shadow-[0_0_0_1px_rgba(77,124,111,0.35),0_8px_32px_rgba(77,124,111,0.55),0_24px_80px_rgba(77,124,111,0.25),0_2px_8px_rgba(0,0,0,0.8)]">
+        <img src="brand/icon-primary.svg" alt="Obsid" class="w-12 h-12" style="filter: brightness(0) invert(1);" />
+      </div>
+
+      <!-- Wordmark — fills the panel -->
+      <div class="mb-4">
+        <span class="block text-[128px] xl:text-[152px] font-bold text-white leading-none tracking-[-0.035em]"
+              style="font-family: Outfit, sans-serif;">Obsid</span>
+      </div>
+
+      <!-- Teal accent rule -->
+      <div class="w-14 h-[3px] bg-[var(--color-primary)] rounded-full mb-5 opacity-90"></div>
+
+      <!-- Tagline -->
+      <p class="text-[15px] text-[rgba(255,255,255,0.48)] leading-relaxed max-w-[280px]"
+         style="font-family: Outfit, sans-serif;">
         {{ 'LOGIN.TAGLINE' | translate }}
       </p>
     </div>
 
-    <!-- Decorative accent line -->
-    <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>
+    <!-- Features — anchored to bottom -->
+    <div class="px-16 xl:px-20 pb-12 relative z-10 flex flex-col gap-3.5">
+      <span class="text-[10px] font-semibold text-[rgba(77,124,111,0.7)] uppercase tracking-[0.14em] mb-0.5">Capabilities</span>
+      <div class="flex items-center gap-3.5">
+        <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
+          <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
+        </div>
+        <span class="text-[14px] text-[rgba(255,255,255,0.55)]">{{ 'LOGIN.FEAT_WAREHOUSE' | translate }}</span>
+      </div>
+      <div class="flex items-center gap-3.5">
+        <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
+          <lucide-icon name="TrendingUp" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
+        </div>
+        <span class="text-[14px] text-[rgba(255,255,255,0.55)]">{{ 'LOGIN.FEAT_ANALYTICS' | translate }}</span>
+      </div>
+      <div class="flex items-center gap-3.5">
+        <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
+          <lucide-icon name="ShieldCheck" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
+        </div>
+        <span class="text-[14px] text-[rgba(255,255,255,0.55)]">{{ 'LOGIN.FEAT_SECURE' | translate }}</span>
+      </div>
+    </div>
 
-    <!-- Feature pills -->
-    <div class="flex items-center gap-8 mt-4">
-      <div class="flex items-center gap-2">
-        <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
-        <span class="text-[13px] text-[var(--color-on-surface-variant)]">{{ 'LOGIN.FEAT_WAREHOUSE' | translate }}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <lucide-icon name="TrendingUp" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
-        <span class="text-[13px] text-[var(--color-on-surface-variant)]">{{ 'LOGIN.FEAT_ANALYTICS' | translate }}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <lucide-icon name="ShieldCheck" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
-        <span class="text-[13px] text-[var(--color-on-surface-variant)]">{{ 'LOGIN.FEAT_SECURE' | translate }}</span>
-      </div>
+    <!-- Version bottom-left -->
+    <div class="px-16 xl:px-20 pb-5 relative z-10">
+      <span class="text-[11px] text-[rgba(255,255,255,0.14)]">{{ 'LOGIN.VERSION' | translate }}</span>
     </div>
   </div>
 
-  <!-- Right Panel - Form -->
-  <div class="flex-1 bg-surface flex flex-col items-center justify-center p-8 lg:p-16 relative">
-    <!-- Mobile logo (visible only on small screens) -->
-    <div class="flex lg:hidden flex-col items-center gap-4 mb-10">
-      <img src="brand/icon-primary.svg" alt="Obsid" class="w-16 h-16">
-      <h1 class="text-2xl font-bold text-foreground">Obsid</h1>
+  <!-- ═══════════════════════════════════════
+       RIGHT — Form panel
+  ═══════════════════════════════════════ -->
+  <div class="flex-1 flex flex-col items-center justify-center px-8 md:px-12 xl:px-16 relative">
+
+    <!-- Right-panel ambient glow — more present -->
+    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] pointer-events-none"
+         style="background: radial-gradient(ellipse at bottom right, rgba(77,124,111,0.09) 0%, transparent 65%);"></div>
+
+    <!-- Mobile brand header (hidden on desktop) -->
+    <div class="flex lg:hidden items-center gap-3 mb-12 self-start">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#4d7c6f] to-[#2d5247] flex items-center justify-center
+                  shadow-[0_4px_20px_rgba(77,124,111,0.5)]">
+        <img src="brand/icon-primary.svg" alt="Obsid" class="w-5 h-5" style="filter: brightness(0) invert(1);" />
+      </div>
+      <span class="text-[22px] font-bold text-white tracking-[-0.01em]" style="font-family: Outfit, sans-serif;">Obsid</span>
     </div>
 
-    <div class="w-full max-w-[380px] flex flex-col gap-8">
-      <!-- Header -->
-      <div class="flex flex-col gap-2">
-        <h2 class="text-[28px] font-bold text-foreground">{{ 'LOGIN.WELCOME_BACK' | translate }}</h2>
-        <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
+    <!-- Form container -->
+    <div class="w-full max-w-[380px] relative z-10">
+
+      <!-- Heading block — more typographic presence -->
+      <div class="mb-10">
+        <h1 class="text-[40px] font-black text-white leading-tight tracking-[-0.03em] mb-2.5"
+            style="font-family: Outfit, sans-serif;">
+          {{ 'LOGIN.WELCOME_BACK' | translate }}
+        </h1>
+        <p class="text-[14px] text-[rgba(255,255,255,0.44)]">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
       </div>
 
       <!-- Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+
         <!-- Email -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-foreground">
+        <div class="flex flex-col gap-2">
+          <label class="text-[11px] font-semibold text-[rgba(255,255,255,0.45)] uppercase tracking-[0.1em]">
             {{ 'LOGIN.EMAIL' | translate }}
           </label>
-          <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
-                      focus-within:border-[var(--color-primary)] transition-colors">
-            <lucide-icon name="Mail" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
+          <div class="flex items-center gap-3 border-b border-[rgba(255,255,255,0.12)] pb-3
+                      focus-within:border-[var(--color-primary)] transition-colors duration-200 group">
+            <lucide-icon name="Mail" class="!w-4 !h-4 !text-[rgba(255,255,255,0.22)] group-focus-within:!text-[var(--color-primary)] transition-colors duration-200 shrink-0"></lucide-icon>
             <input
               type="email"
               formControlName="email"
-              class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none"
+              class="flex-1 bg-transparent text-white text-[15px] placeholder-[rgba(255,255,255,0.18)] outline-none"
               [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
             />
           </div>
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <p class="text-[var(--color-status-error)] text-xs mt-0.5">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
+            <p class="text-[var(--color-status-error)] text-[12px]">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
           }
         </div>
 
         <!-- Password -->
-        <div class="flex flex-col gap-1.5">
+        <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
-            <label class="text-[13px] font-medium text-foreground">
+            <label class="text-[11px] font-semibold text-[rgba(255,255,255,0.45)] uppercase tracking-[0.1em]">
               {{ 'LOGIN.PASSWORD' | translate }}
             </label>
-            <a routerLink="/forgot-password" class="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
+            <a routerLink="/forgot-password"
+               class="text-[12px] text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
               {{ 'LOGIN.FORGOT_PASSWORD' | translate }}
             </a>
           </div>
-          <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
-                      focus-within:border-[var(--color-primary)] transition-colors">
-            <lucide-icon name="Lock" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
+          <div class="flex items-center gap-3 border-b border-[rgba(255,255,255,0.12)] pb-3
+                      focus-within:border-[var(--color-primary)] transition-colors duration-200 group">
+            <lucide-icon name="Lock" class="!w-4 !h-4 !text-[rgba(255,255,255,0.22)] group-focus-within:!text-[var(--color-primary)] transition-colors duration-200 shrink-0"></lucide-icon>
             <input
               [type]="showPassword() ? 'text' : 'password'"
               formControlName="password"
-              class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none"
+              class="flex-1 bg-transparent text-white text-[15px] placeholder-[rgba(255,255,255,0.18)] outline-none"
               [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
             />
             <button
               type="button"
               (click)="togglePasswordVisibility()"
-              class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors shrink-0"
+              class="text-[rgba(255,255,255,0.22)] hover:text-[rgba(255,255,255,0.65)] transition-colors shrink-0"
               [attr.aria-label]="(showPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
             >
-              <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
+              <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-4 !h-4"></lucide-icon>
             </button>
           </div>
           @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <p class="text-[var(--color-status-error)] text-xs mt-0.5">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
+            <p class="text-[var(--color-status-error)] text-[12px]">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
           }
         </div>
 
         <!-- Remember me -->
-        <label class="flex items-center gap-2 cursor-pointer">
+        <label class="flex items-center gap-2.5 cursor-pointer pt-1">
           <input
             type="checkbox"
             formControlName="rememberMe"
-            class="w-[18px] h-[18px] rounded border-[var(--color-border)] bg-transparent text-[var(--color-primary)]
-                   focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer"
+            class="w-4 h-4 rounded-sm border-[rgba(255,255,255,0.2)] bg-transparent
+                   focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer accent-[var(--color-primary)]"
           />
-          <span class="text-[13px] text-[var(--color-on-surface-variant)]">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
+          <span class="text-[13px] text-[rgba(255,255,255,0.35)]">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
         </label>
 
-        <!-- Submit -->
+        <!-- Submit — stronger glow presence -->
         <button
           type="submit"
           [disabled]="loginForm.invalid || loading()"
-          class="w-full py-3.5 rounded-lg bg-[var(--color-primary)] text-white font-semibold text-[15px]
-                 hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed
-                 transition-colors flex items-center justify-center gap-2"
+          class="mt-2 w-full py-4 rounded-xl font-semibold text-[15px] text-white
+                 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]
+                 shadow-[0_4px_24px_rgba(77,124,111,0.55),0_1px_2px_rgba(0,0,0,0.4)]
+                 hover:shadow-[0_6px_40px_rgba(77,124,111,0.75),0_1px_2px_rgba(0,0,0,0.4)]
+                 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
+                 transition-all duration-200 flex items-center justify-center gap-2.5"
+          style="font-family: Outfit, sans-serif; letter-spacing: 0.01em;"
         >
           @if (loading()) {
-            <mat-spinner diameter="20" class="!w-5 !h-5"></mat-spinner>
+            <mat-spinner diameter="18" class="!w-[18px] !h-[18px]"></mat-spinner>
             <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
           } @else {
-            <lucide-icon name="LogIn" class="!w-[18px] !h-[18px]"></lucide-icon>
+            <lucide-icon name="LogIn" class="!w-4 !h-4"></lucide-icon>
             <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
           }
         </button>
+
       </form>
 
-      <!-- Divider -->
-      <div class="flex items-center gap-3">
-        <div class="flex-1 h-px bg-[var(--border)]"></div>
-        <span class="text-xs text-[var(--color-on-surface-variant)]">{{ 'LOGIN.OR' | translate }}</span>
-        <div class="flex-1 h-px bg-[var(--border)]"></div>
+      <!-- Divider + contact -->
+      <div class="mt-8 flex flex-col gap-5">
+        <div class="flex items-center gap-3">
+          <div class="flex-1 h-px bg-[rgba(255,255,255,0.08)]"></div>
+          <span class="text-[11px] text-[rgba(255,255,255,0.22)] uppercase tracking-[0.1em]">{{ 'LOGIN.OR' | translate }}</span>
+          <div class="flex-1 h-px bg-[rgba(255,255,255,0.08)]"></div>
+        </div>
+
+        <p class="text-[13px] text-[rgba(255,255,255,0.3)] text-center">
+          {{ 'LOGIN.NEED_ACCESS' | translate }}
+          <span class="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] cursor-pointer transition-colors font-medium">
+            {{ 'LOGIN.CONTACT_ADMIN' | translate }}
+          </span>
+        </p>
       </div>
-
-      <!-- Contact admin -->
-      <p class="text-center text-[13px] text-[var(--color-on-surface-variant)]">
-        {{ 'LOGIN.NEED_ACCESS' | translate }}
-        <span class="text-[var(--color-primary)] font-medium">{{ 'LOGIN.CONTACT_ADMIN' | translate }}</span>
-      </p>
     </div>
-
-    <!-- Version -->
-    <p class="absolute bottom-6 text-[11px] text-[var(--color-on-surface-muted)]">{{ 'LOGIN.VERSION' | translate }}</p>
   </div>
+
 </div>

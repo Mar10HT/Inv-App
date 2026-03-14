@@ -133,11 +133,6 @@ export class Dashboard implements OnInit {
   warehouseChartSeries = signal<ApexAxisChartSeries>([]);
   warehouseChartOptions = signal<BarChartOptions | null>(null);
 
-  // Chart tooltip theme based on active theme
-  private get chartTooltipTheme(): 'dark' | 'light' {
-    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-  }
-
   // Resolve CSS variable to hex for ApexCharts (which needs resolved values)
   private getCssVar(name: string, fallback: string): string {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;

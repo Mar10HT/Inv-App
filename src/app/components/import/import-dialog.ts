@@ -1,5 +1,4 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -15,7 +14,6 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatDialogModule,
     LucideAngularModule,
     MatProgressBarModule,
@@ -76,7 +74,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
                   class="hidden"
                   (change)="onFileSelect($event)"
                 />
-                <span class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-2.5 rounded-lg cursor-pointer font-medium transition-colors">
+                <span class="ds-btn ds-btn--primary cursor-pointer">
                   {{ 'IMPORT.SELECT_FILE' | translate }}
                 </span>
               </label>
@@ -244,15 +242,15 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
           @if (step() === 'preview' && preview()!.validCount > 0) {
             <button
               (click)="startImport()"
-              class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-colors font-medium flex items-center gap-2">
-              <lucide-icon name="Upload" class="!w-4 !h-4"></lucide-icon>
+              class="ds-btn ds-btn--primary">
+              <lucide-icon name="Upload" class="shrink-0"></lucide-icon>
               {{ 'IMPORT.IMPORT_VALID' | translate }} ({{ preview()!.validCount }})
             </button>
           }
           @if (step() === 'result') {
             <button
               (click)="dialogRef.close(true)"
-              class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-colors font-medium">
+              class="ds-btn ds-btn--primary">
               {{ 'COMMON.DONE' | translate }}
             </button>
           }

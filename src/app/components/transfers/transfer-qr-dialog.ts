@@ -21,9 +21,9 @@ import { TransferRequest } from '../../interfaces/transfer-request.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-qr-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
-          <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.TITLE' | translate }}</h2>
+          <h2 id="transfer-qr-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.TITLE' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.QR.INSTRUCTIONS' | translate }}</p>
         </div>
         <div class="p-6 flex flex-col items-center">
@@ -136,9 +136,9 @@ export interface TransferScanQrResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-scan-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
-          <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.SCAN_TITLE' | translate }}</h2>
+          <h2 id="transfer-scan-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.SCAN_TITLE' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.QR.SCAN_INSTRUCTIONS' | translate }}</p>
         </div>
         <div class="p-6">
@@ -224,9 +224,9 @@ export interface TransferRejectResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-reject-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
-          <h2 class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.REJECT_TITLE' | translate }}</h2>
+          <h2 id="transfer-reject-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.REJECT_TITLE' | translate }}</h2>
         </div>
         <div class="p-6">
           <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.REJECT_REASON' | translate }}</label>

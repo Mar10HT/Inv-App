@@ -55,8 +55,7 @@ interface TrendPoint {
     TranslateModule,
     NgApexchartsModule
   ],
-  templateUrl: './reports.html',
-  styleUrl: './reports.css'
+  templateUrl: './reports.html'
 })
 export class Reports implements OnInit {
   private inventoryService = inject(InventoryService);

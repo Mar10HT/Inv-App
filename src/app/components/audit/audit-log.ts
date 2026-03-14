@@ -1,5 +1,5 @@
 import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,12 +14,12 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     MatButtonModule,
     MatPaginatorModule,
-    TranslateModule
+    TranslateModule,
+    DatePipe
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -33,8 +33,8 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
             </div>
             <button
               (click)="exportToCSV()"
-              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
-              <lucide-icon name="Download" class="!w-5 !h-5"></lucide-icon>
+              class="ds-btn ds-btn--primary">
+              <lucide-icon name="Download" class="shrink-0"></lucide-icon>
               {{ 'COMMON.EXPORT' | translate }}
             </button>
           </div>
@@ -164,7 +164,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
                     <div class="flex items-center gap-2 mt-2 text-sm text-[var(--color-on-surface-variant)]">
                       <lucide-icon name="User" class="!w-3.5 !h-3.5"></lucide-icon>
                       <span>{{ log.userName }}</span>
-                      @if (log.userEmail) {
+                      @if (log.userEmail && log.userEmail !== log.userName) {
                         <span class="text-[var(--color-on-surface-muted)]">({{ log.userEmail }})</span>
                       }
                     </div>

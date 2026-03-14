@@ -34,9 +34,9 @@ export interface LoanFormResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+      <div role="dialog" aria-modal="true" aria-labelledby="loan-form-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
-          <h2 class="text-xl font-semibold text-foreground">{{ 'LOANS.NEW_LOAN' | translate }}</h2>
+          <h2 id="loan-form-dialog-title" class="text-xl font-semibold text-foreground">{{ 'LOANS.NEW_LOAN' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'LOANS.NEW_LOAN_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
@@ -147,6 +147,7 @@ export interface LoanFormResult {
                     <button
                       type="button"
                       (click)="removeLoanItem(i)"
+                      aria-label="Remove item"
                       class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
                       <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
                     </button>

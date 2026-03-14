@@ -154,6 +154,66 @@
   font-size: var(--text-base);
 }
 
+/* Approve Button (success actions: approve, confirm, complete) */
+.ds-btn--approve {
+  background: var(--color-success-bg);
+  color: var(--color-status-success);
+  border-color: var(--color-success-border);
+}
+.ds-btn--approve:hover:not(:disabled) {
+  background: var(--color-status-success);
+  color: #ffffff;
+  border-color: var(--color-status-success);
+}
+
+/* Send/Info Button (send, dispatch actions) */
+.ds-btn--send {
+  background: var(--color-info-bg);
+  color: var(--color-status-info);
+  border-color: var(--color-info-border);
+}
+.ds-btn--send:hover:not(:disabled) {
+  background: var(--color-status-info);
+  color: #ffffff;
+  border-color: var(--color-status-info);
+}
+
+/* QR/Special Button (QR scan, special actions) */
+.ds-btn--qr {
+  background: var(--color-accent-violet-bg);
+  color: var(--color-accent-violet);
+  border-color: transparent;
+}
+.ds-btn--qr:hover:not(:disabled) {
+  background: var(--color-accent-violet);
+  color: #ffffff;
+  border-color: var(--color-accent-violet);
+}
+
+/* Return/Warning Button (return, undo actions) */
+.ds-btn--return {
+  background: var(--color-warning-bg);
+  color: var(--color-status-warning);
+  border-color: var(--color-warning-border);
+}
+.ds-btn--return:hover:not(:disabled) {
+  background: var(--color-status-warning);
+  color: #ffffff;
+  border-color: var(--color-status-warning);
+}
+
+/* Danger Ghost Button (reject with ghost style) */
+.ds-btn--danger-ghost {
+  background: var(--color-error-bg);
+  color: var(--color-status-error);
+  border-color: var(--color-error-border);
+}
+.ds-btn--danger-ghost:hover:not(:disabled) {
+  background: var(--color-error);
+  color: var(--color-error-on);
+  border-color: var(--color-error);
+}
+
 /* ----------------------------------------
    BADGE COMPONENT
    ---------------------------------------- */

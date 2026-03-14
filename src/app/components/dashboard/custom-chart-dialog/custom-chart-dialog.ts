@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -251,7 +251,16 @@ export class CustomChartDialog implements OnInit {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<CustomChartDialog>);
   private translate = inject(TranslateService);
+  private themeService = inject(ThemeService);
   data = inject<CustomChartDialogData>(MAT_DIALOG_DATA);
+
+  constructor() {
+    // Re-render preview when theme changes so tooltip theme stays in sync
+    effect(() => {
+      this.themeService.isDark();
+      this.updatePreview();
+    });
+  }
 
   isEditing = false;
 
@@ -317,7 +326,6 @@ export class CustomChartDialog implements OnInit {
   private get chartForeColor(): string { return this.getCssVar('--color-on-surface-variant', '#94a3b8'); }
   private get chartGridColor(): string { return this.getCssVar('--color-border-subtle', '#2a2a2a'); }
   private get chartTextColor(): string { return this.getCssVar('--color-on-surface', '#e2e8f0'); }
-  private themeService = inject(ThemeService);
 
   // Template-accessible chart legend and grid
   previewLegend = computed(() => ({ show: true, position: 'bottom' as const, labels: { colors: this.chartForeColor } }));

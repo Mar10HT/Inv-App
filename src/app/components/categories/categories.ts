@@ -28,8 +28,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
     NgxPermissionsModule,
     SkeletonCardComponent
   ],
-  templateUrl: './categories.html',
-  styleUrl: './categories.css'
+  templateUrl: './categories.html'
 })
 export class Categories implements OnInit {
   private categoryService = inject(CategoryService);

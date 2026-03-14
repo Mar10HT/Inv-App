@@ -26,8 +26,7 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
     TranslateModule,
     NgxPermissionsModule
   ],
-  templateUrl: './suppliers.html',
-  styleUrl: './suppliers.css'
+  templateUrl: './suppliers.html'
 })
 export class Suppliers implements OnInit {
   private supplierService = inject(SupplierService);

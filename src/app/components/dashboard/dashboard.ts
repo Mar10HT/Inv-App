@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, effect } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,7 +37,6 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     CdkDrag,
     CdkDropList,
     CdkDragPlaceholder,
@@ -50,7 +49,8 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
     DashboardChartsComponent,
     SkeletonDashboardComponent,
     DashboardTransactionsComponent,
-    DashboardLowStockComponent
+    DashboardLowStockComponent,
+    NgClass
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -89,6 +89,7 @@ export class Dashboard implements OnInit {
   // Dashboard widgets configuration
   private readonly STORAGE_KEY = 'dashboard_layout';
   private readonly CUSTOM_CHARTS_KEY = 'dashboard_custom_charts';
+  private readonly DATA_READY_DELAY_MS = 100;
 
   chartWidgets = signal<string[]>(['status', 'categories', 'warehouses']);
   tableWidgets = signal<string[]>(['transactions', 'lowStock']);
@@ -131,12 +132,6 @@ export class Dashboard implements OnInit {
 
   warehouseChartSeries = signal<ApexAxisChartSeries>([]);
   warehouseChartOptions = signal<BarChartOptions | null>(null);
-
-  // Color palette for charts
-  private readonly chartColors = [
-    '#4d7c6f', '#5d8c7f', '#6d9c8f', '#7dac9f', '#8dbcaf',
-    '#9dcdbf', '#3d6c5f', '#2d5c4f', '#1d4c3f', '#0d3c2f'
-  ];
 
   // Resolve CSS variable to hex for ApexCharts (which needs resolved values)
   private getCssVar(name: string, fallback: string): string {
@@ -535,7 +530,12 @@ export class Dashboard implements OnInit {
         this.translate.instant('DASHBOARD.OUT_OF_STOCK'),
         this.translate.instant('DASHBOARD.IN_USE')
       ],
-      colors: ['#10b981', '#f97316', '#ef4444', '#3b82f6'],
+      colors: [
+        this.getCssVar('--color-status-success', '#10b981'),
+        this.getCssVar('--color-status-warning', '#f59e0b'),
+        this.getCssVar('--color-status-error', '#ef4444'),
+        this.getCssVar('--color-status-info', '#3b82f6'),
+      ],
       legend: {
         position: 'bottom',
         labels: { colors: foreColor }
@@ -585,7 +585,7 @@ export class Dashboard implements OnInit {
         axisTicks: { show: false }
       },
       yaxis: { labels: { style: { colors: foreColor } } },
-      colors: this.chartColors,
+      colors: [this.getCssVar('--color-primary', '#4d7c6f')],
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%', distributed: true } },
       dataLabels: { enabled: false },
@@ -607,7 +607,7 @@ export class Dashboard implements OnInit {
         axisTicks: { show: false }
       },
       yaxis: { labels: { style: { colors: foreColor } } },
-      colors: ['#06b6d4'],
+      colors: [this.getCssVar('--color-accent-cyan', '#06b6d4')],
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
       dataLabels: { enabled: false },
@@ -680,7 +680,7 @@ export class Dashboard implements OnInit {
           outOfStockItems: data.outOfStock || 0,
           inUseItems: data.inUse || 0,
           totalValueUSD: data.totalValue || 0,
-          totalValueHNL: (data.totalValue || 0) * 25
+          totalValueHNL: (data.totalValue || 0) * this.HNL_TO_USD_RATE
         };
 
         this.stats.set(dashboardStats);
@@ -705,7 +705,7 @@ export class Dashboard implements OnInit {
 
         setTimeout(() => {
           this.dataReady.set(true);
-        }, 100);
+        }, this.DATA_READY_DELAY_MS);
       },
       error: (err) => {
         this.logger.error('Error loading dashboard data', err);

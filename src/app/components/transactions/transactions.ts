@@ -26,8 +26,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
     TranslateModule,
     NgxPermissionsModule
   ],
-  templateUrl: './transactions.html',
-  styleUrl: './transactions.css'
+  templateUrl: './transactions.html'
 })
 export class Transactions implements OnInit {
   private transactionService = inject(TransactionService);

@@ -1,5 +1,5 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,6 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     MatButtonModule,
@@ -38,6 +37,7 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
     StockTakeFormDialogComponent,
     StockTakeCompleteDialogComponent,
     StockTakeVarianceComponent,
+    DatePipe,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -56,8 +56,8 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
               <ng-container *ngxPermissionsOnly="['create_stock_takes']">
                 <button
                   (click)="openNewDialog()"
-                  class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
-                  <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
+                  class="ds-btn ds-btn--primary">
+                  <lucide-icon name="Plus" class="shrink-0"></lucide-icon>
                   <span>{{ 'STOCK_TAKE.NEW' | translate }}</span>
                 </button>
               </ng-container>
@@ -200,8 +200,9 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
                           @if (st.status === Status.COMPLETED) {
                             <button
                               (click)="openVarianceReport(st)"
-                              class="bg-violet-600/20 hover:bg-violet-600 text-violet-400 hover:text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap border border-violet-600/50">
-                              <lucide-icon name="BarChart3" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                              aria-label="View variance report"
+                              class="ds-btn ds-btn--qr ds-btn--sm">
+                              <lucide-icon name="BarChart3" class="shrink-0"></lucide-icon>
                             </button>
                           }
                         </div>
@@ -293,14 +294,14 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
                   <ng-container *ngxPermissionsOnly="['manage_stock_takes']">
                     <button
                       (click)="cancelStockTake()"
-                      class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm border border-red-600/50 font-medium">
-                      <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                      class="ds-btn ds-btn--danger-ghost">
+                      <lucide-icon name="X" class="shrink-0"></lucide-icon>
                       <span>{{ 'STOCK_TAKE.CANCEL.BUTTON' | translate }}</span>
                     </button>
                     <button
                       (click)="completeStockTake()"
-                      class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
-                      <lucide-icon name="CheckCircle2" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                      class="ds-btn ds-btn--primary">
+                      <lucide-icon name="CheckCircle2" class="shrink-0"></lucide-icon>
                       <span>{{ 'STOCK_TAKE.COMPLETE.BUTTON' | translate }}</span>
                     </button>
                   </ng-container>
@@ -309,8 +310,8 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
               @if (selectedStockTake()!.status === Status.COMPLETED) {
                 <button
                   (click)="openVarianceReport(selectedStockTake()!)"
-                  class="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
-                  <lucide-icon name="BarChart3" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                  class="ds-btn ds-btn--qr">
+                  <lucide-icon name="BarChart3" class="shrink-0"></lucide-icon>
                   <span>{{ 'STOCK_TAKE.VARIANCE.VIEW_REPORT' | translate }}</span>
                 </button>
               }
@@ -407,11 +408,11 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
                             <button
                               (click)="saveItemCount(item)"
                               [disabled]="savingItem() === item.id"
-                              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                              class="ds-btn ds-btn--primary ds-btn--sm">
                               @if (savingItem() === item.id) {
-                                <lucide-icon name="Loader2" class="!w-4 !h-4 !text-white animate-spin shrink-0"></lucide-icon>
+                                <lucide-icon name="Loader2" class="animate-spin shrink-0"></lucide-icon>
                               } @else {
-                                <lucide-icon name="Save" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                <lucide-icon name="Save" class="shrink-0"></lucide-icon>
                               }
                               <span>{{ 'STOCK_TAKE.DETAIL.SAVE_COUNT' | translate }}</span>
                             </button>
@@ -468,8 +469,8 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
                     <button
                       (click)="saveItemCount(item)"
                       [disabled]="savingItem() === item.id"
-                      class="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="Save" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      class="w-full ds-btn ds-btn--primary ds-btn--sm justify-center">
+                      <lucide-icon name="Save" class="shrink-0"></lucide-icon>
                       <span>{{ 'STOCK_TAKE.DETAIL.SAVE_COUNT' | translate }}</span>
                     </button>
                   }

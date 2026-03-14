@@ -37,7 +37,7 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
             <p class="text-[var(--color-on-surface-variant)] text-sm mb-6">{{ 'DISCHARGES.PUBLIC_FORM.SUCCESS_HINT' | translate }}</p>
             <button
               (click)="resetForm()"
-              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all font-medium">
+              class="ds-btn ds-btn--primary">
               {{ 'DISCHARGES.PUBLIC_FORM.NEW_REQUEST' | translate }}
             </button>
           </div>
@@ -188,7 +188,7 @@ import { AvailableItem } from '../../../interfaces/discharge-request.interface';
               <button
                 (click)="submitRequest()"
                 [disabled]="!canSubmit() || submitting()"
-                class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-8 py-3 rounded-lg transition-all font-medium flex items-center gap-2">
+                class="ds-btn ds-btn--primary">
                 @if (submitting()) {
                   <lucide-icon name="Loader2" class="!w-5 !h-5 !text-current animate-spin"></lucide-icon>
                 }

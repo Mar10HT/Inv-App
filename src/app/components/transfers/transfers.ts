@@ -1,5 +1,5 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +22,6 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     MatButtonModule,
@@ -33,7 +32,8 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
     TransferFormDialog,
     TransferQrDialog,
     TransferScanDialog,
-    TransferRejectDialog
+    TransferRejectDialog,
+    DatePipe
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -61,8 +61,8 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
               <ng-container *ngxPermissionsOnly="['create_transfers']">
                 <button
                   (click)="openNewRequestDialog()"
-                  class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
-                  <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
+                  class="ds-btn ds-btn--primary">
+                  <lucide-icon name="Plus" class="shrink-0"></lucide-icon>
                   <span>{{ 'TRANSFERS.NEW_REQUEST' | translate }}</span>
                 </button>
               </ng-container>
@@ -231,14 +231,15 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             <ng-container *ngxPermissionsOnly="['manage_transfers']">
                               <button
                                 (click)="approveRequest(request)"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                                <lucide-icon name="Check" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                class="ds-btn ds-btn--approve ds-btn--sm">
+                                <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                                 <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
                               </button>
                               <button
                                 (click)="rejectRequest(request)"
-                                class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                                <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                                aria-label="Reject transfer"
+                                class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                                <lucide-icon name="X" class="shrink-0"></lucide-icon>
                               </button>
                             </ng-container>
                           }
@@ -246,22 +247,23 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             <ng-container *ngxPermissionsOnly="['manage_transfers']">
                               <button
                                 (click)="sendTransfer(request)"
-                                class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                                <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                class="ds-btn ds-btn--send ds-btn--sm">
+                                <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                                 <span>{{ 'TRANSFERS.SEND' | translate }}</span>
                               </button>
                               <button
                                 (click)="cancelRequest(request)"
-                                class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                                <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                                aria-label="Cancel transfer"
+                                class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                                <lucide-icon name="X" class="shrink-0"></lucide-icon>
                               </button>
                             </ng-container>
                           }
                           @case (Status.SENT) {
                             <button
                               (click)="showQrCode(request)"
-                              class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              class="ds-btn ds-btn--qr ds-btn--sm">
+                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
                               <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
                             </button>
                           }
@@ -327,14 +329,15 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex gap-2">
                         <button
                           (click)="approveRequest(request)"
-                          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                          <lucide-icon name="Check" class="!w-4 !h-4 !text-white"></lucide-icon>
+                          class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
+                          <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                           <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
                         </button>
                         <button
                           (click)="rejectRequest(request)"
-                          class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                          <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                          aria-label="Reject transfer"
+                          class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                          <lucide-icon name="X" class="shrink-0"></lucide-icon>
                         </button>
                       </div>
                     </ng-container>
@@ -344,14 +347,15 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex gap-2">
                         <button
                           (click)="sendTransfer(request)"
-                          class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                          <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
+                          class="flex-1 ds-btn ds-btn--send ds-btn--sm justify-center">
+                          <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                           <span>{{ 'TRANSFERS.SEND' | translate }}</span>
                         </button>
                         <button
                           (click)="cancelRequest(request)"
-                          class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                          <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                          aria-label="Cancel transfer"
+                          class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                          <lucide-icon name="X" class="shrink-0"></lucide-icon>
                         </button>
                       </div>
                     </ng-container>
@@ -359,8 +363,8 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                   @case (Status.SENT) {
                     <button
                       (click)="showQrCode(request)"
-                      class="w-full bg-violet-600 hover:bg-violet-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      class="w-full ds-btn ds-btn--qr ds-btn--sm justify-center">
+                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
                       <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
                     </button>
                   }

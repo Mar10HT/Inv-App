@@ -1,5 +1,5 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +23,6 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     MatButtonModule,
@@ -34,7 +33,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
     NgxPermissionsModule,
     LoanFormDialog,
     LoanQrDialog,
-    LoanScanDialog
+    LoanScanDialog,
+    DatePipe
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -62,8 +62,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
               <ng-container *ngxPermissionsOnly="['create_loans']">
                 <button
                   (click)="openNewLoanDialog()"
-                  class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium whitespace-nowrap">
-                  <lucide-icon name="Plus" class="!w-5 !h-5 !text-white shrink-0"></lucide-icon>
+                  class="ds-btn ds-btn--primary">
+                  <lucide-icon name="Plus" class="shrink-0"></lucide-icon>
                   <span>{{ 'LOANS.NEW_LOAN' | translate }}</span>
                 </button>
               </ng-container>
@@ -235,22 +235,23 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <ng-container *ngxPermissionsOnly="['manage_loans']">
                               <button
                                 (click)="sendLoan(loan)"
-                                class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                                <lucide-icon name="Send" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                class="ds-btn ds-btn--send ds-btn--sm">
+                                <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                                 <span>{{ 'LOANS.SEND' | translate }}</span>
                               </button>
                               <button
                                 (click)="cancelLoan(loan)"
-                                class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                                <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                                aria-label="Cancel loan"
+                                class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                                <lucide-icon name="X" class="shrink-0"></lucide-icon>
                               </button>
                             </ng-container>
                           }
                           @case (LoanStatus.SENT) {
                             <button
                               (click)="showQrCode(loan, 'send')"
-                              class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              class="ds-btn ds-btn--qr ds-btn--sm">
+                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
                               <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
                             </button>
                           }
@@ -258,8 +259,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <ng-container *ngxPermissionsOnly="['manage_loans']">
                               <button
                                 (click)="initiateReturn(loan)"
-                                class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                                <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                class="ds-btn ds-btn--return ds-btn--sm">
+                                <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                                 <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                               </button>
                             </ng-container>
@@ -268,8 +269,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <ng-container *ngxPermissionsOnly="['manage_loans']">
                               <button
                                 (click)="initiateReturn(loan)"
-                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                                <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                class="ds-btn ds-btn--danger ds-btn--sm">
+                                <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                                 <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                               </button>
                             </ng-container>
@@ -277,8 +278,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                           @case (LoanStatus.RETURN_PENDING) {
                             <button
                               (click)="showQrCode(loan, 'return')"
-                              class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              class="ds-btn ds-btn--approve ds-btn--sm">
+                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
                               <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
                             </button>
                           }
@@ -292,8 +293,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <ng-container *ngxPermissionsOnly="['manage_loans']">
                               <button
                                 (click)="initiateReturn(loan)"
-                                class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                                <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                                class="ds-btn ds-btn--return ds-btn--sm">
+                                <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                                 <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                               </button>
                             </ng-container>
@@ -357,14 +358,15 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       <div class="flex gap-2">
                         <button
                           (click)="sendLoan(loan)"
-                          class="flex-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                          <lucide-icon name="Send" class="!w-4 !h-4 !text-white"></lucide-icon>
+                          class="flex-1 ds-btn ds-btn--send ds-btn--sm justify-center">
+                          <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                           <span>{{ 'LOANS.SEND' | translate }}</span>
                         </button>
                         <button
                           (click)="cancelLoan(loan)"
-                          class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                          <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                          aria-label="Cancel loan"
+                          class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                          <lucide-icon name="X" class="shrink-0"></lucide-icon>
                         </button>
                       </div>
                     </ng-container>
@@ -372,8 +374,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                   @case (LoanStatus.SENT) {
                     <button
                       (click)="showQrCode(loan, 'send')"
-                      class="w-full bg-violet-600 hover:bg-violet-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      class="w-full ds-btn ds-btn--qr ds-btn--sm justify-center">
+                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
                       <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
                     </button>
                   }
@@ -381,8 +383,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     <ng-container *ngxPermissionsOnly="['manage_loans']">
                       <button
                         (click)="initiateReturn(loan)"
-                        class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">
+                        <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                         <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                       </button>
                     </ng-container>
@@ -391,8 +393,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     <ng-container *ngxPermissionsOnly="['manage_loans']">
                       <button
                         (click)="initiateReturn(loan)"
-                        class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        class="w-full ds-btn ds-btn--danger ds-btn--sm justify-center">
+                        <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                         <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                       </button>
                     </ng-container>
@@ -400,8 +402,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                   @case (LoanStatus.RETURN_PENDING) {
                     <button
                       (click)="showQrCode(loan, 'return')"
-                      class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                      <lucide-icon name="QrCode" class="!w-4 !h-4 !text-white"></lucide-icon>
+                      class="w-full ds-btn ds-btn--approve ds-btn--sm justify-center">
+                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
                       <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
                     </button>
                   }
@@ -409,8 +411,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     <ng-container *ngxPermissionsOnly="['manage_loans']">
                       <button
                         (click)="initiateReturn(loan)"
-                        class="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="CornerDownLeft" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">
+                        <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                         <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                       </button>
                     </ng-container>

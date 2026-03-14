@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -6,6 +6,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../services/theme.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { ThemeService } from '../../../services/theme.service';
 
 export type ChartType = 'bar' | 'line' | 'area' | 'pie' | 'donut' | 'radialBar';
 export type DataSource =
@@ -251,7 +252,16 @@ export class CustomChartDialog implements OnInit {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<CustomChartDialog>);
   private translate = inject(TranslateService);
+  private themeService = inject(ThemeService);
   data = inject<CustomChartDialogData>(MAT_DIALOG_DATA);
+
+  constructor() {
+    // Re-render preview when theme changes so tooltip theme stays in sync
+    effect(() => {
+      this.themeService.isDark();
+      this.updatePreview();
+    });
+  }
 
   isEditing = false;
 

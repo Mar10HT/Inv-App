@@ -1,5 +1,5 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -19,7 +19,6 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     MatButtonModule,
@@ -27,6 +26,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
     MatPaginatorModule,
     NgxPermissionsModule,
     TranslateModule,
+    DatePipe,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -41,7 +41,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
             <ng-container *ngxPermissionsOnly="['manage_discharges']">
               <button
                 (click)="openShareDialog()"
-                class="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors font-medium whitespace-nowrap">
+                class="ds-btn ds-btn--primary">
                 <lucide-icon name="QrCode" class="!w-5 !h-5"></lucide-icon>
                 <span>{{ 'DISCHARGES.SHARE_FORM.BUTTON' | translate }}</span>
               </button>
@@ -188,14 +188,15 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                           @if (request.status === Status.PENDING) {
                             <button
                               (click)="completeRequest(request)"
-                              class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
-                              <lucide-icon name="Check" class="!w-4 !h-4 !text-white shrink-0"></lucide-icon>
+                              class="ds-btn ds-btn--approve ds-btn--sm">
+                              <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                               <span>{{ 'DISCHARGES.COMPLETE' | translate }}</span>
                             </button>
                             <button
                               (click)="rejectRequest(request)"
-                              class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm border border-red-600/50">
-                              <lucide-icon name="X" class="!w-4 !h-4 !text-current shrink-0"></lucide-icon>
+                              aria-label="Reject discharge request"
+                              class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                              <lucide-icon name="X" class="shrink-0"></lucide-icon>
                             </button>
                           }
                         </ng-container>
@@ -251,14 +252,15 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                     <div class="flex gap-2" (click)="$event.stopPropagation()">
                       <button
                         (click)="completeRequest(request)"
-                        class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                        <lucide-icon name="Check" class="!w-4 !h-4 !text-white"></lucide-icon>
+                        class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
+                        <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                         <span>{{ 'DISCHARGES.COMPLETE' | translate }}</span>
                       </button>
                       <button
                         (click)="rejectRequest(request)"
-                        class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-2 rounded-lg border border-red-600/50">
-                        <lucide-icon name="X" class="!w-4 !h-4 !text-current"></lucide-icon>
+                        aria-label="Reject discharge request"
+                        class="ds-btn ds-btn--danger-ghost ds-btn--sm">
+                        <lucide-icon name="X" class="shrink-0"></lucide-icon>
                       </button>
                     </div>
                   }
@@ -293,9 +295,9 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
     <!-- Reject Dialog -->
     @if (showRejectDialog) {
       <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeRejectDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+        <div role="dialog" aria-modal="true" aria-labelledby="reject-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
-            <h2 class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>
+            <h2 id="reject-dialog-title" class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>
           </div>
           <div class="p-6">
             <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.REJECT_REASON' | translate }}</label>
@@ -314,7 +316,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
             </button>
             <button
               (click)="confirmReject()"
-              class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-all">
+              class="ds-btn ds-btn--danger">
               {{ 'DISCHARGES.REJECT' | translate }}
             </button>
           </div>
@@ -325,9 +327,9 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
     <!-- Share Form Dialog -->
     @if (showShareDialog) {
       <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeShareDialog()">
-        <div class="rounded-xl w-full max-w-md border border-theme" [style.background-color]="'var(--color-surface-variant)'" (click)="$event.stopPropagation()">
+        <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" class="rounded-xl w-full max-w-md border border-theme" [style.background-color]="'var(--color-surface-variant)'" (click)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
-            <h2 class="text-xl font-semibold" [style.color]="'var(--color-foreground)'">{{ 'DISCHARGES.SHARE_FORM.TITLE' | translate }}</h2>
+            <h2 id="share-dialog-title" class="text-xl font-semibold" [style.color]="'var(--color-foreground)'">{{ 'DISCHARGES.SHARE_FORM.TITLE' | translate }}</h2>
             <button (click)="closeShareDialog()" class="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
               <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
             </button>
@@ -340,7 +342,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
               </div>
             } @else if (shareQrDataUrl()) {
-              <!-- QR Code -->
+              <!-- QR Code: bg-white is intentional — scanners require white background -->
               <div class="bg-white rounded-xl p-4">
                 <img [src]="shareQrDataUrl()" alt="QR Code" class="w-[250px] h-[250px]" />
               </div>
@@ -355,7 +357,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
               <div class="flex gap-3 w-full">
                 <button
                   (click)="copyShareUrl()"
-                  class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors font-medium">
+                  class="flex-1 ds-btn ds-btn--primary justify-center">
                   <lucide-icon [name]="shareCopied() ? 'Check' : 'Copy'" class="!w-4 !h-4 !text-white"></lucide-icon>
                   {{ shareCopied() ? ('DISCHARGES.SHARE_FORM.COPIED' | translate) : ('DISCHARGES.SHARE_FORM.COPY_URL' | translate) }}
                 </button>

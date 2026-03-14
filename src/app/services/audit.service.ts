@@ -109,7 +109,7 @@ export class AuditService {
       entityId: log.entityId,
       entityName,
       userId: log.user?.id || log.userId || '',
-      userName: log.user?.name || 'Unknown',
+      userName: log.user?.name || log.user?.email || 'System',
       userEmail: log.user?.email || '',
       changes,
       createdAt: new Date(log.createdAt)

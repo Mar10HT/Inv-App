@@ -93,8 +93,8 @@ table td:nth-child(n+3):not(:last-child) {
 
 /* Native select option styling for light theme */
 [data-theme="light"] select option {
-    background-color: #ffffff;
-    color: #1e293b;
+    background-color: var(--color-surface-variant);
+    color: var(--color-on-surface);
 }
 
 /* Custom select chevron - replaces inline SVG background styles */
@@ -304,83 +304,83 @@ i-lucide svg {
 [data-theme="light"] {
     /* Material Form Fields */
     .mat-mdc-form-field .mdc-text-field--filled {
-        background-color: #f1f5f9 !important;
+        background-color: var(--color-surface-elevated) !important;
     }
     .mat-mdc-form-field .mdc-text-field--filled:hover {
-        background-color: #e2e8f0 !important;
+        background-color: var(--color-border) !important;
     }
     .mat-mdc-form-field .mdc-text-field--filled .mdc-text-field__input {
-        color: #1e293b !important;
+        color: var(--color-on-surface) !important;
     }
     .mat-mdc-form-field .mdc-text-field--filled .mdc-floating-label {
-        color: #475569 !important;
+        color: var(--color-on-surface-variant) !important;
     }
     .mat-mdc-form-field .mdc-line-ripple::before {
-        border-bottom-color: #cbd5e1 !important;
+        border-bottom-color: var(--color-border) !important;
     }
     .mat-mdc-form-field .mdc-line-ripple::after {
         border-bottom-color: var(--color-primary) !important;
     }
     .mat-mdc-form-field textarea.mdc-text-field__input {
-        color: #1e293b !important;
+        color: var(--color-on-surface) !important;
     }
 
     /* Material Select */
-    .mat-mdc-select-value-text { color: #1e293b !important; }
-    .mat-mdc-select-arrow { color: #64748b !important; }
+    .mat-mdc-select-value-text { color: var(--color-on-surface) !important; }
+    .mat-mdc-select-arrow { color: var(--color-on-surface-muted) !important; }
 
     .mat-mdc-select-panel {
-        background-color: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
+        background-color: var(--color-surface-variant) !important;
+        border: 1px solid var(--color-border) !important;
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
     }
     .mat-mdc-option {
-        background-color: #ffffff !important;
-        color: #1e293b !important;
+        background-color: var(--color-surface-variant) !important;
+        color: var(--color-on-surface) !important;
     }
     .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-        background-color: #f1f5f9 !important;
+        background-color: var(--color-surface-elevated) !important;
     }
     .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-        background-color: #f1f5f9 !important;
+        background-color: var(--color-surface-elevated) !important;
     }
     .mat-mdc-option .mdc-list-item__primary-text {
-        color: #1e293b !important;
+        color: var(--color-on-surface) !important;
     }
     .mat-pseudo-checkbox-checked {
         background-color: var(--color-primary) !important;
     }
     .mat-pseudo-checkbox {
-        border-color: #cbd5e1 !important;
+        border-color: var(--color-border) !important;
     }
 
     /* Material Select - Outline variant */
     .mat-mdc-form-field-type-mat-select .mdc-notched-outline__leading,
     .mat-mdc-form-field-type-mat-select .mdc-notched-outline__notch,
     .mat-mdc-form-field-type-mat-select .mdc-notched-outline__trailing {
-        border-color: #cbd5e1 !important;
+        border-color: var(--color-border) !important;
     }
     .mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
-        background-color: #ffffff !important;
+        background-color: var(--color-surface-variant) !important;
     }
     .mat-mdc-form-field-type-mat-select .mat-mdc-floating-label {
-        color: #64748b !important;
+        color: var(--color-on-surface-muted) !important;
     }
     .mat-mdc-form-field-type-mat-select .mat-mdc-select-value-text {
-        color: #1e293b !important;
+        color: var(--color-on-surface) !important;
     }
 
     /* Dialog inputs */
     .mat-mdc-dialog-surface .mat-mdc-form-field .mdc-text-field--filled {
-        background-color: #f1f5f9 !important;
+        background-color: var(--color-surface-elevated) !important;
     }
     .mat-mdc-dialog-container input,
     .mat-mdc-dialog-container textarea,
     .cdk-overlay-pane input,
     .cdk-overlay-pane textarea {
-        background-color: #f1f5f9 !important;
-        border-color: #cbd5e1 !important;
-        color: #1e293b !important;
+        background-color: var(--color-surface-elevated) !important;
+        border-color: var(--color-border) !important;
+        color: var(--color-on-surface) !important;
     }
     .mat-mdc-dialog-container input:focus,
     .mat-mdc-dialog-container textarea:focus,
@@ -392,18 +392,18 @@ i-lucide svg {
     .mat-mdc-dialog-container textarea::placeholder,
     .cdk-overlay-pane input::placeholder,
     .cdk-overlay-pane textarea::placeholder {
-        color: #94a3b8 !important;
+        color: var(--color-on-surface-muted) !important;
     }
     .mdc-text-field__input::placeholder {
-        color: #94a3b8 !important;
+        color: var(--color-on-surface-muted) !important;
     }
 
     /* Tables */
     table thead tr {
-        border-bottom: 1px solid #e2e8f0 !important;
+        border-bottom: 1px solid var(--color-border) !important;
     }
     table tbody tr {
-        border-bottom-color: #e2e8f0 !important;
+        border-bottom-color: var(--color-border) !important;
     }
 
     /* Danger buttons - ensure visible on light bg */

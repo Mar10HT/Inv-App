@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
+import { downloadStyledXLSX } from '../../../utils/xlsx.utils';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 // Angular Material imports - only what's actually used
@@ -337,45 +338,23 @@ export class InventoryList implements OnInit {
 
   // Export functionality
   exportData(): void {
-    const data = this.dataSource.data;
-    const csvContent = this.convertToCSV(data);
-    this.downloadCSV(csvContent, `inventory-${new Date().toISOString().split('T')[0]}.csv`);
-  }
+    const rows = this.dataSource.data.map(item => ({
+      [this.translate.instant('DASHBOARD.TABLE.ITEM')]:         item.name,
+      [this.translate.instant('ITEM_DETAIL.DESCRIPTION')]:      item.description ?? '',
+      [this.translate.instant('DASHBOARD.TABLE.QUANTITY')]:     item.quantity,
+      [this.translate.instant('DASHBOARD.TABLE.CATEGORY')]:     item.category,
+      [this.translate.instant('DASHBOARD.TABLE.WAREHOUSE')]:    item.warehouse?.name ?? '',
+      Status:                                                    item.status,
+      [this.translate.instant('DASHBOARD.TABLE.LAST_UPDATED')]: this.formatDate(item.updatedAt),
+    }));
 
-  private convertToCSV(data: InventoryItemInterface[]): string {
-    const d = ';'; // Semicolon delimiter for Excel compatibility
-    const headers = [
-      this.translate.instant('DASHBOARD.TABLE.ITEM'),
-      this.translate.instant('ITEM_DETAIL.DESCRIPTION'),
-      this.translate.instant('DASHBOARD.TABLE.QUANTITY'),
-      this.translate.instant('DASHBOARD.TABLE.CATEGORY'),
-      this.translate.instant('DASHBOARD.TABLE.WAREHOUSE'),
-      this.translate.instant('DASHBOARD.TABLE.STATUS'),
-      this.translate.instant('DASHBOARD.TABLE.LAST_UPDATED')
-    ].join(d);
-
-    const rows = data.map(item => [
-      `"${item.name}"`,
-      `"${item.description ?? ''}"`,
-      item.quantity.toString(),
-      `"${item.category}"`,
-      `"${item.warehouse?.name ?? ''}"`,
-      `"${this.getStatusText(item)}"`,
-      `"${this.formatDate(item.updatedAt)}"`
-    ].join(d));
-
-    return [headers, ...rows].join('\n');
-  }
-
-  private downloadCSV(content: string, fileName: string): void {
-    const BOM = '\uFEFF'; // UTF-8 BOM for Excel
-    const blob = new Blob([BOM + content], { type: 'text/csv;charset=utf-8;' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    window.URL.revokeObjectURL(url);
+    downloadStyledXLSX(rows, {
+      sheetName:      'Inventory',
+      filename:       `inventory-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor:    '4D7C6F',
+      colWidths:      [30, 40, 10, 20, 22, 14, 18],
+      statusColIndex: 5, // Status column
+    });
   }
 
   trackByFn(index: number, item: InventoryItemInterface): any {

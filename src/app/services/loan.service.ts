@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { downloadStyledXLSX } from '../utils/xlsx.utils';
 import { Observable, tap, map, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
@@ -516,24 +517,31 @@ export class LoanService {
   }
 
   /**
-   * Export loans to CSV
+   * Export loans to XLSX
    */
-  exportToCSV(loans?: Loan[]): void {
+  exportToXLSX(loans?: Loan[]): void {
     const data = loans || this.loansSignal();
-    const d = ';';
 
-    let csv = `Item${d}Service Tag${d}Cantidad${d}Origen${d}Destino${d}Fecha Préstamo${d}Fecha Devolución${d}Fecha Retorno${d}Estado${d}Notas\n`;
+    const rows = data.map(loan => ({
+      Item:            loan.inventoryItemName,
+      'Service Tag':   loan.inventoryItemServiceTag || '',
+      Quantity:        loan.quantity,
+      Origin:          loan.sourceWarehouseName,
+      Destination:     loan.destinationWarehouseName,
+      'Loan Date':     loan.loanDate.toLocaleDateString(),
+      'Due Date':      loan.dueDate.toLocaleDateString(),
+      'Return Date':   loan.returnDate?.toLocaleDateString() || '',
+      Status:          loan.status,
+      Notes:           loan.notes || '',
+    }));
 
-    for (const loan of data) {
-      csv += `"${loan.inventoryItemName}"${d}"${loan.inventoryItemServiceTag || ''}"${d}${loan.quantity}${d}"${loan.sourceWarehouseName}"${d}"${loan.destinationWarehouseName}"${d}"${loan.loanDate.toLocaleDateString()}"${d}"${loan.dueDate.toLocaleDateString()}"${d}"${loan.returnDate?.toLocaleDateString() || ''}"${d}"${loan.status}"${d}"${loan.notes || ''}"\n`;
-    }
-
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `loans-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+    downloadStyledXLSX(rows, {
+      sheetName:      'Loans',
+      filename:       `loans-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor:    '6B7BB5',
+      colWidths:      [30, 14, 10, 22, 22, 14, 14, 14, 16, 30],
+      statusColIndex: 8, // Status column
+    });
   }
 
   /**

@@ -20,6 +20,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (
         error.status === 401 &&
         !req.url.includes('/auth/login') &&
+        !req.url.includes('/auth/logout') &&
         !req.url.includes('/auth/refresh') &&
         !req.url.includes('/auth/csrf-token') &&
         !req.url.includes('/public/')

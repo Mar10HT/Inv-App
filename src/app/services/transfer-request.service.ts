@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { downloadStyledXLSX } from '../utils/xlsx.utils';
 import { Observable, tap, map, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
@@ -401,25 +402,30 @@ export class TransferRequestService {
   }
 
   /**
-   * Export to CSV
+   * Export to XLSX
    */
-  exportToCSV(requests?: TransferRequest[]): void {
+  exportToXLSX(requests?: TransferRequest[]): void {
     const data = requests || this.requestsSignal();
-    const d = ';';
 
-    let csv = `ID${d}Estado${d}Origen${d}Destino${d}Solicitado Por${d}Aprobado Por${d}Items${d}Fecha Creacion${d}Notas\n`;
+    const rows = data.map(req => ({
+      ID:             req.id,
+      Status:         req.status,
+      Origin:         req.sourceWarehouseName,
+      Destination:    req.destinationWarehouseName,
+      'Requested By': req.requestedByName,
+      'Approved By':  req.approvedByName || '',
+      Items:          req.items.map(i => `${i.inventoryItemName} (${i.quantity})`).join(', '),
+      'Created At':   req.createdAt.toLocaleDateString(),
+      Notes:          req.notes || '',
+    }));
 
-    for (const req of data) {
-      const itemsList = req.items.map(i => `${i.inventoryItemName} (${i.quantity})`).join(', ');
-      csv += `"${req.id}"${d}"${req.status}"${d}"${req.sourceWarehouseName}"${d}"${req.destinationWarehouseName}"${d}"${req.requestedByName}"${d}"${req.approvedByName || ''}"${d}"${itemsList}"${d}"${req.createdAt.toLocaleDateString()}"${d}"${req.notes || ''}"\n`;
-    }
-
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `transfer-requests-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+    downloadStyledXLSX(rows, {
+      sheetName:      'Transfer Requests',
+      filename:       `transfer-requests-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor:    '3B82F6',
+      colWidths:      [28, 14, 22, 22, 20, 20, 40, 14, 30],
+      statusColIndex: 1, // Status column
+    });
   }
 
   /**

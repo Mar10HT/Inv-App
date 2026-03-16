@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginRequest, RegisterRequest, AuthResponse, AuthUser, UpdateProfileResponse, ChangePasswordResponse, ForgotPasswordResponse, ResetPasswordResponse, PendingReset, GeneratedResetLink } from '../interfaces/auth.interface';
 import { PermissionsService } from './permissions.service';
@@ -46,6 +46,7 @@ export class AuthService {
   logout(): Observable<any> {
     // Call backend logout endpoint to clear HttpOnly cookie
     return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+      catchError(() => of(null)), // always proceed with local cleanup even if backend fails
       tap(() => {
         localStorage.removeItem(this.USER_KEY);
         this.currentUser.set(null);

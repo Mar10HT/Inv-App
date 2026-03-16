@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
+import { downloadStyledXLSX } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { forkJoin } from 'rxjs';
@@ -485,100 +486,108 @@ export class Reports implements OnInit {
 
   exportReport(): void {
     const currency = this.selectedCurrency();
-    const items = this.filteredItems();
     const warehouses = this.inventoryService.warehouses();
     const suppliers = this.inventoryService.suppliers();
     const t = (key: string) => this.translate.instant(key);
-    const d = ';'; // Delimiter - semicolon for Excel compatibility
 
-    // Headers
-    let csv = `${t('REPORTS.TABLE.ITEM')}${d}SKU${d}${t('REPORTS.TABLE.CATEGORY')}${d}${t('REPORTS.PDF.WAREHOUSE')}${d}${t('SUPPLIER.TITLE')}${d}${t('REPORTS.TABLE.QTY')}${d}${t('REPORTS.PDF.MIN_QTY')}${d}${t('REPORTS.TABLE.UNIT_PRICE')}${d}${t('REPORTS.TABLE.TOTAL')}${d}${t('REPORTS.PDF.CURRENCY')}${d}${t('COMMON.STATUS')}\n`;
+    const rows = this.filteredItems().map(item => ({
+      [t('REPORTS.TABLE.ITEM')]:       item.name,
+      SKU:                             item.sku || '',
+      [t('REPORTS.TABLE.CATEGORY')]:   item.category,
+      [t('REPORTS.PDF.WAREHOUSE')]:    warehouses.find(w => w.id === item.warehouseId)?.name || '',
+      [t('SUPPLIER.TITLE')]:           suppliers.find(s => s.id === item.supplierId)?.name || '',
+      [t('REPORTS.TABLE.QTY')]:        item.quantity,
+      [t('REPORTS.PDF.MIN_QTY')]:      item.minQuantity,
+      [t('REPORTS.TABLE.UNIT_PRICE')]: item.price || 0,
+      [t('REPORTS.TABLE.TOTAL')]:      +((item.price || 0) * item.quantity).toFixed(2),
+      [t('REPORTS.PDF.CURRENCY')]:     item.currency || 'USD',
+      [t('COMMON.STATUS')]:            t(`STATUS.${item.status}`),
+    }));
 
-    // Data rows
-    for (const item of items) {
-      const warehouse = warehouses.find(w => w.id === item.warehouseId);
-      const supplier = suppliers.find(s => s.id === item.supplierId);
-      const totalValue = (item.price || 0) * item.quantity;
-      const statusText = t(`STATUS.${item.status}`);
-
-      csv += `"${this.escapeCSV(item.name)}"${d}"${item.sku || ''}"${d}"${this.escapeCSV(item.category)}"${d}"${this.escapeCSV(warehouse?.name || '')}"${d}"${this.escapeCSV(supplier?.name || '')}"${d}${item.quantity}${d}${item.minQuantity}${d}${this.formatDecimal(item.price || 0)}${d}${this.formatDecimal(totalValue)}${d}"${item.currency || 'USD'}"${d}"${statusText}"\n`;
-    }
-
-    this.downloadCSV(csv, `inventario-valor-${currency}-${new Date().toISOString().split('T')[0]}.csv`);
+    downloadStyledXLSX(rows, {
+      sheetName:   'Inventory',
+      filename:    `inventario-valor-${currency}-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor: '4D7C6F',
+      colWidths:   [30, 12, 18, 22, 22, 8, 10, 12, 12, 8, 14],
+    });
   }
 
   exportTransactions(): void {
-    const transactions = this.filteredTransactions();
     const t = (key: string) => this.translate.instant(key);
-    const d = ';'; // Delimiter - semicolon for Excel compatibility
+    const rows: Record<string, any>[] = [];
 
-    // Headers
-    let csv = `${t('REPORTS.TABLE.DATE')}${d}${t('REPORTS.TABLE.TYPE')}${d}${t('TRANSACTION.SOURCE_WAREHOUSE')}${d}${t('TRANSACTION.DEST_WAREHOUSE')}${d}${t('REPORTS.TABLE.USER')}${d}${t('REPORTS.TABLE.ITEM')}${d}SKU${d}${t('REPORTS.TABLE.QTY')}${d}${t('TRANSACTION.NOTES')}${d}${t('REPORTS.PDF.NOTES')} Item\n`;
-
-    // Data rows - one row per item in each transaction
-    for (const tx of transactions) {
-      const date = this.formatDateTime(tx.date);
-      const typeText = t(`TRANSACTIONS.TYPE.${tx.type}`);
-      const source = tx.sourceWarehouse?.name || '';
-      const dest = tx.destinationWarehouse?.name || '';
-      const user = tx.user?.name || tx.user?.email || '';
-      const txNotes = tx.notes || '';
-
+    for (const tx of this.filteredTransactions()) {
       for (const item of tx.items) {
-        const itemName = item.inventoryItem?.name || t('REPORTS.PDF.UNKNOWN_ITEM');
-        const itemSku = item.inventoryItem?.sku || '';
-        const itemNotes = item.notes || '';
-
-        csv += `"${date}"${d}"${typeText}"${d}"${this.escapeCSV(source)}"${d}"${this.escapeCSV(dest)}"${d}"${this.escapeCSV(user)}"${d}"${this.escapeCSV(itemName)}"${d}"${itemSku}"${d}${item.quantity}${d}"${this.escapeCSV(txNotes)}"${d}"${this.escapeCSV(itemNotes)}"\n`;
+        rows.push({
+          [t('REPORTS.TABLE.DATE')]:               this.formatDateTime(tx.date),
+          [t('REPORTS.TABLE.TYPE')]:               t(`TRANSACTIONS.TYPE.${tx.type}`),
+          [t('TRANSACTION.SOURCE_WAREHOUSE')]:     tx.sourceWarehouse?.name || '',
+          [t('TRANSACTION.DEST_WAREHOUSE')]:       tx.destinationWarehouse?.name || '',
+          [t('REPORTS.TABLE.USER')]:               tx.user?.name || tx.user?.email || '',
+          [t('REPORTS.TABLE.ITEM')]:               item.inventoryItem?.name || t('REPORTS.PDF.UNKNOWN_ITEM'),
+          SKU:                                     item.inventoryItem?.sku || '',
+          [t('REPORTS.TABLE.QTY')]:               item.quantity,
+          [t('TRANSACTION.NOTES')]:               tx.notes || '',
+          [`${t('REPORTS.PDF.NOTES')} Item`]:     item.notes || '',
+        });
       }
     }
 
-    this.downloadCSV(csv, `transacciones-${new Date().toISOString().split('T')[0]}.csv`);
+    downloadStyledXLSX(rows, {
+      sheetName:   'Transactions',
+      filename:    `transacciones-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor: '60A5FA',
+      colWidths:   [18, 12, 22, 22, 20, 30, 12, 8, 30, 30],
+    });
   }
 
   exportStatusReport(): void {
-    const items = this.allItems();
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
-    const d = ';'; // Delimiter - semicolon for Excel compatibility
 
-    // Headers
-    let csv = `${t('REPORTS.TABLE.ITEM')}${d}SKU${d}${t('REPORTS.TABLE.CATEGORY')}${d}${t('REPORTS.PDF.WAREHOUSE')}${d}${t('REPORTS.PDF.CURRENT_QTY')}${d}${t('REPORTS.PDF.MIN_QTY')}${d}${t('COMMON.STATUS')}${d}${t('REPORTS.CSV.NEEDS_RESTOCK')}\n`;
+    const rows = this.allItems().map(item => ({
+      [t('REPORTS.TABLE.ITEM')]:         item.name,
+      SKU:                               item.sku || '',
+      [t('REPORTS.TABLE.CATEGORY')]:     item.category,
+      [t('REPORTS.PDF.WAREHOUSE')]:      warehouses.find(w => w.id === item.warehouseId)?.name || '',
+      [t('REPORTS.PDF.CURRENT_QTY')]:    item.quantity,
+      [t('REPORTS.PDF.MIN_QTY')]:        item.minQuantity,
+      [t('COMMON.STATUS')]:              t(`STATUS.${item.status}`),
+      [t('REPORTS.CSV.NEEDS_RESTOCK')]:  item.quantity <= item.minQuantity ? t('COMMON.YES') : t('COMMON.NO'),
+    }));
 
-    // Data rows - all items with their status
-    for (const item of items) {
-      const warehouse = warehouses.find(w => w.id === item.warehouseId);
-      const needsRestock = item.quantity <= item.minQuantity ? t('COMMON.YES') : t('COMMON.NO');
-      const statusText = t(`STATUS.${item.status}`);
-
-      csv += `"${this.escapeCSV(item.name)}"${d}"${item.sku || ''}"${d}"${this.escapeCSV(item.category)}"${d}"${this.escapeCSV(warehouse?.name || '')}"${d}${item.quantity}${d}${item.minQuantity}${d}"${statusText}"${d}"${needsRestock}"\n`;
-    }
-
-    this.downloadCSV(csv, `estado-stock-${new Date().toISOString().split('T')[0]}.csv`);
+    downloadStyledXLSX(rows, {
+      sheetName:        'Stock Status',
+      filename:         `estado-stock-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor:      'B45309',
+      colWidths:        [30, 12, 18, 22, 12, 10, 14, 14],
+    });
   }
 
   exportAssignments(): void {
-    // Get all unique items (both assigned and unassigned)
-    const uniqueItems = this.allItems().filter(item => item.itemType === ItemType.UNIQUE);
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
-    const d = ';'; // Delimiter - semicolon for Excel compatibility
 
-    // Headers
-    let csv = `${t('REPORTS.TABLE.ITEM')}${d}${t('REPORTS.PDF.SERVICE_TAG')}${d}${t('REPORTS.PDF.SERIAL_NUMBER')}${d}${t('REPORTS.TABLE.CATEGORY')}${d}${t('REPORTS.PDF.WAREHOUSE')}${d}${t('REPORTS.CSV.ASSIGNED_TO')}${d}${t('REPORTS.PDF.EMAIL')}${d}${t('REPORTS.CSV.ASSIGNMENT_DATE')}${d}${t('REPORTS.CSV.ASSIGNMENT_STATUS')}\n`;
+    const rows = this.allItems()
+      .filter(item => item.itemType === ItemType.UNIQUE)
+      .map(item => ({
+        [t('REPORTS.TABLE.ITEM')]:              item.name,
+        [t('REPORTS.PDF.SERVICE_TAG')]:         item.serviceTag || '',
+        [t('REPORTS.PDF.SERIAL_NUMBER')]:       item.serialNumber || '',
+        [t('REPORTS.TABLE.CATEGORY')]:          item.category,
+        [t('REPORTS.PDF.WAREHOUSE')]:           warehouses.find(w => w.id === item.warehouseId)?.name || '',
+        [t('REPORTS.CSV.ASSIGNED_TO')]:         item.assignedToUser?.name || '',
+        [t('REPORTS.PDF.EMAIL')]:               item.assignedToUser?.email || '',
+        [t('REPORTS.CSV.ASSIGNMENT_DATE')]:     item.assignedAt ? this.formatDate(item.assignedAt) : '',
+        [t('REPORTS.CSV.ASSIGNMENT_STATUS')]:   item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED'),
+      }));
 
-    // Data rows
-    for (const item of uniqueItems) {
-      const warehouse = warehouses.find(w => w.id === item.warehouseId);
-      const assignedTo = item.assignedToUser?.name || '';
-      const email = item.assignedToUser?.email || '';
-      const assignedDate = item.assignedAt ? this.formatDate(item.assignedAt) : '';
-      const assignmentStatus = item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED');
-
-      csv += `"${this.escapeCSV(item.name)}"${d}"${item.serviceTag || ''}"${d}"${item.serialNumber || ''}"${d}"${this.escapeCSV(item.category)}"${d}"${this.escapeCSV(warehouse?.name || '')}"${d}"${this.escapeCSV(assignedTo)}"${d}"${email}"${d}"${assignedDate}"${d}"${assignmentStatus}"\n`;
-    }
-
-    this.downloadCSV(csv, `asignaciones-${new Date().toISOString().split('T')[0]}.csv`);
+    downloadStyledXLSX(rows, {
+      sheetName:   'Assignments',
+      filename:    `asignaciones-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor: 'A78BFA',
+      colWidths:   [30, 14, 14, 18, 22, 22, 28, 16, 14],
+    });
   }
 
   exportTransactionsPDF(): void {
@@ -629,28 +638,4 @@ export class Reports implements OnInit {
     });
   }
 
-  private escapeCSV(value: string): string {
-    if (!value) return '';
-    // Escape double quotes by doubling them
-    return value.replace(/"/g, '""');
-  }
-
-  private formatDecimal(value: number): string {
-    // Fix JavaScript floating point precision issues
-    return (Math.round(value * 100) / 100).toFixed(2);
-  }
-
-  private downloadCSV(content: string, filename: string): void {
-    // Add UTF-8 BOM for Excel to recognize encoding properly
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + content], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
 }

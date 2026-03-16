@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { downloadStyledXLSX } from '../utils/xlsx.utils';
 import { LoggerService } from './logger.service';
 import {
   AuditLog,
@@ -154,24 +155,25 @@ export class AuditService {
   /**
    * Export logs to CSV
    */
-  exportToCSV(logs?: AuditLog[]): void {
+  exportToXLSX(logs?: AuditLog[]): void {
     const data = logs || this.logsSignal();
-    const d = ';';
 
-    let csv = `Date${d}Action${d}Entity${d}Entity Name${d}User${d}Email${d}Changes\n`;
+    const rows = data.map(log => ({
+      Date:          log.createdAt.toLocaleString(),
+      Action:        log.action,
+      Entity:        log.entity,
+      'Entity Name': log.entityName,
+      User:          log.userName,
+      Email:         log.userEmail,
+      Changes:       log.changes.map(c => `${c.field}: ${c.oldValue} → ${c.newValue}`).join(' | '),
+    }));
 
-    for (const log of data) {
-      const date = log.createdAt.toLocaleString();
-      const changes = log.changes.map(c => `${c.field}: ${c.oldValue} → ${c.newValue}`).join(' | ');
-
-      csv += `"${date}"${d}"${log.action}"${d}"${log.entity}"${d}"${log.entityName}"${d}"${log.userName}"${d}"${log.userEmail}"${d}"${changes}"\n`;
-    }
-
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+    downloadStyledXLSX(rows, {
+      sheetName:      'Audit Log',
+      filename:       `audit-log-${new Date().toISOString().split('T')[0]}.xlsx`,
+      headerColor:    '64748B',
+      colWidths:      [20, 10, 16, 30, 20, 28, 50],
+      statusColIndex: 1, // Action column: CREATE / UPDATE / DELETE
+    });
   }
 }

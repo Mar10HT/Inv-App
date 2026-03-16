@@ -417,6 +417,6 @@ export class AuditLogComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    this.auditService.exportToCSV(this.filteredLogs());
+    this.auditService.exportToXLSX(this.filteredLogs());
   }
 }

@@ -769,6 +769,6 @@ export class LoansComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    this.loanService.exportToCSV(this.filteredLoans());
+    this.loanService.exportToXLSX(this.filteredLoans());
   }
 }

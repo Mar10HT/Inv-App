@@ -727,6 +727,6 @@ export class TransfersComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    this.transferService.exportToCSV(this.filteredRequests());
+    this.transferService.exportToXLSX(this.filteredRequests());
   }
 }

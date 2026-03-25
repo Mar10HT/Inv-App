@@ -1,7 +1,8 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { downloadStyledXLSX } from '../utils/xlsx.utils';
-import { Observable, tap, map, catchError, of } from 'rxjs';
+import { Observable, tap, map, catchError, of, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   Loan,
@@ -13,6 +14,7 @@ import {
   LoanWithQr
 } from '../interfaces/loan.interface';
 import { LoggerService } from './logger.service';
+import { WebSocketService } from './websocket.service';
 
 interface PaginatedResponse<T> {
   data: T[];
@@ -29,9 +31,11 @@ interface PaginatedResponse<T> {
 @Injectable({
   providedIn: 'root'
 })
-export class LoanService {
+export class LoanService implements OnDestroy {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
+  private wsService = inject(WebSocketService);
+  private destroy$ = new Subject<void>();
   private apiUrl = `${environment.apiUrl}/loans`;
 
   private loansSignal = signal<Loan[]>([]);
@@ -86,7 +90,15 @@ export class LoanService {
   );
 
   constructor() {
+    this.wsService.connect();
+    this.wsService.onLoanChange().pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.loadLoans());
     this.loadLoans();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**

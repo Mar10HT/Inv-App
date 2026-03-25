@@ -55,6 +55,7 @@ export class WebSocketService implements OnDestroy {
       'inventory:change',
       'loan:change',
       'transaction:change',
+      'alert:change',
     ];
 
     for (const eventName of eventNames) {
@@ -88,6 +89,10 @@ export class WebSocketService implements OnDestroy {
 
   onTransactionChange(): Observable<WsEvent> {
     return this.on('transaction:change');
+  }
+
+  onAlertChange(): Observable<WsEvent> {
+    return this.on('alert:change');
   }
 
   isConnected(): Observable<boolean> {

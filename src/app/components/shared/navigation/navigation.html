@@ -312,6 +312,10 @@
 
         <app-language-selector></app-language-selector>
 
+        <ng-container *ngxPermissionsOnly="['view_inventory']">
+          <app-notification-bell></app-notification-bell>
+        </ng-container>
+
         <button
           class="action-btn logout-action"
           (click)="logout()"

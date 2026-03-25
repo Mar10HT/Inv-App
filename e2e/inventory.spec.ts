@@ -1,19 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// Helper to login before tests
-async function login(page: any) {
-  await page.goto('/login');
-  await page.fill('input[type="email"]', 'admin@test.com');
-  await page.fill('input[type="password"]', 'password123');
-  await page.getByRole('button', { name: /login|iniciar/i }).click();
-  await expect(page).toHaveURL(/dashboard/, { timeout: 10000 });
-}
-
 test.describe('Inventory', () => {
-  test.beforeEach(async ({ page }) => {
-    await login(page);
-  });
-
   test('should display inventory list', async ({ page }) => {
     await page.goto('/inventory');
 

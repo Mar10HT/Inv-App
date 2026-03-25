@@ -8,12 +8,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { forkJoin } from 'rxjs';
 
+import { HttpClient } from '@angular/common/http';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import { UserService } from '../../services/user.service';
 import { PdfExportService } from '../../services/pdf-export.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
+import { environment } from '../../../environments/environment';
 
 type ReportCurrency = 'USD' | 'HNL' | 'ALL';
 
@@ -54,7 +56,7 @@ interface TrendPoint {
     MatTabsModule,
     FormsModule,
     TranslateModule,
-    NgApexchartsModule
+    NgApexchartsModule,
   ],
   templateUrl: './reports.html'
 })
@@ -64,6 +66,7 @@ export class Reports implements OnInit {
   private userService = inject(UserService);
   private translate = inject(TranslateService);
   private pdfExportService = inject(PdfExportService);
+  private http = inject(HttpClient);
 
   // Tab state
   activeTab = signal<number>(0);
@@ -636,6 +639,50 @@ export class Reports implements OnInit {
       assignmentsByUser: this.assignmentsByUser(),
       unassignedItems: this.unassignedUniqueItems()
     });
+  }
+
+  // ============ SERVER-SIDE EXCEL DOWNLOADS ============
+
+  private downloadReport(endpoint: string, filename: string): void {
+    const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
+    this.http.get(`${environment.apiUrl}/${endpoint}?locale=${locale}`, { responseType: 'blob' })
+      .subscribe(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+  }
+
+  exportInventoryExcel(): void {
+    const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
+    this.downloadReport('reports/inventory/excel', `inventario_${Date.now()}.xlsx`);
+  }
+
+  exportLowStockExcel(): void {
+    this.downloadReport('reports/low-stock/excel', `stock_bajo_${Date.now()}.xlsx`);
+  }
+
+  exportTransactionsExcel(): void {
+    this.downloadReport('reports/transactions/excel', `transacciones_${Date.now()}.xlsx`);
+  }
+
+  exportLoansExcel(): void {
+    this.downloadReport('reports/loans/excel', `prestamos_${Date.now()}.xlsx`);
+  }
+
+  exportTransfersExcel(): void {
+    this.downloadReport('reports/transfers/excel', `transferencias_${Date.now()}.xlsx`);
+  }
+
+  exportStockTakesExcel(): void {
+    this.downloadReport('reports/stock-takes/excel', `conteo_fisico_${Date.now()}.xlsx`);
+  }
+
+  exportDischargesExcel(): void {
+    this.downloadReport('reports/discharges/excel', `bajas_${Date.now()}.xlsx`);
   }
 
 }

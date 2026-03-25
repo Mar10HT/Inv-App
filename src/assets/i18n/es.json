@@ -660,7 +660,16 @@
       "FROM": "Origen",
       "TO": "Destino",
       "USER": "Usuario"
-    }
+    },
+    "TAB_DOWNLOADS": "Descargas",
+    "DOWNLOAD_EXCEL": "Descarga reportes Excel generados por el servidor",
+    "EXCEL_INVENTORY": "Inventario",
+    "EXCEL_LOW_STOCK": "Stock Bajo",
+    "EXCEL_TRANSACTIONS": "Transacciones",
+    "EXCEL_LOANS": "Préstamos",
+    "EXCEL_TRANSFERS": "Transferencias",
+    "EXCEL_STOCK_TAKES": "Conteos Físicos",
+    "EXCEL_DISCHARGES": "Bajas"
   },
   "STATUS": {
     "IN_STOCK": "En Stock",
@@ -1068,5 +1077,51 @@
     "LIGHT": "Claro",
     "DARK": "Oscuro",
     "SYSTEM": "Sistema"
+  },
+  "ALERTS": {
+    "TITLE": "Alertas",
+    "NO_ALERTS": "Sin alertas activas",
+    "VIEW_ALL": "Ver todas",
+    "LOW_STOCK": "Stock bajo",
+    "OUT_OF_STOCK": "Sin stock",
+    "EXPIRING_SOON": "Por vencer",
+    "ITEM_IN": "en",
+    "RESOLVE": "Resolver",
+    "RESOLVED": "Resuelto"
+  },
+  "SCHEDULED_REPORTS": {
+    "TITLE": "Reportes Programados",
+    "SUBTITLE": "Envía reportes automáticamente por email según un horario",
+    "ADD": "Agregar Reporte",
+    "NO_REPORTS": "No hay reportes programados configurados",
+    "REPORT_TYPE": "Tipo de Reporte",
+    "FREQUENCY_LABEL": "Frecuencia",
+    "RECIPIENTS": "Emails Destinatarios",
+    "WAREHOUSE": "Bodega",
+    "LOCALE": "Idioma",
+    "NEXT_SEND": "Próximo envío",
+    "LAST_SENT": "Último envío",
+    "NEVER_SENT": "Nunca enviado",
+    "SEND_NOW": "Enviar Ahora",
+    "ACTIVE": "Activo",
+    "INACTIVE": "Inactivo",
+    "CREATED": "Reporte programado exitosamente",
+    "UPDATED": "Reporte actualizado exitosamente",
+    "DELETED": "Reporte eliminado",
+    "SENT_NOW": "Reporte enviado exitosamente",
+    "FREQUENCY": {
+      "DAILY": "Diario",
+      "WEEKLY": "Semanal",
+      "MONTHLY": "Mensual"
+    },
+    "TYPE": {
+      "INVENTORY": "Inventario",
+      "LOW_STOCK": "Stock Bajo",
+      "TRANSACTIONS": "Transacciones",
+      "LOANS": "Préstamos",
+      "TRANSFERS": "Transferencias",
+      "STOCK_TAKES": "Conteos Físicos",
+      "DISCHARGES": "Bajas"
+    }
   }
 }

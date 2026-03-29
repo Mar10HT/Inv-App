@@ -12,8 +12,10 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { UserService } from '../../services/user.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { RolesService } from '../../services/roles.service';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { Warehouse } from '../../interfaces/warehouse.interface';
+import { RoleSummary } from '../../interfaces/role.interface';
 
 export interface UserFormDialogData {
   mode: 'add' | 'edit';
@@ -131,6 +133,31 @@ export interface UserFormDialogData {
           </select>
         </div>
 
+        <!-- Custom Role Assignment -->
+        @if (selectedRole() !== 'SYSTEM_ADMIN' && selectedRole() !== 'EXTERNAL') {
+          <div>
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">
+              {{ 'USER.CUSTOM_ROLE' | translate }}
+            </label>
+            <p class="text-xs text-[var(--color-on-surface-muted)] mb-2">{{ 'USER.CUSTOM_ROLE_DESC' | translate }}</p>
+            @if (loadingRoles()) {
+              <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm py-2">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--color-primary)]"></div>
+                {{ 'COMMON.LOADING' | translate }}...
+              </div>
+            } @else {
+              <select
+                formControlName="roleId"
+                class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
+                <option [value]="null">{{ 'USER.NO_CUSTOM_ROLE' | translate }}</option>
+                @for (r of availableRoles(); track r.id) {
+                  <option [value]="r.id">{{ r.displayName }}</option>
+                }
+              </select>
+            }
+          </div>
+        }
+
         <!-- Warehouse Assignment -->
         @if (selectedRole() !== 'SYSTEM_ADMIN' && selectedRole() !== 'EXTERNAL') {
           <div>
@@ -202,10 +229,15 @@ export class UserFormDialog implements OnInit {
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
   private warehouseService = inject(WarehouseService);
+  private rolesService = inject(RolesService);
 
   saving = signal(false);
   selectedRole = signal<UserRole>(UserRole.USER);
   roles = Object.values(UserRole);
+
+  // Custom role from API
+  availableRoles = signal<RoleSummary[]>([]);
+  loadingRoles = signal(false);
 
   // Warehouse assignment
   allWarehouses = signal<Warehouse[]>([]);
@@ -219,7 +251,8 @@ export class UserFormDialog implements OnInit {
       ? [Validators.required, Validators.minLength(6), Validators.maxLength(100)]
       : [Validators.minLength(6), Validators.maxLength(100)]
     ],
-    role: [UserRole.USER]
+    role: [UserRole.USER],
+    roleId: [null]
   });
 
   ngOnInit(): void {
@@ -234,7 +267,8 @@ export class UserFormDialog implements OnInit {
       this.form.patchValue({
         name: this.data.user.name || '',
         email: this.data.user.email,
-        role: this.data.user.role || UserRole.USER
+        role: this.data.user.role || UserRole.USER,
+        roleId: this.data.user.roleId ?? null
       });
       this.selectedRole.set(this.data.user.role || UserRole.USER);
     }
@@ -244,6 +278,9 @@ export class UserFormDialog implements OnInit {
       this.selectedRole.set(role);
       this.updateValidatorsForRole(role);
     });
+
+    // Load custom roles from API
+    this.loadRoles();
 
     // Load all warehouses for assignment
     this.loadWarehouses();
@@ -293,6 +330,17 @@ export class UserFormDialog implements OnInit {
         newSet.add(warehouseId);
       }
       return newSet;
+    });
+  }
+
+  private loadRoles(): void {
+    this.loadingRoles.set(true);
+    this.rolesService.getAll().subscribe({
+      next: (roles) => {
+        this.availableRoles.set(roles);
+        this.loadingRoles.set(false);
+      },
+      error: () => this.loadingRoles.set(false)
     });
   }
 

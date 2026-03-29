@@ -88,6 +88,11 @@ export const routes: Routes = [
     canActivate: [permissionGuard('users:view')]
   },
   {
+    path: 'roles',
+    loadComponent: () => import('./components/roles/roles').then(m => m.RolesComponent),
+    canActivate: [permissionGuard('settings:edit')]
+  },
+  {
     path: 'transactions',
     loadComponent: () => import('./components/transactions/transactions').then(m => m.Transactions),
     canActivate: [permissionGuard('transactions:view')]

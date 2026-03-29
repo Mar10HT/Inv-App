@@ -247,6 +247,21 @@
         </a>
       </ng-container>
 
+      <ng-container *ngxPermissionsOnly="['settings:edit']">
+        <a
+          routerLink="/roles"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.ROLES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="ShieldCheck" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.ROLES' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
       <ng-container *ngxPermissionsOnly="['audit:view']">
         <a
           routerLink="/audit"

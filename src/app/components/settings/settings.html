@@ -190,7 +190,7 @@
     </div>
 
     <!-- Scheduled Reports Section -->
-    <ng-container *ngxPermissionsOnly="['view_reports']">
+    <ng-container *ngxPermissionsOnly="['reports:view']">
       <div class="bg-surface-variant rounded-xl border border-theme overflow-hidden mb-6">
         <div class="p-6">
           <div class="flex items-center justify-between gap-3 mb-4">
@@ -315,7 +315,7 @@
                       <lucide-icon [name]="report.isActive ? 'ToggleRight' : 'ToggleLeft'" class="!w-4 !h-4" [style.color]="report.isActive ? 'var(--color-primary)' : 'var(--color-on-surface-variant)'"></lucide-icon>
                     </button>
                     <!-- Send now (SYSTEM_ADMIN only via permissions) -->
-                    <ng-container *ngxPermissionsOnly="['view_audit']">
+                    <ng-container *ngxPermissionsOnly="['audit:view']">
                       <button (click)="sendReportNow(report.id)"
                               class="p-1.5 rounded-lg transition-opacity hover:opacity-70"
                               style="background-color: var(--color-surface-variant);"

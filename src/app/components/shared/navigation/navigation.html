@@ -58,7 +58,7 @@
     <!-- Navigation -->
     <nav class="sidebar-nav">
       <!-- MAIN Section -->
-      <ng-container *ngxPermissionsOnly="['view_dashboard']">
+      <ng-container *ngxPermissionsOnly="['dashboard:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.MAIN' | translate }}</div>
         } @else {
@@ -80,7 +80,7 @@
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['view_inventory', 'view_warehouses', 'view_categories', 'view_suppliers', 'view_loans', 'view_transfers', 'view_discharges', 'view_stock_takes']">
+      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'loans:view', 'transfers:view', 'discharges:view', 'stocktake:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -88,7 +88,7 @@
         }
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_inventory']">
+      <ng-container *ngxPermissionsOnly="['inventory:view']">
         <a
           routerLink="/inventory"
           routerLinkActive="active-link"
@@ -103,7 +103,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_warehouses']">
+      <ng-container *ngxPermissionsOnly="['warehouse:view']">
         <a
           routerLink="/warehouses"
           routerLinkActive="active-link"
@@ -118,7 +118,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_categories']">
+      <ng-container *ngxPermissionsOnly="['categories:view']">
         <a
           routerLink="/categories"
           routerLinkActive="active-link"
@@ -133,7 +133,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_suppliers']">
+      <ng-container *ngxPermissionsOnly="['suppliers:view']">
         <a
           routerLink="/suppliers"
           routerLinkActive="active-link"
@@ -148,7 +148,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_loans']">
+      <ng-container *ngxPermissionsOnly="['loans:view']">
         <a
           routerLink="/loans"
           routerLinkActive="active-link"
@@ -163,7 +163,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_transfers']">
+      <ng-container *ngxPermissionsOnly="['transfers:view']">
         <a
           routerLink="/transfers"
           routerLinkActive="active-link"
@@ -178,7 +178,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_discharges']">
+      <ng-container *ngxPermissionsOnly="['discharges:view']">
         <a
           routerLink="/discharges"
           routerLinkActive="active-link"
@@ -193,7 +193,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_stock_takes']">
+      <ng-container *ngxPermissionsOnly="['stocktake:view']">
         <a
           routerLink="/stock-take"
           routerLinkActive="active-link"
@@ -209,7 +209,7 @@
       </ng-container>
 
       <!-- ADMIN Section -->
-      <ng-container *ngxPermissionsOnly="['view_reports', 'view_users', 'view_audit', 'view_settings']">
+      <ng-container *ngxPermissionsOnly="['reports:view', 'users:view', 'audit:view', 'settings:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.ADMIN' | translate }}</div>
         } @else {
@@ -217,7 +217,7 @@
         }
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_reports']">
+      <ng-container *ngxPermissionsOnly="['reports:view']">
         <a
           routerLink="/reports"
           routerLinkActive="active-link"
@@ -232,7 +232,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_users']">
+      <ng-container *ngxPermissionsOnly="['users:view']">
         <a
           routerLink="/users"
           routerLinkActive="active-link"
@@ -247,7 +247,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_audit']">
+      <ng-container *ngxPermissionsOnly="['audit:view']">
         <a
           routerLink="/audit"
           routerLinkActive="active-link"
@@ -262,7 +262,7 @@
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['view_settings']">
+      <ng-container *ngxPermissionsOnly="['settings:view']">
         <a
           routerLink="/settings"
           routerLinkActive="active-link"
@@ -312,7 +312,7 @@
 
         <app-language-selector></app-language-selector>
 
-        <ng-container *ngxPermissionsOnly="['view_inventory']">
+        <ng-container *ngxPermissionsOnly="['inventory:view']">
           <app-notification-bell></app-notification-bell>
         </ng-container>
 

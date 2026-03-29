@@ -1,60 +1,70 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, Subscription, interval } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { LoginRequest, RegisterRequest, AuthResponse, AuthUser, UpdateProfileResponse, ChangePasswordResponse, ForgotPasswordResponse, ResetPasswordResponse, PendingReset, GeneratedResetLink } from '../interfaces/auth.interface';
+import {
+  LoginRequest, RegisterRequest, AuthResponse, AuthUser,
+  UpdateProfileResponse, ChangePasswordResponse, ForgotPasswordResponse,
+  ResetPasswordResponse, PendingReset, GeneratedResetLink, MeResponse
+} from '../interfaces/auth.interface';
 import { PermissionsService } from './permissions.service';
+
+const POLL_INTERVAL_MS = 60_000; // 60 seconds
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
   private permissionsService = inject(PermissionsService);
 
   private readonly USER_KEY = 'auth_user';
 
-  // Current user signal
   currentUser = signal<AuthUser | null>(this.loadUserFromStorage());
   isAuthenticated = signal<boolean>(this.currentUser() !== null);
 
-  // Warehouse access signals
   userWarehouseIds = computed(() => this.currentUser()?.warehouseIds ?? []);
   isAdmin = computed(() => this.currentUser()?.role === 'SYSTEM_ADMIN');
+
+  /** Tracks the current permissionsVersion so polling can detect changes. */
+  private permissionsVersion = signal<number>(0);
+
+  private pollSubscription: Subscription | null = null;
 
   private apiUrl = `${environment.apiUrl}/auth`;
 
   constructor() {
-    // Initialize authentication state from localStorage
     this.checkAuth();
+  }
+
+  ngOnDestroy(): void {
+    this.stopPermissionsPolling();
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
-      tap(response => this.handleAuthResponse(response))
+      tap(() => this.loadMeAndPermissions())
     );
   }
 
   register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data, { withCredentials: true }).pipe(
-      tap(response => this.handleAuthResponse(response))
+      tap(() => this.loadMeAndPermissions())
     );
   }
 
   logout(): Observable<any> {
-    // Call backend logout endpoint to clear HttpOnly cookie
     return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
-      catchError(() => of(null)), // always proceed with local cleanup even if backend fails
+      catchError(() => of(null)),
       tap(() => {
+        this.stopPermissionsPolling();
         localStorage.removeItem(this.USER_KEY);
         this.currentUser.set(null);
         this.isAuthenticated.set(false);
-
-        // Clear all permissions
+        this.permissionsVersion.set(0);
         this.permissionsService.clearPermissions();
-
         this.router.navigate(['/login']);
       })
     );
@@ -63,7 +73,6 @@ export class AuthService {
   updateProfile(data: { name?: string; email: string }): Observable<UpdateProfileResponse> {
     return this.http.post<UpdateProfileResponse>(`${this.apiUrl}/profile`, data, { withCredentials: true }).pipe(
       tap(response => {
-        // Update current user in storage and signal
         const updatedUser = { ...this.currentUser(), ...response.user };
         localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
         this.currentUser.set(updatedUser);
@@ -91,15 +100,53 @@ export class AuthService {
     return this.http.post<GeneratedResetLink>(`${this.apiUrl}/admin/generate-reset-link/${userId}`, {}, { withCredentials: true });
   }
 
-  private handleAuthResponse(response: AuthResponse): void {
-    // No need to store token - it's in HttpOnly cookie
-    // Only store user data for UI purposes
-    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-    this.currentUser.set(response.user);
-    this.isAuthenticated.set(true);
+  // ── Private ───────────────────────────────────────────────────────────────
 
-    // Load permissions based on user role
-    this.permissionsService.loadPermissions(response.user.role);
+  /**
+   * Calls GET /auth/me to retrieve the user profile + resolved permissions
+   * from the server. Stores the user and loads permissions into ngx-permissions.
+   * Starts polling once the first load succeeds.
+   */
+  private loadMeAndPermissions(): void {
+    this.http.get<MeResponse>(`${this.apiUrl}/me`, { withCredentials: true }).pipe(
+      catchError(() => of(null))
+    ).subscribe(response => {
+      if (!response) return;
+
+      localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+      this.currentUser.set(response.user);
+      this.isAuthenticated.set(true);
+      this.permissionsVersion.set(response.permissionsVersion);
+      this.permissionsService.loadPermissions(response.permissions);
+
+      this.startPermissionsPolling();
+    });
+  }
+
+  /**
+   * Polls GET /auth/me every 60 s. When permissionsVersion changes, reloads
+   * the permission set so the UI reacts without requiring a page refresh.
+   */
+  private startPermissionsPolling(): void {
+    if (this.pollSubscription) return; // already running
+
+    this.pollSubscription = interval(POLL_INTERVAL_MS).subscribe(() => {
+      this.http.get<MeResponse>(`${this.apiUrl}/me`, { withCredentials: true }).pipe(
+        catchError(() => of(null))
+      ).subscribe(response => {
+        if (!response) return;
+
+        if (response.permissionsVersion !== this.permissionsVersion()) {
+          this.permissionsVersion.set(response.permissionsVersion);
+          this.permissionsService.loadPermissions(response.permissions);
+        }
+      });
+    });
+  }
+
+  private stopPermissionsPolling(): void {
+    this.pollSubscription?.unsubscribe();
+    this.pollSubscription = null;
   }
 
   private loadUserFromStorage(): AuthUser | null {
@@ -116,13 +163,11 @@ export class AuthService {
 
   private checkAuth(): void {
     const user = this.loadUserFromStorage();
-
     if (user) {
       this.currentUser.set(user);
       this.isAuthenticated.set(true);
-
-      // Load permissions on app init if user is logged in
-      this.permissionsService.loadPermissions(user.role);
+      // Refresh permissions from the server on app init
+      this.loadMeAndPermissions();
     } else {
       this.currentUser.set(null);
       this.isAuthenticated.set(false);

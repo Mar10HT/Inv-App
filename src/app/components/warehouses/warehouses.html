@@ -7,7 +7,7 @@
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'WAREHOUSE.TITLE' | translate }}</h1>
           <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'WAREHOUSE.SUBTITLE' | translate }}</p>
         </div>
-        <ng-container *ngxPermissionsOnly="['create_warehouses']">
+        <ng-container *ngxPermissionsOnly="['warehouse:create']">
           <button
             (click)="addWarehouse()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
@@ -63,7 +63,7 @@
           <lucide-icon name="Warehouse" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
           <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'WAREHOUSE.NO_WAREHOUSES' | translate }}</p>
           <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'WAREHOUSE.NO_WAREHOUSES_DESC' | translate }}</p>
-          <ng-container *ngxPermissionsOnly="['create_warehouses']">
+          <ng-container *ngxPermissionsOnly="['warehouse:create']">
             <button
               (click)="addWarehouse()"
               class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
@@ -129,7 +129,7 @@
                   <!-- Actions Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-1">
-                      <ng-container *ngxPermissionsOnly="['edit_warehouses']">
+                      <ng-container *ngxPermissionsOnly="['warehouse:edit']">
                         <button
                           type="button"
                           (click)="editWarehouse(warehouse)"
@@ -138,7 +138,7 @@
                           <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
                         </button>
                       </ng-container>
-                      <ng-container *ngxPermissionsOnly="['delete_warehouses']">
+                      <ng-container *ngxPermissionsOnly="['warehouse:delete']">
                         <button
                           type="button"
                           (click)="deleteWarehouse(warehouse)"
@@ -185,7 +185,7 @@
 
                 <!-- Actions -->
                 <div class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]">
-                  <ng-container *ngxPermissionsOnly="['edit_warehouses']">
+                  <ng-container *ngxPermissionsOnly="['warehouse:edit']">
                     <button
                       type="button"
                       (click)="editWarehouse(warehouse)"
@@ -193,7 +193,7 @@
                       <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>
-                  <ng-container *ngxPermissionsOnly="['delete_warehouses']">
+                  <ng-container *ngxPermissionsOnly="['warehouse:delete']">
                     <button
                       type="button"
                       (click)="deleteWarehouse(warehouse)"

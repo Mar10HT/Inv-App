@@ -7,7 +7,7 @@
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'DASHBOARD.TITLE' | translate }}</h1>
           <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
         </div>
-        <ng-container *ngxPermissionsOnly="['create_inventory']">
+        <ng-container *ngxPermissionsOnly="['inventory:create']">
           <button
             (click)="addNewItem()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
@@ -163,7 +163,7 @@
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'INVENTORY.LIST.ITEMS_COUNT' | translate:{ count: totalItems() } }}</p>
         </div>
         <div class="flex items-center gap-2">
-          <ng-container *ngxPermissionsOnly="['create_inventory']">
+          <ng-container *ngxPermissionsOnly="['inventory:create']">
             <button
               (click)="openImportDialog()"
               class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium">
@@ -289,7 +289,7 @@
                       class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors flex items-center justify-center">
                       <lucide-icon name="Eye" class="!w-5 !h-5"></lucide-icon>
                     </button>
-                    <ng-container *ngxPermissionsOnly="['edit_inventory']">
+                    <ng-container *ngxPermissionsOnly="['inventory:edit']">
                       <button
                         type="button"
                         (click)="$event.stopPropagation(); editItem(item)"
@@ -298,7 +298,7 @@
                         <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
                       </button>
                     </ng-container>
-                    <ng-container *ngxPermissionsOnly="['delete_inventory']">
+                    <ng-container *ngxPermissionsOnly="['inventory:delete']">
                       <button
                         type="button"
                         (click)="$event.stopPropagation(); deleteItem(item)"
@@ -375,7 +375,7 @@
                   class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors">
                   <lucide-icon name="Eye" class="!w-4 !h-4"></lucide-icon>
                 </button>
-                <ng-container *ngxPermissionsOnly="['edit_inventory']">
+                <ng-container *ngxPermissionsOnly="['inventory:edit']">
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); editItem(item)"
@@ -384,7 +384,7 @@
                     <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                   </button>
                 </ng-container>
-                <ng-container *ngxPermissionsOnly="['delete_inventory']">
+                <ng-container *ngxPermissionsOnly="['inventory:delete']">
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); deleteItem(item)"

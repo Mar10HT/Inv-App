@@ -59,7 +59,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
               </button>
-              <ng-container *ngxPermissionsOnly="['create_loans']">
+              <ng-container *ngxPermissionsOnly="['loans:create']">
                 <button
                   (click)="openNewLoanDialog()"
                   class="ds-btn ds-btn--primary">
@@ -232,7 +232,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       <div class="flex items-center justify-center gap-2">
                         @switch (loan.status) {
                           @case (LoanStatus.PENDING) {
-                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                            <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
                                 (click)="sendLoan(loan)"
                                 class="ds-btn ds-btn--send ds-btn--sm">
@@ -256,7 +256,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </button>
                           }
                           @case (LoanStatus.RECEIVED) {
-                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                            <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
                                 (click)="initiateReturn(loan)"
                                 class="ds-btn ds-btn--return ds-btn--sm">
@@ -266,7 +266,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </ng-container>
                           }
                           @case (LoanStatus.OVERDUE) {
-                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                            <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
                                 (click)="initiateReturn(loan)"
                                 class="ds-btn ds-btn--danger ds-btn--sm">
@@ -290,7 +290,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>
                           }
                           @case (LoanStatus.ACTIVE) {
-                            <ng-container *ngxPermissionsOnly="['manage_loans']">
+                            <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
                                 (click)="initiateReturn(loan)"
                                 class="ds-btn ds-btn--return ds-btn--sm">
@@ -354,7 +354,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                 <!-- Mobile Actions -->
                 @switch (loan.status) {
                   @case (LoanStatus.PENDING) {
-                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                    <ng-container *ngxPermissionsOnly="['loans:manage']">
                       <div class="flex gap-2">
                         <button
                           (click)="sendLoan(loan)"
@@ -380,7 +380,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     </button>
                   }
                   @case (LoanStatus.RECEIVED) {
-                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                    <ng-container *ngxPermissionsOnly="['loans:manage']">
                       <button
                         (click)="initiateReturn(loan)"
                         class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">
@@ -390,7 +390,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     </ng-container>
                   }
                   @case (LoanStatus.OVERDUE) {
-                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                    <ng-container *ngxPermissionsOnly="['loans:manage']">
                       <button
                         (click)="initiateReturn(loan)"
                         class="w-full ds-btn ds-btn--danger ds-btn--sm justify-center">
@@ -408,7 +408,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     </button>
                   }
                   @case (LoanStatus.ACTIVE) {
-                    <ng-container *ngxPermissionsOnly="['manage_loans']">
+                    <ng-container *ngxPermissionsOnly="['loans:manage']">
                       <button
                         (click)="initiateReturn(loan)"
                         class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">

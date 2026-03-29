@@ -55,7 +55,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
             </div>
 
             @if (request()!.status === Status.PENDING) {
-              <ng-container *ngxPermissionsOnly="['manage_discharges']">
+              <ng-container *ngxPermissionsOnly="['discharges:manage']">
                 <div class="flex gap-2">
                   <button
                     (click)="completeRequest()"

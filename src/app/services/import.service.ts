@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { ImportResult } from '../interfaces/import.interface';
 import { environment } from '../../environments/environment';
 
@@ -27,8 +27,10 @@ export class ImportService {
         const link = document.createElement('a');
         link.href = url;
         link.download = 'plantilla-importacion.xlsx';
+        document.body.appendChild(link);
         link.click();
-        URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
       }),
       map(() => void 0)
     );
@@ -56,8 +58,7 @@ export class ImportService {
             message: e.error
           }))
         };
-      }),
-      catchError(err => throwError(() => err))
+      })
     );
   }
 }

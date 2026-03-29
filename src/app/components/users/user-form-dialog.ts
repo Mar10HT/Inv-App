@@ -384,6 +384,11 @@ export class UserFormDialog implements OnInit {
       delete formValue.password;
     }
 
+    // Remove null roleId — backend @IsString() rejects null; omitting it means "no change"
+    if (formValue.roleId == null) {
+      delete formValue.roleId;
+    }
+
     if (this.data.mode === 'add') {
       this.userService.create(formValue).subscribe({
         next: (newUser) => {

@@ -1,13 +1,17 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ImportService } from '../../services/import.service';
 import { ImportResult } from '../../interfaces/import.interface';
 
 type ImportStep = 'upload' | 'importing' | 'result';
+
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 @Component({
   selector: 'app-import-dialog',
@@ -97,12 +101,7 @@ type ImportStep = 'upload' | 'importing' | 'result';
           <div class="text-center py-8">
             <lucide-icon name="CloudCog" class="!w-12 !h-12 text-[var(--color-primary)] mb-4 animate-pulse"></lucide-icon>
             <p class="text-foreground text-lg mb-4">{{ 'IMPORT.IMPORTING' | translate }}</p>
-            <mat-progress-bar
-              mode="determinate"
-              [value]="importService.progress()"
-              class="rounded-full">
-            </mat-progress-bar>
-            <p class="text-[var(--color-on-surface-variant)] text-sm mt-2">{{ importService.progress() }}%</p>
+            <mat-progress-bar mode="indeterminate" class="rounded-full"></mat-progress-bar>
           </div>
         }
 
@@ -160,6 +159,11 @@ type ImportStep = 'upload' | 'importing' | 'result';
         </button>
         @if (step() === 'result') {
           <button
+            (click)="resetToUpload()"
+            class="px-6 py-2.5 rounded-lg bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground transition-colors font-medium">
+            {{ 'IMPORT.TRY_AGAIN' | translate }}
+          </button>
+          <button
             (click)="dialogRef.close(true)"
             class="ds-btn ds-btn--primary">
             {{ 'COMMON.DONE' | translate }}
@@ -177,8 +181,10 @@ type ImportStep = 'upload' | 'importing' | 'result';
   `]
 })
 export class ImportDialog {
-  dialogRef = inject(MatDialogRef<ImportDialog>);
-  importService = inject(ImportService);
+  protected dialogRef = inject(MatDialogRef<ImportDialog>);
+  protected importService = inject(ImportService);
+  private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   step = signal<ImportStep>('upload');
   dragOver = signal(false);
@@ -186,7 +192,9 @@ export class ImportDialog {
   result = signal<ImportResult | null>(null);
 
   downloadTemplate(): void {
-    this.importService.downloadTemplate();
+    this.importService.downloadTemplate()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   onDragOver(event: DragEvent): void {
@@ -198,7 +206,10 @@ export class ImportDialog {
   onDragLeave(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    this.dragOver.set(false);
+    const target = event.currentTarget as HTMLElement;
+    if (!event.relatedTarget || !target.contains(event.relatedTarget as Node)) {
+      this.dragOver.set(false);
+    }
   }
 
   onDrop(event: DragEvent): void {
@@ -219,34 +230,48 @@ export class ImportDialog {
     }
   }
 
+  resetToUpload(): void {
+    this.step.set('upload');
+    this.result.set(null);
+    this.fileError.set(null);
+  }
+
   private processFile(file: File): void {
     this.fileError.set(null);
 
     const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (extension !== '.xlsx') {
-      this.fileError.set('Formato inválido. Por favor sube un archivo Excel (.xlsx).');
+    if (extension !== '.xlsx' || (file.type && file.type !== XLSX_MIME)) {
+      this.fileError.set(this.translate.instant('IMPORT.INVALID_FORMAT'));
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      this.fileError.set(this.translate.instant('IMPORT.FILE_TOO_LARGE'));
       return;
     }
 
     this.step.set('importing');
 
-    this.importService.uploadExcel(file).subscribe({
-      next: (result) => {
-        this.result.set(result);
-        this.step.set('result');
-      },
-      error: (err) => {
-        const message = err?.error?.message || err?.message || 'Error al importar el archivo.';
-        this.result.set({
-          success: false,
-          totalRows: 0,
-          validRows: 0,
-          invalidRows: 0,
-          importedCount: 0,
-          errors: [{ row: 0, field: '', message }]
-        });
-        this.step.set('result');
-      }
-    });
+    this.importService.uploadExcel(file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.result.set(result);
+          this.step.set('result');
+        },
+        error: (err) => {
+          const message = err?.error?.message || err?.message
+            || this.translate.instant('IMPORT.GENERIC_ERROR');
+          this.result.set({
+            success: false,
+            totalRows: 0,
+            validRows: 0,
+            invalidRows: 0,
+            importedCount: 0,
+            errors: [{ row: 0, field: '', message }]
+          });
+          this.step.set('result');
+        }
+      });
   }
 }

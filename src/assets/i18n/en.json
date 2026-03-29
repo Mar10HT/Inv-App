@@ -79,14 +79,14 @@
   },
   "IMPORT": {
     "TITLE": "Import Items",
-    "SUBTITLE": "Upload multiple items from a CSV file",
+    "SUBTITLE": "Upload multiple items from an Excel file",
     "TEMPLATE_INFO": "Download the template to see the correct format",
     "TEMPLATE_DESC": "The template includes examples of BULK and UNIQUE items with all available fields.",
-    "DOWNLOAD_TEMPLATE": "Download CSV Template",
+    "DOWNLOAD_TEMPLATE": "Download Excel Template",
     "DROP_FILE": "Drag and drop your file here",
     "OR": "or",
     "SELECT_FILE": "Select File",
-    "SUPPORTED_FORMATS": "Supported format: CSV (.csv)",
+    "SUPPORTED_FORMATS": "Supported format: Excel (.xlsx)",
     "TOTAL_ROWS": "Total Rows",
     "VALID_ROWS": "Valid Rows",
     "INVALID_ROWS": "Invalid Rows",
@@ -104,7 +104,11 @@
     "ERRORS": "Errors",
     "ERROR_DETAILS": "Error details",
     "ROW": "Row",
-    "IMPORT_VALID": "Import Valid"
+    "IMPORT_VALID": "Import Valid",
+    "INVALID_FORMAT": "Invalid format. Please upload an Excel file (.xlsx).",
+    "FILE_TOO_LARGE": "File is too large. Maximum size is 10MB.",
+    "GENERIC_ERROR": "Error importing the file. Please try again.",
+    "TRY_AGAIN": "Try Again"
   },
   "DASHBOARD": {
     "TITLE": "Inventory Management",

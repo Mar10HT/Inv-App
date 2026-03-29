@@ -79,14 +79,14 @@
   },
   "IMPORT": {
     "TITLE": "Importar Items",
-    "SUBTITLE": "Cargar múltiples items desde un archivo CSV",
+    "SUBTITLE": "Cargar múltiples items desde un archivo Excel",
     "TEMPLATE_INFO": "Descarga la plantilla para conocer el formato correcto",
     "TEMPLATE_DESC": "La plantilla incluye ejemplos de items BULK y UNIQUE con todos los campos disponibles.",
-    "DOWNLOAD_TEMPLATE": "Descargar Plantilla CSV",
+    "DOWNLOAD_TEMPLATE": "Descargar Plantilla Excel",
     "DROP_FILE": "Arrastra y suelta tu archivo aquí",
     "OR": "o",
     "SELECT_FILE": "Seleccionar Archivo",
-    "SUPPORTED_FORMATS": "Formato soportado: CSV (.csv)",
+    "SUPPORTED_FORMATS": "Formato soportado: Excel (.xlsx)",
     "TOTAL_ROWS": "Total Filas",
     "VALID_ROWS": "Filas Válidas",
     "INVALID_ROWS": "Filas Inválidas",
@@ -104,7 +104,11 @@
     "ERRORS": "Errores",
     "ERROR_DETAILS": "Detalle de errores",
     "ROW": "Fila",
-    "IMPORT_VALID": "Importar Válidos"
+    "IMPORT_VALID": "Importar Válidos",
+    "INVALID_FORMAT": "Formato inválido. Por favor sube un archivo Excel (.xlsx).",
+    "FILE_TOO_LARGE": "El archivo es demasiado grande. El tamaño máximo es 10MB.",
+    "GENERIC_ERROR": "Error al importar el archivo. Por favor intenta de nuevo.",
+    "TRY_AGAIN": "Intentar de Nuevo"
   },
   "DASHBOARD": {
     "TITLE": "Gestión de Inventario",

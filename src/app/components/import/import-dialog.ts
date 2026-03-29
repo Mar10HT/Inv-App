@@ -5,9 +5,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ImportService } from '../../services/import.service';
-import { ImportRow, ImportPreview, ImportResult } from '../../interfaces/import.interface';
+import { ImportResult } from '../../interfaces/import.interface';
 
-type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
+type ImportStep = 'upload' | 'importing' | 'result';
 
 @Component({
   selector: 'app-import-dialog',
@@ -70,7 +70,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
               <label class="inline-block">
                 <input
                   type="file"
-                  accept=".csv"
+                  accept=".xlsx"
                   class="hidden"
                   (change)="onFileSelect($event)"
                 />
@@ -92,77 +92,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
           </div>
         }
 
-        <!-- Step 2: Preview -->
-        @if (step() === 'preview' && preview()) {
-          <div class="space-y-4">
-            <!-- Summary -->
-            <div class="grid grid-cols-3 gap-4">
-              <div class="bg-[var(--color-surface)] rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-foreground">{{ preview()!.totalCount }}</p>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'IMPORT.TOTAL_ROWS' | translate }}</p>
-              </div>
-              <div class="bg-[var(--color-surface)] rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ preview()!.validCount }}</p>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'IMPORT.VALID_ROWS' | translate }}</p>
-              </div>
-              <div class="bg-[var(--color-surface)] rounded-lg p-4 text-center">
-                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ preview()!.invalidCount }}</p>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'IMPORT.INVALID_ROWS' | translate }}</p>
-              </div>
-            </div>
-
-            <!-- Preview Table -->
-            <div class="bg-[var(--color-surface)] rounded-lg overflow-hidden">
-              <div class="max-h-[300px] overflow-auto">
-                <table class="w-full text-sm">
-                  <thead class="sticky top-0 bg-[var(--color-surface-variant)]">
-                    <tr>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">#</th>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">{{ 'IMPORT.COL_STATUS' | translate }}</th>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">{{ 'IMPORT.COL_NAME' | translate }}</th>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">{{ 'IMPORT.COL_CATEGORY' | translate }}</th>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">{{ 'IMPORT.COL_QTY' | translate }}</th>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">{{ 'IMPORT.COL_WAREHOUSE' | translate }}</th>
-                      <th class="text-left px-4 py-3 text-[var(--color-on-surface-variant)] font-medium">{{ 'IMPORT.COL_ERRORS' | translate }}</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-[var(--color-border-subtle)]">
-                    @for (row of preview()!.rows; track row.rowNumber) {
-                      <tr [class]="row.isValid ? '' : 'bg-[var(--color-error-bg)]'">
-                        <td class="px-4 py-3 text-[var(--color-on-surface-variant)]">{{ row.rowNumber }}</td>
-                        <td class="px-4 py-3">
-                          @if (row.isValid) {
-                            <span class="text-[var(--color-status-success)]"><lucide-icon name="CheckCircle2" class="!w-4 !h-4"></lucide-icon></span>
-                          } @else {
-                            <span class="text-[var(--color-status-error)]"><lucide-icon name="AlertCircle" class="!w-4 !h-4"></lucide-icon></span>
-                          }
-                        </td>
-                        <td class="px-4 py-3 text-foreground">{{ row.name || '-' }}</td>
-                        <td class="px-4 py-3 text-[var(--color-on-surface-variant)]">{{ row.category || '-' }}</td>
-                        <td class="px-4 py-3 text-[var(--color-on-surface-variant)]">{{ row.quantity }}</td>
-                        <td class="px-4 py-3 text-[var(--color-on-surface-variant)]">{{ row.warehouseName || '-' }}</td>
-                        <td class="px-4 py-3 text-[var(--color-status-error)] text-xs">
-                          {{ row.errors.join(', ') }}
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            @if (preview()!.invalidCount > 0) {
-              <div class="bg-[var(--color-accent-amber-bg)] border border-[var(--color-warning-border)] rounded-lg p-4">
-                <div class="flex items-start gap-2 text-amber-400">
-                  <lucide-icon name="AlertTriangle" class="mt-0.5 !w-5 !h-5"></lucide-icon>
-                  <p class="text-sm">{{ 'IMPORT.INVALID_WARNING' | translate }}</p>
-                </div>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Step 3: Importing -->
+        <!-- Step 2: Importing -->
         @if (step() === 'importing') {
           <div class="text-center py-8">
             <lucide-icon name="CloudCog" class="!w-12 !h-12 text-[var(--color-primary)] mb-4 animate-pulse"></lucide-icon>
@@ -176,7 +106,7 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
           </div>
         }
 
-        <!-- Step 4: Result -->
+        <!-- Step 3: Result -->
         @if (step() === 'result' && result()) {
           <div class="space-y-6">
             <!-- Success/Error Icon -->
@@ -222,39 +152,19 @@ type ImportStep = 'upload' | 'preview' | 'importing' | 'result';
       </div>
 
       <!-- Footer -->
-      <div class="flex justify-between items-center gap-3 px-6 py-4 border-t border-[var(--color-border-subtle)]">
-        <div>
-          @if (step() === 'preview') {
-            <button
-              (click)="goBack()"
-              class="px-4 py-2 text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors">
-              <lucide-icon name="ArrowLeft" class="!w-4 !h-4 align-middle mr-1"></lucide-icon>
-              {{ 'COMMON.BACK' | translate }}
-            </button>
-          }
-        </div>
-        <div class="flex gap-3">
+      <div class="flex justify-end items-center gap-3 px-6 py-4 border-t border-[var(--color-border-subtle)]">
+        <button
+          (click)="dialogRef.close()"
+          class="px-6 py-2.5 rounded-lg bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground transition-colors font-medium">
+          {{ step() === 'result' ? ('COMMON.CLOSE' | translate) : ('COMMON.CANCEL' | translate) }}
+        </button>
+        @if (step() === 'result') {
           <button
-            (click)="dialogRef.close()"
-            class="px-6 py-2.5 rounded-lg bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground transition-colors font-medium">
-            {{ step() === 'result' ? ('COMMON.CLOSE' | translate) : ('COMMON.CANCEL' | translate) }}
+            (click)="dialogRef.close(true)"
+            class="ds-btn ds-btn--primary">
+            {{ 'COMMON.DONE' | translate }}
           </button>
-          @if (step() === 'preview' && preview()!.validCount > 0) {
-            <button
-              (click)="startImport()"
-              class="ds-btn ds-btn--primary">
-              <lucide-icon name="Upload" class="shrink-0"></lucide-icon>
-              {{ 'IMPORT.IMPORT_VALID' | translate }} ({{ preview()!.validCount }})
-            </button>
-          }
-          @if (step() === 'result') {
-            <button
-              (click)="dialogRef.close(true)"
-              class="ds-btn ds-btn--primary">
-              {{ 'COMMON.DONE' | translate }}
-            </button>
-          }
-        </div>
+        }
       </div>
     </div>
   `,
@@ -273,7 +183,6 @@ export class ImportDialog {
   step = signal<ImportStep>('upload');
   dragOver = signal(false);
   fileError = signal<string | null>(null);
-  preview = signal<ImportPreview | null>(null);
   result = signal<ImportResult | null>(null);
 
   downloadTemplate(): void {
@@ -313,71 +222,28 @@ export class ImportDialog {
   private processFile(file: File): void {
     this.fileError.set(null);
 
-    // Validate file type (only CSV is supported)
     const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (extension !== '.csv') {
-      this.fileError.set('Invalid file type. Please upload a CSV file.');
+    if (extension !== '.xlsx') {
+      this.fileError.set('Formato inválido. Por favor sube un archivo Excel (.xlsx).');
       return;
     }
-
-    // Read file
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      this.parseAndPreview(content);
-    };
-    reader.onerror = () => {
-      this.fileError.set('Error reading file. Please try again.');
-    };
-    reader.readAsText(file);
-  }
-
-  private parseAndPreview(content: string): void {
-    let preview = this.importService.parseCSV(content);
-
-    if (preview.totalCount === 0) {
-      this.fileError.set('No valid rows found in the file.');
-      return;
-    }
-
-    // Validate against existing data
-    preview = {
-      ...preview,
-      rows: this.importService.validateAgainstData(preview.rows),
-      validCount: 0,
-      invalidCount: 0
-    };
-    preview.validCount = preview.rows.filter(r => r.isValid).length;
-    preview.invalidCount = preview.rows.filter(r => !r.isValid).length;
-
-    this.preview.set(preview);
-    this.step.set('preview');
-  }
-
-  goBack(): void {
-    this.step.set('upload');
-    this.preview.set(null);
-  }
-
-  startImport(): void {
-    const previewData = this.preview();
-    if (!previewData) return;
 
     this.step.set('importing');
 
-    this.importService.importRows(previewData.rows).subscribe({
+    this.importService.uploadExcel(file).subscribe({
       next: (result) => {
         this.result.set(result);
         this.step.set('result');
       },
       error: (err) => {
+        const message = err?.error?.message || err?.message || 'Error al importar el archivo.';
         this.result.set({
           success: false,
-          totalRows: previewData.totalCount,
-          validRows: previewData.validCount,
-          invalidRows: previewData.invalidCount,
+          totalRows: 0,
+          validRows: 0,
+          invalidRows: 0,
           importedCount: 0,
-          errors: [{ row: 0, field: '', message: err.message || 'Import failed' }]
+          errors: [{ row: 0, field: '', message }]
         });
         this.step.set('result');
       }

@@ -142,7 +142,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
               <div class="bg-[var(--color-surface)] rounded-lg p-4 max-h-[200px] overflow-auto">
                 <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'IMPORT.ERROR_DETAILS' | translate }}:</p>
                 <ul class="space-y-1 text-sm text-[var(--color-status-error)]">
-                  @for (error of result()!.errors; track error.row) {
+                  @for (error of result()!.errors; track $index) {
                     <li>{{ 'IMPORT.ROW' | translate }} {{ error.row }}: {{ error.message }}</li>
                   }
                 </ul>

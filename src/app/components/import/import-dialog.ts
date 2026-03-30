@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs/operators';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -53,7 +54,8 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
                   <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'IMPORT.TEMPLATE_DESC' | translate }}</p>
                   <button
                     (click)="downloadTemplate()"
-                    class="mt-3 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] text-sm font-medium flex items-center gap-1">
+                    [disabled]="downloading()"
+                    class="mt-3 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] text-sm font-medium flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
                     <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
                     {{ 'IMPORT.DOWNLOAD_TEMPLATE' | translate }}
                   </button>
@@ -182,7 +184,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 })
 export class ImportDialog {
   protected dialogRef = inject(MatDialogRef<ImportDialog>);
-  protected importService = inject(ImportService);
+  private importService = inject(ImportService);
   private destroyRef = inject(DestroyRef);
   private translate = inject(TranslateService);
 
@@ -190,10 +192,16 @@ export class ImportDialog {
   protected dragOver = signal(false);
   protected fileError = signal<string | null>(null);
   protected result = signal<ImportResult | null>(null);
+  protected downloading = signal(false);
 
   downloadTemplate(): void {
+    if (this.downloading()) return;
+    this.downloading.set(true);
     this.importService.downloadTemplate()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.downloading.set(false))
+      )
       .subscribe({
         error: () => {
           this.fileError.set(this.translate.instant('IMPORT.GENERIC_ERROR'));
@@ -257,7 +265,23 @@ export class ImportDialog {
     this.step.set('importing');
 
     this.importService.uploadExcel(file)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          // Fallback: if observable completes without emitting next or error, escape importing state
+          if (this.step() === 'importing') {
+            this.result.set({
+              success: false,
+              totalRows: 0,
+              validRows: 0,
+              invalidRows: 0,
+              importedCount: 0,
+              errors: [{ row: 0, field: '', message: this.translate.instant('IMPORT.GENERIC_ERROR') }]
+            });
+            this.step.set('result');
+          }
+        })
+      )
       .subscribe({
         next: (result) => {
           this.result.set(result);

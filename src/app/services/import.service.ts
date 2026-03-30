@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -17,6 +18,7 @@ interface BulkOperationResult {
 export class ImportService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
+  private document = inject(DOCUMENT);
 
   downloadTemplate(): Observable<void> {
     return this.http.get(`${this.apiUrl}/inventory/import-template`, {
@@ -24,12 +26,12 @@ export class ImportService {
     }).pipe(
       tap(blob => {
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = this.document.createElement('a');
         link.href = url;
         link.download = 'plantilla-importacion.xlsx';
-        document.body.appendChild(link);
+        this.document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        this.document.body.removeChild(link);
         setTimeout(() => URL.revokeObjectURL(url), 100);
       }),
       map(() => void 0)

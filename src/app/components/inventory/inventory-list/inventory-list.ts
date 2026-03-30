@@ -328,11 +328,17 @@ export class InventoryList implements OnInit {
 
   // Open import dialog
   openImportDialog(): void {
-    this.dialog.open(ImportDialog, {
+    const dialogRef = this.dialog.open(ImportDialog, {
       width: '800px',
       maxWidth: '95vw',
       disableClose: true,
       panelClass: 'import-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(imported => {
+      if (imported) {
+        this.inventoryService.refresh();
+      }
     });
   }
 

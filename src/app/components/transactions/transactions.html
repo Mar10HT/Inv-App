@@ -7,7 +7,7 @@
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'TRANSACTION.TITLE' | translate }}</h1>
           <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'TRANSACTION.SUBTITLE' | translate }}</p>
         </div>
-        <ng-container *ngxPermissionsOnly="['create_transactions']">
+        <ng-container *ngxPermissionsOnly="['transactions:create']">
           <button
             (click)="addTransaction()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
@@ -96,7 +96,7 @@
           <lucide-icon name="Receipt" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
           <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
           <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'TRANSACTION.NO_TRANSACTIONS_DESC' | translate }}</p>
-          <ng-container *ngxPermissionsOnly="['create_transactions']">
+          <ng-container *ngxPermissionsOnly="['transactions:create']">
             <button
               (click)="addTransaction()"
               class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
@@ -164,7 +164,7 @@
 
                   <!-- Actions Column -->
                   <td class="px-6 py-4">
-                    <ng-container *ngxPermissionsOnly="['delete_transactions']">
+                    <ng-container *ngxPermissionsOnly="['transactions:delete']">
                       <button
                         type="button"
                         (click)="deleteTransaction(transaction)"
@@ -218,7 +218,7 @@
                 </div>
 
                 <!-- Actions -->
-                <ng-container *ngxPermissionsOnly="['delete_transactions']">
+                <ng-container *ngxPermissionsOnly="['transactions:delete']">
                   <div class="flex justify-end pt-2 border-t border-[var(--color-border-subtle)]">
                     <button
                       type="button"

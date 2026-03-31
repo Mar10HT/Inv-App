@@ -7,7 +7,7 @@
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'USER.TITLE' | translate }}</h1>
           <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'USER.SUBTITLE' | translate }}</p>
         </div>
-        <ng-container *ngxPermissionsOnly="['create_users']">
+        <ng-container *ngxPermissionsOnly="['users:create']">
           <button
             (click)="addUser()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
@@ -118,7 +118,7 @@
           <lucide-icon name="Users" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
           <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
           <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
-          <ng-container *ngxPermissionsOnly="['create_users']">
+          <ng-container *ngxPermissionsOnly="['users:create']">
             <button
               (click)="addUser()"
               class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
@@ -174,7 +174,7 @@
                   <!-- Actions Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-1">
-                      <ng-container *ngxPermissionsOnly="['edit_users']">
+                      <ng-container *ngxPermissionsOnly="['users:edit']">
                         <button
                           type="button"
                           (click)="editUser(user)"
@@ -192,7 +192,7 @@
                           <lucide-icon name="KeyRound" class="!w-5 !h-5"></lucide-icon>
                         </button>
                       </ng-container>
-                      <ng-container *ngxPermissionsOnly="['delete_users']">
+                      <ng-container *ngxPermissionsOnly="['users:delete']">
                         <button
                           type="button"
                           (click)="deleteUser(user)"
@@ -237,7 +237,7 @@
 
                 <!-- Actions -->
                 <div class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]">
-                  <ng-container *ngxPermissionsOnly="['edit_users']">
+                  <ng-container *ngxPermissionsOnly="['users:edit']">
                     <button
                       type="button"
                       (click)="editUser(user)"
@@ -253,7 +253,7 @@
                       <lucide-icon name="KeyRound" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>
-                  <ng-container *ngxPermissionsOnly="['delete_users']">
+                  <ng-container *ngxPermissionsOnly="['users:delete']">
                     <button
                       type="button"
                       (click)="deleteUser(user)"

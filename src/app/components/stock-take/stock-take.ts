@@ -53,7 +53,7 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
                 <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'STOCK_TAKE.TITLE' | translate }}</h1>
                 <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'STOCK_TAKE.SUBTITLE' | translate }}</p>
               </div>
-              <ng-container *ngxPermissionsOnly="['create_stock_takes']">
+              <ng-container *ngxPermissionsOnly="['stocktake:create']">
                 <button
                   (click)="openNewDialog()"
                   class="ds-btn ds-btn--primary">
@@ -291,7 +291,7 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
               </div>
               @if (selectedStockTake()!.status === Status.IN_PROGRESS) {
                 <div class="flex gap-2">
-                  <ng-container *ngxPermissionsOnly="['manage_stock_takes']">
+                  <ng-container *ngxPermissionsOnly="['stocktake:manage']">
                     <button
                       (click)="cancelStockTake()"
                       class="ds-btn ds-btn--danger-ghost">

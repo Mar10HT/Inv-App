@@ -26,6 +26,12 @@ export interface AuthUser {
   warehouseIds?: string[];
 }
 
+export interface MeResponse {
+  user: AuthUser;
+  permissions: string[];
+  permissionsVersion: number;
+}
+
 export interface UpdateProfileResponse {
   message: string;
   user: AuthUser;

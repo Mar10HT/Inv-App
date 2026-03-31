@@ -12,6 +12,7 @@
     "DISCHARGES": "Solicitudes",
     "STOCK_TAKE": "Conteo Físico",
     "USERS": "Usuarios",
+    "ROLES": "Roles",
     "AUDIT": "Historial",
     "TRANSACTIONS": "Transacciones",
     "TRANSACTIONS_LIST": "Lista de Transacciones",
@@ -81,7 +82,7 @@
     "TITLE": "Importar Items",
     "SUBTITLE": "Cargar múltiples items desde un archivo Excel",
     "TEMPLATE_INFO": "Descarga la plantilla para conocer el formato correcto",
-    "TEMPLATE_DESC": "La plantilla incluye ejemplos de items BULK y UNIQUE con todos los campos disponibles.",
+    "TEMPLATE_DESC": "La plantilla incluye listas desplegables de bodegas, categorías y proveedores, además de ejemplos de items BULK y UNIQUE.",
     "DOWNLOAD_TEMPLATE": "Descargar Plantilla Excel",
     "DROP_FILE": "Arrastra y suelta tu archivo aquí",
     "OR": "o",
@@ -393,12 +394,40 @@
     "ASSIGNED_WAREHOUSES": "Bodegas Asignadas",
     "ASSIGNED_WAREHOUSES_DESC": "Seleccione las bodegas a las que este usuario tiene acceso",
     "NO_WAREHOUSES": "Sin bodegas asignadas",
-    "ALL_ACCESS": "Este rol tiene acceso a todas las bodegas"
+    "ALL_ACCESS": "Este rol tiene acceso a todas las bodegas",
+    "CUSTOM_ROLE": "Rol Personalizado",
+    "CUSTOM_ROLE_DESC": "Sobreescribir permisos con un rol específico",
+    "NO_CUSTOM_ROLE": "Ninguno (usar rol heredado)"
   },
   "USERS": {
     "TITLE": "Usuarios",
     "ADD": "Agregar Usuario",
     "EDIT": "Editar Usuario"
+  },
+  "ROLES": {
+    "TITLE": "Roles",
+    "SUBTITLE": "Gestionar roles y sus permisos",
+    "ADD": "Nuevo Rol",
+    "EDIT": "Editar Rol",
+    "LIST": "Lista de Roles",
+    "TOTAL": "Total de Roles",
+    "SYSTEM_ROLES": "Roles del Sistema",
+    "CUSTOM_ROLES": "Roles Personalizados",
+    "NAME": "Nombre",
+    "DISPLAY_NAME": "Nombre visible",
+    "DESCRIPTION": "Descripción",
+    "PERMISSIONS": "Permisos",
+    "USERS": "Usuarios",
+    "TYPE": "Tipo",
+    "SYSTEM": "Sistema",
+    "CUSTOM": "Personalizado",
+    "SELECTED": "seleccionados",
+    "NAME_HINT": "ej. MI_ROL_PERSONALIZADO",
+    "NO_ROLES": "No se encontraron roles",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Rol",
+      "MESSAGE": "¿Estás seguro de que deseas eliminar el rol \"{{name}}\"? Esta acción no se puede deshacer."
+    }
   },
   "TRANSACTION": {
     "TITLE": "Transacciones",
@@ -516,7 +545,8 @@
       "WAREHOUSE": "Bodega",
       "SUPPLIER": "Proveedor",
       "USER": "Usuario",
-      "TRANSACTION": "Transacción"
+      "TRANSACTION": "Transacción",
+      "ROLE": "Rol"
     }
   },
   "LOGIN": {
@@ -664,7 +694,16 @@
       "FROM": "Origen",
       "TO": "Destino",
       "USER": "Usuario"
-    }
+    },
+    "TAB_DOWNLOADS": "Descargas",
+    "DOWNLOAD_EXCEL": "Descarga reportes Excel generados por el servidor",
+    "EXCEL_INVENTORY": "Inventario",
+    "EXCEL_LOW_STOCK": "Stock Bajo",
+    "EXCEL_TRANSACTIONS": "Transacciones",
+    "EXCEL_LOANS": "Préstamos",
+    "EXCEL_TRANSFERS": "Transferencias",
+    "EXCEL_STOCK_TAKES": "Conteos Físicos",
+    "EXCEL_DISCHARGES": "Bajas"
   },
   "STATUS": {
     "IN_STOCK": "En Stock",
@@ -1072,5 +1111,51 @@
     "LIGHT": "Claro",
     "DARK": "Oscuro",
     "SYSTEM": "Sistema"
+  },
+  "ALERTS": {
+    "TITLE": "Alertas",
+    "NO_ALERTS": "Sin alertas activas",
+    "VIEW_ALL": "Ver todas",
+    "LOW_STOCK": "Stock bajo",
+    "OUT_OF_STOCK": "Sin stock",
+    "EXPIRING_SOON": "Por vencer",
+    "ITEM_IN": "en",
+    "RESOLVE": "Resolver",
+    "RESOLVED": "Resuelto"
+  },
+  "SCHEDULED_REPORTS": {
+    "TITLE": "Reportes Programados",
+    "SUBTITLE": "Envía reportes automáticamente por email según un horario",
+    "ADD": "Agregar Reporte",
+    "NO_REPORTS": "No hay reportes programados configurados",
+    "REPORT_TYPE": "Tipo de Reporte",
+    "FREQUENCY_LABEL": "Frecuencia",
+    "RECIPIENTS": "Emails Destinatarios",
+    "WAREHOUSE": "Bodega",
+    "LOCALE": "Idioma",
+    "NEXT_SEND": "Próximo envío",
+    "LAST_SENT": "Último envío",
+    "NEVER_SENT": "Nunca enviado",
+    "SEND_NOW": "Enviar Ahora",
+    "ACTIVE": "Activo",
+    "INACTIVE": "Inactivo",
+    "CREATED": "Reporte programado exitosamente",
+    "UPDATED": "Reporte actualizado exitosamente",
+    "DELETED": "Reporte eliminado",
+    "SENT_NOW": "Reporte enviado exitosamente",
+    "FREQUENCY": {
+      "DAILY": "Diario",
+      "WEEKLY": "Semanal",
+      "MONTHLY": "Mensual"
+    },
+    "TYPE": {
+      "INVENTORY": "Inventario",
+      "LOW_STOCK": "Stock Bajo",
+      "TRANSACTIONS": "Transacciones",
+      "LOANS": "Préstamos",
+      "TRANSFERS": "Transferencias",
+      "STOCK_TAKES": "Conteos Físicos",
+      "DISCHARGES": "Bajas"
+    }
   }
 }

@@ -38,7 +38,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
               <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'DISCHARGES.TITLE' | translate }}</h1>
               <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'DISCHARGES.SUBTITLE' | translate }}</p>
             </div>
-            <ng-container *ngxPermissionsOnly="['manage_discharges']">
+            <ng-container *ngxPermissionsOnly="['discharges:manage']">
               <button
                 (click)="openShareDialog()"
                 class="ds-btn ds-btn--primary">
@@ -184,7 +184,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                     </td>
                     <td class="px-6 py-4" (click)="$event.stopPropagation()">
                       <div class="flex items-center gap-2">
-                        <ng-container *ngxPermissionsOnly="['manage_discharges']">
+                        <ng-container *ngxPermissionsOnly="['discharges:manage']">
                           @if (request.status === Status.PENDING) {
                             <button
                               (click)="completeRequest(request)"
@@ -247,7 +247,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                     <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
                   </div>
                 </div>
-                <ng-container *ngxPermissionsOnly="['manage_discharges']">
+                <ng-container *ngxPermissionsOnly="['discharges:manage']">
                   @if (request.status === Status.PENDING) {
                     <div class="flex gap-2" (click)="$event.stopPropagation()">
                       <button

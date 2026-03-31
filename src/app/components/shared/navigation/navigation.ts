@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
+import { NotificationBellComponent } from '../notification-bell/notification-bell';
 import { AuthService } from '../../../services/auth.service';
 import { SidebarService } from '../../../services/sidebar.service';
 import { ThemeService } from '../../../services/theme.service';
@@ -27,6 +28,7 @@ import { PermissionsService } from '../../../services/permissions.service';
     TranslateModule,
     NgxPermissionsModule,
     LanguageSelectorComponent,
+    NotificationBellComponent,
   ],
   templateUrl: './navigation.html',
   styleUrls: ['./navigation.css', './navigation-mobile.css']

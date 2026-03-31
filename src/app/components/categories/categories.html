@@ -7,7 +7,7 @@
           <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'CATEGORY.TITLE' | translate }}</h1>
           <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'CATEGORY.SUBTITLE' | translate }}</p>
         </div>
-        <ng-container *ngxPermissionsOnly="['create_categories']">
+        <ng-container *ngxPermissionsOnly="['categories:create']">
           <button
             (click)="addCategory()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-lg transition-all flex items-center gap-2 w-fit font-medium">
@@ -73,7 +73,7 @@
           <lucide-icon name="Tag" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
           <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'CATEGORY.NO_CATEGORIES' | translate }}</p>
           <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'CATEGORY.NO_CATEGORIES_DESC' | translate }}</p>
-          <ng-container *ngxPermissionsOnly="['create_categories']">
+          <ng-container *ngxPermissionsOnly="['categories:create']">
             <button
               (click)="addCategory()"
               class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
@@ -98,7 +98,7 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ng-container *ngxPermissionsOnly="['edit_categories']">
+                  <ng-container *ngxPermissionsOnly="['categories:edit']">
                     <button
                       type="button"
                       (click)="editCategory(category)"
@@ -107,7 +107,7 @@
                       <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                     </button>
                   </ng-container>
-                  <ng-container *ngxPermissionsOnly="['delete_categories']">
+                  <ng-container *ngxPermissionsOnly="['categories:delete']">
                     <button
                       type="button"
                       (click)="deleteCategory(category)"

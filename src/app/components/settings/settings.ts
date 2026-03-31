@@ -1,13 +1,16 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsModule } from 'ngx-permissions';
 import { environment } from '../../../environments/environment';
 import { NotificationService } from '../../services/notification.service';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ScheduledReportsService, ScheduledReport } from '../../services/scheduled-reports.service';
 
 @Component({
   selector: 'app-settings',
@@ -15,10 +18,12 @@ import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    FormsModule,
     LucideAngularModule,
     MatSnackBarModule,
     MatDialogModule,
-    TranslateModule
+    TranslateModule,
+    NgxPermissionsModule,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.css'
@@ -28,6 +33,7 @@ export class Settings implements OnInit {
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
+  scheduledReportsService = inject(ScheduledReportsService);
 
   currentLang = signal<string>('en');
   darkMode = signal<boolean>(true);
@@ -36,7 +42,19 @@ export class Settings implements OnInit {
   exporting = signal<boolean>(false);
   resetting = signal<boolean>(false);
 
+  // Scheduled reports
+  showScheduledForm = signal(false);
+  editingReport = signal<ScheduledReport | null>(null);
+  scheduledForm = {
+    reportType: 'INVENTORY' as ScheduledReport['reportType'],
+    frequency: 'WEEKLY' as ScheduledReport['frequency'],
+    recipientEmails: '',
+    locale: 'es',
+  };
+
   ngOnInit(): void {
+    this.scheduledReportsService.loadAll();
+
     // Load saved preferences (local)
     const savedLang = localStorage.getItem('language') || 'en';
     this.currentLang.set(savedLang);
@@ -129,6 +147,59 @@ export class Settings implements OnInit {
         this.exporting.set(false);
         this.notifications.handleError(err);
       }
+    });
+  }
+
+  // Scheduled reports methods
+  toggleScheduledForm(): void {
+    this.editingReport.set(null);
+    this.scheduledForm = { reportType: 'INVENTORY', frequency: 'WEEKLY', recipientEmails: '', locale: 'es' };
+    this.showScheduledForm.update(v => !v);
+  }
+
+  cancelScheduledForm(): void {
+    this.showScheduledForm.set(false);
+    this.editingReport.set(null);
+  }
+
+  saveScheduledReport(): void {
+    const editing = this.editingReport();
+    if (editing) {
+      this.scheduledReportsService.update(editing.id, this.scheduledForm).subscribe({
+        next: () => {
+          this.cancelScheduledForm();
+          this.notifications.success('SCHEDULED_REPORTS.UPDATED');
+        },
+        error: (err) => this.notifications.handleError(err),
+      });
+    } else {
+      this.scheduledReportsService.create(this.scheduledForm).subscribe({
+        next: () => {
+          this.cancelScheduledForm();
+          this.notifications.success('SCHEDULED_REPORTS.CREATED');
+        },
+        error: (err) => this.notifications.handleError(err),
+      });
+    }
+  }
+
+  toggleReportActive(report: ScheduledReport): void {
+    this.scheduledReportsService.update(report.id, { isActive: !report.isActive }).subscribe({
+      error: (err) => this.notifications.handleError(err),
+    });
+  }
+
+  deleteScheduledReport(id: string): void {
+    this.scheduledReportsService.delete(id).subscribe({
+      next: () => this.notifications.success('SCHEDULED_REPORTS.DELETED'),
+      error: (err) => this.notifications.handleError(err),
+    });
+  }
+
+  sendReportNow(id: string): void {
+    this.scheduledReportsService.sendNow(id).subscribe({
+      next: () => this.notifications.success('SCHEDULED_REPORTS.SENT_NOW'),
+      error: (err) => this.notifications.handleError(err),
     });
   }
 

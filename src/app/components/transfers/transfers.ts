@@ -58,7 +58,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
               </button>
-              <ng-container *ngxPermissionsOnly="['create_transfers']">
+              <ng-container *ngxPermissionsOnly="['transfers:create']">
                 <button
                   (click)="openNewRequestDialog()"
                   class="ds-btn ds-btn--primary">
@@ -228,7 +228,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex items-center justify-center gap-2">
                         @switch (request.status) {
                           @case (Status.PENDING) {
-                            <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                            <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
                                 (click)="approveRequest(request)"
                                 class="ds-btn ds-btn--approve ds-btn--sm">
@@ -244,7 +244,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             </ng-container>
                           }
                           @case (Status.APPROVED) {
-                            <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                            <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
                                 (click)="sendTransfer(request)"
                                 class="ds-btn ds-btn--send ds-btn--sm">
@@ -325,7 +325,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                 <!-- Mobile Actions -->
                 @switch (request.status) {
                   @case (Status.PENDING) {
-                    <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                    <ng-container *ngxPermissionsOnly="['transfers:manage']">
                       <div class="flex gap-2">
                         <button
                           (click)="approveRequest(request)"
@@ -343,7 +343,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                     </ng-container>
                   }
                   @case (Status.APPROVED) {
-                    <ng-container *ngxPermissionsOnly="['manage_transfers']">
+                    <ng-container *ngxPermissionsOnly="['transfers:manage']">
                       <div class="flex gap-2">
                         <button
                           (click)="sendTransfer(request)"

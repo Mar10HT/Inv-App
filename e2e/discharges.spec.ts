@@ -1,16 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-async function login(page: import('@playwright/test').Page) {
-  await page.goto('/login');
-  await page.fill('input[type="email"]', 'admin@test.com');
-  await page.fill('input[type="password"]', 'password123');
-  await page.getByRole('button', { name: /login|iniciar/i }).click();
-  await expect(page).toHaveURL(/dashboard/, { timeout: 10000 });
-}
-
 test.describe('Discharge requests — admin view', () => {
   test.beforeEach(async ({ page }) => {
-    await login(page);
     await page.goto('/discharges');
   });
 

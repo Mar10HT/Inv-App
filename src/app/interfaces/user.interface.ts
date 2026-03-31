@@ -12,6 +12,7 @@ export interface User {
   password?: string;
   name?: string;
   role: UserRole;
+  roleId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +22,7 @@ export interface CreateUserDto {
   password: string;
   name?: string;
   role?: UserRole;
+  roleId?: string;
 }
 
 export interface UpdateUserDto {
@@ -28,4 +30,5 @@ export interface UpdateUserDto {
   password?: string;
   name?: string;
   role?: UserRole;
+  roleId?: string;
 }

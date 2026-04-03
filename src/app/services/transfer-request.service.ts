@@ -88,10 +88,10 @@ export class TransferRequestService {
         this.logger.error('Error loading transfer requests', err);
         this.errorSignal.set(err.message || 'Error loading transfer requests');
         return of([]);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     ).subscribe(requests => {
       this.requestsSignal.set(requests);
-      this.loadingSignal.set(false);
     });
   }
 

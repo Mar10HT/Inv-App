@@ -1,4 +1,5 @@
-import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -235,12 +236,14 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
                                 (click)="sendLoan(loan)"
+                                [disabled]="loanService.loading()"
                                 class="ds-btn ds-btn--send ds-btn--sm">
                                 <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                                 <span>{{ 'LOANS.SEND' | translate }}</span>
                               </button>
                               <button
                                 (click)="cancelLoan(loan)"
+                                [disabled]="loanService.loading()"
                                 [attr.aria-label]="'COMMON.CANCEL' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -270,6 +273,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
                                 (click)="initiateReturn(loan)"
+                                [disabled]="loanService.loading()"
                                 class="ds-btn ds-btn--return ds-btn--sm">
                                 <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                                 <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
@@ -390,12 +394,14 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       <div class="flex gap-2">
                         <button
                           (click)="sendLoan(loan)"
+                          [disabled]="loanService.loading()"
                           class="flex-1 ds-btn ds-btn--send ds-btn--sm justify-center">
                           <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                           <span>{{ 'LOANS.SEND' | translate }}</span>
                         </button>
                         <button
                           (click)="cancelLoan(loan)"
+                          [disabled]="loanService.loading()"
                           [attr.aria-label]="'COMMON.CANCEL' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -426,6 +432,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     <ng-container *ngxPermissionsOnly="['loans:manage']">
                       <button
                         (click)="initiateReturn(loan)"
+                        [disabled]="loanService.loading()"
                         class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">
                         <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                         <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
@@ -543,6 +550,7 @@ export class LoansComponent implements OnInit {
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
   // Expose enum
   LoanStatus = LoanStatus;
@@ -579,15 +587,20 @@ export class LoansComponent implements OnInit {
     return loans.slice(start, start + this.pageSize);
   });
 
+  constructor() {
+    // Reactively re-apply filters whenever the service loans signal updates
+    effect(() => {
+      this.loanService.loans();
+      this.applyFilters();
+    });
+  }
+
   ngOnInit(): void {
     // Load required data (loans are loaded by the service constructor)
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err)
     });
     this.inventoryService.loadItems();
-
-    // Apply filters after short delay to allow data to load
-    setTimeout(() => this.applyFilters(), 100);
   }
 
   applyFilters(): void {
@@ -643,9 +656,9 @@ export class LoansComponent implements OnInit {
 
   onLoanCreated(result: LoanFormResult): void {
     this.closeNewLoanDialog();
-    // Reload loans from server to ensure fresh data
-    this.loanService.loadLoans();
-    setTimeout(() => this.applyFilters(), 300);
+    // The WebSocket subscription in LoanService already reloads on changes;
+    // calling loadLoans() here would cause a double HTTP request.
+    this.applyFilters();
   }
 
   // ==================== QR Operations ====================
@@ -666,7 +679,7 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.loanService.sendLoan(loan.id).subscribe({
           next: (result) => {
@@ -704,7 +717,7 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.loanService.initiateReturn(loan.id).subscribe({
           next: (result) => {
@@ -742,7 +755,7 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.loanService.cancelLoan(loan.id).subscribe({
           next: (result) => {
@@ -773,7 +786,7 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.loanService.manualConfirmReceipt(loan.id).subscribe({
           next: (result) => {
@@ -804,7 +817,7 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.loanService.manualConfirmReturn(loan.id).subscribe({
           next: (result) => {

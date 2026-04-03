@@ -1,4 +1,5 @@
-import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -231,12 +232,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
                                 (click)="approveRequest(request)"
+                                [disabled]="transferService.loading()"
                                 class="ds-btn ds-btn--approve ds-btn--sm">
                                 <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                                 <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
                               </button>
                               <button
                                 (click)="rejectRequest(request)"
+                                [disabled]="transferService.loading()"
                                 [attr.aria-label]="'TRANSFERS.REJECT' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -247,12 +250,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
                                 (click)="sendTransfer(request)"
+                                [disabled]="transferService.loading()"
                                 class="ds-btn ds-btn--send ds-btn--sm">
                                 <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                                 <span>{{ 'TRANSFERS.SEND' | translate }}</span>
                               </button>
                               <button
                                 (click)="cancelRequest(request)"
+                                [disabled]="transferService.loading()"
                                 [attr.aria-label]="'COMMON.CANCEL' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -340,12 +345,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex gap-2">
                         <button
                           (click)="approveRequest(request)"
+                          [disabled]="transferService.loading()"
                           class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
                           <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                           <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
                         </button>
                         <button
                           (click)="rejectRequest(request)"
+                          [disabled]="transferService.loading()"
                           [attr.aria-label]="'TRANSFERS.REJECT' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -358,12 +365,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex gap-2">
                         <button
                           (click)="sendTransfer(request)"
+                          [disabled]="transferService.loading()"
                           class="flex-1 ds-btn ds-btn--send ds-btn--sm justify-center">
                           <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                           <span>{{ 'TRANSFERS.SEND' | translate }}</span>
                         </button>
                         <button
                           (click)="cancelRequest(request)"
+                          [disabled]="transferService.loading()"
                           [attr.aria-label]="'COMMON.CANCEL' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -460,6 +469,7 @@ export class TransfersComponent implements OnInit {
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
   // Expose enum
   Status = TransferRequestStatus;
@@ -499,13 +509,20 @@ export class TransfersComponent implements OnInit {
     return requests.slice(start, start + this.pageSize);
   });
 
+  constructor() {
+    // Reactively re-apply filters whenever the service requests signal updates
+    effect(() => {
+      this.transferService.requests();
+      this.applyFilters();
+    });
+  }
+
   ngOnInit(): void {
     // Transfer requests are loaded by the service constructor
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err)
     });
     this.inventoryService.loadItems();
-    setTimeout(() => this.applyFilters(), 100);
   }
 
   applyFilters(): void {
@@ -578,7 +595,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.approveRequest(request.id).subscribe({
           next: (result) => {
@@ -634,7 +651,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.sendTransfer(request.id).subscribe({
           next: (result) => {
@@ -668,7 +685,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.cancelRequest(request.id).subscribe({
           next: (result) => {
@@ -699,7 +716,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.manualConfirmReceipt(request.id).subscribe({
           next: (result) => {

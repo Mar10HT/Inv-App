@@ -118,16 +118,19 @@ export class LoanService implements OnDestroy {
         this.logger.error('Error loading loans', err);
         this.errorSignal.set(err.message || 'Error loading loans');
         return of([]);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     ).subscribe(loans => {
       this.loansSignal.set(loans);
-      this.loadingSignal.set(false);
     });
   }
 
   /**
-   * Transform backend loan to frontend format
+   * Transform backend loan to frontend format.
+   * `any` is intentional here — the backend response shape is not typed at the
+   * transport layer. A dedicated raw-response interface can be added later.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private transformLoan(loan: any): Loan {
     return {
       id: loan.id,

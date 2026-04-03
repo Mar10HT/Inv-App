@@ -1,4 +1,5 @@
-import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -53,7 +54,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                 <span>{{ 'TRANSFERS.QR.SCAN' | translate }}</span>
               </button>
               <button
-                (click)="exportToCSV()"
+                (click)="exportToXLSX()"
                 class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
@@ -138,7 +139,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                 <input
                   type="text"
                   [(ngModel)]="searchQuery"
-                  (ngModelChange)="applyFilters()"
+                  (ngModelChange)="onFilterChange()"
                   [placeholder]="'TRANSFERS.SEARCH_PLACEHOLDER' | translate"
                   class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
@@ -150,7 +151,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
             <div class="lg:w-56">
               <select
                 [(ngModel)]="selectedStatus"
-                (ngModelChange)="applyFilters()"
+                (ngModelChange)="onFilterChange()"
                 class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'TRANSFERS.ALL_STATUS' | translate }}</option>
@@ -231,12 +232,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
                                 (click)="approveRequest(request)"
+                                [disabled]="transferService.loading()"
                                 class="ds-btn ds-btn--approve ds-btn--sm">
                                 <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                                 <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
                               </button>
                               <button
                                 (click)="rejectRequest(request)"
+                                [disabled]="transferService.loading()"
                                 [attr.aria-label]="'TRANSFERS.REJECT' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -247,12 +250,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
                                 (click)="sendTransfer(request)"
+                                [disabled]="transferService.loading()"
                                 class="ds-btn ds-btn--send ds-btn--sm">
                                 <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                                 <span>{{ 'TRANSFERS.SEND' | translate }}</span>
                               </button>
                               <button
                                 (click)="cancelRequest(request)"
+                                [disabled]="transferService.loading()"
                                 [attr.aria-label]="'COMMON.CANCEL' | translate"
                                 class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                                 <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -260,12 +265,23 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             </ng-container>
                           }
                           @case (Status.SENT) {
-                            <button
-                              (click)="showQrCode(request)"
-                              class="ds-btn ds-btn--qr ds-btn--sm">
-                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                              <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
-                            </button>
+                            <div class="flex gap-1.5">
+                              <button
+                                (click)="showQrCode(request)"
+                                class="ds-btn ds-btn--qr ds-btn--sm">
+                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                                <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
+                              </button>
+                              <ng-container *ngxPermissionsOnly="['transfers:manage']">
+                                <button
+                                  (click)="manualConfirmReceipt(request)"
+                                  [disabled]="transferService.loading()"
+                                  [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
+                                  class="ds-btn ds-btn--ghost ds-btn--sm">
+                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                </button>
+                              </ng-container>
+                            </div>
                           }
                           @case (Status.COMPLETED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | date:'mediumDate' }}</span>
@@ -329,12 +345,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex gap-2">
                         <button
                           (click)="approveRequest(request)"
+                          [disabled]="transferService.loading()"
                           class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
                           <lucide-icon name="Check" class="shrink-0"></lucide-icon>
                           <span>{{ 'TRANSFERS.APPROVE' | translate }}</span>
                         </button>
                         <button
                           (click)="rejectRequest(request)"
+                          [disabled]="transferService.loading()"
                           [attr.aria-label]="'TRANSFERS.REJECT' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -347,12 +365,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <div class="flex gap-2">
                         <button
                           (click)="sendTransfer(request)"
+                          [disabled]="transferService.loading()"
                           class="flex-1 ds-btn ds-btn--send ds-btn--sm justify-center">
                           <lucide-icon name="Send" class="shrink-0"></lucide-icon>
                           <span>{{ 'TRANSFERS.SEND' | translate }}</span>
                         </button>
                         <button
                           (click)="cancelRequest(request)"
+                          [disabled]="transferService.loading()"
                           [attr.aria-label]="'COMMON.CANCEL' | translate"
                           class="ds-btn ds-btn--danger-ghost ds-btn--sm">
                           <lucide-icon name="X" class="shrink-0"></lucide-icon>
@@ -361,12 +381,23 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                     </ng-container>
                   }
                   @case (Status.SENT) {
-                    <button
-                      (click)="showQrCode(request)"
-                      class="w-full ds-btn ds-btn--qr ds-btn--sm justify-center">
-                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                      <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
-                    </button>
+                    <div class="flex gap-2">
+                      <button
+                        (click)="showQrCode(request)"
+                        class="flex-1 ds-btn ds-btn--qr ds-btn--sm justify-center">
+                        <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                        <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
+                      </button>
+                      <ng-container *ngxPermissionsOnly="['transfers:manage']">
+                        <button
+                          (click)="manualConfirmReceipt(request)"
+                          [disabled]="transferService.loading()"
+                          [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
+                          class="ds-btn ds-btn--ghost ds-btn--sm">
+                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                        </button>
+                      </ng-container>
+                    </div>
                   }
                 }
               </div>
@@ -432,12 +463,13 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
   `
 })
 export class TransfersComponent implements OnInit {
-  private transferService = inject(TransferRequestService);
+  protected transferService = inject(TransferRequestService);
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
   // Expose enum
   Status = TransferRequestStatus;
@@ -477,13 +509,20 @@ export class TransfersComponent implements OnInit {
     return requests.slice(start, start + this.pageSize);
   });
 
+  constructor() {
+    // Reactively re-apply filters whenever the service requests signal updates
+    effect(() => {
+      this.transferService.requests();
+      this.applyFilters();
+    }, { allowSignalWrites: true });
+  }
+
   ngOnInit(): void {
+    // Transfer requests are loaded by the service constructor
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err)
     });
     this.inventoryService.loadItems();
-    this.transferService.loadRequests();
-    setTimeout(() => this.applyFilters(), 100);
   }
 
   applyFilters(): void {
@@ -506,15 +545,20 @@ export class TransfersComponent implements OnInit {
     }
 
     // Sort by date descending
-    requests = requests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    requests = [...requests].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     this.filteredRequestsSignal.set(requests);
+  }
+
+  onFilterChange(): void {
     this.pageIndex = 0;
+    this.applyFilters();
   }
 
   clearFilters(): void {
     this.searchQuery = '';
     this.selectedStatus = 'all';
+    this.pageIndex = 0;
     this.applyFilters();
   }
 
@@ -556,7 +600,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.approveRequest(request.id).subscribe({
           next: (result) => {
@@ -612,7 +656,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.sendTransfer(request.id).subscribe({
           next: (result) => {
@@ -646,7 +690,7 @@ export class TransfersComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed) {
         this.transferService.cancelRequest(request.id).subscribe({
           next: (result) => {
@@ -657,6 +701,39 @@ export class TransfersComponent implements OnInit {
           },
           error: () => {
             this.notifications.error(this.translate.instant('TRANSFERS.CANCEL_ERROR'));
+          }
+        });
+      }
+    });
+  }
+
+  // ==================== Manual Confirmation (No QR) ====================
+
+  manualConfirmReceipt(request: TransferRequest): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_TITLE'),
+        message: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_WARNING'),
+        confirmText: this.translate.instant('TRANSFERS.MANUAL_CONFIRM'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'warning'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
+      if (confirmed) {
+        this.transferService.manualConfirmReceipt(request.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_SUCCESS'));
+              this.applyFilters();
+            } else {
+              this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
+            }
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
           }
         });
       }
@@ -726,7 +803,7 @@ export class TransfersComponent implements OnInit {
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
-  exportToCSV(): void {
+  exportToXLSX(): void {
     this.transferService.exportToXLSX(this.filteredRequests());
   }
 }

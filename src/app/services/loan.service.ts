@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { downloadStyledXLSX } from '../utils/xlsx.utils';
-import { Observable, tap, map, catchError, of, Subject } from 'rxjs';
+import { Observable, tap, map, catchError, of, Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
@@ -27,6 +27,8 @@ interface PaginatedResponse<T> {
     hasPrevPage: boolean;
   };
 }
+
+const MAX_LOANS_LIMIT = 200;
 
 @Injectable({
   providedIn: 'root'
@@ -108,7 +110,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    const params = new HttpParams().set('limit', '200');
+    const params = new HttpParams().set('limit', String(MAX_LOANS_LIMIT));
 
     this.http.get<PaginatedResponse<any>>(this.apiUrl, { params }).pipe(
       map(response => response.data.map((loan: any) => this.transformLoan(loan))),
@@ -116,16 +118,19 @@ export class LoanService implements OnDestroy {
         this.logger.error('Error loading loans', err);
         this.errorSignal.set(err.message || 'Error loading loans');
         return of([]);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     ).subscribe(loans => {
       this.loansSignal.set(loans);
-      this.loadingSignal.set(false);
     });
   }
 
   /**
-   * Transform backend loan to frontend format
+   * Transform backend loan to frontend format.
+   * `any` is intentional here — the backend response shape is not typed at the
+   * transport layer. A dedicated raw-response interface can be added later.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private transformLoan(loan: any): Loan {
     return {
       id: loan.id,
@@ -144,10 +149,10 @@ export class LoanService implements OnDestroy {
       // QR fields
       sendQrCode: loan.sendQrCode,
       returnQrCode: loan.returnQrCode,
-      receivedAt: loan.receivedAt ? new Date(loan.receivedAt) : undefined,
+      receivedAt: loan.receivedAt && !isNaN(new Date(loan.receivedAt).getTime()) ? new Date(loan.receivedAt) : undefined,
       receivedById: loan.receivedById,
       receivedByName: loan.receivedBy?.name || loan.receivedBy?.email,
-      returnConfirmedAt: loan.returnConfirmedAt ? new Date(loan.returnConfirmedAt) : undefined,
+      returnConfirmedAt: loan.returnConfirmedAt && !isNaN(new Date(loan.returnConfirmedAt).getTime()) ? new Date(loan.returnConfirmedAt) : undefined,
       returnConfirmedById: loan.returnConfirmedById,
       returnConfirmedByName: loan.returnConfirmedBy?.name || loan.returnConfirmedBy?.email,
       notes: loan.notes,
@@ -167,20 +172,15 @@ export class LoanService implements OnDestroy {
 
     return this.http.post<any>(this.apiUrl, dto).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (newLoan) => {
-          this.loansSignal.update(loans => [newLoan, ...loans]);
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error creating loan');
-          this.loadingSignal.set(false);
-        }
+      tap(newLoan => {
+        this.loansSignal.update(loans => [newLoan, ...loans]);
       }),
       catchError(err => {
         this.logger.error('Error creating loan', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error creating loan');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -193,22 +193,67 @@ export class LoanService implements OnDestroy {
 
     return this.http.patch<any>(`${this.apiUrl}/${loanId}/return`, dto || {}).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === loanId ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error returning loan');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error returning loan', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error returning loan');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
+    );
+  }
+
+  // ==================== Manual Confirmation (No QR) ====================
+
+  /**
+   * Manually confirm receipt of a loan without QR code.
+   * Accepts SENT or OVERDUE loans.
+   */
+  manualConfirmReceipt(loanId: string): Observable<Loan | null> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
+      map(loan => this.transformLoan(loan)),
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
+      }),
+      catchError(err => {
+        this.logger.error('Error manually confirming receipt', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming receipt');
+        return of(null);
+      }),
+      finalize(() => this.loadingSignal.set(false))
+    );
+  }
+
+  /**
+   * Manually confirm return of a loan without QR code.
+   * Accepts RETURN_PENDING or OVERDUE loans.
+   */
+  manualConfirmReturn(loanId: string): Observable<Loan | null> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
+      map(loan => this.transformLoan(loan)),
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
+      }),
+      catchError(err => {
+        this.logger.error('Error manually confirming return', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming return');
+        return of(null);
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -226,22 +271,17 @@ export class LoanService implements OnDestroy {
         ...this.transformLoan(response),
         qrCodeDataUrl: response.qrCodeDataUrl
       })),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === loanId ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error sending loan');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error sending loan', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error sending loan');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -254,22 +294,17 @@ export class LoanService implements OnDestroy {
 
     return this.http.post<any>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error confirming receipt');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error confirming receipt', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming receipt');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -285,22 +320,17 @@ export class LoanService implements OnDestroy {
         ...this.transformLoan(response),
         qrCodeDataUrl: response.qrCodeDataUrl
       })),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === loanId ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error initiating return');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error initiating return', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error initiating return');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -313,22 +343,17 @@ export class LoanService implements OnDestroy {
 
     return this.http.post<any>(`${this.apiUrl}/confirm-return`, { qrCode }).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error confirming return');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error confirming return', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming return');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -341,22 +366,17 @@ export class LoanService implements OnDestroy {
 
     return this.http.post<any>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error processing QR code');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error processing QR code', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error processing QR code');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -382,22 +402,17 @@ export class LoanService implements OnDestroy {
 
     return this.http.patch<any>(`${this.apiUrl}/${loanId}/cancel`, {}).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === loanId ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error canceling loan');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error canceling loan', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error canceling loan');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -500,15 +515,14 @@ export class LoanService implements OnDestroy {
     return this.http.delete<void>(`${this.apiUrl}/${loanId}`).pipe(
       map(() => {
         this.loansSignal.update(loans => loans.filter(l => l.id !== loanId));
-        this.loadingSignal.set(false);
         return true;
       }),
       catchError(err => {
         this.logger.error('Error deleting loan', err);
         this.errorSignal.set(err.message || 'Error deleting loan');
-        this.loadingSignal.set(false);
         return of(false);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 

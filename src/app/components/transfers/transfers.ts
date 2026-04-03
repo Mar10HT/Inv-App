@@ -139,7 +139,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                 <input
                   type="text"
                   [(ngModel)]="searchQuery"
-                  (ngModelChange)="applyFilters()"
+                  (ngModelChange)="onFilterChange()"
                   [placeholder]="'TRANSFERS.SEARCH_PLACEHOLDER' | translate"
                   class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
@@ -151,7 +151,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
             <div class="lg:w-56">
               <select
                 [(ngModel)]="selectedStatus"
-                (ngModelChange)="applyFilters()"
+                (ngModelChange)="onFilterChange()"
                 class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'TRANSFERS.ALL_STATUS' | translate }}</option>
@@ -548,12 +548,17 @@ export class TransfersComponent implements OnInit {
     requests = [...requests].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     this.filteredRequestsSignal.set(requests);
+  }
+
+  onFilterChange(): void {
     this.pageIndex = 0;
+    this.applyFilters();
   }
 
   clearFilters(): void {
     this.searchQuery = '';
     this.selectedStatus = 'all';
+    this.pageIndex = 0;
     this.applyFilters();
   }
 

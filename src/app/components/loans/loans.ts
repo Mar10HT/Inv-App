@@ -140,7 +140,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                 <input
                   type="text"
                   [(ngModel)]="searchQuery"
-                  (ngModelChange)="applyFilters()"
+                  (ngModelChange)="onFilterChange()"
                   [placeholder]="'LOANS.SEARCH_PLACEHOLDER' | translate"
                   class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
@@ -152,7 +152,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
             <div class="lg:w-56">
               <select
                 [(ngModel)]="selectedStatus"
-                (ngModelChange)="applyFilters()"
+                (ngModelChange)="onFilterChange()"
                 class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'LOANS.ALL_STATUS' | translate }}</option>
@@ -626,12 +626,17 @@ export class LoansComponent implements OnInit {
     loans = [...loans].sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
 
     this.filteredLoansSignal.set(loans);
+  }
+
+  onFilterChange(): void {
     this.pageIndex = 0;
+    this.applyFilters();
   }
 
   clearFilters(): void {
     this.searchQuery = '';
     this.selectedStatus = 'all';
+    this.pageIndex = 0;
     this.applyFilters();
   }
 

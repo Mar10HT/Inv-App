@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { downloadStyledXLSX } from '../utils/xlsx.utils';
-import { Observable, tap, map, catchError, of, Subject } from 'rxjs';
+import { Observable, tap, map, catchError, of, Subject, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
@@ -144,7 +144,7 @@ export class LoanService implements OnDestroy {
       // QR fields
       sendQrCode: loan.sendQrCode,
       returnQrCode: loan.returnQrCode,
-      receivedAt: loan.receivedAt ? new Date(loan.receivedAt) : undefined,
+      receivedAt: loan.receivedAt && !isNaN(new Date(loan.receivedAt).getTime()) ? new Date(loan.receivedAt) : undefined,
       receivedById: loan.receivedById,
       receivedByName: loan.receivedBy?.name || loan.receivedBy?.email,
       returnConfirmedAt: loan.returnConfirmedAt ? new Date(loan.returnConfirmedAt) : undefined,
@@ -224,22 +224,17 @@ export class LoanService implements OnDestroy {
 
     return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === loanId ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error confirming receipt');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error manually confirming receipt', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming receipt');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -253,22 +248,17 @@ export class LoanService implements OnDestroy {
 
     return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
       map(loan => this.transformLoan(loan)),
-      tap({
-        next: (updatedLoan) => {
-          this.loansSignal.update(loans =>
-            loans.map(l => l.id === loanId ? updatedLoan : l)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error confirming return');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedLoan => {
+        this.loansSignal.update(loans =>
+          loans.map(l => l.id === loanId ? updatedLoan : l)
+        );
       }),
       catchError(err => {
         this.logger.error('Error manually confirming return', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming return');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 

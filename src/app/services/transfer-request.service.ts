@@ -314,6 +314,15 @@ export class TransferRequestService {
   // ==================== Standard Operations ====================
 
   /**
+   * Manually confirm receipt of a transfer without QR code.
+   * Uses the same /complete endpoint as the legacy flow — both execute the same
+   * inventory transaction. Explicitly named to clarify intent at the call site.
+   */
+  manualConfirmReceipt(id: string): Observable<TransferRequest | null> {
+    return this.completeTransfer(id);
+  }
+
+  /**
    * Complete transfer without QR (legacy method)
    */
   completeTransfer(id: string): Observable<TransferRequest | null> {

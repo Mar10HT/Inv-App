@@ -699,7 +699,7 @@ export class TransfersComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.transferService.completeTransfer(request.id).subscribe({
+        this.transferService.manualConfirmReceipt(request.id).subscribe({
           next: (result) => {
             if (result) {
               this.notifications.success(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_SUCCESS'));

@@ -152,7 +152,7 @@ export class LoanService implements OnDestroy {
       receivedAt: loan.receivedAt && !isNaN(new Date(loan.receivedAt).getTime()) ? new Date(loan.receivedAt) : undefined,
       receivedById: loan.receivedById,
       receivedByName: loan.receivedBy?.name || loan.receivedBy?.email,
-      returnConfirmedAt: loan.returnConfirmedAt ? new Date(loan.returnConfirmedAt) : undefined,
+      returnConfirmedAt: loan.returnConfirmedAt && !isNaN(new Date(loan.returnConfirmedAt).getTime()) ? new Date(loan.returnConfirmedAt) : undefined,
       returnConfirmedById: loan.returnConfirmedById,
       returnConfirmedByName: loan.returnConfirmedBy?.name || loan.returnConfirmedBy?.email,
       notes: loan.notes,

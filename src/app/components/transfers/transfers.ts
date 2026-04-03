@@ -514,7 +514,7 @@ export class TransfersComponent implements OnInit {
     effect(() => {
       this.transferService.requests();
       this.applyFilters();
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {

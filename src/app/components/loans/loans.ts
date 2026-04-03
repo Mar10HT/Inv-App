@@ -592,7 +592,7 @@ export class LoansComponent implements OnInit {
     effect(() => {
       this.loanService.loans();
       this.applyFilters();
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
@@ -797,7 +797,6 @@ export class LoansComponent implements OnInit {
           next: (result) => {
             if (result) {
               this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'));
-              this.applyFilters();
             } else {
               this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
             }
@@ -828,7 +827,6 @@ export class LoansComponent implements OnInit {
           next: (result) => {
             if (result) {
               this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
-              this.applyFilters();
             } else {
               this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
             }

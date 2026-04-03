@@ -163,6 +163,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                 <option [value]="LoanStatus.OVERDUE">{{ 'LOANS.STATUS.OVERDUE' | translate }}</option>
                 <option [value]="LoanStatus.RETURNED">{{ 'LOANS.STATUS.RETURNED' | translate }}</option>
                 <option [value]="LoanStatus.CANCELLED">{{ 'LOANS.STATUS.CANCELLED' | translate }}</option>
+                <option [value]="LoanStatus.ACTIVE">{{ 'LOANS.STATUS.ACTIVE' | translate }}</option>
               </select>
             </div>
 
@@ -892,7 +893,8 @@ export class LoansComponent implements OnInit {
       [LoanStatus.RETURN_PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-accent-amber-bg)]',
       [LoanStatus.RETURNED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
       [LoanStatus.OVERDUE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
-      [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]'
+      [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
+      [LoanStatus.ACTIVE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]'
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }

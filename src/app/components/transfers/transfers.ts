@@ -260,12 +260,22 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             </ng-container>
                           }
                           @case (Status.SENT) {
-                            <button
-                              (click)="showQrCode(request)"
-                              class="ds-btn ds-btn--qr ds-btn--sm">
-                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                              <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
-                            </button>
+                            <div class="flex gap-1.5">
+                              <button
+                                (click)="showQrCode(request)"
+                                class="ds-btn ds-btn--qr ds-btn--sm">
+                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                                <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
+                              </button>
+                              <ng-container *ngxPermissionsOnly="['transfers:manage']">
+                                <button
+                                  (click)="manualConfirmReceipt(request)"
+                                  [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
+                                  class="ds-btn ds-btn--ghost ds-btn--sm">
+                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                </button>
+                              </ng-container>
+                            </div>
                           }
                           @case (Status.COMPLETED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | date:'mediumDate' }}</span>
@@ -361,12 +371,22 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                     </ng-container>
                   }
                   @case (Status.SENT) {
-                    <button
-                      (click)="showQrCode(request)"
-                      class="w-full ds-btn ds-btn--qr ds-btn--sm justify-center">
-                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                      <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
-                    </button>
+                    <div class="flex gap-2">
+                      <button
+                        (click)="showQrCode(request)"
+                        class="flex-1 ds-btn ds-btn--qr ds-btn--sm justify-center">
+                        <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                        <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
+                      </button>
+                      <ng-container *ngxPermissionsOnly="['transfers:manage']">
+                        <button
+                          (click)="manualConfirmReceipt(request)"
+                          [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
+                          class="ds-btn ds-btn--ghost ds-btn--sm">
+                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                        </button>
+                      </ng-container>
+                    </div>
                   }
                 }
               </div>
@@ -657,6 +677,39 @@ export class TransfersComponent implements OnInit {
           },
           error: () => {
             this.notifications.error(this.translate.instant('TRANSFERS.CANCEL_ERROR'));
+          }
+        });
+      }
+    });
+  }
+
+  // ==================== Manual Confirmation (No QR) ====================
+
+  manualConfirmReceipt(request: TransferRequest): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_TITLE'),
+        message: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_WARNING'),
+        confirmText: this.translate.instant('TRANSFERS.MANUAL_CONFIRM'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'warning'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.transferService.completeTransfer(request.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_SUCCESS'));
+              this.applyFilters();
+            } else {
+              this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
+            }
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
           }
         });
       }

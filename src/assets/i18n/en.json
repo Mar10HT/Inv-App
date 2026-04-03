@@ -848,7 +848,16 @@
       "STEP3": "Recipient scans QR",
       "STEP4": "Initiate return (generates QR)",
       "STEP5": "Sender scans QR"
-    }
+    },
+    "MANUAL_CONFIRM_RECEIPT": "Confirm Receipt (No QR)",
+    "MANUAL_CONFIRM_RETURN": "Confirm Return (No QR)",
+    "MANUAL_CONFIRM_RECEIPT_TITLE": "Confirm Receipt Manually",
+    "MANUAL_CONFIRM_RECEIPT_WARNING": "This will confirm receipt without physical QR verification. Only use when QR scanning is not possible. This action will be recorded in the audit log.",
+    "MANUAL_CONFIRM_RETURN_TITLE": "Confirm Return Manually",
+    "MANUAL_CONFIRM_RETURN_WARNING": "This will confirm the return without physical QR verification. Only use when QR scanning is not possible. This action will be recorded in the audit log.",
+    "MANUAL_CONFIRM_RECEIPT_SUCCESS": "Receipt confirmed manually",
+    "MANUAL_CONFIRM_RETURN_SUCCESS": "Return confirmed manually",
+    "MANUAL_CONFIRM_ERROR": "Could not confirm. Please try again."
   },
   "TRANSFERS": {
     "TITLE": "Transfers",
@@ -918,7 +927,12 @@
       "SCAN_ERROR": "Error processing QR code",
       "SHOW_QR": "Show QR",
       "ERROR": "Error getting QR code"
-    }
+    },
+    "MANUAL_CONFIRM": "Confirm Receipt (No QR)",
+    "MANUAL_CONFIRM_TITLE": "Confirm Receipt Manually",
+    "MANUAL_CONFIRM_WARNING": "This will complete the transfer without physical QR verification. Only use when QR scanning is not possible. This action will be recorded in the audit log.",
+    "MANUAL_CONFIRM_SUCCESS": "Transfer completed manually",
+    "MANUAL_CONFIRM_ERROR": "Could not complete transfer. Please try again."
   },
   "DISCHARGES": {
     "TITLE": "Material Requests",

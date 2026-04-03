@@ -848,7 +848,16 @@
       "STEP3": "Destinatario escanea QR",
       "STEP4": "Iniciar devolución (genera QR)",
       "STEP5": "Remitente escanea QR"
-    }
+    },
+    "MANUAL_CONFIRM_RECEIPT": "Confirmar Recepción (Sin QR)",
+    "MANUAL_CONFIRM_RETURN": "Confirmar Devolución (Sin QR)",
+    "MANUAL_CONFIRM_RECEIPT_TITLE": "Confirmar Recepción Manualmente",
+    "MANUAL_CONFIRM_RECEIPT_WARNING": "Esto confirmará la recepción sin verificación física por QR. Usar solo cuando el escaneo QR no sea posible. Esta acción quedará registrada en el log de auditoría.",
+    "MANUAL_CONFIRM_RETURN_TITLE": "Confirmar Devolución Manualmente",
+    "MANUAL_CONFIRM_RETURN_WARNING": "Esto confirmará la devolución sin verificación física por QR. Usar solo cuando el escaneo QR no sea posible. Esta acción quedará registrada en el log de auditoría.",
+    "MANUAL_CONFIRM_RECEIPT_SUCCESS": "Recepción confirmada manualmente",
+    "MANUAL_CONFIRM_RETURN_SUCCESS": "Devolución confirmada manualmente",
+    "MANUAL_CONFIRM_ERROR": "No se pudo confirmar. Intente de nuevo."
   },
   "TRANSFERS": {
     "TITLE": "Transferencias",
@@ -918,7 +927,12 @@
       "SCAN_ERROR": "Error al procesar el código QR",
       "SHOW_QR": "Ver QR",
       "ERROR": "Error al obtener el código QR"
-    }
+    },
+    "MANUAL_CONFIRM": "Confirmar Recepción (Sin QR)",
+    "MANUAL_CONFIRM_TITLE": "Confirmar Recepción Manualmente",
+    "MANUAL_CONFIRM_WARNING": "Esto completará la transferencia sin verificación física por QR. Usar solo cuando el escaneo QR no sea posible. Esta acción quedará registrada en el log de auditoría.",
+    "MANUAL_CONFIRM_SUCCESS": "Transferencia completada manualmente",
+    "MANUAL_CONFIRM_ERROR": "No se pudo completar la transferencia. Intente de nuevo."
   },
   "DISCHARGES": {
     "TITLE": "Solicitudes de Material",

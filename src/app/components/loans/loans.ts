@@ -248,12 +248,22 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </ng-container>
                           }
                           @case (LoanStatus.SENT) {
-                            <button
-                              (click)="showQrCode(loan, 'send')"
-                              class="ds-btn ds-btn--qr ds-btn--sm">
-                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                              <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
-                            </button>
+                            <div class="flex gap-1.5">
+                              <button
+                                (click)="showQrCode(loan, 'send')"
+                                class="ds-btn ds-btn--qr ds-btn--sm">
+                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                              </button>
+                              <ng-container *ngxPermissionsOnly="['loans:manage']">
+                                <button
+                                  (click)="manualConfirmReceipt(loan)"
+                                  [attr.title]="'LOANS.MANUAL_CONFIRM_RECEIPT' | translate"
+                                  class="ds-btn ds-btn--ghost ds-btn--sm">
+                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                </button>
+                              </ng-container>
+                            </div>
                           }
                           @case (LoanStatus.RECEIVED) {
                             <ng-container *ngxPermissionsOnly="['loans:manage']">
@@ -267,21 +277,48 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                           }
                           @case (LoanStatus.OVERDUE) {
                             <ng-container *ngxPermissionsOnly="['loans:manage']">
-                              <button
-                                (click)="initiateReturn(loan)"
-                                class="ds-btn ds-btn--danger ds-btn--sm">
-                                <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
-                                <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                              </button>
+                              <div class="flex gap-1.5">
+                                @if (!loan.receivedAt) {
+                                  <button
+                                    (click)="manualConfirmReceipt(loan)"
+                                    class="ds-btn ds-btn--ghost ds-btn--sm">
+                                    <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                    <span>{{ 'LOANS.MANUAL_CONFIRM_RECEIPT' | translate }}</span>
+                                  </button>
+                                } @else {
+                                  <button
+                                    (click)="initiateReturn(loan)"
+                                    class="ds-btn ds-btn--danger ds-btn--sm">
+                                    <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
+                                    <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                                  </button>
+                                  <button
+                                    (click)="manualConfirmReturn(loan)"
+                                    [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
+                                    class="ds-btn ds-btn--ghost ds-btn--sm">
+                                    <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                  </button>
+                                }
+                              </div>
                             </ng-container>
                           }
                           @case (LoanStatus.RETURN_PENDING) {
-                            <button
-                              (click)="showQrCode(loan, 'return')"
-                              class="ds-btn ds-btn--approve ds-btn--sm">
-                              <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                              <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
-                            </button>
+                            <div class="flex gap-1.5">
+                              <button
+                                (click)="showQrCode(loan, 'return')"
+                                class="ds-btn ds-btn--approve ds-btn--sm">
+                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                              </button>
+                              <ng-container *ngxPermissionsOnly="['loans:manage']">
+                                <button
+                                  (click)="manualConfirmReturn(loan)"
+                                  [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
+                                  class="ds-btn ds-btn--ghost ds-btn--sm">
+                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                </button>
+                              </ng-container>
+                            </div>
                           }
                           @case (LoanStatus.RETURNED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | date:'mediumDate' }}</span>
@@ -372,12 +409,22 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     </ng-container>
                   }
                   @case (LoanStatus.SENT) {
-                    <button
-                      (click)="showQrCode(loan, 'send')"
-                      class="w-full ds-btn ds-btn--qr ds-btn--sm justify-center">
-                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                      <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
-                    </button>
+                    <div class="flex gap-2">
+                      <button
+                        (click)="showQrCode(loan, 'send')"
+                        class="flex-1 ds-btn ds-btn--qr ds-btn--sm justify-center">
+                        <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                        <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                      </button>
+                      <ng-container *ngxPermissionsOnly="['loans:manage']">
+                        <button
+                          (click)="manualConfirmReceipt(loan)"
+                          [attr.title]="'LOANS.MANUAL_CONFIRM_RECEIPT' | translate"
+                          class="ds-btn ds-btn--ghost ds-btn--sm">
+                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                        </button>
+                      </ng-container>
+                    </div>
                   }
                   @case (LoanStatus.RECEIVED) {
                     <ng-container *ngxPermissionsOnly="['loans:manage']">
@@ -391,21 +438,48 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                   }
                   @case (LoanStatus.OVERDUE) {
                     <ng-container *ngxPermissionsOnly="['loans:manage']">
-                      <button
-                        (click)="initiateReturn(loan)"
-                        class="w-full ds-btn ds-btn--danger ds-btn--sm justify-center">
-                        <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
-                        <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                      </button>
+                      @if (!loan.receivedAt) {
+                        <button
+                          (click)="manualConfirmReceipt(loan)"
+                          class="w-full ds-btn ds-btn--ghost ds-btn--sm justify-center">
+                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                          <span>{{ 'LOANS.MANUAL_CONFIRM_RECEIPT' | translate }}</span>
+                        </button>
+                      } @else {
+                        <div class="flex gap-2">
+                          <button
+                            (click)="initiateReturn(loan)"
+                            class="flex-1 ds-btn ds-btn--danger ds-btn--sm justify-center">
+                            <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
+                            <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
+                          </button>
+                          <button
+                            (click)="manualConfirmReturn(loan)"
+                            [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
+                            class="ds-btn ds-btn--ghost ds-btn--sm">
+                            <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                          </button>
+                        </div>
+                      }
                     </ng-container>
                   }
                   @case (LoanStatus.RETURN_PENDING) {
-                    <button
-                      (click)="showQrCode(loan, 'return')"
-                      class="w-full ds-btn ds-btn--approve ds-btn--sm justify-center">
-                      <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                      <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
-                    </button>
+                    <div class="flex gap-2">
+                      <button
+                        (click)="showQrCode(loan, 'return')"
+                        class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
+                        <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
+                        <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                      </button>
+                      <ng-container *ngxPermissionsOnly="['loans:manage']">
+                        <button
+                          (click)="manualConfirmReturn(loan)"
+                          [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
+                          class="ds-btn ds-btn--ghost ds-btn--sm">
+                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                        </button>
+                      </ng-container>
+                    </div>
                   }
                   @case (LoanStatus.ACTIVE) {
                     <ng-container *ngxPermissionsOnly="['loans:manage']">
@@ -688,6 +762,70 @@ export class LoansComponent implements OnInit {
           },
           error: () => {
             this.notifications.error(this.translate.instant('LOANS.CANCEL_ERROR'));
+          }
+        });
+      }
+    });
+  }
+
+  // ==================== Manual Confirmation (No QR) ====================
+
+  manualConfirmReceipt(loan: Loan): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_TITLE'),
+        message: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_WARNING'),
+        confirmText: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'warning'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.loanService.manualConfirmReceipt(loan.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'));
+              this.applyFilters();
+            } else {
+              this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+            }
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+          }
+        });
+      }
+    });
+  }
+
+  manualConfirmReturn(loan: Loan): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_TITLE'),
+        message: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_WARNING'),
+        confirmText: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        type: 'warning'
+      },
+      panelClass: 'confirm-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.loanService.manualConfirmReturn(loan.id).subscribe({
+          next: (result) => {
+            if (result) {
+              this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
+              this.applyFilters();
+            } else {
+              this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+            }
+          },
+          error: () => {
+            this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
           }
         });
       }

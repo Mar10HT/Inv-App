@@ -212,6 +212,66 @@ export class LoanService implements OnDestroy {
     );
   }
 
+  // ==================== Manual Confirmation (No QR) ====================
+
+  /**
+   * Manually confirm receipt of a loan without QR code.
+   * Accepts SENT or OVERDUE loans.
+   */
+  manualConfirmReceipt(loanId: string): Observable<Loan | null> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
+      map(loan => this.transformLoan(loan)),
+      tap({
+        next: (updatedLoan) => {
+          this.loansSignal.update(loans =>
+            loans.map(l => l.id === loanId ? updatedLoan : l)
+          );
+          this.loadingSignal.set(false);
+        },
+        error: (error) => {
+          this.errorSignal.set(error.error?.message || error.message || 'Error confirming receipt');
+          this.loadingSignal.set(false);
+        }
+      }),
+      catchError(err => {
+        this.logger.error('Error manually confirming receipt', err);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Manually confirm return of a loan without QR code.
+   * Accepts RETURN_PENDING or OVERDUE loans.
+   */
+  manualConfirmReturn(loanId: string): Observable<Loan | null> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
+      map(loan => this.transformLoan(loan)),
+      tap({
+        next: (updatedLoan) => {
+          this.loansSignal.update(loans =>
+            loans.map(l => l.id === loanId ? updatedLoan : l)
+          );
+          this.loadingSignal.set(false);
+        },
+        error: (error) => {
+          this.errorSignal.set(error.error?.message || error.message || 'Error confirming return');
+          this.loadingSignal.set(false);
+        }
+      }),
+      catchError(err => {
+        this.logger.error('Error manually confirming return', err);
+        return of(null);
+      })
+    );
+  }
+
   // ==================== QR-Based Operations ====================
 
   /**

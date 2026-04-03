@@ -258,6 +258,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                               <ng-container *ngxPermissionsOnly="['loans:manage']">
                                 <button
                                   (click)="manualConfirmReceipt(loan)"
+                                  [disabled]="loanService.loading()"
                                   [attr.title]="'LOANS.MANUAL_CONFIRM_RECEIPT' | translate"
                                   class="ds-btn ds-btn--ghost ds-btn--sm">
                                   <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -413,6 +414,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       <ng-container *ngxPermissionsOnly="['loans:manage']">
                         <button
                           (click)="manualConfirmReceipt(loan)"
+                          [disabled]="loanService.loading()"
                           [attr.title]="'LOANS.MANUAL_CONFIRM_RECEIPT' | translate"
                           class="ds-btn ds-btn--ghost ds-btn--sm">
                           <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -435,6 +437,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       @if (!loan.receivedAt) {
                         <button
                           (click)="manualConfirmReceipt(loan)"
+                          [disabled]="loanService.loading()"
                           class="w-full ds-btn ds-btn--ghost ds-btn--sm justify-center">
                           <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
                           <span>{{ 'LOANS.MANUAL_CONFIRM_RECEIPT' | translate }}</span>
@@ -443,6 +446,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                         <div class="flex gap-2">
                           <button
                             (click)="initiateReturn(loan)"
+                            [disabled]="loanService.loading()"
                             class="flex-1 ds-btn ds-btn--danger ds-btn--sm justify-center">
                             <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                             <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
@@ -577,7 +581,9 @@ export class LoansComponent implements OnInit {
 
   ngOnInit(): void {
     // Load required data (loans are loaded by the service constructor)
-    this.warehouseService.getAll().subscribe();
+    this.warehouseService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
     this.inventoryService.loadItems();
 
     // Apply filters after short delay to allow data to load

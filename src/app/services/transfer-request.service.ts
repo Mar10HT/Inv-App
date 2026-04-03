@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { downloadStyledXLSX } from '../utils/xlsx.utils';
-import { Observable, tap, map, catchError, of } from 'rxjs';
+import { Observable, tap, map, catchError, of, finalize } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   TransferRequest,
@@ -139,20 +139,15 @@ export class TransferRequestService {
 
     return this.http.post<any>(this.apiUrl, dto).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (newReq) => {
-          this.requestsSignal.update(requests => [newReq, ...requests]);
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error creating transfer request');
-          this.loadingSignal.set(false);
-        }
+      tap(newReq => {
+        this.requestsSignal.update(requests => [newReq, ...requests]);
       }),
       catchError(err => {
         this.logger.error('Error creating transfer request', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error creating transfer request');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -165,22 +160,17 @@ export class TransferRequestService {
 
     return this.http.patch<any>(`${this.apiUrl}/${id}/approve`, {}).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error approving transfer request');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error approving transfer request', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error approving transfer request');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -193,22 +183,17 @@ export class TransferRequestService {
 
     return this.http.patch<any>(`${this.apiUrl}/${id}/reject`, { reason }).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error rejecting transfer request');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error rejecting transfer request', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error rejecting transfer request');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -226,22 +211,17 @@ export class TransferRequestService {
         ...this.transformRequest(response),
         qrCodeDataUrl: response.qrCodeDataUrl
       })),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error sending transfer');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error sending transfer', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error sending transfer');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -254,22 +234,17 @@ export class TransferRequestService {
 
     return this.http.post<any>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === updatedReq.id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error confirming receipt');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === updatedReq.id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error confirming receipt', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error confirming receipt');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -282,22 +257,17 @@ export class TransferRequestService {
 
     return this.http.post<any>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === updatedReq.id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error processing QR code');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === updatedReq.id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error processing QR code', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error processing QR code');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -333,22 +303,17 @@ export class TransferRequestService {
 
     return this.http.patch<any>(`${this.apiUrl}/${id}/complete`, {}).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error completing transfer');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error completing transfer', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error completing transfer');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 
@@ -361,22 +326,17 @@ export class TransferRequestService {
 
     return this.http.patch<any>(`${this.apiUrl}/${id}/cancel`, {}).pipe(
       map(req => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update(requests =>
-            requests.map(r => r.id === id ? updatedReq : r)
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(error.error?.message || error.message || 'Error cancelling transfer request');
-          this.loadingSignal.set(false);
-        }
+      tap(updatedReq => {
+        this.requestsSignal.update(requests =>
+          requests.map(r => r.id === id ? updatedReq : r)
+        );
       }),
       catchError(err => {
         this.logger.error('Error cancelling transfer request', err);
+        this.errorSignal.set(err.error?.message || err.message || 'Error cancelling transfer request');
         return of(null);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 

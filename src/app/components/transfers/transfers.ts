@@ -498,11 +498,11 @@ export class TransfersComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // Transfer requests are loaded by the service constructor
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err)
     });
     this.inventoryService.loadItems();
-    this.transferService.loadRequests();
     setTimeout(() => this.applyFilters(), 100);
   }
 

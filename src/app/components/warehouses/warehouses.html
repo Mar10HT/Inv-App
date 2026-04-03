@@ -112,8 +112,7 @@
                     @if (warehouse.manager) {
                       <div class="flex items-center gap-2">
                         <div class="w-7 h-7 bg-[var(--color-primary-container)] rounded-full flex items-center justify-center flex-shrink-0">
-                          <!-- TODO: remove redundant ?. on toUpperCase() — charAt() always returns string, Angular NG8107 warning -->
-                          <span class="text-[var(--color-primary)] text-xs font-medium">{{ warehouse.manager.name?.charAt(0)?.toUpperCase() || '?' }}</span>
+                          <span class="text-[var(--color-primary)] text-xs font-medium">{{ warehouse.manager.name.charAt(0).toUpperCase() || '?' }}</span>
                         </div>
                         <span class="text-sm text-[var(--color-on-surface)]">{{ warehouse.manager.name }}</span>
                       </div>

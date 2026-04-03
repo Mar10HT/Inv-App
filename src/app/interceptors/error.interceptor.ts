@@ -1,5 +1,5 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -10,7 +10,9 @@ let isRefreshing = false;
 const refreshDone$ = new BehaviorSubject<boolean>(false);
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
+  // Use Injector instead of inject(AuthService) directly to avoid the circular
+  // dependency: AuthService → HttpClient → errorInterceptor → AuthService.
+  const injector = inject(Injector);
   const http = inject(HttpClient);
   const logger = inject(LoggerService);
 
@@ -38,7 +40,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             catchError((refreshError) => {
               isRefreshing = false;
               refreshDone$.next(true);
-              authService.logout().subscribe();
+              injector.get(AuthService).logout().subscribe();
               return throwError(() => ({
                 status: 401,
                 message: 'Session expired. Please log in again.',

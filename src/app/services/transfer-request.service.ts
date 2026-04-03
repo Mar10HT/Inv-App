@@ -297,7 +297,7 @@ export class TransferRequestService {
   /**
    * Complete transfer without QR (legacy method)
    */
-  completeTransfer(id: string): Observable<TransferRequest | null> {
+  private completeTransfer(id: string): Observable<TransferRequest | null> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 

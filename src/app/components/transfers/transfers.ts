@@ -270,6 +270,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                               <ng-container *ngxPermissionsOnly="['transfers:manage']">
                                 <button
                                   (click)="manualConfirmReceipt(request)"
+                                  [disabled]="transferService.loading()"
                                   [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
                                   class="ds-btn ds-btn--ghost ds-btn--sm">
                                   <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -381,6 +382,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       <ng-container *ngxPermissionsOnly="['transfers:manage']">
                         <button
                           (click)="manualConfirmReceipt(request)"
+                          [disabled]="transferService.loading()"
                           [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
                           class="ds-btn ds-btn--ghost ds-btn--sm">
                           <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -452,7 +454,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
   `
 })
 export class TransfersComponent implements OnInit {
-  private transferService = inject(TransferRequestService);
+  protected transferService = inject(TransferRequestService);
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);

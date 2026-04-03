@@ -512,15 +512,14 @@ export class LoanService implements OnDestroy {
     return this.http.delete<void>(`${this.apiUrl}/${loanId}`).pipe(
       map(() => {
         this.loansSignal.update(loans => loans.filter(l => l.id !== loanId));
-        this.loadingSignal.set(false);
         return true;
       }),
       catchError(err => {
         this.logger.error('Error deleting loan', err);
         this.errorSignal.set(err.message || 'Error deleting loan');
-        this.loadingSignal.set(false);
         return of(false);
-      })
+      }),
+      finalize(() => this.loadingSignal.set(false))
     );
   }
 

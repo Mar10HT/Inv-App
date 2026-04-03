@@ -857,7 +857,8 @@
     "MANUAL_CONFIRM_RETURN_WARNING": "Esto confirmará la devolución sin verificación física por QR. Usar solo cuando el escaneo QR no sea posible. Esta acción quedará registrada en el log de auditoría.",
     "MANUAL_CONFIRM_RECEIPT_SUCCESS": "Recepción confirmada manualmente",
     "MANUAL_CONFIRM_RETURN_SUCCESS": "Devolución confirmada manualmente",
-    "MANUAL_CONFIRM_ERROR": "No se pudo confirmar. Intente de nuevo."
+    "MANUAL_CONFIRM_ERROR": "No se pudo confirmar la recepción. Intente de nuevo.",
+    "MANUAL_CONFIRM_RETURN_ERROR": "No se pudo confirmar la devolución. Intente de nuevo."
   },
   "TRANSFERS": {
     "TITLE": "Transferencias",

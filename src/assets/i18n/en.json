@@ -857,7 +857,8 @@
     "MANUAL_CONFIRM_RETURN_WARNING": "This will confirm the return without physical QR verification. Only use when QR scanning is not possible. This action will be recorded in the audit log.",
     "MANUAL_CONFIRM_RECEIPT_SUCCESS": "Receipt confirmed manually",
     "MANUAL_CONFIRM_RETURN_SUCCESS": "Return confirmed manually",
-    "MANUAL_CONFIRM_ERROR": "Could not confirm. Please try again."
+    "MANUAL_CONFIRM_ERROR": "Could not confirm receipt. Please try again.",
+    "MANUAL_CONFIRM_RETURN_ERROR": "Could not confirm return. Please try again."
   },
   "TRANSFERS": {
     "TITLE": "Transfers",

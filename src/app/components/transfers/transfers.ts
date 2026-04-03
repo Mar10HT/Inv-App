@@ -53,7 +53,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                 <span>{{ 'TRANSFERS.QR.SCAN' | translate }}</span>
               </button>
               <button
-                (click)="exportToCSV()"
+                (click)="exportToXLSX()"
                 class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
@@ -526,7 +526,7 @@ export class TransfersComponent implements OnInit {
     }
 
     // Sort by date descending
-    requests = requests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    requests = [...requests].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     this.filteredRequestsSignal.set(requests);
     this.pageIndex = 0;
@@ -779,7 +779,7 @@ export class TransfersComponent implements OnInit {
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
-  exportToCSV(): void {
+  exportToXLSX(): void {
     this.transferService.exportToXLSX(this.filteredRequests());
   }
 }

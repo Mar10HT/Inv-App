@@ -54,7 +54,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                 <span>{{ 'LOANS.QR.SCAN' | translate }}</span>
               </button>
               <button
-                (click)="exportToCSV()"
+                (click)="exportToXLSX()"
                 class="bg-transparent border border-[var(--color-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-elevated)] hover:text-foreground px-4 py-3 rounded-lg transition-all flex items-center gap-2 font-medium whitespace-nowrap">
                 <lucide-icon name="Download" class="!w-5 !h-5 !text-current shrink-0"></lucide-icon>
                 <span>{{ 'COMMON.EXPORT' | translate }}</span>
@@ -281,6 +281,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                                 @if (!loan.receivedAt) {
                                   <button
                                     (click)="manualConfirmReceipt(loan)"
+                                    [disabled]="loanService.loading()"
                                     class="ds-btn ds-btn--ghost ds-btn--sm">
                                     <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
                                     <span>{{ 'LOANS.MANUAL_CONFIRM_RECEIPT' | translate }}</span>
@@ -288,12 +289,14 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                                 } @else {
                                   <button
                                     (click)="initiateReturn(loan)"
+                                    [disabled]="loanService.loading()"
                                     class="ds-btn ds-btn--danger ds-btn--sm">
                                     <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
                                     <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
                                   </button>
                                   <button
                                     (click)="manualConfirmReturn(loan)"
+                                    [disabled]="loanService.loading()"
                                     [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
                                     class="ds-btn ds-btn--ghost ds-btn--sm">
                                     <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -313,6 +316,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                               <ng-container *ngxPermissionsOnly="['loans:manage']">
                                 <button
                                   (click)="manualConfirmReturn(loan)"
+                                  [disabled]="loanService.loading()"
                                   [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
                                   class="ds-btn ds-btn--ghost ds-btn--sm">
                                   <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -325,16 +329,6 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                           }
                           @case (LoanStatus.CANCELLED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>
-                          }
-                          @case (LoanStatus.ACTIVE) {
-                            <ng-container *ngxPermissionsOnly="['loans:manage']">
-                              <button
-                                (click)="initiateReturn(loan)"
-                                class="ds-btn ds-btn--return ds-btn--sm">
-                                <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
-                                <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                              </button>
-                            </ng-container>
                           }
                           @default {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>
@@ -455,6 +449,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                           </button>
                           <button
                             (click)="manualConfirmReturn(loan)"
+                            [disabled]="loanService.loading()"
                             [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
                             class="ds-btn ds-btn--ghost ds-btn--sm">
                             <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
@@ -474,22 +469,13 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       <ng-container *ngxPermissionsOnly="['loans:manage']">
                         <button
                           (click)="manualConfirmReturn(loan)"
+                          [disabled]="loanService.loading()"
                           [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
                           class="ds-btn ds-btn--ghost ds-btn--sm">
                           <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
                         </button>
                       </ng-container>
                     </div>
-                  }
-                  @case (LoanStatus.ACTIVE) {
-                    <ng-container *ngxPermissionsOnly="['loans:manage']">
-                      <button
-                        (click)="initiateReturn(loan)"
-                        class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">
-                        <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
-                        <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                      </button>
-                    </ng-container>
                   }
                 }
               </div>
@@ -547,7 +533,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
   `
 })
 export class LoansComponent implements OnInit {
-  private loanService = inject(LoanService);
+  protected loanService = inject(LoanService);
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
@@ -590,10 +576,9 @@ export class LoansComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Load required data
+    // Load required data (loans are loaded by the service constructor)
     this.warehouseService.getAll().subscribe();
     this.inventoryService.loadItems();
-    this.loanService.loadLoans();
 
     // Apply filters after short delay to allow data to load
     setTimeout(() => this.applyFilters(), 100);
@@ -619,7 +604,7 @@ export class LoansComponent implements OnInit {
     }
 
     // Sort by loan date descending
-    loans = loans.sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+    loans = [...loans].sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
 
     this.filteredLoansSignal.set(loans);
     this.pageIndex = 0;
@@ -821,11 +806,11 @@ export class LoansComponent implements OnInit {
               this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
               this.applyFilters();
             } else {
-              this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+              this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
             }
           },
           error: () => {
-            this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+            this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
           }
         });
       }
@@ -885,8 +870,7 @@ export class LoansComponent implements OnInit {
       [LoanStatus.RETURN_PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-accent-amber-bg)]',
       [LoanStatus.RETURNED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
       [LoanStatus.OVERDUE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
-      [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
-      [LoanStatus.ACTIVE]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]'
+      [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]'
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
@@ -906,7 +890,7 @@ export class LoansComponent implements OnInit {
     return 'text-foreground';
   }
 
-  exportToCSV(): void {
+  exportToXLSX(): void {
     this.loanService.exportToXLSX(this.filteredLoans());
   }
 }

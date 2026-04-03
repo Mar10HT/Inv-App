@@ -22,6 +22,8 @@ interface PaginatedResponse<T> {
   };
 }
 
+const MAX_REQUESTS_LIMIT = 200;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -78,7 +80,7 @@ export class TransferRequestService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    const params = new HttpParams().set('limit', '200');
+    const params = new HttpParams().set('limit', String(MAX_REQUESTS_LIMIT));
 
     this.http.get<PaginatedResponse<any>>(this.apiUrl, { params }).pipe(
       map(response => response.data.map((req: any) => this.transformRequest(req))),

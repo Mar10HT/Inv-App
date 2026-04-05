@@ -66,11 +66,18 @@ Deploy to Vercel with zero configuration. See the [deployment guide](./context/V
 
 ## Documentation
 
+**Core Documentation:**
+| | |
+|---|---|
+| [Architecture Codemaps](./docs/CODEMAPS.md) | Complete codebase structure & module overview |
+| [Recent Patterns](./docs/RECENT-PATTERNS.md) | Modern patterns (signals, filtering, dialogs, QR) |
+| [Component Guide](./context/COMPONENT_GUIDE.md) | Component structure, styling, templates |
+
+**Supplementary:**
 | | |
 |---|---|
 | [Changelog](./CHANGELOG.md) | Version history |
 | [Security](./context/SECURITY.md) | Security implementation |
-| [Component Guide](./context/COMPONENT_GUIDE.md) | Component architecture |
 | [Optimizations](./context/OPTIMIZATIONS.md) | Performance analysis |
 | [Roadmap](./context/ROADMAP.md) | Planned features |
 | [Deployment](./context/VERCEL-DEPLOYMENT.md) | Vercel deployment |

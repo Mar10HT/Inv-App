@@ -262,6 +262,108 @@ bg-[#1a1a1a]          /* ❌ Use bg-surface-variant instead */
 
 ---
 
+## Reactive Patterns (Signals & Effects)
+
+### Signal-Based State Management
+
+```typescript
+export class MyComponent {
+  // Writable signals for state
+  searchQuery = signal('');
+  selectedStatus = signal<Status>('all');
+  pageIndex = signal(0);
+
+  // Computed signals for derived state
+  filteredItems = computed(() => {
+    const items = this.itemService.items();
+    const query = this.searchQuery();
+    return items.filter(i => i.name.includes(query));
+  });
+
+  // Reactive effect for complex logic
+  constructor() {
+    effect(() => {
+      this.itemService.items();  // Track dependency
+      this.applyFilters();        // Update derived results
+    }, { allowSignalWrites: true });
+  }
+}
+```
+
+### When to Use effect() with allowSignalWrites
+
+Use this pattern for filtering and reactive data transformations:
+
+```typescript
+constructor() {
+  // ✅ DO: Re-apply filters when source data changes
+  effect(() => {
+    this.service.items();        // Read signal
+    this.applyFilters();         // Update writable signal
+  }, { allowSignalWrites: true });
+}
+
+applyFilters(): void {
+  let items = this.service.items();
+
+  // Apply filters...
+  if (this.searchQuery) {
+    items = items.filter(/* ... */);
+  }
+
+  // Update result signal
+  this.filteredItems.set(items);
+}
+```
+
+### Pagination Reset Pattern
+
+Always reset pagination to page 0 when filters change:
+
+```typescript
+onFilterChange(): void {
+  this.pageIndex = 0;           // Reset to first page
+  this.applyFilters();          // Re-filter and update
+}
+
+// Separate handler for pagination (doesn't re-filter)
+onPageChange(event: { pageIndex: number }): void {
+  this.pageIndex = event.pageIndex;
+  // DO NOT call applyFilters() here
+}
+```
+
+### Subscription Cleanup with takeUntilDestroyed
+
+Replace manual unsubscribe with automatic cleanup:
+
+```typescript
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef, inject } from '@angular/core';
+
+@Component({ /* ... */ })
+export class MyComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private service = inject(MyService);
+
+  ngOnInit(): void {
+    // Observable auto-unsubscribes on component destroy
+    this.service.getData().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (data) => {
+        this.items.set(data);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+      }
+    });
+  }
+}
+```
+
+---
+
 ## Dialog Structure (Modals)
 
 ### Data Interface

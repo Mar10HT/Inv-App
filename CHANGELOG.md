@@ -6,6 +6,29 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ---
 
+## [Unreleased]
+
+### Architecture
+- **Manual Confirm UI Pattern**: Added manual receipt/return confirmation dialogs for loans and transfers (fallback to QR scanning)
+- **Reactive Filtering with Signals**: Implemented `effect()` with `allowSignalWrites: true` for responsive filter updates across loans and transfers lists
+- **takeUntilDestroyed**: Migrated all component subscriptions to use `takeUntilDestroyed()` for automatic cleanup
+- **Dialog Result Types**: Standardized dialog output types (`LoanFormResult`, `ScanQrResult`, `TransferRejectResult`)
+
+### Fixed
+- **Pagination Reset on Filter**: Filters now reset page index to 0, preventing viewing wrong page after search/status change
+- **Batch Operation Completion**: Implemented counter-based pattern for tracking multi-item creation (loans, transfers) instead of relying on RxJS operators
+
+### Documentation
+- Added comprehensive codemaps document (`docs/CODEMAPS.md`)
+- Added detailed recent patterns guide (`docs/RECENT-PATTERNS.md`)
+
+### Changed
+- Loan confirmations now support both QR scanning and manual action buttons
+- Transfer status workflows enhanced with manual reject dialog
+- Component imports reorganized for better readability
+
+---
+
 ## [0.4.5] - 2026-01-19
 
 ### Security

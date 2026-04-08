@@ -17,6 +17,7 @@ import {
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { WebSocketService } from './websocket.service';
+import { transformLoan, getActiveLoanForItem, isItemOnLoan, filterLoans } from '../utils/loan.utils';
 
 const MAX_LOANS_LIMIT = 200;
 
@@ -113,41 +114,6 @@ export class LoanService implements OnDestroy {
     ).subscribe(loans => {
       this.loansSignal.set(loans);
     });
-  }
-
-  /**
-   * Transform backend loan to frontend format.
-   */
-  private transformLoan(loan: RawLoan): Loan {
-    return {
-      id: loan.id,
-      inventoryItemId: loan.inventoryItemId,
-      inventoryItemName: loan.inventoryItem?.name || '',
-      inventoryItemServiceTag: loan.inventoryItem?.serviceTag,
-      quantity: loan.quantity,
-      sourceWarehouseId: loan.sourceWarehouseId,
-      sourceWarehouseName: loan.sourceWarehouse?.name || '',
-      destinationWarehouseId: loan.destinationWarehouseId,
-      destinationWarehouseName: loan.destinationWarehouse?.name || '',
-      loanDate: new Date(loan.loanDate),
-      dueDate: new Date(loan.dueDate),
-      returnDate: loan.returnDate ? new Date(loan.returnDate) : undefined,
-      status: loan.status as LoanStatus,
-      // QR fields
-      sendQrCode: loan.sendQrCode,
-      returnQrCode: loan.returnQrCode,
-      receivedAt: loan.receivedAt && !isNaN(new Date(loan.receivedAt).getTime()) ? new Date(loan.receivedAt) : undefined,
-      receivedById: loan.receivedById,
-      receivedByName: loan.receivedBy?.name || loan.receivedBy?.email,
-      returnConfirmedAt: loan.returnConfirmedAt && !isNaN(new Date(loan.returnConfirmedAt).getTime()) ? new Date(loan.returnConfirmedAt) : undefined,
-      returnConfirmedById: loan.returnConfirmedById,
-      returnConfirmedByName: loan.returnConfirmedBy?.name || loan.returnConfirmedBy?.email,
-      notes: loan.notes,
-      createdById: loan.createdById,
-      createdByName: loan.createdBy?.name || loan.createdBy?.email || '',
-      createdAt: new Date(loan.createdAt),
-      updatedAt: new Date(loan.updatedAt)
-    };
   }
 
   /**
@@ -441,56 +407,21 @@ export class LoanService implements OnDestroy {
    * Get active loan for an item (if any)
    */
   getActiveLoanForItem(inventoryItemId: string): Loan | undefined {
-    const activeStatuses = [LoanStatus.PENDING, LoanStatus.SENT, LoanStatus.RECEIVED, LoanStatus.RETURN_PENDING, LoanStatus.OVERDUE];
-    return this.loansSignal().find(
-      l => l.inventoryItemId === inventoryItemId && activeStatuses.includes(l.status)
-    );
+    return getActiveLoanForItem(this.loansSignal(), inventoryItemId);
   }
 
   /**
    * Check if an item is currently on loan
    */
   isItemOnLoan(inventoryItemId: string): boolean {
-    return this.getActiveLoanForItem(inventoryItemId) !== undefined;
+    return isItemOnLoan(this.loansSignal(), inventoryItemId);
   }
 
   /**
    * Get filtered loans
    */
   getFilteredLoans(filter?: LoanFilter): Loan[] {
-    let loans = this.loansSignal();
-
-    if (!filter) return loans;
-
-    if (filter.status) {
-      loans = loans.filter(l => l.status === filter.status);
-    }
-
-    if (filter.sourceWarehouseId) {
-      loans = loans.filter(l => l.sourceWarehouseId === filter.sourceWarehouseId);
-    }
-
-    if (filter.destinationWarehouseId) {
-      loans = loans.filter(l => l.destinationWarehouseId === filter.destinationWarehouseId);
-    }
-
-    if (filter.inventoryItemId) {
-      loans = loans.filter(l => l.inventoryItemId === filter.inventoryItemId);
-    }
-
-    if (filter.overdue) {
-      loans = loans.filter(l => l.status === LoanStatus.OVERDUE);
-    }
-
-    if (filter.dateFrom) {
-      loans = loans.filter(l => l.loanDate >= filter.dateFrom!);
-    }
-
-    if (filter.dateTo) {
-      loans = loans.filter(l => l.loanDate <= filter.dateTo!);
-    }
-
-    return loans.sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+    return filterLoans(this.loansSignal(), filter);
   }
 
   /**

@@ -10,17 +10,8 @@ import {
   TransferRequestStats,
   TransferRequestWithQr
 } from '../interfaces/transfer-request.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
 
 const MAX_REQUESTS_LIMIT = 200;
 

@@ -19,6 +19,8 @@ export enum InventoryStatus {
 import { UserRole } from './user.interface';
 export { UserRole };
 
+export type { PaginatedResponse } from './common.interface';
+
 // Warehouse interface
 export interface Warehouse {
   id: string;
@@ -129,17 +131,6 @@ export interface UpdateInventoryItemDto {
   supplierId?: string;
   assignedToUserId?: string;
   status?: InventoryStatus;
-}
-
-// Paginated response from API
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
 }
 
 // Stats response from API

@@ -6,11 +6,11 @@ import {
   CreateInventoryItemDto,
   UpdateInventoryItemDto,
   InventoryStatus,
-  PaginatedResponse,
   StatsResponse,
   Warehouse,
   Supplier
 } from '../../interfaces/inventory-item.interface';
+import { PaginatedResponse } from '../../interfaces/common.interface';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../logger.service';
 import { WebSocketService } from '../websocket.service';

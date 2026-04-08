@@ -3,17 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
 import { User, CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
 import { Warehouse } from '../interfaces/warehouse.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { environment } from '../../environments/environment';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
 
 @Injectable({
   providedIn: 'root'

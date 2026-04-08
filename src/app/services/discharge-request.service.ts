@@ -9,17 +9,8 @@ import {
   DischargeRequestStats,
   AvailableItem,
 } from '../interfaces/discharge-request.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
 
 @Injectable({
   providedIn: 'root',

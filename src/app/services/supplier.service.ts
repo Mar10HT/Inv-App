@@ -2,17 +2,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
 import { Supplier, CreateSupplierDto, UpdateSupplierDto } from '../interfaces/supplier.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { environment } from '../../environments/environment';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
 
 @Injectable({
   providedIn: 'root'

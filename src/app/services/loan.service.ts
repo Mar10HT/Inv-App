@@ -13,20 +13,9 @@ import {
   LoanStats,
   LoanWithQr
 } from '../interfaces/loan.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { WebSocketService } from './websocket.service';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-}
 
 const MAX_LOANS_LIMIT = 200;
 

@@ -535,6 +535,9 @@
       "UNAUTHORIZED": "Sesión expirada. Por favor inicia sesión nuevamente.",
       "FORBIDDEN": "No tienes permiso para realizar esta acción.",
       "NOT_FOUND": "{{entity}} no encontrado.",
+      "NOT_FOUND_RESOURCE": "El recurso solicitado no fue encontrado.",
+      "VALIDATION_FAILED": "Error de validación.",
+      "TOO_MANY_REQUESTS": "Demasiadas solicitudes. Por favor espera un momento.",
       "CONFLICT": "Este registro ya existe o hay un conflicto con datos existentes.",
       "SERVER": "Error del servidor. Por favor intenta más tarde.",
       "UNKNOWN": "Ocurrió un error inesperado. Por favor intenta de nuevo."

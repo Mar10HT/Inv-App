@@ -25,8 +25,8 @@ export enum AuditEntity {
 
 export interface AuditChange {
   field: string;
-  oldValue: any;
-  newValue: any;
+  oldValue: unknown;
+  newValue: unknown;
 }
 
 export interface AuditLog {
@@ -39,7 +39,7 @@ export interface AuditLog {
   userName: string;
   userEmail: string;
   changes: AuditChange[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
 }
 
@@ -58,7 +58,7 @@ export interface CreateAuditLogDto {
   entityId: string;
   entityName: string;
   changes?: AuditChange[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Backend API types
@@ -68,8 +68,8 @@ export interface BackendAuditLog {
   entity: string;
   entityId: string;
   changes: {
-    before?: Record<string, any>;
-    after?: Record<string, any>;
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
     fields?: string[];
   } | null;
   createdAt: string;

@@ -8,7 +8,8 @@ import {
   InventoryStatus,
   StatsResponse,
   Warehouse,
-  Supplier
+  Supplier,
+  RawInventoryItem,
 } from '../../interfaces/inventory-item.interface';
 import { PaginatedResponse } from '../../interfaces/common.interface';
 import { environment } from '../../../environments/environment';
@@ -165,7 +166,7 @@ export class InventoryService implements OnDestroy {
     }
   }
 
-  private transformItem(item: any): InventoryItemInterface {
+  private transformItem(item: RawInventoryItem): InventoryItemInterface {
     return {
       ...item,
       createdAt: new Date(item.createdAt),

@@ -11,7 +11,8 @@ import {
   ReturnLoanDto,
   LoanFilter,
   LoanStats,
-  LoanWithQr
+  LoanWithQr,
+  RawLoan,
 } from '../interfaces/loan.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
@@ -101,8 +102,8 @@ export class LoanService implements OnDestroy {
 
     const params = new HttpParams().set('limit', String(MAX_LOANS_LIMIT));
 
-    this.http.get<PaginatedResponse<any>>(this.apiUrl, { params }).pipe(
-      map(response => response.data.map((loan: any) => this.transformLoan(loan))),
+    this.http.get<PaginatedResponse<RawLoan>>(this.apiUrl, { params }).pipe(
+      map(response => response.data.map((loan) => this.transformLoan(loan))),
       catchError(err => {
         this.logger.error('Error loading loans', err);
         this.errorSignal.set(err.message || 'Error loading loans');
@@ -116,11 +117,8 @@ export class LoanService implements OnDestroy {
 
   /**
    * Transform backend loan to frontend format.
-   * `any` is intentional here — the backend response shape is not typed at the
-   * transport layer. A dedicated raw-response interface can be added later.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private transformLoan(loan: any): Loan {
+  private transformLoan(loan: RawLoan): Loan {
     return {
       id: loan.id,
       inventoryItemId: loan.inventoryItemId,
@@ -159,7 +157,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.post<any>(this.apiUrl, dto).pipe(
+    return this.http.post<RawLoan>(this.apiUrl, dto).pipe(
       map(loan => this.transformLoan(loan)),
       tap(newLoan => {
         this.loansSignal.update(loans => [newLoan, ...loans]);
@@ -180,7 +178,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${loanId}/return`, dto || {}).pipe(
+    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/return`, dto || {}).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
@@ -206,7 +204,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
+    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
@@ -230,7 +228,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
+    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
@@ -255,7 +253,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${loanId}/send`, {}).pipe(
+    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/send`, {}).pipe(
       map(response => ({
         ...this.transformLoan(response),
         qrCodeDataUrl: response.qrCodeDataUrl
@@ -281,7 +279,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.post<any>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
+    return this.http.post<RawLoan>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
@@ -304,7 +302,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${loanId}/initiate-return`, {}).pipe(
+    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/initiate-return`, {}).pipe(
       map(response => ({
         ...this.transformLoan(response),
         qrCodeDataUrl: response.qrCodeDataUrl
@@ -330,7 +328,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.post<any>(`${this.apiUrl}/confirm-return`, { qrCode }).pipe(
+    return this.http.post<RawLoan>(`${this.apiUrl}/confirm-return`, { qrCode }).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
@@ -353,7 +351,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.post<any>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
+    return this.http.post<RawLoan>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
@@ -389,7 +387,7 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${loanId}/cancel`, {}).pipe(
+    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/cancel`, {}).pipe(
       map(loan => this.transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>

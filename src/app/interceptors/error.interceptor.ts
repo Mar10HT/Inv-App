@@ -31,7 +31,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           isRefreshing = true;
           refreshDone$.next(false);
 
-          return http.post<any>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
+          return http.post<{ access_token: string }>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
             switchMap(() => {
               isRefreshing = false;
               refreshDone$.next(true);

@@ -193,7 +193,7 @@ export class InventoryList implements OnInit {
         case 'warehouse':
           return item.warehouse?.name ?? '';
         default:
-          return (item as any)[property];
+          return (item as Record<string, unknown>)[property];
       }
     };
   }
@@ -363,7 +363,7 @@ export class InventoryList implements OnInit {
     });
   }
 
-  trackByFn(index: number, item: InventoryItemInterface): any {
+  trackByFn(index: number, item: InventoryItemInterface): string {
     return item.id;
   }
 

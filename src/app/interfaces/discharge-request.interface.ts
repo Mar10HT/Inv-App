@@ -63,3 +63,34 @@ export interface DischargeRequestStats {
     rejected: number;
   };
 }
+
+/** Raw shape returned by the backend API before transformation. */
+export interface RawDischargeRequest {
+  id: string;
+  requesterName: string;
+  requesterPosition?: string;
+  requesterPhone?: string;
+  neededByDate?: string;
+  justification?: string;
+  warehouseId: string;
+  warehouse?: { name: string };
+  status: string;
+  resolvedById?: string;
+  resolvedBy?: { name?: string | null; email: string };
+  resolvedAt?: string;
+  rejectedReason?: string;
+  notes?: string;
+  items: Array<{
+    id: string;
+    inventoryItemId: string;
+    quantity: number;
+    inventoryItem?: { name: string; serviceTag?: string };
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RawCreateDischargeResponse {
+  requestsCreated: number;
+  requests: RawDischargeRequest[];
+}

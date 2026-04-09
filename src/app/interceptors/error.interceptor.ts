@@ -45,7 +45,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               injector.get(AuthService).logout().subscribe();
               return throwError(() => ({
                 status: 401,
-                message: translate.instant('COMMON.ERRORS.UNAUTHORIZED'),
+                message: translate.instant('NOTIFICATIONS.ERRORS.UNAUTHORIZED'),
                 originalError: refreshError,
               }));
             }),
@@ -61,37 +61,43 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       // Handle other errors
-      let errorMessage = translate.instant('COMMON.ERRORS.UNKNOWN');
+      let errorMessage = translate.instant('NOTIFICATIONS.ERRORS.UNKNOWN');
 
       if (error.error instanceof ErrorEvent) {
         errorMessage = error.error.message;
       } else {
         switch (error.status) {
           case 403:
-            errorMessage = translate.instant('COMMON.ERRORS.FORBIDDEN');
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.FORBIDDEN');
             break;
 
           case 404:
-            errorMessage = translate.instant('COMMON.ERRORS.NOT_FOUND_RESOURCE');
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.NOT_FOUND_RESOURCE');
             break;
 
           case 422:
-            errorMessage = error.error?.message || translate.instant('COMMON.ERRORS.VALIDATION_FAILED');
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.VALIDATION_FAILED');
+            if (!environment.production) {
+              logger.error('Validation error detail (dev only)', error.error?.message, { url: req.url });
+            }
             break;
 
           case 429:
-            errorMessage = translate.instant('COMMON.ERRORS.TOO_MANY_REQUESTS');
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.TOO_MANY_REQUESTS');
             break;
 
           case 500:
           case 502:
           case 503:
           case 504:
-            errorMessage = translate.instant('COMMON.ERRORS.SERVER');
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.SERVER');
             break;
 
           default:
-            errorMessage = error.error?.message || error.message || translate.instant('COMMON.ERRORS.UNKNOWN');
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.UNKNOWN');
+            if (!environment.production) {
+              logger.error('Unhandled HTTP error detail (dev only)', error.error?.message || error.message, { url: req.url });
+            }
         }
       }
 

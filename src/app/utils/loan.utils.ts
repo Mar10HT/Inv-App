@@ -1,5 +1,24 @@
 import { Loan, LoanStatus, LoanFilter, RawLoan } from '../interfaces/loan.interface';
 
+const VALID_LOAN_STATUSES: readonly LoanStatus[] = [
+  LoanStatus.PENDING,
+  LoanStatus.SENT,
+  LoanStatus.RECEIVED,
+  LoanStatus.RETURN_PENDING,
+  LoanStatus.RETURNED,
+  LoanStatus.OVERDUE,
+  LoanStatus.CANCELLED,
+  LoanStatus.ACTIVE,
+];
+
+function toLoanStatus(value: string): LoanStatus {
+  if (VALID_LOAN_STATUSES.includes(value as LoanStatus)) {
+    return value as LoanStatus;
+  }
+  // Unknown status from backend — default to PENDING as a safe fallback
+  return LoanStatus.PENDING;
+}
+
 /** Transform a raw backend loan response into the frontend Loan model. */
 export function transformLoan(loan: RawLoan): Loan {
   return {
@@ -15,7 +34,7 @@ export function transformLoan(loan: RawLoan): Loan {
     loanDate: new Date(loan.loanDate),
     dueDate: new Date(loan.dueDate),
     returnDate: loan.returnDate ? new Date(loan.returnDate) : undefined,
-    status: loan.status as LoanStatus,
+    status: toLoanStatus(loan.status),
     sendQrCode: loan.sendQrCode,
     returnQrCode: loan.returnQrCode,
     receivedAt: loan.receivedAt && !isNaN(new Date(loan.receivedAt).getTime()) ? new Date(loan.receivedAt) : undefined,

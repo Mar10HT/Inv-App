@@ -540,7 +540,9 @@
       "TOO_MANY_REQUESTS": "Demasiadas solicitudes. Por favor espera un momento.",
       "CONFLICT": "Este registro ya existe o hay un conflicto con datos existentes.",
       "SERVER": "Error del servidor. Por favor intenta más tarde.",
-      "UNKNOWN": "Ocurrió un error inesperado. Por favor intenta de nuevo."
+      "UNKNOWN": "Ocurrió un error inesperado. Por favor intenta de nuevo.",
+      "COMPLETE_DISCHARGE_FAILED": "Error al completar la solicitud de descargo.",
+      "REJECT_DISCHARGE_FAILED": "Error al rechazar la solicitud de descargo."
     },
     "ENTITIES": {
       "ITEM": "Ítem",
@@ -816,6 +818,8 @@
     "CANCEL_LOAN": "Cancelar Préstamo",
     "CANCEL_SUCCESS": "Préstamo cancelado exitosamente",
     "CANCEL_ERROR": "Error al cancelar el préstamo",
+    "LOADING_ERROR": "Error al cargar los préstamos",
+    "DELETE_ERROR": "Error al eliminar el préstamo",
     "CONFIRM_CANCEL_TITLE": "Cancelar Préstamo",
     "CONFIRM_CANCEL_MESSAGE": "¿Cancelar el préstamo de \"{{item}}\"? Esta acción no se puede deshacer.",
     "QR": {

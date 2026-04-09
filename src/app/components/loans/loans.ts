@@ -1,5 +1,6 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -500,12 +501,12 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
           </div>
 
           <!-- Pagination -->
-          @if (filteredLoans().length > pageSize) {
+          @if (filteredLoans().length > pageSize()) {
             <div class="border-t border-theme px-4 py-2">
               <mat-paginator
                 [length]="filteredLoans().length"
-                [pageIndex]="pageIndex"
-                [pageSize]="pageSize"
+                [pageIndex]="pageIndex()"
+                [pageSize]="pageSize()"
                 [pageSizeOptions]="[10, 25, 50]"
                 (page)="onPageChange($event)"
                 showFirstLastButtons
@@ -561,8 +562,8 @@ export class LoansComponent implements OnInit {
   selectedStatus = 'all';
 
   // Pagination
-  pageIndex = 0;
-  pageSize = 10;
+  pageIndex = signal(0);
+  pageSize = signal(10);
 
   // Dialog states
   showNewLoanDialog = false;
@@ -584,8 +585,8 @@ export class LoansComponent implements OnInit {
   // Paginated loans
   paginatedLoans = computed(() => {
     const loans = this.filteredLoansSignal();
-    const start = this.pageIndex * this.pageSize;
-    return loans.slice(start, start + this.pageSize);
+    const start = this.pageIndex() * this.pageSize();
+    return loans.slice(start, start + this.pageSize());
   });
 
   constructor() {
@@ -630,14 +631,14 @@ export class LoansComponent implements OnInit {
   }
 
   onFilterChange(): void {
-    this.pageIndex = 0;
+    this.pageIndex.set(0);
     this.applyFilters();
   }
 
   clearFilters(): void {
     this.searchQuery = '';
     this.selectedStatus = 'all';
-    this.pageIndex = 0;
+    this.pageIndex.set(0);
     this.applyFilters();
   }
 
@@ -646,8 +647,8 @@ export class LoansComponent implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   // ==================== New Loan Dialog ====================
@@ -685,26 +686,26 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
-      if (confirmed) {
-        this.loanService.sendLoan(loan.id).subscribe({
-          next: (result) => {
-            if (result) {
-              this.notifications.success(this.translate.instant('LOANS.SEND_SUCCESS'));
-              this.applyFilters();
-              // Show QR code
-              if (result.qrCodeDataUrl) {
-                this.currentQrDataUrl = result.qrCodeDataUrl;
-                this.currentLoan = result;
-                this.qrDialogType = 'send';
-                this.showQrDialog = true;
-              }
-            }
-          },
-          error: () => {
-            this.notifications.error(this.translate.instant('LOANS.SEND_ERROR'));
+    dialogRef.afterClosed().pipe(
+      filter(confirmed => !!confirmed),
+      switchMap(() => this.loanService.sendLoan(loan.id)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (result) => {
+        if (result) {
+          this.notifications.success(this.translate.instant('LOANS.SEND_SUCCESS'));
+          this.applyFilters();
+          // Show QR code
+          if (result.qrCodeDataUrl) {
+            this.currentQrDataUrl = result.qrCodeDataUrl;
+            this.currentLoan = result;
+            this.qrDialogType = 'send';
+            this.showQrDialog = true;
           }
-        });
+        }
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.SEND_ERROR'));
       }
     });
   }
@@ -723,26 +724,26 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
-      if (confirmed) {
-        this.loanService.initiateReturn(loan.id).subscribe({
-          next: (result) => {
-            if (result) {
-              this.notifications.success(this.translate.instant('LOANS.INITIATE_RETURN_SUCCESS'));
-              this.applyFilters();
-              // Show QR code
-              if (result.qrCodeDataUrl) {
-                this.currentQrDataUrl = result.qrCodeDataUrl;
-                this.currentLoan = result;
-                this.qrDialogType = 'return';
-                this.showQrDialog = true;
-              }
-            }
-          },
-          error: () => {
-            this.notifications.error(this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
+    dialogRef.afterClosed().pipe(
+      filter(confirmed => !!confirmed),
+      switchMap(() => this.loanService.initiateReturn(loan.id)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (result) => {
+        if (result) {
+          this.notifications.success(this.translate.instant('LOANS.INITIATE_RETURN_SUCCESS'));
+          this.applyFilters();
+          // Show QR code
+          if (result.qrCodeDataUrl) {
+            this.currentQrDataUrl = result.qrCodeDataUrl;
+            this.currentLoan = result;
+            this.qrDialogType = 'return';
+            this.showQrDialog = true;
           }
-        });
+        }
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
       }
     });
   }
@@ -761,19 +762,19 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
-      if (confirmed) {
-        this.loanService.cancelLoan(loan.id).subscribe({
-          next: (result) => {
-            if (result) {
-              this.notifications.success(this.translate.instant('LOANS.CANCEL_SUCCESS'));
-              this.applyFilters();
-            }
-          },
-          error: () => {
-            this.notifications.error(this.translate.instant('LOANS.CANCEL_ERROR'));
-          }
-        });
+    dialogRef.afterClosed().pipe(
+      filter(confirmed => !!confirmed),
+      switchMap(() => this.loanService.cancelLoan(loan.id)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (result) => {
+        if (result) {
+          this.notifications.success(this.translate.instant('LOANS.CANCEL_SUCCESS'));
+          this.applyFilters();
+        }
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.CANCEL_ERROR'));
       }
     });
   }
@@ -792,20 +793,20 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
-      if (confirmed) {
-        this.loanService.manualConfirmReceipt(loan.id).subscribe({
-          next: (result) => {
-            if (result) {
-              this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'));
-            } else {
-              this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
-            }
-          },
-          error: () => {
-            this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
-          }
-        });
+    dialogRef.afterClosed().pipe(
+      filter(confirmed => !!confirmed),
+      switchMap(() => this.loanService.manualConfirmReceipt(loan.id)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (result) => {
+        if (result) {
+          this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'));
+        } else {
+          this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+        }
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
       }
     });
   }
@@ -822,20 +823,20 @@ export class LoansComponent implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
-      if (confirmed) {
-        this.loanService.manualConfirmReturn(loan.id).subscribe({
-          next: (result) => {
-            if (result) {
-              this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
-            } else {
-              this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
-            }
-          },
-          error: () => {
-            this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
-          }
-        });
+    dialogRef.afterClosed().pipe(
+      filter(confirmed => !!confirmed),
+      switchMap(() => this.loanService.manualConfirmReturn(loan.id)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (result) => {
+        if (result) {
+          this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
+        } else {
+          this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
+        }
+      },
+      error: () => {
+        this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
       }
     });
   }
@@ -846,7 +847,9 @@ export class LoansComponent implements OnInit {
     this.currentQrDataUrl = null;
     this.showQrDialog = true;
 
-    this.loanService.getQrCode(loan.id, type).subscribe({
+    this.loanService.getQrCode(loan.id, type).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: (qrDataUrl) => {
         this.currentQrDataUrl = qrDataUrl;
       },

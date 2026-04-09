@@ -1,7 +1,8 @@
 import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 import { downloadStyledXLSX } from '../utils/xlsx.utils';
-import { Observable, tap, map, catchError, of, Subject, finalize } from 'rxjs';
+import { Observable, tap, map, catchError, of, Subject, Subscription, finalize } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
@@ -28,7 +29,9 @@ export class LoanService implements OnDestroy {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
   private wsService = inject(WebSocketService);
+  private translate = inject(TranslateService);
   private destroy$ = new Subject<void>();
+  private loadLoansSubscription?: Subscription;
   private apiUrl = `${environment.apiUrl}/loans`;
 
   private loansSignal = signal<Loan[]>([]);
@@ -98,16 +101,18 @@ export class LoanService implements OnDestroy {
    * Load loans from backend - optimized with smaller limit
    */
   loadLoans(): void {
+    this.loadLoansSubscription?.unsubscribe();
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     const params = new HttpParams().set('limit', String(MAX_LOANS_LIMIT));
 
-    this.http.get<PaginatedResponse<RawLoan>>(this.apiUrl, { params }).pipe(
+    this.loadLoansSubscription = this.http.get<PaginatedResponse<RawLoan>>(this.apiUrl, { params }).pipe(
       map(response => response.data.map((loan) => transformLoan(loan))),
       catchError(err => {
         this.logger.error('Error loading loans', err);
-        this.errorSignal.set(err.message || 'Error loading loans');
+        this.errorSignal.set(err.message || this.translate.instant('LOANS.LOADING_ERROR'));
         return of([]);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -130,7 +135,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error creating loan', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error creating loan');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.LOAN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -153,7 +158,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error returning loan', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error returning loan');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.RETURN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -179,7 +184,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error manually confirming receipt', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error confirming receipt');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -203,7 +208,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error manually confirming return', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error confirming return');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -231,7 +236,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error sending loan', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error sending loan');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.SEND_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -254,7 +259,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error confirming receipt', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error confirming receipt');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.QR.SCAN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -280,7 +285,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error initiating return', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error initiating return');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -303,7 +308,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error confirming return', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error confirming return');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.QR.SCAN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -326,7 +331,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error processing QR code', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error processing QR code');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.QR.SCAN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -362,7 +367,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error canceling loan', err);
-        this.errorSignal.set(err.error?.message || err.message || 'Error canceling loan');
+        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.CANCEL_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -437,7 +442,7 @@ export class LoanService implements OnDestroy {
       }),
       catchError(err => {
         this.logger.error('Error deleting loan', err);
-        this.errorSignal.set(err.message || 'Error deleting loan');
+        this.errorSignal.set(err.message || this.translate.instant('LOANS.DELETE_ERROR'));
         return of(false);
       }),
       finalize(() => this.loadingSignal.set(false))

@@ -19,8 +19,6 @@ export enum InventoryStatus {
 import { UserRole } from './user.interface';
 export { UserRole };
 
-export type { PaginatedResponse } from './common.interface';
-
 // Warehouse interface
 export interface Warehouse {
   id: string;

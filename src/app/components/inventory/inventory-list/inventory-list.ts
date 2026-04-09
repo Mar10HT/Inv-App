@@ -1,4 +1,5 @@
-import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -138,6 +139,7 @@ export class InventoryList implements OnInit {
   private notifications = inject(NotificationService);
   private router = inject(Router);
   private translate = inject(TranslateService);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     // Auto-sync filtered items with table data source and handle pagination
@@ -166,7 +168,8 @@ export class InventoryList implements OnInit {
     // Debounced search - waits 300ms after last keystroke
     this.searchSubject.pipe(
       debounceTime(300),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.searchQuery.set(value);
       this.pageIndex.set(0);
@@ -192,8 +195,12 @@ export class InventoryList implements OnInit {
           return new Date(item.updatedAt).getTime();
         case 'warehouse':
           return item.warehouse?.name ?? '';
-        default:
-          return (item as any)[property];
+        default: {
+          const val = (item as unknown as Record<string, unknown>)[property];
+          if (val instanceof Date) return val.getTime();
+          if (typeof val === 'string' || typeof val === 'number') return val;
+          return '';
+        }
       }
     };
   }
@@ -258,9 +265,13 @@ export class InventoryList implements OnInit {
       panelClass: 'confirm-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(confirmed => {
       if (confirmed) {
-        this.inventoryService.deleteItem(item.id).subscribe({
+        this.inventoryService.deleteItem(item.id).pipe(
+          takeUntilDestroyed(this.destroyRef)
+        ).subscribe({
           next: () => {
             this.notifications.deleted('NOTIFICATIONS.ENTITIES.ITEM', item.name);
           },
@@ -335,7 +346,9 @@ export class InventoryList implements OnInit {
       panelClass: 'import-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe(imported => {
+    dialogRef.afterClosed().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(imported => {
       if (imported) {
         this.inventoryService.refresh();
       }
@@ -350,7 +363,7 @@ export class InventoryList implements OnInit {
       [this.translate.instant('DASHBOARD.TABLE.QUANTITY')]:     item.quantity,
       [this.translate.instant('DASHBOARD.TABLE.CATEGORY')]:     item.category,
       [this.translate.instant('DASHBOARD.TABLE.WAREHOUSE')]:    item.warehouse?.name ?? '',
-      Status:                                                    item.status,
+      [this.translate.instant('COMMON.STATUS')]:                 item.status,
       [this.translate.instant('DASHBOARD.TABLE.LAST_UPDATED')]: this.formatDate(item.updatedAt),
     }));
 
@@ -363,7 +376,7 @@ export class InventoryList implements OnInit {
     });
   }
 
-  trackByFn(index: number, item: InventoryItemInterface): any {
+  trackByFn(index: number, item: InventoryItemInterface): string {
     return item.id;
   }
 

@@ -1,7 +1,7 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { LucideAngularModule } from 'lucide-angular';
 import { Observable, of } from 'rxjs';
@@ -15,15 +15,15 @@ import { APP_ICONS } from './shared/icons';
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
 import EN_TRANSLATIONS from '../assets/i18n/en.json';
 
-const TRANSLATIONS: { [key: string]: any } = {
+const TRANSLATIONS: { [key: string]: Record<string, unknown> } = {
   es: ES_TRANSLATIONS,
   en: EN_TRANSLATIONS
 };
 
 // Static loader - SSR compatible
 class StaticTranslateLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<any> {
-    return of(TRANSLATIONS[lang] || TRANSLATIONS['en']);
+  getTranslation(lang: string): Observable<TranslationObject> {
+    return of((TRANSLATIONS[lang] || TRANSLATIONS['en']) as unknown as TranslationObject);
   }
 }
 

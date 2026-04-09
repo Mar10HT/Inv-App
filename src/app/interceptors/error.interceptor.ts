@@ -2,6 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError, BehaviorSubject, filter, take } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
 import { environment } from '../../environments/environment';
@@ -15,6 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
   const http = inject(HttpClient);
   const logger = inject(LoggerService);
+  const translate = inject(TranslateService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -31,7 +33,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           isRefreshing = true;
           refreshDone$.next(false);
 
-          return http.post<any>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
+          return http.post<{ access_token: string }>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
             switchMap(() => {
               isRefreshing = false;
               refreshDone$.next(true);
@@ -43,7 +45,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               injector.get(AuthService).logout().subscribe();
               return throwError(() => ({
                 status: 401,
-                message: 'Session expired. Please log in again.',
+                message: translate.instant('NOTIFICATIONS.ERRORS.UNAUTHORIZED'),
                 originalError: refreshError,
               }));
             }),
@@ -59,37 +61,43 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       // Handle other errors
-      let errorMessage = 'An unexpected error occurred';
+      let errorMessage = translate.instant('NOTIFICATIONS.ERRORS.UNKNOWN');
 
       if (error.error instanceof ErrorEvent) {
         errorMessage = error.error.message;
       } else {
         switch (error.status) {
           case 403:
-            errorMessage = 'You do not have permission to perform this action.';
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.FORBIDDEN');
             break;
 
           case 404:
-            errorMessage = 'The requested resource was not found.';
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.NOT_FOUND_RESOURCE');
             break;
 
           case 422:
-            errorMessage = error.error?.message || 'Validation failed.';
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.VALIDATION_FAILED');
+            if (!environment.production) {
+              logger.error('Validation error detail (dev only)', error.error?.message, { url: req.url });
+            }
             break;
 
           case 429:
-            errorMessage = 'Too many requests. Please wait a moment.';
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.TOO_MANY_REQUESTS');
             break;
 
           case 500:
           case 502:
           case 503:
           case 504:
-            errorMessage = 'Server error. Please try again later.';
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.SERVER');
             break;
 
           default:
-            errorMessage = error.error?.message || error.message || 'An error occurred';
+            errorMessage = translate.instant('NOTIFICATIONS.ERRORS.UNKNOWN');
+            if (!environment.production) {
+              logger.error('Unhandled HTTP error detail (dev only)', error.error?.message || error.message, { url: req.url });
+            }
         }
       }
 

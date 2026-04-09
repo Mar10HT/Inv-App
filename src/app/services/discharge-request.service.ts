@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, map, catchError, of } from 'rxjs';
+import { Observable, tap, map, catchError, of, Subscription, finalize } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environments/environment';
 import {
   DischargeRequest,
@@ -8,18 +9,11 @@ import {
   CreateDischargeRequestDto,
   DischargeRequestStats,
   AvailableItem,
+  RawDischargeRequest,
+  RawCreateDischargeResponse,
 } from '../interfaces/discharge-request.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
 
 @Injectable({
   providedIn: 'root',
@@ -27,11 +21,13 @@ interface PaginatedResponse<T> {
 export class DischargeRequestService {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
+  private translate = inject(TranslateService);
   private apiUrl = `${environment.apiUrl}/discharge-requests`;
 
   private requestsSignal = signal<DischargeRequest[]>([]);
   private loadingSignal = signal(false);
   private errorSignal = signal<string | null>(null);
+  private loadRequestsSubscription?: Subscription;
 
   requests = computed(() => this.requestsSignal());
   loading = computed(() => this.loadingSignal());
@@ -56,7 +52,7 @@ export class DischargeRequestService {
   // ==================== Public Endpoints (no auth) ====================
 
   getAvailableItems(): Observable<AvailableItem[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/public/available-items`).pipe(
+    return this.http.get<AvailableItem[]>(`${this.apiUrl}/public/available-items`).pipe(
       map((items) =>
         items.map((item) => ({
           id: item.id,
@@ -66,7 +62,7 @@ export class DischargeRequestService {
           itemType: item.itemType,
           serviceTag: item.serviceTag,
           warehouseId: item.warehouseId,
-          warehouseName: item.warehouse?.name || '',
+          warehouseName: item.warehouseName,
         })),
       ),
       catchError((err) => {
@@ -78,8 +74,8 @@ export class DischargeRequestService {
 
   createPublicRequest(
     dto: CreateDischargeRequestDto,
-  ): Observable<{ requestsCreated: number; requests: any[] } | null> {
-    return this.http.post<any>(`${this.apiUrl}/public`, dto).pipe(
+  ): Observable<RawCreateDischargeResponse | null> {
+    return this.http.post<RawCreateDischargeResponse>(`${this.apiUrl}/public`, dto).pipe(
       catchError((err) => {
         this.logger.error('Error creating discharge request', err);
         return of(null);
@@ -90,29 +86,31 @@ export class DischargeRequestService {
   // ==================== Protected Endpoints ====================
 
   loadRequests(): void {
+    this.loadRequestsSubscription?.unsubscribe();
+
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     const params = new HttpParams().set('limit', '200');
 
-    this.http
-      .get<PaginatedResponse<any>>(this.apiUrl, { params })
+    this.loadRequestsSubscription = this.http
+      .get<PaginatedResponse<RawDischargeRequest>>(this.apiUrl, { params })
       .pipe(
-        map((response) => response.data.map((req: any) => this.transformRequest(req))),
+        map((response) => response.data.map((req) => this.transformRequest(req))),
         catchError((err) => {
           this.logger.error('Error loading discharge requests', err);
           this.errorSignal.set(err.message || 'Error loading discharge requests');
           return of([]);
         }),
+        finalize(() => this.loadingSignal.set(false)),
       )
       .subscribe((requests) => {
         this.requestsSignal.set(requests);
-        this.loadingSignal.set(false);
       });
   }
 
   findOne(id: string): Observable<DischargeRequest | null> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<RawDischargeRequest>(`${this.apiUrl}/${id}`).pipe(
       map((req) => this.transformRequest(req)),
       catchError((err) => {
         this.logger.error('Error loading discharge request', err);
@@ -125,26 +123,22 @@ export class DischargeRequestService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${id}/complete`, {}).pipe(
+    return this.http.patch<RawDischargeRequest>(`${this.apiUrl}/${id}/complete`, {}).pipe(
       map((req) => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update((requests) =>
-            requests.map((r) => (r.id === id ? updatedReq : r)),
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(
-            error.error?.message || error.message || 'Error completing discharge request',
-          );
-          this.loadingSignal.set(false);
-        },
+      tap((updatedReq) => {
+        this.requestsSignal.update((requests) =>
+          requests.map((r) => (r.id === id ? updatedReq : r)),
+        );
       }),
       catchError((err) => {
         this.logger.error('Error completing discharge request', err);
+        this.errorSignal.set(
+          err.error?.message || err.message ||
+          this.translate.instant('NOTIFICATIONS.ERRORS.COMPLETE_DISCHARGE_FAILED'),
+        );
         return of(null);
       }),
+      finalize(() => this.loadingSignal.set(false)),
     );
   }
 
@@ -152,26 +146,22 @@ export class DischargeRequestService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.patch<any>(`${this.apiUrl}/${id}/reject`, { reason }).pipe(
+    return this.http.patch<RawDischargeRequest>(`${this.apiUrl}/${id}/reject`, { reason }).pipe(
       map((req) => this.transformRequest(req)),
-      tap({
-        next: (updatedReq) => {
-          this.requestsSignal.update((requests) =>
-            requests.map((r) => (r.id === id ? updatedReq : r)),
-          );
-          this.loadingSignal.set(false);
-        },
-        error: (error) => {
-          this.errorSignal.set(
-            error.error?.message || error.message || 'Error rejecting discharge request',
-          );
-          this.loadingSignal.set(false);
-        },
+      tap((updatedReq) => {
+        this.requestsSignal.update((requests) =>
+          requests.map((r) => (r.id === id ? updatedReq : r)),
+        );
       }),
       catchError((err) => {
         this.logger.error('Error rejecting discharge request', err);
+        this.errorSignal.set(
+          err.error?.message || err.message ||
+          this.translate.instant('NOTIFICATIONS.ERRORS.REJECT_DISCHARGE_FAILED'),
+        );
         return of(null);
       }),
+      finalize(() => this.loadingSignal.set(false)),
     );
   }
 
@@ -189,7 +179,7 @@ export class DischargeRequestService {
     this.loadRequests();
   }
 
-  private transformRequest(req: any): DischargeRequest {
+  private transformRequest(req: RawDischargeRequest): DischargeRequest {
     return {
       id: req.id,
       requesterName: req.requesterName,
@@ -205,7 +195,7 @@ export class DischargeRequestService {
       resolvedAt: req.resolvedAt ? new Date(req.resolvedAt) : undefined,
       rejectedReason: req.rejectedReason,
       notes: req.notes,
-      items: (req.items || []).map((item: any) => ({
+      items: (req.items || []).map((item) => ({
         id: item.id,
         inventoryItemId: item.inventoryItemId,
         inventoryItemName: item.inventoryItem?.name || '',

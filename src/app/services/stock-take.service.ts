@@ -10,17 +10,8 @@ import {
   StockTakeStats,
   VarianceReport,
 } from '../interfaces/stock-take.interface';
+import { PaginatedResponse } from '../interfaces/common.interface';
 import { environment } from '../../environments/environment';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
 
 @Injectable({
   providedIn: 'root',

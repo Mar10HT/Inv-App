@@ -1,3 +1,37 @@
+// Raw shape returned by the backend before transformation
+export interface RawTransferRequestItem {
+  id: string;
+  inventoryItemId: string;
+  inventoryItem?: { name: string; serviceTag?: string };
+  quantity: number;
+}
+
+export interface RawTransferRequest {
+  id: string;
+  status: string;
+  sourceWarehouseId: string;
+  sourceWarehouse?: { name: string };
+  destinationWarehouseId: string;
+  destinationWarehouse?: { name: string };
+  requestedById: string;
+  requestedBy?: { name?: string; email?: string };
+  approvedById?: string;
+  approvedBy?: { name?: string; email?: string };
+  approvedAt?: string;
+  rejectedAt?: string;
+  rejectedReason?: string;
+  sendQrCode?: string;
+  receivedAt?: string;
+  receivedById?: string;
+  receivedBy?: { name?: string; email?: string };
+  items?: RawTransferRequestItem[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  // Present only when QR is generated (send endpoint)
+  qrCodeDataUrl?: string;
+}
+
 export enum TransferRequestStatus {
   PENDING = 'PENDING',       // Created, awaiting approval
   APPROVED = 'APPROVED',     // Approved by manager

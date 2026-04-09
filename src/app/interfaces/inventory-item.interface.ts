@@ -131,24 +131,21 @@ export interface UpdateInventoryItemDto {
   status?: InventoryStatus;
 }
 
-// Paginated response from API
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
-
 // Stats response from API
 export interface StatsResponse {
   total: number;
   inStock: number;
   lowStock: number;
   outOfStock: number;
+  inUse: number;
   totalValue: number;
   categories: { name: string; count: number }[];
   locations: { name: string; count: number }[];
 }
+
+/** Raw API response shape for InventoryItem before date transformation. */
+export type RawInventoryItem = Omit<InventoryItemInterface, 'createdAt' | 'updatedAt' | 'assignedAt'> & {
+  createdAt: string;
+  updatedAt: string;
+  assignedAt?: string;
+};

@@ -94,3 +94,33 @@ export interface QrScanResult {
   loan: Loan;
   message: string;
 }
+
+/** Raw API response shape for a Loan before date transformation. */
+export interface RawLoan {
+  id: string;
+  inventoryItemId: string;
+  inventoryItem?: { name: string; serviceTag?: string };
+  quantity: number;
+  sourceWarehouseId: string;
+  sourceWarehouse?: { name: string };
+  destinationWarehouseId: string;
+  destinationWarehouse?: { name: string };
+  loanDate: string;
+  dueDate: string;
+  returnDate?: string;
+  status: string;
+  qrCodeDataUrl?: string;
+  sendQrCode?: string;
+  returnQrCode?: string;
+  receivedAt?: string;
+  receivedById?: string;
+  receivedBy?: { name?: string | null; email: string };
+  returnConfirmedAt?: string;
+  returnConfirmedById?: string;
+  returnConfirmedBy?: { name?: string | null; email: string };
+  notes?: string;
+  createdById: string;
+  createdBy?: { name?: string | null; email: string };
+  createdAt: string;
+  updatedAt: string;
+}

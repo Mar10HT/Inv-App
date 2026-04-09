@@ -535,9 +535,14 @@
       "UNAUTHORIZED": "Session expired. Please log in again.",
       "FORBIDDEN": "You don't have permission to perform this action.",
       "NOT_FOUND": "{{entity}} not found.",
+      "NOT_FOUND_RESOURCE": "The requested resource was not found.",
+      "VALIDATION_FAILED": "Validation failed.",
+      "TOO_MANY_REQUESTS": "Too many requests. Please wait a moment.",
       "CONFLICT": "This record already exists or conflicts with existing data.",
       "SERVER": "Server error. Please try again later.",
-      "UNKNOWN": "An unexpected error occurred. Please try again."
+      "UNKNOWN": "An unexpected error occurred. Please try again.",
+      "COMPLETE_DISCHARGE_FAILED": "Error completing discharge request.",
+      "REJECT_DISCHARGE_FAILED": "Error rejecting discharge request."
     },
     "ENTITIES": {
       "ITEM": "Item",
@@ -813,6 +818,8 @@
     "CANCEL_LOAN": "Cancel Loan",
     "CANCEL_SUCCESS": "Loan cancelled successfully",
     "CANCEL_ERROR": "Error cancelling loan",
+    "LOADING_ERROR": "Error loading loans",
+    "DELETE_ERROR": "Error deleting loan",
     "CONFIRM_CANCEL_TITLE": "Cancel Loan",
     "CONFIRM_CANCEL_MESSAGE": "Cancel the loan of \"{{item}}\"? This action cannot be undone.",
     "QR": {

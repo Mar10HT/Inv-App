@@ -6,11 +6,12 @@ import {
   CreateInventoryItemDto,
   UpdateInventoryItemDto,
   InventoryStatus,
-  PaginatedResponse,
   StatsResponse,
   Warehouse,
-  Supplier
+  Supplier,
+  RawInventoryItem,
 } from '../../interfaces/inventory-item.interface';
+import { PaginatedResponse } from '../../interfaces/common.interface';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../logger.service';
 import { WebSocketService } from '../websocket.service';
@@ -126,7 +127,7 @@ export class InventoryService implements OnDestroy {
       params = params.set('limit', '1000');
     }
 
-    this.http.get<PaginatedResponse<InventoryItemInterface>>(this.apiUrl + '/inventory', { params }).pipe(
+    this.http.get<PaginatedResponse<RawInventoryItem>>(this.apiUrl + '/inventory', { params }).pipe(
       map(response => ({
         items: response.data.map(item => this.transformItem(item)),
         total: response.meta.total
@@ -165,7 +166,7 @@ export class InventoryService implements OnDestroy {
     }
   }
 
-  private transformItem(item: any): InventoryItemInterface {
+  private transformItem(item: RawInventoryItem): InventoryItemInterface {
     return {
       ...item,
       createdAt: new Date(item.createdAt),
@@ -181,20 +182,20 @@ export class InventoryService implements OnDestroy {
   // Get all items as Observable for dashboard calculations
   getItemsObservable(): Observable<InventoryItemInterface[]> {
     const params = new HttpParams().set('limit', '1000');
-    return this.http.get<PaginatedResponse<InventoryItemInterface>>(this.apiUrl + '/inventory', { params }).pipe(
+    return this.http.get<PaginatedResponse<RawInventoryItem>>(this.apiUrl + '/inventory', { params }).pipe(
       map(response => response.data.map(item => this.transformItem(item)))
     );
   }
 
   getItemById(id: string): Observable<InventoryItemInterface> {
-    return this.http.get<InventoryItemInterface>(this.apiUrl + '/inventory/' + id).pipe(
+    return this.http.get<RawInventoryItem>(this.apiUrl + '/inventory/' + id).pipe(
       map(item => this.transformItem(item))
     );
   }
 
   createItem(item: CreateInventoryItemDto): Observable<InventoryItemInterface> {
     this.loading.set(true);
-    return this.http.post<InventoryItemInterface>(this.apiUrl + '/inventory', item).pipe(
+    return this.http.post<RawInventoryItem>(this.apiUrl + '/inventory', item).pipe(
       map(newItem => this.transformItem(newItem)),
       tap({
         next: (newItem) => {
@@ -213,7 +214,7 @@ export class InventoryService implements OnDestroy {
 
   updateItem(id: string, updates: UpdateInventoryItemDto): Observable<InventoryItemInterface> {
     this.loading.set(true);
-    return this.http.patch<InventoryItemInterface>(this.apiUrl + '/inventory/' + id, updates).pipe(
+    return this.http.patch<RawInventoryItem>(this.apiUrl + '/inventory/' + id, updates).pipe(
       map(updatedItem => this.transformItem(updatedItem)),
       tap({
         next: (updatedItem) => {

@@ -196,7 +196,7 @@ export class InventoryList implements OnInit {
         case 'warehouse':
           return item.warehouse?.name ?? '';
         default: {
-          const val = (item as Record<string, unknown>)[property];
+          const val = (item as unknown as Record<string, unknown>)[property];
           if (val instanceof Date) return val.getTime();
           if (typeof val === 'string' || typeof val === 'number') return val;
           return '';

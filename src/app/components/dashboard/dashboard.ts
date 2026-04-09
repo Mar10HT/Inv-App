@@ -17,7 +17,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../services/logger.service';
 import { ThemeService } from '../../services/theme.service';
-import { InventoryItemInterface, InventoryStatus, Currency } from '../../interfaces/inventory-item.interface';
+import { InventoryItemInterface, InventoryStatus, Currency, StatsResponse } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory/inventory-item/inventory-item';
@@ -667,29 +667,29 @@ export class Dashboard implements OnInit {
       allItems: this.inventoryService.getItemsObservable().pipe(catchError(() => of([])))
     }).subscribe({
       next: (results) => {
-        const data = results.stats || {};
+        const data: StatsResponse | null = results.stats || null;
 
         const dashboardStats: DashboardStats = {
-          totalItems: data.total || 0,
+          totalItems: data?.total || 0,
           totalUsers: results.usersCount,
           totalWarehouses: results.warehousesCount,
           totalSuppliers: 0,
           totalCategories: results.categoriesCount,
-          inStockItems: data.inStock || 0,
-          lowStockItems: data.lowStock || 0,
-          outOfStockItems: data.outOfStock || 0,
-          inUseItems: data.inUse || 0,
-          totalValueUSD: data.totalValue || 0,
-          totalValueHNL: (data.totalValue || 0) * this.HNL_TO_USD_RATE
+          inStockItems: data?.inStock || 0,
+          lowStockItems: data?.lowStock || 0,
+          outOfStockItems: data?.outOfStock || 0,
+          inUseItems: data?.inUse || 0,
+          totalValueUSD: data?.totalValue || 0,
+          totalValueHNL: (data?.totalValue || 0) * this.HNL_TO_USD_RATE
         };
 
         this.stats.set(dashboardStats);
-        this.categoryStats.set((data.categories || []).map((cat: any) => ({
+        this.categoryStats.set((data?.categories || []).map((cat: any) => ({
           category: cat.name,
           count: cat.count,
           totalQuantity: cat.count
         })));
-        this.warehouseStats.set((data.locations || []).map((loc: any, index: number) => ({
+        this.warehouseStats.set((data?.locations || []).map((loc: any, index: number) => ({
           id: `warehouse-${index}`,
           name: loc.name,
           itemCount: loc.count,

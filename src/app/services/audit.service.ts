@@ -99,8 +99,8 @@ export class AuditService {
     }
 
     // Extract entity name from changes data
-    const entityName = log.changes?.after?.['name']
-      || log.changes?.before?.['name']
+    const entityName = (log.changes?.after?.['name'] as string | undefined)
+      || (log.changes?.before?.['name'] as string | undefined)
       || log.entityId;
 
     return {

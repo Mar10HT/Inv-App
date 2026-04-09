@@ -1,7 +1,7 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { LucideAngularModule } from 'lucide-angular';
 import { Observable, of } from 'rxjs';
@@ -22,8 +22,8 @@ const TRANSLATIONS: { [key: string]: Record<string, unknown> } = {
 
 // Static loader - SSR compatible
 class StaticTranslateLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<Record<string, unknown>> {
-    return of(TRANSLATIONS[lang] || TRANSLATIONS['en']);
+  getTranslation(lang: string): Observable<TranslationObject> {
+    return of((TRANSLATIONS[lang] || TRANSLATIONS['en']) as unknown as TranslationObject);
   }
 }
 

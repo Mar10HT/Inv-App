@@ -9,7 +9,7 @@ export interface LowStockItem {
   name: string;
   quantity: number;
   minQuantity: number;
-  category?: { name: string };
+  category?: string;
 }
 
 @Component({
@@ -53,7 +53,7 @@ export interface LowStockItem {
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>
-                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.category?.name || '-' }}</p>
+                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.category || '-' }}</p>
               </div>
               <div class="text-right">
                 <p class="text-lg font-bold text-[var(--color-status-warning)]">{{ item.quantity }}</p>

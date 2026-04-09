@@ -59,7 +59,7 @@ export class DischargeRequestService {
           itemType: item.itemType,
           serviceTag: item.serviceTag,
           warehouseId: item.warehouseId,
-          warehouseName: item.warehouse?.name || '',
+          warehouseName: item.warehouseName,
         })),
       ),
       catchError((err) => {

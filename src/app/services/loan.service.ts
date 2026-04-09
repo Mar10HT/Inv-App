@@ -104,7 +104,7 @@ export class LoanService implements OnDestroy {
     const params = new HttpParams().set('limit', String(MAX_LOANS_LIMIT));
 
     this.http.get<PaginatedResponse<RawLoan>>(this.apiUrl, { params }).pipe(
-      map(response => response.data.map((loan) => this.transformLoan(loan))),
+      map(response => response.data.map((loan) => transformLoan(loan))),
       catchError(err => {
         this.logger.error('Error loading loans', err);
         this.errorSignal.set(err.message || 'Error loading loans');
@@ -124,7 +124,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.post<RawLoan>(this.apiUrl, dto).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(newLoan => {
         this.loansSignal.update(loans => [newLoan, ...loans]);
       }),
@@ -145,7 +145,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/return`, dto || {}).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === loanId ? updatedLoan : l)
@@ -171,7 +171,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === loanId ? updatedLoan : l)
@@ -195,7 +195,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === loanId ? updatedLoan : l)
@@ -221,7 +221,7 @@ export class LoanService implements OnDestroy {
 
     return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/send`, {}).pipe(
       map(response => ({
-        ...this.transformLoan(response),
+        ...transformLoan(response),
         qrCodeDataUrl: response.qrCodeDataUrl
       })),
       tap(updatedLoan => {
@@ -246,7 +246,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.post<RawLoan>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
@@ -270,7 +270,7 @@ export class LoanService implements OnDestroy {
 
     return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/initiate-return`, {}).pipe(
       map(response => ({
-        ...this.transformLoan(response),
+        ...transformLoan(response),
         qrCodeDataUrl: response.qrCodeDataUrl
       })),
       tap(updatedLoan => {
@@ -295,7 +295,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.post<RawLoan>(`${this.apiUrl}/confirm-return`, { qrCode }).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
@@ -318,7 +318,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.post<RawLoan>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
@@ -354,7 +354,7 @@ export class LoanService implements OnDestroy {
     this.errorSignal.set(null);
 
     return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/cancel`, {}).pipe(
-      map(loan => this.transformLoan(loan)),
+      map(loan => transformLoan(loan)),
       tap(updatedLoan => {
         this.loansSignal.update(loans =>
           loans.map(l => l.id === loanId ? updatedLoan : l)

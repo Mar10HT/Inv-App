@@ -109,6 +109,7 @@ export interface RawLoan {
   dueDate: string;
   returnDate?: string;
   status: string;
+  qrCodeDataUrl?: string;
   sendQrCode?: string;
   returnQrCode?: string;
   receivedAt?: string;

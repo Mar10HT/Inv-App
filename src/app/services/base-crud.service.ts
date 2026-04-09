@@ -22,8 +22,12 @@ export abstract class BaseCrudService<T extends { id: string }, CreateDto, Updat
         onNext?.(v);
         this.loading.set(false);
       },
-      error: (err: Error) => {
-        this.error.set(err.message);
+      error: (err: unknown) => {
+        const msg = err instanceof Error ? err.message
+          : (typeof err === 'object' && err !== null && 'message' in err)
+            ? String((err as { message: unknown }).message)
+            : 'Unknown error';
+        this.error.set(msg);
         this.loading.set(false);
       },
     });

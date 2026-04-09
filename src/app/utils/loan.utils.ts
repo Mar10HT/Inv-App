@@ -50,8 +50,10 @@ export function filterLoans(loans: Loan[], filter?: LoanFilter): Loan[] {
 
   if (!filter) return result;
 
-  if (filter.status) {
-    result = result.filter(l => l.status === filter.status);
+  // overdue flag supersedes status — OVERDUE is incompatible with any other status value
+  const effectiveStatus = filter.overdue ? LoanStatus.OVERDUE : filter.status;
+  if (effectiveStatus) {
+    result = result.filter(l => l.status === effectiveStatus);
   }
   if (filter.sourceWarehouseId) {
     result = result.filter(l => l.sourceWarehouseId === filter.sourceWarehouseId);
@@ -61,9 +63,6 @@ export function filterLoans(loans: Loan[], filter?: LoanFilter): Loan[] {
   }
   if (filter.inventoryItemId) {
     result = result.filter(l => l.inventoryItemId === filter.inventoryItemId);
-  }
-  if (filter.overdue) {
-    result = result.filter(l => l.status === LoanStatus.OVERDUE);
   }
   if (filter.dateFrom) {
     result = result.filter(l => l.loanDate >= filter.dateFrom!);

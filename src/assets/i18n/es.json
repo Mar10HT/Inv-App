@@ -476,7 +476,11 @@
     "CONFIRM_PASSWORD": "Confirmar Contraseña",
     "UPDATED": "Perfil actualizado correctamente",
     "PASSWORD_CHANGED": "Contraseña cambiada correctamente",
-    "PASSWORD_MISMATCH": "Las contraseñas no coinciden"
+    "PASSWORD_MISMATCH": "Las contraseñas no coinciden",
+    "PASSWORD_MIN_LENGTH": "Mínimo 8 caracteres",
+    "PASSWORD_UPPERCASE": "Debe contener al menos una letra mayúscula",
+    "PASSWORD_NUMBER": "Debe contener al menos un número",
+    "PASSWORD_SPECIAL": "Debe contener al menos un carácter especial (!@#$%...)"
   },
   "SETTINGS": {
     "SUBTITLE": "Personaliza las preferencias de tu aplicación",

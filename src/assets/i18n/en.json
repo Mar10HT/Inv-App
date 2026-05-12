@@ -476,7 +476,11 @@
     "CONFIRM_PASSWORD": "Confirm Password",
     "UPDATED": "Profile updated successfully",
     "PASSWORD_CHANGED": "Password changed successfully",
-    "PASSWORD_MISMATCH": "Passwords do not match"
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "PASSWORD_MIN_LENGTH": "Minimum 8 characters",
+    "PASSWORD_UPPERCASE": "Must contain at least one uppercase letter",
+    "PASSWORD_NUMBER": "Must contain at least one number",
+    "PASSWORD_SPECIAL": "Must contain at least one special character (!@#$%...)"
   },
   "SETTINGS": {
     "SUBTITLE": "Customize your application preferences",

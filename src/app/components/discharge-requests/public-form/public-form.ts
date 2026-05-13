@@ -6,15 +6,21 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { DischargeRequestService } from '../../../services/discharge-request.service';
 import { AvailableItem } from '../../../interfaces/discharge-request.interface';
+import { LanguageSelectorComponent } from '../../shared/language-selector/language-selector.component';
 
 @Component({
   selector: 'app-public-form',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule, LanguageSelectorComponent],
   template: `
-    <div class="min-h-screen bg-surface flex items-center justify-center p-4">
-      <div class="w-full max-w-2xl">
+    <div class="min-h-screen bg-surface p-4">
+      <!-- Top bar with language selector aligned right -->
+      <div class="max-w-2xl mx-auto flex justify-end mb-2">
+        <app-language-selector />
+      </div>
+
+      <div class="max-w-2xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8">
           <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-primary)]/20 rounded-2xl mb-4">

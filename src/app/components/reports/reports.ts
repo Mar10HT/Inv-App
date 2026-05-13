@@ -85,6 +85,10 @@ export class Reports implements OnInit {
   dateTo = signal<string>('');
   transactionTypeFilter = signal<string>('ALL');
 
+  // Warehouse filter for server-side exports (empty = all warehouses the user can access)
+  selectedExportWarehouseId = signal<string>('');
+  warehouseOptions = computed(() => this.inventoryService.warehouses());
+
   // Enums for template
   InventoryStatus = InventoryStatus;
   TransactionType = TransactionType;
@@ -645,7 +649,10 @@ export class Reports implements OnInit {
 
   private downloadReport(endpoint: string, filename: string): void {
     const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
-    this.http.get(`${environment.apiUrl}/${endpoint}?locale=${locale}`, { responseType: 'blob' })
+    const params = new URLSearchParams({ locale });
+    const warehouseId = this.selectedExportWarehouseId();
+    if (warehouseId) params.set('warehouseId', warehouseId);
+    this.http.get(`${environment.apiUrl}/${endpoint}?${params.toString()}`, { responseType: 'blob' })
       .subscribe(blob => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -657,7 +664,6 @@ export class Reports implements OnInit {
   }
 
   exportInventoryExcel(): void {
-    const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
     this.downloadReport('reports/inventory/excel', `inventario_${Date.now()}.xlsx`);
   }
 

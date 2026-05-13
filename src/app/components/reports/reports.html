@@ -713,6 +713,35 @@
           <p class="text-sm mt-1" style="color: var(--color-on-surface-variant);">{{ 'REPORTS.DOWNLOAD_EXCEL' | translate }}</p>
         </div>
 
+        <!-- Warehouse filter — optional, empty means all accessible warehouses -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-end gap-3">
+          <div class="flex flex-col gap-1.5 w-full sm:max-w-xs">
+            <label for="reports-warehouse-filter" class="text-xs font-medium uppercase tracking-wider" style="color: var(--color-on-surface-variant);">
+              {{ 'REPORTS.FILTER_WAREHOUSE' | translate }}
+            </label>
+            <select
+              id="reports-warehouse-filter"
+              [value]="selectedExportWarehouseId()"
+              (change)="selectedExportWarehouseId.set($any($event.target).value)"
+              class="select-chevron w-full rounded-lg border px-3 py-2 text-sm focus:outline-none transition-colors"
+              style="background-color: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-on-surface);">
+              <option value="">{{ 'REPORTS.ALL_WAREHOUSES' | translate }}</option>
+              @for (w of warehouseOptions(); track w.id) {
+                <option [value]="w.id">{{ w.name }}</option>
+              }
+            </select>
+          </div>
+          @if (selectedExportWarehouseId()) {
+            <button
+              type="button"
+              (click)="selectedExportWarehouseId.set('')"
+              class="text-xs px-3 py-2 rounded-lg border transition-colors"
+              style="border-color: var(--color-border); color: var(--color-on-surface-variant);">
+              {{ 'COMMON.CLEAR' | translate }}
+            </button>
+          }
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <!-- Inventory -->
           <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">

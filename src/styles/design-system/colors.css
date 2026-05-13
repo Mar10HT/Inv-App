@@ -14,6 +14,8 @@
   --color-primary-on: #ffffff;
   --color-primary-container: #2d4a3f;
   --color-primary-on-container: #b8d4ca;
+  /* Lighter primary tuned for text/link use on very dark surfaces (~7:1 on #050505). */
+  --color-primary-link: #88b8ac;
 
   /* Secondary - Slate */
   --color-secondary: #475569;
@@ -118,6 +120,8 @@
   --color-primary-on: #ffffff;
   --color-primary-container: #d1e7dd;
   --color-primary-on-container: #0f3d2e;
+  /* On light, regular primary already passes AA; alias for consistency. */
+  --color-primary-link: #2d5a4e;
 
   /* Secondary - Slate */
   --color-secondary: #334155;

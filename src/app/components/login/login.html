@@ -1,217 +1,135 @@
-<div class="min-h-screen flex bg-[var(--color-surface)]">
+<div class="min-h-screen flex items-center justify-center px-6 py-8 bg-[var(--color-surface)] text-[var(--color-on-surface)]">
 
-  <!-- ═══════════════════════════════════════
-       LEFT — Brand panel (hidden on mobile)
-  ═══════════════════════════════════════ -->
-  <!-- bg-[#050505]: intentionally darker than surface — always-dark brand panel -->
-  <div class="hidden lg:flex flex-col w-[58%] relative overflow-hidden bg-[#050505]">
+  <main class="w-full max-w-[360px] flex flex-col">
 
-    <!-- Hard vertical separator — more present -->
-    <div class="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[color-mix(in_srgb,var(--color-primary)_45%,transparent)] to-transparent z-10"></div>
+    <!-- Small wordmark at top of form -->
+    <a href="/" aria-label="Obsid"
+       class="inline-flex items-center gap-2 self-start mb-10 font-mono text-sm font-medium tracking-tight text-[var(--color-on-surface)] no-underline">
+      <img src="brand/icon-mono-white.svg" alt="" class="w-6 h-6 opacity-95" />
+      <span>obsid</span>
+    </a>
 
-    <!-- Primary glow — large, strong, centered -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full pointer-events-none"
-         style="background: radial-gradient(ellipse at center, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, color-mix(in srgb, var(--color-primary) 18%, transparent) 30%, color-mix(in srgb, var(--color-primary) 6%, transparent) 55%, transparent 72%);"></div>
-
-    <!-- Secondary glow — top-left corner -->
-    <div class="absolute -top-48 -left-48 w-[640px] h-[640px] rounded-full pointer-events-none"
-         style="background: radial-gradient(ellipse at center, color-mix(in srgb, var(--color-primary) 20%, transparent) 0%, transparent 65%);"></div>
-
-    <!-- Floor glow — bottom atmosphere -->
-    <div class="absolute bottom-0 left-0 right-0 h-[320px] pointer-events-none"
-         style="background: linear-gradient(to top, color-mix(in srgb, var(--color-primary) 9%, transparent) 0%, transparent 100%);"></div>
-
-    <!-- Grid texture — visible but not dominant -->
-    <div class="absolute inset-0 pointer-events-none opacity-[0.045]"
-         style="background-image: linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px); background-size: 48px 48px;"></div>
-
-    <!-- Brand core — vertically centered in its own space -->
-    <div class="flex-1 flex flex-col items-start justify-center px-16 xl:px-20 relative z-10">
-
-      <!-- Logo badge -->
-      <div class="w-[88px] h-[88px] rounded-[22px] bg-gradient-to-br from-[#4d7c6f] to-[#2d5247] mb-5 flex items-center justify-center
-                  shadow-[0_0_0_1px_rgba(77,124,111,0.35),0_8px_32px_rgba(77,124,111,0.55),0_24px_80px_rgba(77,124,111,0.25),0_2px_8px_rgba(0,0,0,0.8)]">
-        <img src="brand/icon-mono-white.svg" alt="Obsid" class="w-12 h-12" />
-      </div>
-
-      <!-- Wordmark — fills the panel -->
-      <div class="mb-4">
-        <span class="block text-[128px] xl:text-[152px] font-bold text-white leading-none tracking-[-0.035em]">Obsid</span>
-      </div>
-
-      <!-- Teal accent rule -->
-      <div class="w-14 h-[3px] bg-[var(--color-primary)] rounded-full mb-5 opacity-90"></div>
-
-      <!-- Tagline -->
-      <p class="text-[15px] text-[rgba(255,255,255,0.48)] leading-relaxed max-w-[280px]">
-        {{ 'LOGIN.TAGLINE' | translate }}
+    <!-- Heading + subtitle -->
+    <header class="mb-7">
+      <h1 class="text-2xl font-semibold tracking-[-0.02em] text-[var(--color-on-surface)] leading-tight m-0 mb-1.5">
+        {{ 'LOGIN.SIGN_IN' | translate }}
+      </h1>
+      <p class="text-[13.5px] text-[var(--color-on-surface-variant)] leading-normal m-0">
+        {{ 'LOGIN.SUBTITLE' | translate }}
       </p>
-    </div>
+    </header>
 
-    <!-- Features — anchored to bottom -->
-    <div class="px-16 xl:px-20 pb-12 relative z-10 flex flex-col gap-3.5">
-      <span class="text-[10px] font-semibold text-[rgba(77,124,111,0.7)] uppercase tracking-[0.14em] mb-0.5">{{ 'LOGIN.CAPABILITIES' | translate }}</span>
-      <div class="flex items-center gap-3.5">
-        <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
-          <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
-        </div>
-        <span class="text-[14px] text-[rgba(255,255,255,0.55)]">{{ 'LOGIN.FEAT_WAREHOUSE' | translate }}</span>
-      </div>
-      <div class="flex items-center gap-3.5">
-        <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
-          <lucide-icon name="TrendingUp" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
-        </div>
-        <span class="text-[14px] text-[rgba(255,255,255,0.55)]">{{ 'LOGIN.FEAT_ANALYTICS' | translate }}</span>
-      </div>
-      <div class="flex items-center gap-3.5">
-        <div class="w-8 h-8 rounded-lg bg-[rgba(77,124,111,0.12)] border border-[rgba(77,124,111,0.3)] flex items-center justify-center shrink-0">
-          <lucide-icon name="ShieldCheck" class="!w-4 !h-4 text-[var(--color-primary)]"></lucide-icon>
-        </div>
-        <span class="text-[14px] text-[rgba(255,255,255,0.55)]">{{ 'LOGIN.FEAT_SECURE' | translate }}</span>
-      </div>
-    </div>
+    <!-- Persistent error region -->
+    @if (loginError()) {
+      <p class="flex items-start gap-2 text-[13px] text-[var(--color-error)] m-0 mb-4 leading-snug" role="alert">
+        <lucide-icon name="AlertCircle" class="!w-4 !h-4 shrink-0 mt-px"></lucide-icon>
+        <span>{{ loginError() }}</span>
+      </p>
+    }
 
-    <!-- Version bottom-left -->
-    <div class="px-16 xl:px-20 pb-5 relative z-10">
-      <span class="text-[11px] text-[rgba(255,255,255,0.14)]">{{ 'LOGIN.VERSION' | translate }}</span>
-    </div>
-  </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4" novalidate>
 
-  <!-- ═══════════════════════════════════════
-       RIGHT — Form panel
-  ═══════════════════════════════════════ -->
-  <div class="flex-1 flex flex-col items-center justify-center px-8 md:px-12 xl:px-16 relative">
-
-    <!-- Right-panel ambient glow — more present -->
-    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] pointer-events-none"
-         style="background: radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--color-primary) 9%, transparent) 0%, transparent 65%);"></div>
-
-    <!-- Mobile brand header (hidden on desktop) -->
-    <div class="flex lg:hidden items-center gap-3 mb-12 self-start">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#4d7c6f] to-[#2d5247] flex items-center justify-center
-                  shadow-[0_4px_20px_rgba(77,124,111,0.5)]">
-        <img src="brand/icon-mono-white.svg" alt="Obsid" class="w-5 h-5" />
-      </div>
-      <span class="text-[22px] font-bold text-white tracking-[-0.01em]">Obsid</span>
-    </div>
-
-    <!-- Form container -->
-    <div class="w-full max-w-[380px] relative z-10">
-
-      <!-- Heading block — more typographic presence -->
-      <div class="mb-10">
-        <h1 class="text-[40px] font-black text-white leading-tight tracking-[-0.03em] mb-2.5">
-          {{ 'LOGIN.WELCOME_BACK' | translate }}
-        </h1>
-        <p class="text-[14px] text-[rgba(255,255,255,0.44)]">{{ 'LOGIN.SIGN_IN_TO_ACCOUNT' | translate }}</p>
-      </div>
-
-      <!-- Form -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
-
-        <!-- Email -->
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-semibold text-[rgba(255,255,255,0.45)] uppercase tracking-[0.1em]">
-            {{ 'LOGIN.EMAIL' | translate }}
-          </label>
-          <div class="flex items-center gap-3 border-b border-[rgba(255,255,255,0.12)] pb-3
-                      focus-within:border-[var(--color-primary)] transition-colors duration-200 group">
-            <lucide-icon name="Mail" class="!w-4 !h-4 !text-[rgba(255,255,255,0.22)] group-focus-within:!text-[var(--color-primary)] transition-colors duration-200 shrink-0"></lucide-icon>
-            <input
-              type="email"
-              formControlName="email"
-              class="flex-1 bg-transparent text-white text-[15px] placeholder-[rgba(255,255,255,0.18)] outline-none"
-              [placeholder]="'LOGIN.ENTER_EMAIL' | translate"
-            />
-          </div>
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <p class="text-[var(--color-status-error)] text-[12px]">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
-          }
-        </div>
-
-        <!-- Password -->
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <label class="text-[11px] font-semibold text-[rgba(255,255,255,0.45)] uppercase tracking-[0.1em]">
-              {{ 'LOGIN.PASSWORD' | translate }}
-            </label>
-            <a routerLink="/forgot-password"
-               class="text-[12px] text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
-              {{ 'LOGIN.FORGOT_PASSWORD' | translate }}
-            </a>
-          </div>
-          <div class="flex items-center gap-3 border-b border-[rgba(255,255,255,0.12)] pb-3
-                      focus-within:border-[var(--color-primary)] transition-colors duration-200 group">
-            <lucide-icon name="Lock" class="!w-4 !h-4 !text-[rgba(255,255,255,0.22)] group-focus-within:!text-[var(--color-primary)] transition-colors duration-200 shrink-0"></lucide-icon>
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
-              formControlName="password"
-              class="flex-1 bg-transparent text-white text-[15px] placeholder-[rgba(255,255,255,0.18)] outline-none"
-              [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
-            />
-            <button
-              type="button"
-              (click)="togglePasswordVisibility()"
-              class="text-[rgba(255,255,255,0.22)] hover:text-[rgba(255,255,255,0.65)] transition-colors shrink-0"
-              [attr.aria-label]="(showPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
-            >
-              <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-4 !h-4"></lucide-icon>
-            </button>
-          </div>
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <p class="text-[var(--color-status-error)] text-[12px]">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
-          }
-        </div>
-
-        <!-- Remember me -->
-        <label class="flex items-center gap-2.5 cursor-pointer pt-1">
-          <input
-            type="checkbox"
-            formControlName="rememberMe"
-            class="w-4 h-4 rounded-sm border-[rgba(255,255,255,0.2)] bg-transparent
-                   focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer accent-[var(--color-primary)]"
-          />
-          <span class="text-[13px] text-[rgba(255,255,255,0.35)]">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
+      <!-- Email -->
+      <div class="flex flex-col gap-1.5">
+        <label for="login-email" class="text-[13px] font-medium text-[var(--color-on-surface)]">
+          {{ 'LOGIN.EMAIL' | translate }}
         </label>
-
-        <!-- Submit — stronger glow presence -->
-        <button
-          type="submit"
-          [disabled]="loginForm.invalid || loading()"
-          class="mt-2 w-full py-4 rounded-xl font-semibold text-[15px] text-white
-                 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]
-                 shadow-[0_4px_24px_rgba(77,124,111,0.55),0_1px_2px_rgba(0,0,0,0.4)]
-                 hover:shadow-[0_6px_40px_rgba(77,124,111,0.75),0_1px_2px_rgba(0,0,0,0.4)]
-                 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                 transition-all duration-200 flex items-center justify-center gap-2.5 tracking-[0.01em]"
-        >
-          @if (loading()) {
-            <mat-spinner diameter="18" class="!w-[18px] !h-[18px]"></mat-spinner>
-            <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
-          } @else {
-            <lucide-icon name="LogIn" class="!w-4 !h-4"></lucide-icon>
-            <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
-          }
-        </button>
-
-      </form>
-
-      <!-- Divider + contact -->
-      <div class="mt-8 flex flex-col gap-5">
-        <div class="flex items-center gap-3">
-          <div class="flex-1 h-px bg-[rgba(255,255,255,0.08)]"></div>
-          <span class="text-[11px] text-[rgba(255,255,255,0.22)] uppercase tracking-[0.1em]">{{ 'LOGIN.OR' | translate }}</span>
-          <div class="flex-1 h-px bg-[rgba(255,255,255,0.08)]"></div>
+        <div class="flex items-center gap-2 bg-[var(--color-surface-variant)] border rounded-lg pl-3 pr-1.5 h-[42px] transition-colors focus-within:border-[var(--color-on-surface-variant)]"
+             [ngClass]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched ? 'border-[var(--color-error)]' : 'border-[var(--color-border-subtle)]'">
+          <input
+            id="login-email"
+            type="email"
+            autocomplete="email"
+            autocapitalize="off"
+            spellcheck="false"
+            formControlName="email"
+            class="flex-1 bg-transparent border-0 outline-0 text-[var(--color-on-surface)] text-[14px] placeholder:text-[var(--color-on-surface-muted)] p-0 h-full min-w-0"
+            [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
+          />
         </div>
-
-        <p class="text-[13px] text-[rgba(255,255,255,0.3)] text-center">
-          {{ 'LOGIN.NEED_ACCESS' | translate }}
-          <span class="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] cursor-pointer transition-colors font-medium">
-            {{ 'LOGIN.CONTACT_ADMIN' | translate }}
-          </span>
-        </p>
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <p class="text-[12px] text-[var(--color-error)] m-0">{{ 'LOGIN.VALIDATION.INVALID_EMAIL' | translate }}</p>
+        }
       </div>
-    </div>
-  </div>
 
+      <!-- Password -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <label for="login-password" class="text-[13px] font-medium text-[var(--color-on-surface)]">
+            {{ 'LOGIN.PASSWORD' | translate }}
+          </label>
+          <a routerLink="/forgot-password"
+             class="text-[12px] font-medium text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] no-underline px-1.5 -mx-1.5 py-1 -my-1 min-h-[28px] inline-flex items-center transition-colors">
+            {{ 'LOGIN.FORGOT_PASSWORD' | translate }}
+          </a>
+        </div>
+        <div class="flex items-center gap-2 bg-[var(--color-surface-variant)] border rounded-lg pl-3 pr-1.5 h-[42px] transition-colors focus-within:border-[var(--color-on-surface-variant)]"
+             [ngClass]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched ? 'border-[var(--color-error)]' : 'border-[var(--color-border-subtle)]'">
+          <input
+            id="login-password"
+            [type]="showPassword() ? 'text' : 'password'"
+            autocomplete="current-password"
+            formControlName="password"
+            (keydown)="onPasswordKeyEvent($event)"
+            (keyup)="onPasswordKeyEvent($event)"
+            class="flex-1 bg-transparent border-0 outline-0 text-[var(--color-on-surface)] text-[14px] placeholder:text-[var(--color-on-surface-muted)] p-0 h-full min-w-0"
+          />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="appearance-none bg-transparent border-0 cursor-pointer text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[color-mix(in_srgb,var(--color-on-surface)_8%,transparent)] p-0 w-[34px] h-[34px] inline-flex items-center justify-center rounded-md transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-on-surface-variant)]"
+            [attr.aria-label]="(showPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD') | translate"
+            [attr.aria-pressed]="showPassword()"
+          >
+            <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-4 !h-4"></lucide-icon>
+          </button>
+        </div>
+        @if (capsLockOn()) {
+          <p class="inline-flex items-center gap-1.5 text-[12px] text-[var(--color-warning)] m-0" role="status">
+            <lucide-icon name="AlertTriangle" class="!w-3.5 !h-3.5"></lucide-icon>
+            {{ 'LOGIN.CAPS_LOCK_ON' | translate }}
+          </p>
+        }
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <p class="text-[12px] text-[var(--color-error)] m-0">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
+        }
+      </div>
+
+      <!-- Remember me -->
+      <label class="inline-flex items-center gap-2 text-[13px] text-[var(--color-on-surface-variant)] cursor-pointer select-none">
+        <input
+          type="checkbox"
+          formControlName="rememberMe"
+          class="w-[15px] h-[15px] cursor-pointer accent-[var(--color-primary)]"
+        />
+        <span>{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
+      </label>
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        [disabled]="loading()"
+        class="appearance-none inline-flex items-center justify-center gap-2 w-full h-[42px] mt-2 px-4 border-0 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-on)] text-[14px] font-semibold tracking-[0.01em] cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+      >
+        @if (loading()) {
+          <span class="w-3.5 h-3.5 rounded-full border-2 border-[color-mix(in_srgb,var(--color-primary-on)_35%,transparent)] border-t-[var(--color-primary-on)] animate-spin motion-reduce:animate-none" aria-hidden="true"></span>
+          <span>{{ 'LOGIN.SIGNING_IN' | translate }}</span>
+        } @else {
+          <span>{{ 'LOGIN.SIGN_IN' | translate }}</span>
+          <lucide-icon name="ArrowRight" class="!w-4 !h-4"></lucide-icon>
+        }
+      </button>
+    </form>
+
+    <!-- Footer line below the form -->
+    <footer class="flex items-center justify-center gap-2 mt-10 pt-6 border-t border-[var(--color-border-subtle)] text-[12px] text-[var(--color-on-surface-muted)]">
+      <a href="mailto:soporte@obsid.app"
+         class="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] no-underline transition-colors">
+        {{ 'LOGIN.SUPPORT' | translate }}
+      </a>
+      <span class="opacity-60">·</span>
+      <span>{{ 'LOGIN.VERSION' | translate }}</span>
+    </footer>
+
+  </main>
 </div>

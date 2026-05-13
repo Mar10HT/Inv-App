@@ -559,36 +559,35 @@
     }
   },
   "LOGIN": {
-    "TITLE": "INV-APP",
-    "WELCOME_BACK": "Bienvenido",
-    "SIGN_IN_TO_ACCOUNT": "Ingresa tus credenciales para continuar",
-    "TAGLINE": "Gestión de inventario,\nsimplificada.",
-    "FEAT_WAREHOUSE": "Multi-bodega",
-    "FEAT_ANALYTICS": "Analítica en tiempo real",
-    "FEAT_SECURE": "Seguro",
-    "EMAIL": "Correo Electrónico",
+    "TITLE": "Obsid",
+    "SIGN_IN": "Iniciar sesión",
+    "SUBTITLE": "Accede a tu workspace de inventario.",
+    "EMAIL": "Correo",
     "PASSWORD": "Contraseña",
-    "ENTER_EMAIL": "tu@empresa.com",
-    "ENTER_PASSWORD": "Ingresa tu contraseña",
-    "SIGN_IN": "Iniciar Sesión",
+    "EMAIL_PLACEHOLDER": "tu@empresa.com",
     "SIGNING_IN": "Iniciando sesión...",
-    "REMEMBER_ME": "Recordarme",
+    "REMEMBER_ME": "Mantener sesión iniciada",
     "FORGOT_PASSWORD": "¿Olvidaste tu contraseña?",
-    "OR": "o",
-    "NEED_ACCESS": "¿Necesitas acceso? ",
-    "CONTACT_ADMIN": "Contacta al admin",
-    "VERSION": "v2.0.0",
+    "CAPS_LOCK_ON": "Bloqueo de mayúsculas activado",
+    "SUPPORT": "Soporte",
+    "PRIVACY": "Privacidad",
+    "VERSION": "v0.4.5",
+    "STATUS": {
+      "OPERATIONAL": "Sistema operativo",
+      "DEGRADED": "Servicio no disponible",
+      "CHECKING": "Verificando estado..."
+    },
     "VALIDATION": {
       "INVALID_EMAIL": "Por favor ingresa un correo electrónico válido",
-      "PASSWORD_MIN": "La contraseña debe tener al menos 6 caracteres"
+      "PASSWORD_MIN": "La contraseña debe tener al menos 12 caracteres"
     },
     "ERROR": {
+      "GENERIC": "No pudimos iniciar sesión. Verifica tus credenciales e intenta de nuevo.",
       "INVALID_CREDENTIALS": "Credenciales inválidas. Por favor intenta de nuevo."
     },
     "SUCCESS": {
       "WELCOME_BACK": "Bienvenido de nuevo, {{name}}!"
-    },
-    "CAPABILITIES": "Capacidades"
+    }
   },
   "AUTH": {
     "FORGOT_PASSWORD": {
@@ -706,6 +705,8 @@
     },
     "TAB_DOWNLOADS": "Descargas",
     "DOWNLOAD_EXCEL": "Descarga reportes Excel generados por el servidor",
+    "FILTER_WAREHOUSE": "Filtrar por bodega",
+    "ALL_WAREHOUSES": "Todas las bodegas",
     "EXCEL_INVENTORY": "Inventario",
     "EXCEL_LOW_STOCK": "Stock Bajo",
     "EXCEL_TRANSACTIONS": "Transacciones",

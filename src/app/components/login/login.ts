@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
@@ -18,8 +16,6 @@ import { NotificationService } from '../../services/notification.service';
     ReactiveFormsModule,
     RouterLink,
     LucideAngularModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
     TranslateModule
   ],
   templateUrl: './login.html'
@@ -33,34 +29,42 @@ export class Login {
 
   loading = signal(false);
   showPassword = signal(false);
+  capsLockOn = signal(false);
+  loginError = signal<string | null>(null);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(12)]],
     rememberMe: [false]
   });
 
+  onPasswordKeyEvent(event: KeyboardEvent): void {
+    this.capsLockOn.set(event.getModifierState && event.getModifierState('CapsLock'));
+  }
+
   onSubmit(): void {
-    if (this.loginForm.invalid) return;
+    this.loginError.set(null);
+
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.loading.set(true);
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.loading.set(false);
-
-        // Get return URL from query params or default to dashboard
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-
         this.notifications.success('LOGIN.SUCCESS.WELCOME_BACK', {
           interpolateParams: { name: response.user.name || response.user.email }
         });
-
         this.router.navigateByUrl(returnUrl);
       },
       error: (error) => {
         this.loading.set(false);
-        this.notifications.handleError(error);
+        const message = error?.error?.message || error?.message || 'LOGIN.ERROR.GENERIC';
+        this.loginError.set(message);
       }
     });
   }

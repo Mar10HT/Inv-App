@@ -49,3 +49,7 @@ Thumbs.db
 .playwright/
 playwright-report/
 test-results/
+
+# Local agent tooling
+.agents/
+skills-lock.json

@@ -753,6 +753,7 @@
       "LOGIN": "Inicio de sesión",
       "LOGOUT": "Cierre de sesión",
       "PASSWORD_CHANGE": "Contraseña cambiada",
+      "ACCESS": "Acceso administrativo",
       "ASSIGN": "Asignado",
       "UNASSIGN": "Desasignado",
       "TRANSFER": "Transferido",

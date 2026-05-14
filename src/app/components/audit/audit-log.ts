@@ -61,7 +61,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
             <div class="lg:w-48">
               <select
                 [(ngModel)]="selectedAction"
-                (ngModelChange)="applyFilters()"
+                (ngModelChange)="onActionFilterChange()"
                 class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'AUDIT.ALL_ACTIONS' | translate }}</option>
@@ -281,8 +281,25 @@ export class AuditLogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Load logs from backend API
-    this.auditService.loadLogs({ limit: 200 });
+    this.reloadFromServer();
+  }
+
+  /**
+   * The action filter is server-side: the backend hides auth/access events
+   * by default, so picking LOGIN/ACCESS in the dropdown requires re-fetching
+   * with that action explicitly. Other filters (search, entity) stay
+   * client-side over the loaded page.
+   */
+  private reloadFromServer(): void {
+    const options: { limit: number; action?: string } = { limit: 200 };
+    if (this.selectedAction !== 'all') {
+      options.action = this.selectedAction;
+    }
+    this.auditService.loadLogs(options);
+  }
+
+  onActionFilterChange(): void {
+    this.reloadFromServer();
   }
 
   applyFilters(): void {
@@ -298,11 +315,6 @@ export class AuditLogComponent implements OnInit {
       );
     }
 
-    // Action filter
-    if (this.selectedAction !== 'all') {
-      logs = logs.filter(log => log.action === this.selectedAction);
-    }
-
     // Entity filter
     if (this.selectedEntity !== 'all') {
       logs = logs.filter(log => log.entity === this.selectedEntity);
@@ -316,10 +328,15 @@ export class AuditLogComponent implements OnInit {
   }
 
   clearFilters(): void {
+    const actionChanged = this.selectedAction !== 'all';
     this.searchQuery = '';
     this.selectedAction = 'all';
     this.selectedEntity = 'all';
-    this.applyFilters();
+    if (actionChanged) {
+      this.reloadFromServer();
+    } else {
+      this.applyFilters();
+    }
   }
 
   hasFilters(): boolean {
@@ -340,6 +357,7 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.LOGIN]: this.translate.instant('AUDIT.ACTION.LOGIN'),
       [AuditAction.LOGOUT]: this.translate.instant('AUDIT.ACTION.LOGOUT'),
       [AuditAction.PASSWORD_CHANGE]: this.translate.instant('AUDIT.ACTION.PASSWORD_CHANGE'),
+      [AuditAction.ACCESS]: this.translate.instant('AUDIT.ACTION.ACCESS'),
       [AuditAction.ASSIGN]: this.translate.instant('AUDIT.ACTION.ASSIGN'),
       [AuditAction.UNASSIGN]: this.translate.instant('AUDIT.ACTION.UNASSIGN'),
       [AuditAction.TRANSFER]: this.translate.instant('AUDIT.ACTION.TRANSFER'),
@@ -371,6 +389,7 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.LOGIN]: 'LogIn',
       [AuditAction.LOGOUT]: 'LogOut',
       [AuditAction.PASSWORD_CHANGE]: 'KeyRound',
+      [AuditAction.ACCESS]: 'ShieldCheck',
       [AuditAction.ASSIGN]: 'UserPlus',
       [AuditAction.UNASSIGN]: 'UserMinus',
       [AuditAction.TRANSFER]: 'ArrowLeftRight',
@@ -389,6 +408,7 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.LOGIN]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]',
       [AuditAction.LOGOUT]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]',
       [AuditAction.PASSWORD_CHANGE]: 'bg-[var(--color-accent-yellow-bg)] text-[var(--color-accent-yellow)]',
+      [AuditAction.ACCESS]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-muted)]',
       [AuditAction.ASSIGN]: 'bg-[var(--color-accent-purple-bg)] text-[var(--color-accent-purple)]',
       [AuditAction.UNASSIGN]: 'bg-[var(--color-warning-bg)] text-[var(--color-status-warning)]',
       [AuditAction.TRANSFER]: 'bg-[var(--color-accent-cyan-bg)] text-[var(--color-accent-cyan)]',
@@ -407,6 +427,7 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.LOGIN]: 'text-[var(--color-on-surface-variant)]',
       [AuditAction.LOGOUT]: 'text-[var(--color-on-surface-variant)]',
       [AuditAction.PASSWORD_CHANGE]: 'text-yellow-400',
+      [AuditAction.ACCESS]: 'text-[var(--color-on-surface-muted)]',
       [AuditAction.ASSIGN]: 'text-purple-400',
       [AuditAction.UNASSIGN]: 'text-[var(--color-status-warning)]',
       [AuditAction.TRANSFER]: 'text-cyan-400',

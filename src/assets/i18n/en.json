@@ -753,6 +753,7 @@
       "LOGIN": "Login",
       "LOGOUT": "Logout",
       "PASSWORD_CHANGE": "Password Changed",
+      "ACCESS": "Admin access",
       "ASSIGN": "Assigned",
       "UNASSIGN": "Unassigned",
       "TRANSFER": "Transferred",

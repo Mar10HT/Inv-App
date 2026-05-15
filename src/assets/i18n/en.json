@@ -579,7 +579,7 @@
     },
     "VALIDATION": {
       "INVALID_EMAIL": "Please enter a valid email address",
-      "PASSWORD_MIN": "Password must be at least 12 characters"
+      "PASSWORD_MIN": "Password must be at least 8 characters"
     },
     "ERROR": {
       "GENERIC": "We couldn't sign you in. Check your credentials and try again.",

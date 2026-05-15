@@ -579,7 +579,7 @@
     },
     "VALIDATION": {
       "INVALID_EMAIL": "Por favor ingresa un correo electrónico válido",
-      "PASSWORD_MIN": "La contraseña debe tener al menos 12 caracteres"
+      "PASSWORD_MIN": "La contraseña debe tener al menos 8 caracteres"
     },
     "ERROR": {
       "GENERIC": "No pudimos iniciar sesión. Verifica tus credenciales e intenta de nuevo.",
@@ -753,6 +753,7 @@
       "LOGIN": "Inicio de sesión",
       "LOGOUT": "Cierre de sesión",
       "PASSWORD_CHANGE": "Contraseña cambiada",
+      "ACCESS": "Acceso administrativo",
       "ASSIGN": "Asignado",
       "UNASSIGN": "Desasignado",
       "TRANSFER": "Transferido",

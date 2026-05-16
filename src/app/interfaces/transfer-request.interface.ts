@@ -8,6 +8,7 @@ export interface RawTransferRequestItem {
 
 export interface RawTransferRequest {
   id: string;
+  name?: string | null;
   status: string;
   sourceWarehouseId: string;
   sourceWarehouse?: { name: string };
@@ -52,6 +53,7 @@ export interface TransferRequestItem {
 
 export interface TransferRequest {
   id: string;
+  name?: string;
   status: TransferRequestStatus;
   // Source warehouse
   sourceWarehouseId: string;
@@ -83,6 +85,7 @@ export interface TransferRequest {
 }
 
 export interface CreateTransferRequestDto {
+  name?: string;
   sourceWarehouseId: string;
   destinationWarehouseId: string;
   items: {

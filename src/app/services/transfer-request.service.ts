@@ -100,6 +100,7 @@ export class TransferRequestService implements OnDestroy {
   private transformRequest(req: RawTransferRequest): TransferRequest {
     return {
       id: req.id,
+      name: req.name ?? undefined,
       status: req.status as TransferRequestStatus,
       sourceWarehouseId: req.sourceWarehouseId,
       sourceWarehouseName: req.sourceWarehouse?.name || '',

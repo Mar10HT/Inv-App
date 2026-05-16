@@ -201,9 +201,13 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                   <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
-                        <p class="text-foreground font-medium">{{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }}</p>
+                        <p class="text-foreground font-medium">{{ request.name || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
                         <p class="text-[var(--color-on-surface-variant)] text-sm truncate max-w-xs">
-                          {{ getItemsPreview(request) }}
+                          @if (request.name) {
+                            {{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }} · {{ getItemsPreview(request) }}
+                          } @else {
+                            {{ getItemsPreview(request) }}
+                          }
                         </p>
                       </div>
                     </td>
@@ -266,23 +270,15 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             </ng-container>
                           }
                           @case (Status.SENT) {
-                            <div class="flex gap-1.5">
+                            <ng-container *ngxPermissionsOnly="['transfers:manage']">
                               <button
-                                (click)="showQrCode(request)"
-                                class="ds-btn ds-btn--qr ds-btn--sm">
-                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                                <span>{{ 'TRANSFERS.QR.SHOW_QR' | translate }}</span>
+                                (click)="manualConfirmReceipt(request)"
+                                [disabled]="transferService.loading()"
+                                class="ds-btn ds-btn--approve ds-btn--sm">
+                                <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                <span>{{ 'TRANSFERS.MANUAL_CONFIRM' | translate }}</span>
                               </button>
-                              <ng-container *ngxPermissionsOnly="['transfers:manage']">
-                                <button
-                                  (click)="manualConfirmReceipt(request)"
-                                  [disabled]="transferService.loading()"
-                                  [attr.title]="'TRANSFERS.MANUAL_CONFIRM' | translate"
-                                  class="ds-btn ds-btn--ghost ds-btn--sm">
-                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                                </button>
-                              </ng-container>
-                            </div>
+                            </ng-container>
                           }
                           @case (Status.COMPLETED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | date:'mediumDate' }}</span>
@@ -318,8 +314,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
               <div class="p-4">
                 <div class="flex justify-between items-start mb-3">
                   <div>
-                    <p class="text-foreground font-medium">{{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }}</p>
-                    <p class="text-[var(--color-on-surface-variant)] text-sm">{{ getItemsPreview(request) }}</p>
+                    <p class="text-foreground font-medium">{{ request.name || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
+                    <p class="text-[var(--color-on-surface-variant)] text-sm">
+                      @if (request.name) {
+                        {{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }} · {{ getItemsPreview(request) }}
+                      } @else {
+                        {{ getItemsPreview(request) }}
+                      }
+                    </p>
                   </div>
                   <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                     {{ getStatusLabel(request.status) }}

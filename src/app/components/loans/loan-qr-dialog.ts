@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoanService } from '../../services/loan.service';
 import { NotificationService } from '../../services/notification.service';
 import { Loan } from '../../interfaces/loan.interface';
+import { summarizeLoanItems } from '../../utils/loan.utils';
 
 // ==================== QR Code Display Dialog ====================
 
@@ -42,7 +43,7 @@ export interface LoanQrData {
             <div class="bg-white p-4 rounded-lg mb-4">
               <img [src]="qrDataUrl()" alt="QR Code" class="w-56 h-56 block" />
             </div>
-            <p class="text-foreground font-medium text-center mb-1">{{ loan()?.inventoryItemName }}</p>
+            <p class="text-foreground font-medium text-center mb-1">{{ loanSummary() }}</p>
             <p class="text-[var(--color-on-surface-variant)] text-sm text-center">
               {{ loan()?.sourceWarehouseName }} → {{ loan()?.destinationWarehouseName }}
             </p>
@@ -88,6 +89,15 @@ export class LoanQrDialog {
     this.closed.emit();
   }
 
+  loanSummary(): string {
+    const l = this.loan();
+    return l ? this.summaryFor(l) : '';
+  }
+
+  summaryFor(loan: Loan): string {
+    return summarizeLoanItems(loan);
+  }
+
   printQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentLoan = this.loan();
@@ -98,7 +108,7 @@ export class LoanQrDialog {
       printWindow.document.write(`
         <html>
           <head>
-            <title>QR Code - ${currentLoan.inventoryItemName}</title>
+            <title>QR Code - ${this.summaryFor(currentLoan)}</title>
             <style>
               body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
               img { max-width: 300px; }
@@ -108,7 +118,7 @@ export class LoanQrDialog {
           </head>
           <body>
             <img src="${dataUrl}" alt="QR Code" />
-            <h2>${currentLoan.inventoryItemName}</h2>
+            <h2>${this.summaryFor(currentLoan)}</h2>
             <p>${currentLoan.sourceWarehouseName} → ${currentLoan.destinationWarehouseName}</p>
             <p>${this.type() === 'send' ? 'Scan to confirm receipt' : 'Scan to confirm return'}</p>
             <script>window.onload = function() { window.print(); }</script>

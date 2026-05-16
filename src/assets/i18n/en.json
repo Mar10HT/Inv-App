@@ -314,6 +314,7 @@
       "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
     "MANAGER": "Manager",
+    "MANAGER_PLACEHOLDER": "No manager assigned",
     "NO_MANAGER": "No manager",
     "SET_MANAGER": "Set Manager"
   },
@@ -767,12 +768,15 @@
       "CATEGORY": "Category",
       "USER": "User",
       "TRANSACTION": "Transaction",
-      "LOAN": "Loan"
+      "LOAN": "Loan",
+      "TRANSFER_REQUEST": "Transfer"
     }
   },
   "LOANS": {
     "TITLE": "Loans",
     "SUBTITLE": "Temporary equipment loans between warehouses",
+    "NAME": "Loan name",
+    "NAME_PLACEHOLDER": "e.g. Friday event loan (optional)",
     "NEW_LOAN": "New Loan",
     "NEW_LOAN_DESC": "Create an equipment loan between warehouses",
     "SEARCH_PLACEHOLDER": "Search by item or warehouse...",
@@ -876,6 +880,8 @@
   "TRANSFERS": {
     "TITLE": "Transfers",
     "SUBTITLE": "Manage transfer requests between warehouses",
+    "NAME": "Transfer name",
+    "NAME_PLACEHOLDER": "e.g. Monthly restock (optional)",
     "NEW_REQUEST": "New Request",
     "NEW_REQUEST_DESC": "Create a transfer request for items between warehouses",
     "SEARCH_PLACEHOLDER": "Search by warehouse or item...",

@@ -18,10 +18,12 @@ export interface CreateWarehouseDto {
   name: string;
   location: string;
   description?: string;
+  managerId?: string | null;
 }
 
 export interface UpdateWarehouseDto {
   name?: string;
   location?: string;
   description?: string;
+  managerId?: string | null;
 }

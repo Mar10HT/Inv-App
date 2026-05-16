@@ -314,6 +314,7 @@
       "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
     },
     "MANAGER": "Encargado",
+    "MANAGER_PLACEHOLDER": "Sin encargado asignado",
     "NO_MANAGER": "Sin encargado",
     "SET_MANAGER": "Asignar Encargado"
   },
@@ -767,12 +768,15 @@
       "CATEGORY": "Categoría",
       "USER": "Usuario",
       "TRANSACTION": "Transacción",
-      "LOAN": "Préstamo"
+      "LOAN": "Préstamo",
+      "TRANSFER_REQUEST": "Transferencia"
     }
   },
   "LOANS": {
     "TITLE": "Préstamos",
     "SUBTITLE": "Gestión de préstamos temporales entre bodegas",
+    "NAME": "Nombre del préstamo",
+    "NAME_PLACEHOLDER": "Ej: Préstamo para evento del viernes (opcional)",
     "NEW_LOAN": "Nuevo Préstamo",
     "NEW_LOAN_DESC": "Crear un préstamo de equipo entre bodegas",
     "SEARCH_PLACEHOLDER": "Buscar por item o bodega...",
@@ -876,6 +880,8 @@
   "TRANSFERS": {
     "TITLE": "Transferencias",
     "SUBTITLE": "Gestión de solicitudes de transferencia entre bodegas",
+    "NAME": "Nombre de la transferencia",
+    "NAME_PLACEHOLDER": "Ej: Reposición mensual (opcional)",
     "NEW_REQUEST": "Nueva Solicitud",
     "NEW_REQUEST_DESC": "Crear una solicitud de transferencia de items entre bodegas",
     "SEARCH_PLACEHOLDER": "Buscar por bodega o item...",

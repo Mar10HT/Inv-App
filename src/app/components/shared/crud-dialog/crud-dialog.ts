@@ -60,7 +60,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
             } @else if (field.type === 'select') {
               <select
                 [formControlName]="field.key"
-                class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer appearance-none"
+                class="select-chevron w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched">
                 <option value="">{{ (field.placeholderKey || field.labelKey) | translate }}</option>
                 @for (opt of field.options; track opt.value) {

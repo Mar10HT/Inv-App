@@ -40,6 +40,19 @@ export interface LoanFormResult {
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'LOANS.NEW_LOAN_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
+          <!-- Loan name -->
+          <div>
+            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NAME' | translate }}</label>
+            <input
+              type="text"
+              [ngModel]="selectedName()"
+              (ngModelChange)="selectedName.set($event)"
+              maxlength="120"
+              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+              [placeholder]="'LOANS.NAME_PLACEHOLDER' | translate"
+            />
+          </div>
+
           <!-- Source Warehouse Select -->
           <div>
             <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.SOURCE_WAREHOUSE' | translate }} *</label>
@@ -192,6 +205,7 @@ export class LoanFormDialog {
   created = output<LoanFormResult>();
 
   // Form signals
+  selectedName = signal('');
   selectedSourceWarehouseId = signal('');
   selectedDestWarehouseId = signal('');
   selectedDueDate = signal('');
@@ -210,7 +224,11 @@ export class LoanFormDialog {
   // Set of item IDs currently on loan (for fast lookup)
   private itemsOnLoanSet = computed(() => {
     const activeLoans = this.loanService.activeLoans();
-    return new Set(activeLoans.map(l => l.inventoryItemId));
+    const set = new Set<string>();
+    for (const loan of activeLoans) {
+      for (const li of loan.items) set.add(li.inventoryItemId);
+    }
+    return set;
   });
 
   availableItemsForLoan = computed(() => {
@@ -289,48 +307,34 @@ export class LoanFormDialog {
   createLoan(): void {
     if (!this.canCreateLoan()) return;
 
-    const items = this.loanItems().filter(item => item.inventoryItemId);
-    const generalNotes = this.selectedNotes();
-    let successCount = 0;
-    let completedCount = 0;
+    const items = this.loanItems().filter((item) => item.inventoryItemId);
+    const generalNotes = this.selectedNotes() || undefined;
 
-    for (const item of items) {
-      const notes = [generalNotes, item.notes].filter(n => n).join(' - ') || undefined;
-
-      this.loanService.createLoan({
-        inventoryItemId: item.inventoryItemId,
-        quantity: item.quantity,
+    this.loanService
+      .createLoan({
+        name: this.selectedName().trim() || undefined,
+        items: items.map((i) => ({
+          inventoryItemId: i.inventoryItemId,
+          quantity: i.quantity,
+          notes: i.notes || undefined,
+        })),
         sourceWarehouseId: this.selectedSourceWarehouseId(),
         destinationWarehouseId: this.selectedDestWarehouseId(),
         dueDate: this.selectedDueDate(),
-        notes
-      }).subscribe({
+        notes: generalNotes,
+      })
+      .subscribe({
         next: (result) => {
           if (result) {
-            successCount++;
+            this.notifications.success(this.translate.instant('LOANS.LOAN_CREATED'));
+            this.created.emit({ success: true, count: items.length });
+          } else {
+            this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
           }
-          completedCount++;
-          this.checkAllCompleted(completedCount, items.length, successCount);
         },
         error: () => {
-          completedCount++;
-          this.checkAllCompleted(completedCount, items.length, successCount);
-        }
+          this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
+        },
       });
-    }
-  }
-
-  private checkAllCompleted(completed: number, total: number, successCount: number): void {
-    if (completed === total) {
-      if (successCount > 0) {
-        const message = successCount === 1
-          ? this.translate.instant('LOANS.LOAN_CREATED')
-          : this.translate.instant('LOANS.LOANS_CREATED', { count: successCount });
-        this.notifications.success(message);
-        this.created.emit({ success: true, count: successCount });
-      } else {
-        this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
-      }
-    }
   }
 }

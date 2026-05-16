@@ -10,13 +10,20 @@ export enum LoanStatus {
   ACTIVE = 'ACTIVE'
 }
 
-export interface Loan {
+export interface LoanItem {
   id: string;
-  // Item info
   inventoryItemId: string;
   inventoryItemName: string;
   inventoryItemServiceTag?: string;
   quantity: number;
+  notes?: string;
+}
+
+export interface Loan {
+  id: string;
+  name?: string;
+  // Items belonging to this loan
+  items: LoanItem[];
   // Source warehouse (who lends)
   sourceWarehouseId: string;
   sourceWarehouseName: string;
@@ -48,9 +55,15 @@ export interface Loan {
   updatedAt: Date;
 }
 
-export interface CreateLoanDto {
+export interface CreateLoanItemDto {
   inventoryItemId: string;
   quantity: number;
+  notes?: string;
+}
+
+export interface CreateLoanDto {
+  name?: string;
+  items: CreateLoanItemDto[];
   sourceWarehouseId: string;
   destinationWarehouseId: string;
   dueDate: Date | string;
@@ -96,11 +109,18 @@ export interface QrScanResult {
 }
 
 /** Raw API response shape for a Loan before date transformation. */
-export interface RawLoan {
+export interface RawLoanItem {
   id: string;
   inventoryItemId: string;
-  inventoryItem?: { name: string; serviceTag?: string };
+  inventoryItem?: { name?: string; serviceTag?: string | null };
   quantity: number;
+  notes?: string | null;
+}
+
+export interface RawLoan {
+  id: string;
+  name?: string | null;
+  items: RawLoanItem[];
   sourceWarehouseId: string;
   sourceWarehouse?: { name: string };
   destinationWarehouseId: string;

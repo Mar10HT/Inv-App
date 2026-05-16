@@ -238,7 +238,17 @@ export class AuditLogComponent implements OnInit {
 
   // Filter options
   actions = Object.values(AuditAction);
-  entities = Object.values(AuditEntity);
+  // Backend entity strings actually written to the audit log
+  entities: string[] = [
+    'InventoryItem',
+    'Warehouse',
+    'Supplier',
+    'Category',
+    'User',
+    'Transaction',
+    'Loan',
+    'TransferRequest',
+  ];
 
   // Filter state
   searchQuery = '';
@@ -367,15 +377,16 @@ export class AuditLogComponent implements OnInit {
     return labels[action] || action;
   }
 
-  getEntityLabel(entity: AuditEntity): string {
-    const labels: Record<AuditEntity, string> = {
-      [AuditEntity.INVENTORY_ITEM]: this.translate.instant('AUDIT.ENTITY.INVENTORY_ITEM'),
-      [AuditEntity.WAREHOUSE]: this.translate.instant('AUDIT.ENTITY.WAREHOUSE'),
-      [AuditEntity.SUPPLIER]: this.translate.instant('AUDIT.ENTITY.SUPPLIER'),
-      [AuditEntity.CATEGORY]: this.translate.instant('AUDIT.ENTITY.CATEGORY'),
-      [AuditEntity.USER]: this.translate.instant('AUDIT.ENTITY.USER'),
-      [AuditEntity.TRANSACTION]: this.translate.instant('AUDIT.ENTITY.TRANSACTION'),
-      [AuditEntity.LOAN]: this.translate.instant('AUDIT.ENTITY.LOAN')
+  getEntityLabel(entity: string): string {
+    const labels: Record<string, string> = {
+      InventoryItem: this.translate.instant('AUDIT.ENTITY.INVENTORY_ITEM'),
+      Warehouse: this.translate.instant('AUDIT.ENTITY.WAREHOUSE'),
+      Supplier: this.translate.instant('AUDIT.ENTITY.SUPPLIER'),
+      Category: this.translate.instant('AUDIT.ENTITY.CATEGORY'),
+      User: this.translate.instant('AUDIT.ENTITY.USER'),
+      Transaction: this.translate.instant('AUDIT.ENTITY.TRANSACTION'),
+      Loan: this.translate.instant('AUDIT.ENTITY.LOAN'),
+      TransferRequest: this.translate.instant('AUDIT.ENTITY.TRANSFER_REQUEST'),
     };
     return labels[entity] || entity;
   }

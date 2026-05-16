@@ -8,10 +8,22 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { WarehouseService } from '../../services/warehouse.service';
+import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
-import { Warehouse } from '../../interfaces/warehouse.interface';
+import {
+  Warehouse,
+  CreateWarehouseDto,
+  UpdateWarehouseDto,
+} from '../../interfaces/warehouse.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
+
+function normalizeManagerId<T extends { managerId?: string | null }>(payload: T): T {
+  if (payload && 'managerId' in payload && (payload.managerId === undefined || payload.managerId === '')) {
+    return { ...payload, managerId: null };
+  }
+  return payload;
+}
 
 @Component({
   selector: 'app-warehouses',
@@ -30,6 +42,7 @@ import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-
 })
 export class Warehouses implements OnInit {
   private warehouseService = inject(WarehouseService);
+  private userService = inject(UserService);
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
@@ -48,10 +61,17 @@ export class Warehouses implements OnInit {
 
   ngOnInit(): void {
     this.loadWarehouses();
+    this.loadUsers();
   }
 
   private loadWarehouses(): void {
     this.warehouseService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err)
+    });
+  }
+
+  private loadUsers(): void {
+    this.userService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err)
     });
   }
@@ -63,8 +83,9 @@ export class Warehouses implements OnInit {
       panelClass: 'item-detail-dialog',
       data: buildWarehouseDialogData(
         'add',
-        (data) => this.warehouseService.create(data),
-        (id, data) => this.warehouseService.update(id, data),
+        (data: CreateWarehouseDto) => this.warehouseService.create(normalizeManagerId(data)),
+        (id, data: UpdateWarehouseDto) => this.warehouseService.update(id, normalizeManagerId(data)),
+        this.userService.users(),
       )
     });
 
@@ -82,8 +103,9 @@ export class Warehouses implements OnInit {
       panelClass: 'item-detail-dialog',
       data: buildWarehouseDialogData(
         'edit',
-        (data) => this.warehouseService.create(data),
-        (id, data) => this.warehouseService.update(id, data),
+        (data: CreateWarehouseDto) => this.warehouseService.create(normalizeManagerId(data)),
+        (id, data: UpdateWarehouseDto) => this.warehouseService.update(id, normalizeManagerId(data)),
+        this.userService.users(),
         warehouse,
       )
     });

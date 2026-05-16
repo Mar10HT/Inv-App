@@ -382,11 +382,11 @@ export class LoanService implements OnDestroy {
   }
 
   /**
-   * Get loans for a specific item
+   * Get loans that include a specific item
    */
   getLoansForItem(inventoryItemId: string): Loan[] {
     return this.loansSignal()
-      .filter(l => l.inventoryItemId === inventoryItemId)
+      .filter(l => l.items.some(i => i.inventoryItemId === inventoryItemId))
       .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
   }
 
@@ -472,24 +472,23 @@ export class LoanService implements OnDestroy {
     const data = loans || this.loansSignal();
 
     const rows = data.map(loan => ({
-      Item:            loan.inventoryItemName,
-      'Service Tag':   loan.inventoryItemServiceTag || '',
-      Quantity:        loan.quantity,
-      Origin:          loan.sourceWarehouseName,
-      Destination:     loan.destinationWarehouseName,
-      'Loan Date':     loan.loanDate.toLocaleDateString(),
-      'Due Date':      loan.dueDate.toLocaleDateString(),
-      'Return Date':   loan.returnDate?.toLocaleDateString() || '',
-      Status:          loan.status,
-      Notes:           loan.notes || '',
+      Items: loan.items.map(i => (i.quantity > 1 ? `${i.inventoryItemName} ×${i.quantity}` : i.inventoryItemName)).join('; '),
+      'Total Qty': loan.items.reduce((s, i) => s + i.quantity, 0),
+      Origin: loan.sourceWarehouseName,
+      Destination: loan.destinationWarehouseName,
+      'Loan Date': loan.loanDate.toLocaleDateString(),
+      'Due Date': loan.dueDate.toLocaleDateString(),
+      'Return Date': loan.returnDate?.toLocaleDateString() || '',
+      Status: loan.status,
+      Notes: loan.notes || '',
     }));
 
     downloadStyledXLSX(rows, {
       sheetName:      'Loans',
       filename:       `loans-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:    '6B7BB5',
-      colWidths:      [30, 14, 10, 22, 22, 14, 14, 14, 16, 30],
-      statusColIndex: 8, // Status column
+      colWidths:      [40, 10, 22, 22, 14, 14, 14, 16, 30],
+      statusColIndex: 7,
     });
   }
 

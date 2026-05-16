@@ -16,6 +16,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { Loan, LoanStatus } from '../../interfaces/loan.interface';
+import { summarizeLoanItems, totalLoanQuantity } from '../../utils/loan.utils';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { LoanFormDialog, LoanFormResult } from './loan-form-dialog';
 import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
@@ -204,13 +205,17 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                   <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
-                        <p class="text-foreground font-medium">{{ loan.inventoryItemName }}</p>
-                        @if (loan.inventoryItemServiceTag) {
-                          <p class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.inventoryItemServiceTag }}</p>
+                        <p class="text-foreground font-medium">{{ loan.name || summarize(loan) }}</p>
+                        @if (loan.name) {
+                          <p class="text-[var(--color-on-surface-variant)] text-sm">{{ summarize(loan) }}</p>
+                        } @else if (loan.items.length > 1) {
+                          <p class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.items.length }} {{ 'TRANSACTION.ITEMS' | translate }}</p>
+                        } @else if (loan.items[0]?.inventoryItemServiceTag) {
+                          <p class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.items[0].inventoryItemServiceTag }}</p>
                         }
                       </div>
                     </td>
-                    <td class="px-6 py-4 text-foreground">{{ loan.quantity }}</td>
+                    <td class="px-6 py-4 text-foreground">{{ totalQty(loan) }}</td>
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-2">
                         <lucide-icon name="Warehouse" class="!text-[var(--color-on-surface-variant)] !w-4 !h-4"></lucide-icon>
@@ -253,23 +258,15 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </ng-container>
                           }
                           @case (LoanStatus.SENT) {
-                            <div class="flex gap-1.5">
+                            <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
-                                (click)="showQrCode(loan, 'send')"
-                                class="ds-btn ds-btn--qr ds-btn--sm">
-                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                                <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                                (click)="manualConfirmReceipt(loan)"
+                                [disabled]="loanService.loading()"
+                                class="ds-btn ds-btn--approve ds-btn--sm">
+                                <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.MANUAL_CONFIRM_RECEIPT' | translate }}</span>
                               </button>
-                              <ng-container *ngxPermissionsOnly="['loans:manage']">
-                                <button
-                                  (click)="manualConfirmReceipt(loan)"
-                                  [disabled]="loanService.loading()"
-                                  [attr.title]="'LOANS.MANUAL_CONFIRM_RECEIPT' | translate"
-                                  class="ds-btn ds-btn--ghost ds-btn--sm">
-                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                                </button>
-                              </ng-container>
-                            </div>
+                            </ng-container>
                           }
                           @case (LoanStatus.RECEIVED) {
                             <ng-container *ngxPermissionsOnly="['loans:manage']">
@@ -313,23 +310,15 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </ng-container>
                           }
                           @case (LoanStatus.RETURN_PENDING) {
-                            <div class="flex gap-1.5">
+                            <ng-container *ngxPermissionsOnly="['loans:manage']">
                               <button
-                                (click)="showQrCode(loan, 'return')"
+                                (click)="manualConfirmReturn(loan)"
+                                [disabled]="loanService.loading()"
                                 class="ds-btn ds-btn--approve ds-btn--sm">
-                                <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                                <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
+                                <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
+                                <span>{{ 'LOANS.MANUAL_CONFIRM_RETURN' | translate }}</span>
                               </button>
-                              <ng-container *ngxPermissionsOnly="['loans:manage']">
-                                <button
-                                  (click)="manualConfirmReturn(loan)"
-                                  [disabled]="loanService.loading()"
-                                  [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
-                                  class="ds-btn ds-btn--ghost ds-btn--sm">
-                                  <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                                </button>
-                              </ng-container>
-                            </div>
+                            </ng-container>
                           }
                           @case (LoanStatus.RETURNED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | date:'mediumDate' }}</span>
@@ -363,11 +352,16 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
               <div class="p-4">
                 <div class="flex justify-between items-start mb-3">
                   <div>
-                    <p class="text-foreground font-medium">{{ loan.inventoryItemName }}</p>
+                    <p class="text-foreground font-medium">{{ loan.name || summarize(loan) }}</p>
+                    @if (loan.name) {
+                      <p class="text-[var(--color-on-surface-variant)] text-xs mb-1">{{ summarize(loan) }}</p>
+                    }
                     <p class="text-[var(--color-on-surface-variant)] text-sm">
-                      {{ 'DASHBOARD.TABLE.QUANTITY' | translate }}: {{ loan.quantity }}
-                      @if (loan.inventoryItemServiceTag) {
-                        · {{ loan.inventoryItemServiceTag }}
+                      {{ 'DASHBOARD.TABLE.QUANTITY' | translate }}: {{ totalQty(loan) }}
+                      @if (loan.items.length === 1 && loan.items[0].inventoryItemServiceTag) {
+                        · {{ loan.items[0].inventoryItemServiceTag }}
+                      } @else if (loan.items.length > 1) {
+                        · {{ loan.items.length }} {{ 'TRANSACTION.ITEMS' | translate }}
                       }
                     </p>
                   </div>
@@ -612,10 +606,13 @@ export class LoansComponent implements OnInit {
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       loans = loans.filter(loan =>
-        loan.inventoryItemName.toLowerCase().includes(query) ||
+        (loan.name?.toLowerCase().includes(query) ?? false) ||
         loan.sourceWarehouseName.toLowerCase().includes(query) ||
         loan.destinationWarehouseName.toLowerCase().includes(query) ||
-        (loan.inventoryItemServiceTag?.toLowerCase().includes(query) ?? false)
+        loan.items.some(i =>
+          i.inventoryItemName.toLowerCase().includes(query) ||
+          (i.inventoryItemServiceTag?.toLowerCase().includes(query) ?? false)
+        )
       );
     }
 
@@ -675,7 +672,7 @@ export class LoansComponent implements OnInit {
       data: {
         title: this.translate.instant('LOANS.CONFIRM_SEND_TITLE'),
         message: this.translate.instant('LOANS.CONFIRM_SEND_MESSAGE', {
-          item: loan.inventoryItemName,
+          item: this.summarize(loan),
           from: loan.sourceWarehouseName,
           to: loan.destinationWarehouseName
         }),
@@ -715,7 +712,7 @@ export class LoansComponent implements OnInit {
       data: {
         title: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_TITLE'),
         message: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_MESSAGE', {
-          item: loan.inventoryItemName
+          item: this.summarize(loan)
         }),
         confirmText: this.translate.instant('LOANS.INITIATE_RETURN'),
         cancelText: this.translate.instant('COMMON.CANCEL'),
@@ -753,7 +750,7 @@ export class LoansComponent implements OnInit {
       data: {
         title: this.translate.instant('LOANS.CONFIRM_CANCEL_TITLE'),
         message: this.translate.instant('LOANS.CONFIRM_CANCEL_MESSAGE', {
-          item: loan.inventoryItemName
+          item: this.summarize(loan)
         }),
         confirmText: this.translate.instant('LOANS.CANCEL_LOAN'),
         cancelText: this.translate.instant('COMMON.CANCEL'),
@@ -900,6 +897,14 @@ export class LoansComponent implements OnInit {
       [LoanStatus.ACTIVE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]'
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
+  }
+
+  summarize(loan: Loan): string {
+    return summarizeLoanItems(loan);
+  }
+
+  totalQty(loan: Loan): number {
+    return totalLoanQuantity(loan);
   }
 
   getDueDateClass(loan: Loan): string {

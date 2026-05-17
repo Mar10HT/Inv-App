@@ -238,6 +238,14 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     </td>
                     <td class="px-6 py-4">
                       <div class="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          (click)="downloadPdf(loan)"
+                          [attr.aria-label]="'LOANS.DOWNLOAD_PDF' | translate"
+                          [attr.title]="'LOANS.DOWNLOAD_PDF' | translate"
+                          class="ds-btn ds-btn--ghost ds-btn--sm">
+                          <lucide-icon name="FileText" class="shrink-0"></lucide-icon>
+                        </button>
                         @switch (loan.status) {
                           @case (LoanStatus.PENDING) {
                             <ng-container *ngxPermissionsOnly="['loans:manage']">
@@ -382,6 +390,16 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.DUE_DATE' | translate }}</p>
                     <p [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</p>
                   </div>
+                </div>
+                <!-- PDF download — always available -->
+                <div class="mb-2 flex justify-end">
+                  <button
+                    type="button"
+                    (click)="downloadPdf(loan)"
+                    class="ds-btn ds-btn--ghost ds-btn--sm">
+                    <lucide-icon name="FileText" class="shrink-0"></lucide-icon>
+                    <span>PDF</span>
+                  </button>
                 </div>
                 <!-- Mobile Actions -->
                 @switch (loan.status) {
@@ -901,6 +919,10 @@ export class LoansComponent implements OnInit {
 
   summarize(loan: Loan): string {
     return summarizeLoanItems(loan);
+  }
+
+  downloadPdf(loan: Loan): void {
+    this.loanService.downloadPdf(loan.id);
   }
 
   totalQty(loan: Loan): number {

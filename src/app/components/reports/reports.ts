@@ -13,6 +13,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import { UserService } from '../../services/user.service';
 import { PdfExportService } from '../../services/pdf-export.service';
+import { triggerBlobDownload } from '../../utils/download.utils';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { environment } from '../../../environments/environment';
@@ -85,9 +86,27 @@ export class Reports implements OnInit {
   dateTo = signal<string>('');
   transactionTypeFilter = signal<string>('ALL');
 
-  // Warehouse filter for server-side exports (empty = all warehouses the user can access)
-  selectedExportWarehouseId = signal<string>('');
+  // Global warehouse filter — applies to every tab including server-side downloads.
+  // Empty = all warehouses the user can access.
+  selectedWarehouseId = signal<string>('');
   warehouseOptions = computed(() => this.inventoryService.warehouses());
+
+  /** Items scoped to the currently selected warehouse (or all when empty). */
+  private scopedItems = computed(() => {
+    const wh = this.selectedWarehouseId();
+    const items = this.allItems();
+    return wh ? items.filter((i) => i.warehouseId === wh) : items;
+  });
+
+  /** Transactions scoped to the currently selected warehouse on source OR destination side. */
+  private scopedTransactions = computed(() => {
+    const wh = this.selectedWarehouseId();
+    const transactions = this.allTransactions();
+    if (!wh) return transactions;
+    return transactions.filter(
+      (t) => t.sourceWarehouseId === wh || t.destinationWarehouseId === wh,
+    );
+  });
 
   // Enums for template
   InventoryStatus = InventoryStatus;
@@ -102,7 +121,7 @@ export class Reports implements OnInit {
 
   // ============ VALUE REPORT COMPUTED ============
   filteredItems = computed(() => {
-    const items = this.allItems();
+    const items = this.scopedItems();
     const currency = this.selectedCurrency();
     if (currency === 'ALL') return items;
     return items.filter(item => item.currency === currency);
@@ -186,7 +205,7 @@ export class Reports implements OnInit {
 
   // ============ TRANSACTIONS REPORT COMPUTED ============
   filteredTransactions = computed(() => {
-    let transactions = this.allTransactions();
+    let transactions = this.scopedTransactions();
     const typeFilter = this.transactionTypeFilter();
     const from = this.dateFrom();
     const to = this.dateTo();
@@ -221,7 +240,7 @@ export class Reports implements OnInit {
 
   // ============ STATUS REPORT COMPUTED ============
   statusSummary = computed((): StatusSummary[] => {
-    const items = this.allItems();
+    const items = this.scopedItems();
     const statuses = [InventoryStatus.IN_STOCK, InventoryStatus.LOW_STOCK, InventoryStatus.OUT_OF_STOCK, InventoryStatus.IN_USE];
 
     return statuses.map(status => ({
@@ -232,16 +251,16 @@ export class Reports implements OnInit {
   });
 
   outOfStockItems = computed(() => {
-    return this.allItems().filter(i => i.status === InventoryStatus.OUT_OF_STOCK);
+    return this.scopedItems().filter(i => i.status === InventoryStatus.OUT_OF_STOCK);
   });
 
   lowStockItems = computed(() => {
-    return this.allItems().filter(i => i.status === InventoryStatus.LOW_STOCK);
+    return this.scopedItems().filter(i => i.status === InventoryStatus.LOW_STOCK);
   });
 
   // ============ ASSIGNMENTS REPORT COMPUTED ============
   assignedItems = computed(() => {
-    return this.allItems().filter(item =>
+    return this.scopedItems().filter(item =>
       item.itemType === ItemType.UNIQUE && item.assignedToUserId
     );
   });
@@ -272,14 +291,14 @@ export class Reports implements OnInit {
   });
 
   unassignedUniqueItems = computed(() => {
-    return this.allItems().filter(item =>
+    return this.scopedItems().filter(item =>
       item.itemType === ItemType.UNIQUE && !item.assignedToUserId
     );
   });
 
   // ============ TRENDS COMPUTED ============
   transactionTrends = computed((): TrendPoint[] => {
-    const transactions = this.allTransactions();
+    const transactions = this.scopedTransactions();
     const map = new Map<string, TrendPoint>();
 
     // Get last 30 days
@@ -650,17 +669,10 @@ export class Reports implements OnInit {
   private downloadReport(endpoint: string, filename: string): void {
     const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
     const params = new URLSearchParams({ locale });
-    const warehouseId = this.selectedExportWarehouseId();
+    const warehouseId = this.selectedWarehouseId();
     if (warehouseId) params.set('warehouseId', warehouseId);
-    this.http.get(`${environment.apiUrl}/${endpoint}?${params.toString()}`, { responseType: 'blob' })
-      .subscribe(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+    this.http.get<Blob>(`${environment.apiUrl}/${endpoint}?${params.toString()}`, { responseType: 'blob' as 'json' })
+      .subscribe(blob => triggerBlobDownload(blob, filename));
   }
 
   exportInventoryExcel(): void {

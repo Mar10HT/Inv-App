@@ -218,7 +218,7 @@
               <div
                 *cdkVirtualFor="let item of filteredItems(); trackBy: trackByFn"
                 (click)="viewItem(item)"
-                class="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1fr_1fr_120px] items-center border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer group"
+                class="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1fr_1fr_120px] items-start border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer group"
                 style="height: 65px;">
                 <!-- Item Column -->
                 <div class="px-6 py-3">
@@ -229,8 +229,8 @@
                     <div class="min-w-0">
                       <p class="font-medium text-foreground truncate">{{ item.name }}</p>
                       @if (item.description) {
-                        <p class="text-sm text-[var(--color-on-surface-variant)] truncate">
-                          {{ item.description.length > 40 ? (item.description | slice:0:40) + '...' : item.description }}
+                        <p class="hidden xl:block text-sm text-[var(--color-on-surface-variant)] truncate" [title]="item.description">
+                          {{ item.description }}
                         </p>
                       }
                     </div>
@@ -238,31 +238,31 @@
                 </div>
 
                 <!-- Category Column -->
-                <div class="px-6 py-3">
-                  <span class="text-[var(--color-on-surface-variant)] text-sm">{{ item.category }}</span>
+                <div class="px-6 py-3 min-w-0">
+                  <p class="text-[var(--color-on-surface-variant)] text-sm truncate" [title]="item.category">{{ item.category }}</p>
                 </div>
 
                 <!-- Model Column -->
-                <div class="px-6 py-3">
-                  <span class="text-[var(--color-on-surface-variant)] text-sm">{{ item.model || '-' }}</span>
+                <div class="px-6 py-3 min-w-0">
+                  <p class="text-[var(--color-on-surface-variant)] text-sm truncate" [title]="item.model || '-'">{{ item.model || '-' }}</p>
                 </div>
 
                 <!-- Quantity Column -->
-                <div class="px-6 py-3">
-                  <span class="text-foreground font-medium">{{ item.quantity }}</span>
+                <div class="px-6 py-3 min-w-0">
+                  <p class="text-foreground font-medium truncate">{{ item.quantity }}</p>
                 </div>
 
                 <!-- Location Column -->
-                <div class="px-6 py-3">
-                  <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm">
-                    <lucide-icon name="MapPin" class="!w-3.5 !h-3.5 !text-[var(--color-on-surface-variant)]"></lucide-icon>
-                    <span>{{ item.warehouse?.name }}</span>
+                <div class="px-6 py-3 min-w-0">
+                  <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm min-w-0">
+                    <lucide-icon name="MapPin" class="!w-3.5 !h-3.5 !text-[var(--color-on-surface-variant)] flex-shrink-0"></lucide-icon>
+                    <span class="truncate" [title]="item.warehouse?.name || ''">{{ item.warehouse?.name }}</span>
                   </div>
                 </div>
 
                 <!-- Last Updated Column -->
-                <div class="px-6 py-3">
-                  <span class="text-[var(--color-on-surface-variant)] text-sm">{{ formatDate(item.updatedAt) }}</span>
+                <div class="px-6 py-3 min-w-0">
+                  <p class="text-[var(--color-on-surface-variant)] text-sm truncate">{{ formatDate(item.updatedAt) }}</p>
                 </div>
 
                 <!-- Status Column -->

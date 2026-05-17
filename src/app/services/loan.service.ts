@@ -19,6 +19,7 @@ import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { WebSocketService } from './websocket.service';
 import { transformLoan, getActiveLoanForItem, isItemOnLoan, filterLoans } from '../utils/loan.utils';
+import { triggerBlobDownload } from '../utils/download.utils';
 
 const MAX_LOANS_LIMIT = 200;
 
@@ -497,5 +498,21 @@ export class LoanService implements OnDestroy {
    */
   refresh(): void {
     this.loadLoans();
+  }
+
+  /**
+   * Download a PDF receipt for a loan
+   */
+  downloadPdf(loanId: string): void {
+    const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
+    this.http
+      .get(`${this.apiUrl}/${loanId}/pdf?locale=${locale}`, { responseType: 'blob' })
+      .subscribe({
+        next: (blob) => triggerBlobDownload(blob, `prestamo_${loanId}.pdf`),
+        error: (err) => {
+          this.logger.error('Error downloading loan PDF', err);
+          this.errorSignal.set(this.translate.instant('LOANS.PDF_ERROR'));
+        },
+      });
   }
 }

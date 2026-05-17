@@ -14,6 +14,7 @@ import {
 } from '../interfaces/transfer-request.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
+import { triggerBlobDownload } from '../utils/download.utils';
 
 const MAX_REQUESTS_LIMIT = 200;
 
@@ -370,6 +371,22 @@ export class TransferRequestService implements OnDestroy {
    */
   getStatsFromBackend(): Observable<TransferRequestStats> {
     return this.http.get<TransferRequestStats>(`${this.apiUrl}/stats`);
+  }
+
+  /**
+   * Download a PDF receipt for a transfer request
+   */
+  downloadPdf(transferId: string): void {
+    const locale = this.translate.currentLang === 'es' ? 'es' : 'en';
+    this.http
+      .get(`${this.apiUrl}/${transferId}/pdf?locale=${locale}`, { responseType: 'blob' })
+      .subscribe({
+        next: (blob) => triggerBlobDownload(blob, `transferencia_${transferId}.pdf`),
+        error: (err) => {
+          this.logger.error('Error downloading transfer PDF', err);
+          this.errorSignal.set(this.translate.instant('TRANSFERS.PDF_ERROR'));
+        },
+      });
   }
 
   /**

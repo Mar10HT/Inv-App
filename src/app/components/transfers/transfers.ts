@@ -232,6 +232,14 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                     </td>
                     <td class="px-6 py-4">
                       <div class="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          (click)="downloadPdf(request)"
+                          [attr.aria-label]="'TRANSFERS.DOWNLOAD_PDF' | translate"
+                          [attr.title]="'TRANSFERS.DOWNLOAD_PDF' | translate"
+                          class="ds-btn ds-btn--ghost ds-btn--sm">
+                          <lucide-icon name="FileText" class="shrink-0"></lucide-icon>
+                        </button>
                         @switch (request.status) {
                           @case (Status.PENDING) {
                             <ng-container *ngxPermissionsOnly="['transfers:manage']">
@@ -340,6 +348,16 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
                     <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
                   </div>
+                </div>
+                <!-- PDF download — always available -->
+                <div class="mb-2 flex justify-end">
+                  <button
+                    type="button"
+                    (click)="downloadPdf(request)"
+                    class="ds-btn ds-btn--ghost ds-btn--sm">
+                    <lucide-icon name="FileText" class="shrink-0"></lucide-icon>
+                    <span>PDF</span>
+                  </button>
                 </div>
                 <!-- Mobile Actions -->
                 @switch (request.status) {
@@ -743,6 +761,12 @@ export class TransfersComponent implements OnInit {
         this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
       }
     });
+  }
+
+  // ==================== PDF ====================
+
+  downloadPdf(request: TransferRequest): void {
+    this.transferService.downloadPdf(request.id);
   }
 
   // ==================== QR Operations ====================

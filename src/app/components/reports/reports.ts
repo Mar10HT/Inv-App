@@ -703,4 +703,8 @@ export class Reports implements OnInit {
     this.downloadReport('reports/discharges/excel', `bajas_${Date.now()}.xlsx`);
   }
 
+  exportOutflowsExcel(): void {
+    this.downloadReport('reports/outflows/excel', `salidas_${Date.now()}.xlsx`);
+  }
+
 }

@@ -128,6 +128,11 @@ export const routes: Routes = [
     canActivate: [permissionGuard('discharges:view')]
   },
   {
+    path: 'outflows',
+    loadComponent: () => import('./components/outflows/outflows').then(m => m.OutflowsComponent),
+    canActivate: [permissionGuard('outflows:view')]
+  },
+  {
     path: 'discharges/:id',
     loadComponent: () => import('./components/discharge-requests/discharge-detail/discharge-detail').then(m => m.DischargeDetailComponent),
     canActivate: [permissionGuard('discharges:view')]

@@ -11,6 +11,7 @@ const ALL_PERMISSIONS = [
   'discharges:manage', 'discharges:view',
   'inventory:change', 'inventory:create', 'inventory:delete', 'inventory:edit', 'inventory:view',
   'loans:create', 'loans:manage', 'loans:view',
+  'outflows:cancel', 'outflows:create', 'outflows:view',
   'reports:view',
   'settings:edit', 'settings:view',
   'stocktake:create', 'stocktake:manage', 'stocktake:view',

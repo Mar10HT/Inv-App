@@ -10,6 +10,7 @@
     "LOANS": "Préstamos",
     "TRANSFERS": "Transferencias",
     "DISCHARGES": "Solicitudes",
+    "OUTFLOWS": "Salidas",
     "STOCK_TAKE": "Conteo Físico",
     "USERS": "Usuarios",
     "ROLES": "Roles",
@@ -714,7 +715,8 @@
     "EXCEL_LOANS": "Préstamos",
     "EXCEL_TRANSFERS": "Transferencias",
     "EXCEL_STOCK_TAKES": "Conteos Físicos",
-    "EXCEL_DISCHARGES": "Bajas"
+    "EXCEL_DISCHARGES": "Bajas",
+    "EXCEL_OUTFLOWS": "Salidas"
   },
   "STATUS": {
     "IN_STOCK": "En Stock",
@@ -957,6 +959,60 @@
     "MANUAL_CONFIRM_WARNING": "Esto completará la transferencia sin verificación física por QR. Usar solo cuando el escaneo QR no sea posible. Esta acción quedará registrada en el log de auditoría.",
     "MANUAL_CONFIRM_SUCCESS": "Transferencia completada manualmente",
     "MANUAL_CONFIRM_ERROR": "No se pudo completar la transferencia. Intente de nuevo."
+  },
+  "OUTFLOWS": {
+    "TITLE": "Salidas",
+    "SUBTITLE": "Registro de productos que salen del inventario por daño, pérdida, venta u otros motivos",
+    "NEW_OUTFLOW": "Nueva salida",
+    "NEW_OUTFLOW_DESC": "Registra una salida de inventario. El stock se descontará al guardar.",
+    "CREATE": "Crear salida",
+    "CREATE_SUCCESS": "Salida creada y stock descontado",
+    "CREATE_ERROR": "No se pudo crear la salida",
+    "LOADING_ERROR": "No se pudieron cargar las salidas",
+    "EMPTY": "Aún no hay salidas registradas",
+    "UNNAMED": "Salida sin nombre",
+    "NAME": "Nombre",
+    "NAME_PLACEHOLDER": "Ej: Baja por inundación bodega B",
+    "WAREHOUSE": "Bodega",
+    "SELECT_WAREHOUSE": "Seleccionar bodega",
+    "REASON": "Motivo",
+    "SELECT_REASON": "Seleccionar motivo",
+    "NOTES": "Notas",
+    "NOTES_PLACEHOLDER": "Detalles adicionales (opcional)",
+    "DOWNLOAD_PDF": "Descargar PDF",
+    "PDF_ERROR": "No se pudo descargar el PDF",
+    "CANCEL_OUTFLOW": "Cancelar salida",
+    "CONFIRM_CANCEL_TITLE": "Cancelar salida",
+    "CONFIRM_CANCEL_MESSAGE": "¿Cancelar la salida \"{{name}}\"? Se restituirá el stock al inventario.",
+    "CANCEL_SUCCESS": "Salida cancelada y stock restituido",
+    "CANCEL_ERROR": "No se pudo cancelar la salida",
+    "FILTER_WAREHOUSE": "Bodega",
+    "FILTER_STATUS": "Estado",
+    "FILTER_REASON": "Motivo",
+    "COL_NAME": "Nombre",
+    "COL_WAREHOUSE": "Bodega",
+    "COL_REASON": "Motivo",
+    "COL_ITEMS": "Items",
+    "COL_STATUS": "Estado",
+    "COL_DATE": "Fecha",
+    "COL_ACTIONS": "Acciones",
+    "STATS": {
+      "ACTIVE": "Registradas",
+      "CANCELLED": "Canceladas",
+      "TOTAL": "Total"
+    },
+    "STATUS": {
+      "ACTIVE": "Registrada",
+      "CANCELLED": "Cancelada"
+    },
+    "REASONS": {
+      "DAMAGED": "Dañado",
+      "LOST": "Perdido",
+      "EXPIRED": "Vencido",
+      "CONSUMED": "Consumo interno",
+      "SOLD": "Venta",
+      "OTHER": "Otro"
+    }
   },
   "DISCHARGES": {
     "TITLE": "Solicitudes de Material",

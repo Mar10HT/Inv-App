@@ -10,6 +10,7 @@
     "LOANS": "Loans",
     "TRANSFERS": "Transfers",
     "DISCHARGES": "Requests",
+    "OUTFLOWS": "Outflows",
     "STOCK_TAKE": "Stock Take",
     "USERS": "Users",
     "ROLES": "Roles",
@@ -714,7 +715,8 @@
     "EXCEL_LOANS": "Loans",
     "EXCEL_TRANSFERS": "Transfer Requests",
     "EXCEL_STOCK_TAKES": "Stock Takes",
-    "EXCEL_DISCHARGES": "Discharges"
+    "EXCEL_DISCHARGES": "Discharges",
+    "EXCEL_OUTFLOWS": "Outflows"
   },
   "STATUS": {
     "IN_STOCK": "In Stock",
@@ -957,6 +959,60 @@
     "MANUAL_CONFIRM_WARNING": "This will complete the transfer without physical QR verification. Only use when QR scanning is not possible. This action will be recorded in the audit log.",
     "MANUAL_CONFIRM_SUCCESS": "Transfer completed manually",
     "MANUAL_CONFIRM_ERROR": "Could not complete transfer. Please try again."
+  },
+  "OUTFLOWS": {
+    "TITLE": "Outflows",
+    "SUBTITLE": "Record items leaving inventory permanently — damaged, lost, sold, or other",
+    "NEW_OUTFLOW": "New outflow",
+    "NEW_OUTFLOW_DESC": "Record an inventory outflow. Stock will be decremented on save.",
+    "CREATE": "Create outflow",
+    "CREATE_SUCCESS": "Outflow created and stock decremented",
+    "CREATE_ERROR": "Could not create outflow",
+    "LOADING_ERROR": "Could not load outflows",
+    "EMPTY": "No outflows recorded yet",
+    "UNNAMED": "Unnamed outflow",
+    "NAME": "Name",
+    "NAME_PLACEHOLDER": "e.g. Flood damage write-off, warehouse B",
+    "WAREHOUSE": "Warehouse",
+    "SELECT_WAREHOUSE": "Select warehouse",
+    "REASON": "Reason",
+    "SELECT_REASON": "Select reason",
+    "NOTES": "Notes",
+    "NOTES_PLACEHOLDER": "Additional details (optional)",
+    "DOWNLOAD_PDF": "Download PDF",
+    "PDF_ERROR": "Could not download PDF",
+    "CANCEL_OUTFLOW": "Cancel outflow",
+    "CONFIRM_CANCEL_TITLE": "Cancel outflow",
+    "CONFIRM_CANCEL_MESSAGE": "Cancel outflow \"{{name}}\"? Stock will be restored to inventory.",
+    "CANCEL_SUCCESS": "Outflow cancelled and stock restored",
+    "CANCEL_ERROR": "Could not cancel outflow",
+    "FILTER_WAREHOUSE": "Warehouse",
+    "FILTER_STATUS": "Status",
+    "FILTER_REASON": "Reason",
+    "COL_NAME": "Name",
+    "COL_WAREHOUSE": "Warehouse",
+    "COL_REASON": "Reason",
+    "COL_ITEMS": "Items",
+    "COL_STATUS": "Status",
+    "COL_DATE": "Date",
+    "COL_ACTIONS": "Actions",
+    "STATS": {
+      "ACTIVE": "Recorded",
+      "CANCELLED": "Cancelled",
+      "TOTAL": "Total"
+    },
+    "STATUS": {
+      "ACTIVE": "Recorded",
+      "CANCELLED": "Cancelled"
+    },
+    "REASONS": {
+      "DAMAGED": "Damaged",
+      "LOST": "Lost",
+      "EXPIRED": "Expired",
+      "CONSUMED": "Consumed",
+      "SOLD": "Sold",
+      "OTHER": "Other"
+    }
   },
   "DISCHARGES": {
     "TITLE": "Material Requests",

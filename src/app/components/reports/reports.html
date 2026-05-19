@@ -840,6 +840,20 @@
               Excel
             </button>
           </div>
+
+          <!-- Outflows -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(234,88,12,0.12);">
+                <lucide-icon name="PackageMinus" class="!w-5 !h-5" style="color: #ea580c;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_OUTFLOWS' | translate }}</span>
+            </div>
+            <button (click)="exportOutflowsExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #ea580c; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
         </div>
       </div>
     }

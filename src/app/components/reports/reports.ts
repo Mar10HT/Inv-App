@@ -13,6 +13,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import { UserService } from '../../services/user.service';
 import { PdfExportService } from '../../services/pdf-export.service';
+import { ThemeService } from '../../services/theme.service';
 import { triggerBlobDownload } from '../../utils/download.utils';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
@@ -67,6 +68,7 @@ export class Reports implements OnInit {
   private userService = inject(UserService);
   private translate = inject(TranslateService);
   private pdfExportService = inject(PdfExportService);
+  private themeService = inject(ThemeService);
   private http = inject(HttpClient);
 
   // Tab state
@@ -325,7 +327,7 @@ export class Reports implements OnInit {
 
   trendChartOptions = computed(() => {
     const trends = this.transactionTrends();
-    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const isDark = this.themeService.isDark();
 
     return {
       series: [

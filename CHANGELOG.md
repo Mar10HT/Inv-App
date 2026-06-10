@@ -8,6 +8,12 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ## [Unreleased]
 
+### Added
+- **Sales module** (`/sales`): record sales with per-customer-tier pricing (wholesale / distributor / retail) and manual per-line unit prices
+  - List with stats (recorded, revenue per currency, cancelled, total), warehouse / status / customer-type filters, desktop table + mobile cards
+  - Create dialog with customer name + type, currency (USD/HNL), per-line quantity and unit price (pre-filled from the item's price), and a live total
+  - PDF sale receipt download and cancel-to-restore-stock, gated by `sales:view` / `sales:create` / `sales:cancel`
+
 ### Architecture
 - **Manual Confirm UI Pattern**: Added manual receipt/return confirmation dialogs for loans and transfers (fallback to QR scanning)
 - **Reactive Filtering with Signals**: Implemented `effect()` with `allowSignalWrites: true` for responsive filter updates across loans and transfers lists

@@ -8,6 +8,8 @@ The application includes:
 - User management with role-based access
 - Transactions (entry, exit, transfer)
 - Inter-warehouse loans with due dates
+- Outflows / write-offs (damaged, lost, sold, etc.) with PDF receipts
+- Sales with per-customer-tier pricing (wholesale / distributor / retail) and PDF receipts
 - Reports with PDF and CSV export
 - Internationalization (English and Spanish)
 - Dark and light themes

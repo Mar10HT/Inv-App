@@ -26,6 +26,8 @@ Track stock, manage warehouses, handle loans and transfers, generate reports —
 - **Inventory Management** — Full CRUD with advanced filtering, bulk/unique items, Excel import, and low stock alerts
 - **Multi-Warehouse** — Transfers with approval workflows, stock reconciliation, and transaction history
 - **Loan System** — Warehouse-to-warehouse lending with due dates, automatic overdue detection, and returns
+- **Sales** — Per-customer-tier pricing (wholesale / distributor / retail) with manual line pricing, totals, and PDF receipts
+- **Outflows** — Permanent write-offs (damaged, lost, sold, etc.) with PDF receipts and cancel-to-restore stock
 - **Reports & Analytics** — Interactive dashboard with customizable chart widgets, drag-and-drop grid, CSV/PDF export
 - **Role-Based Access** — Granular permissions with 5 user roles and route-level protection
 - **Internationalization** — English and Spanish with runtime language switching

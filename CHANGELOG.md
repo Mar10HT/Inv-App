@@ -8,6 +8,18 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ## [Unreleased]
 
+### Fixed
+- Unit test suite (0/12 passing) — `TestBed` setup across all specs never accounted for `provideZonelessChangeDetection()` or `TranslateService`, so every spec crashed on `NG0908`/`NG0201` instead of running.
+
+### Added
+- CI (`.github/workflows/ci.yml`): install, lint (non-blocking — see below), unit tests, production build on every push/PR to `main`.
+- ESLint via `@angular-eslint`, wired to `npm run lint` (`ng lint`) — this project had no linting configured at all before.
+
+### Known backlog
+- Enabling lint surfaced ~270 pre-existing findings (mostly `@typescript-eslint/no-explicit-any`) that were never enforced before. CI runs lint but doesn't fail on it yet — needs a dedicated cleanup pass.
+
+## [0.5.0] - 2026-07-07
+
 ### Added
 - **Sales module** (`/sales`): record sales with per-customer-tier pricing (wholesale / distributor / retail) and manual per-line unit prices
   - List with stats (recorded, revenue per currency, cancelled, total), warehouse / status / customer-type filters, desktop table + mobile cards

@@ -11,6 +11,8 @@
 npm-debug.log
 yarn-error.log
 bun.lockb
+# npm is the toolchain used by Vercel (see vercel.json) — bun.lock is stray drift
+bun.lock
 
 # IDEs and editors
 .idea/

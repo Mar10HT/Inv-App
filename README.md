@@ -43,7 +43,7 @@ Track stock, manage warehouses, handle loans and transfers, generate reports —
 | **Charts** | ApexCharts |
 | **i18n** | ngx-translate |
 | **Auth** | JWT (HttpOnly cookies) · CSRF protection |
-| **Testing** | Jest · Playwright |
+| **Testing** | Karma/Jasmine (unit) · Playwright (e2e) |
 
 ## Getting Started
 
@@ -54,12 +54,12 @@ npm install
 npm start              # → http://localhost:4200
 ```
 
-Connects to the backend API at `http://localhost:3000/api` by default. See [environment config](./src/environments/) to customize.
+Connects to the backend API at `http://localhost:3001/api` by default. See [environment config](./src/environments/) to customize.
 
 ```bash
-npm run build          # Production build
+npm run build:prod     # Production build
 npm test               # Unit tests
-npm run e2e            # E2E tests (Playwright)
+npm run test:e2e       # E2E tests (Playwright)
 ```
 
 ## Deploy

@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, output, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -33,8 +33,9 @@ export interface LoanFormResult {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div role="dialog" aria-modal="true" aria-labelledby="loan-form-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div role="dialog" aria-modal="true" aria-labelledby="loan-form-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="loan-form-dialog-title" class="text-xl font-semibold text-foreground">{{ 'LOANS.NEW_LOAN' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'LOANS.NEW_LOAN_DESC' | translate }}</p>
@@ -42,8 +43,9 @@ export interface LoanFormResult {
         <div class="p-6 space-y-4">
           <!-- Loan name -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NAME' | translate }}</label>
+            <label for="loan-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NAME' | translate }}</label>
             <input
+              id="loan-name"
               type="text"
               [ngModel]="selectedName()"
               (ngModelChange)="selectedName.set($event)"
@@ -55,8 +57,9 @@ export interface LoanFormResult {
 
           <!-- Source Warehouse Select -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.SOURCE_WAREHOUSE' | translate }} *</label>
+            <label for="loan-source-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.SOURCE_WAREHOUSE' | translate }} *</label>
             <select
+              id="loan-source-warehouse"
               [ngModel]="selectedSourceWarehouseId()"
               (ngModelChange)="onSourceWarehouseChange($event)"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
@@ -70,8 +73,9 @@ export interface LoanFormResult {
 
           <!-- Destination Warehouse Select -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.DEST_WAREHOUSE' | translate }} *</label>
+            <label for="loan-dest-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.DEST_WAREHOUSE' | translate }} *</label>
             <select
+              id="loan-dest-warehouse"
               [ngModel]="selectedDestWarehouseId()"
               (ngModelChange)="selectedDestWarehouseId.set($event)"
               [disabled]="!selectedSourceWarehouseId()"
@@ -86,8 +90,9 @@ export interface LoanFormResult {
 
           <!-- Due Date -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.DUE_DATE' | translate }} *</label>
+            <label for="loan-due-date" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.DUE_DATE' | translate }} *</label>
             <input
+              id="loan-due-date"
               type="date"
               [ngModel]="selectedDueDate()"
               (ngModelChange)="selectedDueDate.set($event)"
@@ -98,8 +103,9 @@ export interface LoanFormResult {
 
           <!-- Notes -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NOTES' | translate }}</label>
+            <label for="loan-notes" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NOTES' | translate }}</label>
             <textarea
+              id="loan-notes"
               [ngModel]="selectedNotes()"
               (ngModelChange)="selectedNotes.set($event)"
               rows="2"
@@ -111,9 +117,9 @@ export interface LoanFormResult {
           <!-- Items Section -->
           <div>
             <div class="flex items-center justify-between mb-3">
-              <label class="text-sm font-medium text-[var(--color-on-surface-variant)]">
+              <span class="text-sm font-medium text-[var(--color-on-surface-variant)]">
                 {{ 'TRANSACTION.ITEMS' | translate }} *
-              </label>
+              </span>
               <button
                 type="button"
                 (click)="addLoanItem()"

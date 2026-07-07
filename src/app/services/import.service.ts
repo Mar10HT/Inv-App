@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 interface BulkOperationResult {
   success: number;
   failed: number;
-  errors: Array<{ index?: number; id?: string; error: string }>;
+  errors: { index?: number; id?: string; error: string }[];
 }
 
 @Injectable({

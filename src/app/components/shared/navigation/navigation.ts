@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, effect, PLATFORM_ID, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, effect, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,7 +51,8 @@ export class Navigation {
   private mobileMenuOpen = signal<boolean>(false);
   isMobileMenuOpen = computed(() => this.mobileMenuOpen());
 
-  constructor(@Inject(PLATFORM_ID) platformId: object) {
+  constructor() {
+    const platformId = inject(PLATFORM_ID);
     this.isBrowser = isPlatformBrowser(platformId);
 
     // Effect to manage body scroll lock when mobile menu is open

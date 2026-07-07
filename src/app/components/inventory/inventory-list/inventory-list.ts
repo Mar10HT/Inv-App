@@ -1,4 +1,4 @@
-import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { Component, computed, signal, effect, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -54,7 +54,7 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
   templateUrl: './inventory-list.html',
   styleUrl: './inventory-list.css'
 })
-export class InventoryList implements OnInit {
+export class InventoryList implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -183,7 +183,7 @@ export class InventoryList implements OnInit {
     // Custom sort for status
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
-        case 'status':
+        case 'status': {
           const statusOrder: Record<string, number> = {
             [InventoryStatus.OUT_OF_STOCK]: 0,
             [InventoryStatus.LOW_STOCK]: 1,
@@ -191,6 +191,7 @@ export class InventoryList implements OnInit {
             [InventoryStatus.IN_STOCK]: 3
           };
           return statusOrder[item.status] ?? 0;
+        }
         case 'updatedAt':
           return new Date(item.updatedAt).getTime();
         case 'warehouse':

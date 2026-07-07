@@ -9,6 +9,8 @@ import {
   UpdateStockTakeItemDto,
   StockTakeStats,
   VarianceReport,
+  RawStockTake,
+  RawStockTakeItem,
 } from '../interfaces/stock-take.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { environment } from '../../environments/environment';
@@ -46,8 +48,8 @@ export class StockTakeService {
     }
 
     this.http
-      .get<PaginatedResponse<any>>(this.apiUrl, { params })
-      .pipe(map((response) => response.data.map((raw: any) => this.mapStockTake(raw))))
+      .get<PaginatedResponse<RawStockTake>>(this.apiUrl, { params })
+      .pipe(map((response) => response.data.map((raw) => this.mapStockTake(raw))))
       .subscribe({
         next: (stockTakes) => {
           this.stockTakesSignal.set(stockTakes);
@@ -62,7 +64,7 @@ export class StockTakeService {
 
   create(dto: CreateStockTakeDto): Observable<StockTake> {
     this.loading.set(true);
-    return this.http.post<any>(this.apiUrl, dto).pipe(
+    return this.http.post<RawStockTake>(this.apiUrl, dto).pipe(
       map((raw) => this.mapStockTake(raw)),
       tap({
         next: (newSt) => {
@@ -75,13 +77,13 @@ export class StockTakeService {
   }
 
   getById(id: string): Observable<StockTake> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<RawStockTake>(`${this.apiUrl}/${id}`).pipe(
       map((raw) => this.mapStockTake(raw)),
     );
   }
 
   updateItem(stockTakeId: string, dto: UpdateStockTakeItemDto): Observable<StockTakeItem> {
-    return this.http.patch<any>(`${this.apiUrl}/${stockTakeId}/items`, dto).pipe(
+    return this.http.patch<RawStockTakeItem>(`${this.apiUrl}/${stockTakeId}/items`, dto).pipe(
       map((raw) => this.mapStockTakeItem(raw)),
     );
   }
@@ -89,7 +91,7 @@ export class StockTakeService {
   complete(id: string, applyToInventory: boolean): Observable<StockTake> {
     const params = new HttpParams().set('applyChanges', applyToInventory.toString());
     return this.http
-      .patch<any>(`${this.apiUrl}/${id}/complete`, {}, { params })
+      .patch<RawStockTake>(`${this.apiUrl}/${id}/complete`, {}, { params })
       .pipe(
         map((raw) => this.mapStockTake(raw)),
         tap({
@@ -103,7 +105,7 @@ export class StockTakeService {
   }
 
   cancel(id: string): Observable<StockTake> {
-    return this.http.patch<any>(`${this.apiUrl}/${id}/cancel`, {}).pipe(
+    return this.http.patch<RawStockTake>(`${this.apiUrl}/${id}/cancel`, {}).pipe(
       map((raw) => this.mapStockTake(raw)),
       tap({
         next: (updated) => {
@@ -120,8 +122,8 @@ export class StockTakeService {
   }
 
   // Map backend response to frontend model
-  private mapStockTake(raw: any): StockTake {
-    const items = (raw.items || []).map((item: any) => this.mapStockTakeItem(item));
+  private mapStockTake(raw: RawStockTake): StockTake {
+    const items = (raw.items || []).map((item) => this.mapStockTakeItem(item));
     const countedItems = items.filter((i: StockTakeItem) => i.countedQty !== null).length;
     return {
       id: raw.id,
@@ -139,7 +141,7 @@ export class StockTakeService {
     };
   }
 
-  private mapStockTakeItem(raw: any): StockTakeItem {
+  private mapStockTakeItem(raw: RawStockTakeItem): StockTakeItem {
     return {
       id: raw.id,
       stockTakeId: raw.stockTakeId,

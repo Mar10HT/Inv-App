@@ -1,6 +1,8 @@
 import { Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { CrudDialogConfig, CrudDialogData, CrudFieldOption } from '../shared/crud-dialog';
 import { User } from '../../interfaces/user.interface';
+import { Warehouse, CreateWarehouseDto, UpdateWarehouseDto } from '../../interfaces/warehouse.interface';
 
 export { CrudDialog as WarehouseFormDialog } from '../shared/crud-dialog';
 
@@ -57,16 +59,18 @@ function buildConfig(users: User[]): CrudDialogConfig {
 
 export function buildWarehouseDialogData(
   mode: 'add' | 'edit',
-  createFn: (data: any) => import('rxjs').Observable<any>,
-  updateFn: (id: string, data: any) => import('rxjs').Observable<any>,
+  createFn: (data: CreateWarehouseDto) => Observable<Warehouse>,
+  updateFn: (id: string, data: UpdateWarehouseDto) => Observable<Warehouse>,
   users: User[],
-  entity?: any,
-): CrudDialogData {
+  entity?: Warehouse,
+): CrudDialogData<Warehouse> {
   return {
     mode,
     config: buildConfig(users),
     entity,
-    createFn,
-    updateFn,
+    // The dialog only knows the raw, dynamically-keyed form value; the field config above
+    // guarantees its keys line up with CreateWarehouseDto/UpdateWarehouseDto, so this narrowing is safe.
+    createFn: (data: Record<string, unknown>) => createFn(data as unknown as CreateWarehouseDto),
+    updateFn: (id: string, data: Record<string, unknown>) => updateFn(id, data as unknown as UpdateWarehouseDto),
   };
 }

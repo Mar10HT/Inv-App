@@ -217,7 +217,10 @@
               class="virtual-scroll-viewport">
               <div
                 *cdkVirtualFor="let item of filteredItems(); trackBy: trackByFn"
+                role="button"
+                tabindex="0"
                 (click)="viewItem(item)"
+                (keydown.enter)="viewItem(item)"
                 class="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1fr_1fr_120px] items-start border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer group"
                 style="height: 65px;">
                 <!-- Item Column -->
@@ -280,7 +283,7 @@
                 </div>
 
                 <!-- Actions Column -->
-                <div class="px-6 py-3">
+                <div class="px-6 py-3" role="presentation" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                   <div class="flex items-center gap-1">
                     <button
                       type="button"
@@ -335,7 +338,10 @@
           @for (item of paginatedItems(); track item.id) {
             <div
               class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors cursor-pointer"
-              (click)="viewItem(item)">
+              role="button"
+              tabindex="0"
+              (click)="viewItem(item)"
+              (keydown.enter)="viewItem(item)">
               <!-- Status Badge -->
               <div class="flex justify-between items-start mb-2">
                 <div class="w-8 h-8 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
@@ -367,7 +373,11 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]">
+              <div
+                class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]"
+                role="presentation"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()">
                 <button
                   type="button"
                   (click)="$event.stopPropagation(); viewItem(item)"

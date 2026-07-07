@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
-import { downloadStyledXLSX } from '../../utils/xlsx.utils';
+import { downloadStyledXLSX, XlsxRow } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { forkJoin } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
 import { InventoryService } from '../../services/inventory/inventory.service';
@@ -542,7 +541,7 @@ export class Reports implements OnInit {
 
   exportTransactions(): void {
     const t = (key: string) => this.translate.instant(key);
-    const rows: Record<string, any>[] = [];
+    const rows: XlsxRow[] = [];
 
     for (const tx of this.filteredTransactions()) {
       for (const item of tx.items) {

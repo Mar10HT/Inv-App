@@ -5,7 +5,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RolesService } from '../../services/roles.service';
-import { RoleSummary, PermissionGroup, PermissionGroupItem } from '../../interfaces/role.interface';
+import { RoleSummary, PermissionGroup } from '../../interfaces/role.interface';
 
 export interface RoleFormDialogData {
   mode: 'add' | 'edit';
@@ -37,18 +37,18 @@ export interface RoleFormDialogData {
         <!-- Name (create only) -->
         @if (data.mode === 'add') {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="role-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'ROLES.NAME' | translate }} *
             </label>
-            <input type="text" [(ngModel)]="nameValue"
+            <input type="text" id="role-name" [(ngModel)]="nameValue"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors uppercase"
               [placeholder]="'ROLES.NAME_HINT' | translate" />
           </div>
         } @else {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <div class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'ROLES.NAME' | translate }}
-            </label>
+            </div>
             <p class="px-4 py-3 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg text-foreground font-mono text-sm">
               {{ data.role!.name }}
             </p>
@@ -57,20 +57,20 @@ export interface RoleFormDialogData {
 
         <!-- Display Name -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="role-display-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'ROLES.DISPLAY_NAME' | translate }} *
           </label>
-          <input type="text" [(ngModel)]="displayNameValue"
+          <input type="text" id="role-display-name" [(ngModel)]="displayNameValue"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [placeholder]="'ROLES.DISPLAY_NAME' | translate" />
         </div>
 
         <!-- Description -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="role-description" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'ROLES.DESCRIPTION' | translate }}
           </label>
-          <textarea [(ngModel)]="descriptionValue" rows="2"
+          <textarea id="role-description" [(ngModel)]="descriptionValue" rows="2"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
             [placeholder]="'ROLES.DESCRIPTION' | translate"></textarea>
         </div>
@@ -78,12 +78,12 @@ export interface RoleFormDialogData {
         <!-- Permissions -->
         <div>
           <div class="flex items-center justify-between mb-3">
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)]">
+            <div class="block text-sm font-medium text-[var(--color-on-surface-variant)]">
               {{ 'ROLES.PERMISSIONS' | translate }}
               <span class="ml-2 text-xs font-normal text-[var(--color-primary)]">
                 {{ selectedCount() }} {{ 'ROLES.SELECTED' | translate }}
               </span>
-            </label>
+            </div>
           </div>
 
           @if (loadingPermissions()) {
@@ -183,7 +183,11 @@ export class RoleFormDialog implements OnInit {
   toggleGroup(module: string): void {
     this.expandedGroups.update(s => {
       const n = new Set(s);
-      n.has(module) ? n.delete(module) : n.add(module);
+      if (n.has(module)) {
+        n.delete(module);
+      } else {
+        n.add(module);
+      }
       return n;
     });
   }
@@ -191,7 +195,11 @@ export class RoleFormDialog implements OnInit {
   togglePermission(id: string): void {
     this.selectedPermissionIds.update(s => {
       const n = new Set(s);
-      n.has(id) ? n.delete(id) : n.add(id);
+      if (n.has(id)) {
+        n.delete(id);
+      } else {
+        n.add(id);
+      }
       return n;
     });
   }

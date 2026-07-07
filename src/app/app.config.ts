@@ -16,7 +16,7 @@ import { APP_ICONS } from './shared/icons';
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
 import EN_TRANSLATIONS from '../assets/i18n/en.json';
 
-const TRANSLATIONS: { [key: string]: Record<string, unknown> } = {
+const TRANSLATIONS: Record<string, Record<string, unknown>> = {
   es: ES_TRANSLATIONS,
   en: EN_TRANSLATIONS
 };

@@ -121,10 +121,11 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
         <!-- Filters -->
         <div class="bg-surface-variant border border-theme rounded-xl p-4 mb-6 flex flex-col sm:flex-row gap-3">
           <div class="flex-1">
-            <label class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="sale-filter-warehouse" class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'SALES.FILTER_WAREHOUSE' | translate }}
             </label>
             <select
+              id="sale-filter-warehouse"
               [ngModel]="filterWarehouseId()"
               (ngModelChange)="filterWarehouseId.set($event)"
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
@@ -136,10 +137,11 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
             </select>
           </div>
           <div class="flex-1">
-            <label class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="sale-filter-status" class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'SALES.FILTER_STATUS' | translate }}
             </label>
             <select
+              id="sale-filter-status"
               [ngModel]="filterStatus()"
               (ngModelChange)="filterStatus.set($event)"
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
@@ -150,10 +152,11 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
             </select>
           </div>
           <div class="flex-1">
-            <label class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="sale-filter-customer-type" class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'SALES.FILTER_CUSTOMER_TYPE' | translate }}
             </label>
             <select
+              id="sale-filter-customer-type"
               [ngModel]="filterCustomerType()"
               (ngModelChange)="filterCustomerType.set($event)"
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"

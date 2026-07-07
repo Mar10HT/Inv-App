@@ -45,7 +45,10 @@ export interface LowStockItem {
       <div class="divide-y divide-[var(--color-border-subtle)] max-h-[500px] overflow-y-auto">
         @for (item of displayItems(); track item.id) {
           <div
+            role="button"
+            tabindex="0"
             (click)="itemClick.emit(item)"
+            (keydown.enter)="itemClick.emit(item)"
             class="px-6 py-4 hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer">
             <div class="flex items-center gap-4">
               <div class="w-10 h-10 bg-[var(--color-warning-bg)] rounded-lg flex items-center justify-center flex-shrink-0">

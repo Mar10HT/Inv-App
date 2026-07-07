@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';

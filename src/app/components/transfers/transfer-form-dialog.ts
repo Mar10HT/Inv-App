@@ -31,8 +31,8 @@ export interface TransferFormResult {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div role="dialog" aria-modal="true" aria-labelledby="transfer-form-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="close()">
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-form-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="transfer-form-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.NEW_REQUEST' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.NEW_REQUEST_DESC' | translate }}</p>
@@ -40,9 +40,10 @@ export interface TransferFormResult {
         <div class="p-6 space-y-4">
           <!-- Transfer name -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NAME' | translate }}</label>
+            <label for="transfer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NAME' | translate }}</label>
             <input
               type="text"
+              id="transfer-name"
               [ngModel]="selectedName()"
               (ngModelChange)="selectedName.set($event)"
               maxlength="120"
@@ -53,8 +54,9 @@ export interface TransferFormResult {
 
           <!-- Source Warehouse -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.SOURCE' | translate }} *</label>
+            <label for="transfer-source" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.SOURCE' | translate }} *</label>
             <select
+              id="transfer-source"
               [ngModel]="selectedSourceWarehouseId()"
               (ngModelChange)="onSourceWarehouseChange($event)"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
@@ -68,8 +70,9 @@ export interface TransferFormResult {
 
           <!-- Destination Warehouse -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.DESTINATION' | translate }} *</label>
+            <label for="transfer-destination" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.DESTINATION' | translate }} *</label>
             <select
+              id="transfer-destination"
               [ngModel]="selectedDestWarehouseId()"
               (ngModelChange)="selectedDestWarehouseId.set($event)"
               [disabled]="!selectedSourceWarehouseId()"
@@ -84,8 +87,9 @@ export interface TransferFormResult {
 
           <!-- Notes -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NOTES' | translate }}</label>
+            <label for="transfer-notes" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NOTES' | translate }}</label>
             <textarea
+              id="transfer-notes"
               [ngModel]="selectedNotes()"
               (ngModelChange)="selectedNotes.set($event)"
               rows="2"
@@ -97,7 +101,7 @@ export interface TransferFormResult {
           <!-- Items Section -->
           <div>
             <div class="flex items-center justify-between mb-3">
-              <label class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.ITEMS' | translate }} *</label>
+              <div class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'TRANSFERS.ITEMS' | translate }} *</div>
               <button
                 type="button"
                 (click)="addItem()"

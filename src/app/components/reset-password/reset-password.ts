@@ -62,13 +62,14 @@ import { AuthService } from '../../services/auth.service';
             <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
               <!-- New Password -->
               <div class="flex flex-col gap-1.5">
-                <label class="text-[13px] font-medium text-foreground">
+                <label for="reset-new-password" class="text-[13px] font-medium text-foreground">
                   {{ 'AUTH.RESET_PASSWORD.NEW_PASSWORD' | translate }}
                 </label>
                 <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
                             focus-within:border-[var(--color-primary)] transition-colors">
                   <lucide-icon name="Lock" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
                   <input
+                    id="reset-new-password"
                     [type]="showPassword() ? 'text' : 'password'"
                     formControlName="newPassword"
                     class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-variant)] outline-none"
@@ -89,13 +90,14 @@ import { AuthService } from '../../services/auth.service';
 
               <!-- Confirm Password -->
               <div class="flex flex-col gap-1.5">
-                <label class="text-[13px] font-medium text-foreground">
+                <label for="reset-confirm-password" class="text-[13px] font-medium text-foreground">
                   {{ 'AUTH.RESET_PASSWORD.CONFIRM_PASSWORD' | translate }}
                 </label>
                 <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
                             focus-within:border-[var(--color-primary)] transition-colors">
                   <lucide-icon name="Lock" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
                   <input
+                    id="reset-confirm-password"
                     [type]="showConfirmPassword() ? 'text' : 'password'"
                     formControlName="confirmPassword"
                     class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-variant)] outline-none"

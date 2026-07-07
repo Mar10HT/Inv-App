@@ -59,11 +59,12 @@ export interface UserFormDialogData {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
         <!-- Name -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="user-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'USER.NAME' | translate }}
           </label>
           <input
             type="text"
+            id="user-name"
             formControlName="name"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [placeholder]="'USER.NAME' | translate"
@@ -72,11 +73,12 @@ export interface UserFormDialogData {
 
         <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="user-email" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'USER.EMAIL' | translate }} {{ isExternalUser() ? '' : '*' }}
           </label>
           <input
             type="email"
+            id="user-email"
             formControlName="email"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [placeholder]="isExternalUser() ? ('USER.EMAIL_OPTIONAL' | translate) : ('USER.EMAIL' | translate)"
@@ -93,11 +95,12 @@ export interface UserFormDialogData {
         <!-- Password (hidden for EXTERNAL users) -->
         @if (!isExternalUser()) {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="user-password" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'USER.PASSWORD' | translate }} {{ data.mode === 'add' ? '*' : '' }}
             </label>
             <input
               type="password"
+              id="user-password"
               formControlName="password"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [placeholder]="data.mode === 'edit' ? ('USER.PASSWORD_HINT' | translate) : ('USER.PASSWORD' | translate)"
@@ -121,10 +124,11 @@ export interface UserFormDialogData {
 
         <!-- Role -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="user-role" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'USER.ROLE' | translate }}
           </label>
           <select
+            id="user-role"
             formControlName="role"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
             @for (role of roles; track role) {
@@ -136,7 +140,7 @@ export interface UserFormDialogData {
         <!-- Custom Role Assignment -->
         @if (selectedRole() !== 'SYSTEM_ADMIN' && selectedRole() !== 'EXTERNAL') {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="user-role-id" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'USER.CUSTOM_ROLE' | translate }}
             </label>
             <p class="text-xs text-[var(--color-on-surface-muted)] mb-2">{{ 'USER.CUSTOM_ROLE_DESC' | translate }}</p>
@@ -147,6 +151,7 @@ export interface UserFormDialogData {
               </div>
             } @else {
               <select
+                id="user-role-id"
                 formControlName="roleId"
                 class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
                 <option [value]="null">{{ 'USER.NO_CUSTOM_ROLE' | translate }}</option>
@@ -161,9 +166,9 @@ export interface UserFormDialogData {
         <!-- Warehouse Assignment -->
         @if (selectedRole() !== 'SYSTEM_ADMIN' && selectedRole() !== 'EXTERNAL') {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <div class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'USER.ASSIGNED_WAREHOUSES' | translate }}
-            </label>
+            </div>
             <p class="text-xs text-[var(--color-on-surface-muted)] mb-3">{{ 'USER.ASSIGNED_WAREHOUSES_DESC' | translate }}</p>
 
             @if (loadingWarehouses()) {

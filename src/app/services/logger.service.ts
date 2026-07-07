@@ -10,7 +10,7 @@ export class LoggerService {
    * Log informational messages
    * Only logs in development mode
    */
-  log(message: string, ...args: any[]): void {
+  log(message: string, ...args: unknown[]): void {
     if (!environment.production) {
       console.log(`[INFO] ${message}`, ...args);
     }
@@ -20,7 +20,7 @@ export class LoggerService {
    * Log warning messages
    * Logs in both development and production
    */
-  warn(message: string, ...args: any[]): void {
+  warn(message: string, ...args: unknown[]): void {
     if (!environment.production) {
       console.warn(`[WARN] ${message}`, ...args);
     }
@@ -32,7 +32,7 @@ export class LoggerService {
    * In production, errors are also reported to Sentry (no-op if Sentry was never
    * initialized, e.g. no DSN configured — see sentry-init.ts).
    */
-  error(message: string, error?: any, ...args: any[]): void {
+  error(message: string, error?: unknown, ...args: unknown[]): void {
     const errorMessage = `[ERROR] ${message}`;
     console.error(errorMessage, error, ...args);
 
@@ -49,7 +49,7 @@ export class LoggerService {
    * Log debug messages
    * Only logs in development mode
    */
-  debug(message: string, ...args: any[]): void {
+  debug(message: string, ...args: unknown[]): void {
     if (!environment.production) {
       console.debug(`[DEBUG] ${message}`, ...args);
     }
@@ -59,7 +59,7 @@ export class LoggerService {
    * Log info messages with data
    * Useful for tracking user actions or data flow
    */
-  info(message: string, data?: any): void {
+  info(message: string, data?: unknown): void {
     if (!environment.production) {
       if (data) {
         console.info(`[INFO] ${message}`, data);

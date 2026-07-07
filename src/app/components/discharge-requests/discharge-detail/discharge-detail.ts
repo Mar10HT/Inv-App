@@ -189,14 +189,15 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
     <!-- Reject Dialog -->
     @if (showRejectDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeRejectDialog()">
-        <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closeRejectDialog()">
+        <div role="dialog" aria-modal="true" aria-labelledby="discharge-detail-reject-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
-            <h2 class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>
+            <h2 id="discharge-detail-reject-title" class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>
           </div>
           <div class="p-6">
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.REJECT_REASON' | translate }}</label>
+            <label for="discharge-detail-reject-reason" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.REJECT_REASON' | translate }}</label>
             <textarea
+              id="discharge-detail-reject-reason"
               [(ngModel)]="rejectReason"
               rows="3"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none"

@@ -75,10 +75,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Name -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.NAME' | translate }} *</label>
+            <label for="item-name" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.NAME' | translate }} *</label>
             <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="Type" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-              <input type="text" formControlName="name"
+              <input id="item-name" type="text" formControlName="name"
                 [placeholder]="'INVENTORY.FORM.BASIC_INFO.NAME_PLACEHOLDER' | translate"
                 class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
             </div>
@@ -89,9 +89,9 @@
 
           <!-- Category (select dropdown) -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.CATEGORY' | translate }} *</label>
+            <label for="item-category" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.CATEGORY' | translate }} *</label>
             <div class="flex items-center bg-surface border border-theme rounded-lg pl-3.5 pr-3 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
-              <select formControlName="category"
+              <select id="item-category" formControlName="category"
                 class="flex-1 bg-transparent text-foreground text-sm appearance-none outline-none min-w-0 custom-select">
                 <option value="" disabled>{{ 'INVENTORY.FORM.BASIC_INFO.CATEGORY_PLACEHOLDER' | translate }}</option>
                 @for (category of categories(); track category.id) {
@@ -110,10 +110,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Model -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.MODEL' | translate }}</label>
+            <label for="item-model" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.MODEL' | translate }}</label>
             <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="Cpu" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-              <input type="text" formControlName="model"
+              <input id="item-model" type="text" formControlName="model"
                 [placeholder]="'INVENTORY.FORM.BASIC_INFO.MODEL_PLACEHOLDER' | translate"
                 class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
             </div>
@@ -121,9 +121,9 @@
 
           <!-- Warehouse (select dropdown) -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.WAREHOUSE.LABEL' | translate }} *</label>
+            <label for="item-warehouseId" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.WAREHOUSE.LABEL' | translate }} *</label>
             <div class="flex items-center bg-surface border border-theme rounded-lg pl-3.5 pr-3 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
-              <select formControlName="warehouseId"
+              <select id="item-warehouseId" formControlName="warehouseId"
                 class="flex-1 bg-transparent text-foreground text-sm appearance-none outline-none min-w-0 custom-select">
                 <option value="" disabled>{{ 'INVENTORY.FORM.WAREHOUSE.HINT' | translate }}</option>
                 @for (warehouse of warehouses(); track warehouse.id) {
@@ -140,8 +140,8 @@
 
         <!-- Row 3: Description (full width) -->
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.DESCRIPTION' | translate }} *</label>
-          <textarea formControlName="description" rows="3"
+          <label for="item-description" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.DESCRIPTION' | translate }} *</label>
+          <textarea id="item-description" formControlName="description" rows="3"
             [placeholder]="'INVENTORY.FORM.BASIC_INFO.DESCRIPTION_PLACEHOLDER' | translate"
             class="w-full px-3.5 py-2.5 bg-surface border border-theme rounded-lg text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:border-[var(--color-primary)] focus:outline-none transition-colors resize-none"></textarea>
           @if (hasError('description')) {
@@ -170,10 +170,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Service Tag -->
             <div class="flex flex-col gap-1.5">
-              <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG' | translate }} *</label>
+              <label for="item-serviceTag" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG' | translate }} *</label>
               <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
                 <lucide-icon name="Tag" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-                <input type="text" formControlName="serviceTag"
+                <input id="item-serviceTag" type="text" formControlName="serviceTag"
                   [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SERVICE_TAG_PLACEHOLDER' | translate"
                   class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
               </div>
@@ -183,10 +183,10 @@
             </div>
             <!-- Serial Number -->
             <div class="flex flex-col gap-1.5">
-              <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER' | translate }}</label>
+              <label for="item-serialNumber" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER' | translate }}</label>
               <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
                 <lucide-icon name="Hash" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-                <input type="text" formControlName="serialNumber"
+                <input id="item-serialNumber" type="text" formControlName="serialNumber"
                   [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SERIAL_NUMBER_PLACEHOLDER' | translate"
                   class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
               </div>
@@ -196,20 +196,20 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- SKU -->
             <div class="flex flex-col gap-1.5">
-              <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.SKU' | translate }}</label>
+              <label for="item-sku" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.SKU' | translate }}</label>
               <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
                 <lucide-icon name="Package" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-                <input type="text" formControlName="sku"
+                <input id="item-sku" type="text" formControlName="sku"
                   [placeholder]="'INVENTORY.FORM.IDENTIFIERS.SKU_PLACEHOLDER' | translate"
                   class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
               </div>
             </div>
             <!-- Barcode -->
             <div class="flex flex-col gap-1.5">
-              <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.BARCODE' | translate }}</label>
+              <label for="item-barcode" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.BARCODE' | translate }}</label>
               <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
                 <lucide-icon name="Scan" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-                <input type="text" formControlName="barcode"
+                <input id="item-barcode" type="text" formControlName="barcode"
                   [placeholder]="'INVENTORY.FORM.IDENTIFIERS.BARCODE_PLACEHOLDER' | translate"
                   class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
               </div>
@@ -232,10 +232,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Current Quantity -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.QUANTITY.CURRENT' | translate }} *</label>
+            <label for="item-quantity" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.QUANTITY.CURRENT' | translate }} *</label>
             <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="Package" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-              <input type="number" formControlName="quantity" placeholder="0"
+              <input id="item-quantity" type="number" formControlName="quantity" placeholder="0"
                 class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
             </div>
             @if (hasError('quantity')) {
@@ -244,10 +244,10 @@
           </div>
           <!-- Minimum Quantity -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.QUANTITY.MINIMUM' | translate }}</label>
+            <label for="item-minQuantity" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.QUANTITY.MINIMUM' | translate }}</label>
             <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="AlertTriangle" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-              <input type="number" formControlName="minQuantity" placeholder="0"
+              <input id="item-minQuantity" type="number" formControlName="minQuantity" placeholder="0"
                 class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
             </div>
           </div>
@@ -277,18 +277,18 @@
         <div class="flex gap-4">
           <!-- Price -->
           <div class="flex flex-col gap-1.5 flex-1">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.PRICE.AMOUNT' | translate }} *</label>
+            <label for="item-price" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.PRICE.AMOUNT' | translate }} *</label>
             <div class="flex items-center gap-2 bg-surface border border-theme rounded-lg px-3.5 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="DollarSign" class="!w-[18px] !h-[18px] text-on-surface-variant shrink-0"></lucide-icon>
-              <input type="number" step="0.01" formControlName="price" placeholder="0.00"
+              <input id="item-price" type="number" step="0.01" formControlName="price" placeholder="0.00"
                 class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-muted)] outline-none min-w-0" />
             </div>
           </div>
           <!-- Currency -->
           <div class="flex flex-col gap-1.5 w-[200px]">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.PRICE.CURRENCY' | translate }} *</label>
+            <label for="item-currency" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.PRICE.CURRENCY' | translate }} *</label>
             <div class="flex items-center bg-surface border border-theme rounded-lg pl-3.5 pr-3 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
-              <select formControlName="currency"
+              <select id="item-currency" formControlName="currency"
                 class="flex-1 bg-transparent text-foreground text-sm appearance-none outline-none min-w-0 custom-select">
                 <option [value]="Currency.HNL">HNL (L)</option>
                 <option [value]="Currency.USD">USD ($)</option>
@@ -300,9 +300,9 @@
 
         <!-- Row 2: Supplier (full width) -->
         <div class="flex flex-col gap-1.5">
-          <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.SUPPLIER.LABEL' | translate }}</label>
+          <label for="item-supplierId" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.SUPPLIER.LABEL' | translate }}</label>
           <div class="flex items-center bg-surface border border-theme rounded-lg pl-3.5 pr-3 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
-            <select formControlName="supplierId"
+            <select id="item-supplierId" formControlName="supplierId"
               class="flex-1 bg-transparent text-foreground text-sm appearance-none outline-none min-w-0 custom-select">
               <option value="">{{ 'INVENTORY.FORM.SUPPLIER.NONE' | translate }}</option>
               @for (supplier of suppliers(); track supplier.id) {
@@ -328,9 +328,9 @@
 
           <!-- Assigned User -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.ASSIGNMENT.USER' | translate }}</label>
+            <label for="item-assignedToUserId" class="text-[13px] font-medium text-foreground">{{ 'INVENTORY.FORM.ASSIGNMENT.USER' | translate }}</label>
             <div class="flex items-center bg-surface border border-theme rounded-lg pl-3.5 pr-3 py-2.5 focus-within:border-[var(--color-primary)] transition-colors">
-              <select formControlName="assignedToUserId"
+              <select id="item-assignedToUserId" formControlName="assignedToUserId"
                 class="flex-1 bg-transparent text-foreground text-sm appearance-none outline-none min-w-0 custom-select">
                 <option value="">{{ 'INVENTORY.FORM.ASSIGNMENT.UNASSIGNED' | translate }}</option>
                 @for (user of assignableUsers(); track user.id) {

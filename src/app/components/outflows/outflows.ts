@@ -108,10 +108,11 @@ import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
         <!-- Filters -->
         <div class="bg-surface-variant border border-theme rounded-xl p-4 mb-6 flex flex-col sm:flex-row gap-3">
           <div class="flex-1">
-            <label class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="outflow-filter-warehouse" class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'OUTFLOWS.FILTER_WAREHOUSE' | translate }}
             </label>
             <select
+              id="outflow-filter-warehouse"
               [ngModel]="filterWarehouseId()"
               (ngModelChange)="filterWarehouseId.set($event)"
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
@@ -123,10 +124,11 @@ import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
             </select>
           </div>
           <div class="flex-1">
-            <label class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="outflow-filter-status" class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'OUTFLOWS.FILTER_STATUS' | translate }}
             </label>
             <select
+              id="outflow-filter-status"
               [ngModel]="filterStatus()"
               (ngModelChange)="filterStatus.set($event)"
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
@@ -137,10 +139,11 @@ import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
             </select>
           </div>
           <div class="flex-1">
-            <label class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
+            <label for="outflow-filter-reason" class="block text-xs font-medium text-[var(--color-on-surface-variant)] mb-1">
               {{ 'OUTFLOWS.FILTER_REASON' | translate }}
             </label>
             <select
+              id="outflow-filter-reason"
               [ngModel]="filterReason()"
               (ngModelChange)="filterReason.set($event)"
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"

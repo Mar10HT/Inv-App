@@ -55,8 +55,9 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
               <h2 class="text-lg font-semibold text-foreground mb-4">{{ 'DISCHARGES.PUBLIC_FORM.REQUESTER_INFO' | translate }}</h2>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NAME' | translate }} *</label>
+                  <label for="requester-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NAME' | translate }} *</label>
                   <input
+                    id="requester-name"
                     type="text"
                     [(ngModel)]="requesterName"
                     class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
@@ -65,8 +66,9 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.POSITION' | translate }}</label>
+                    <label for="requester-position" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.POSITION' | translate }}</label>
                     <input
+                      id="requester-position"
                       type="text"
                       [(ngModel)]="requesterPosition"
                       class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
@@ -74,8 +76,9 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.PHONE' | translate }}</label>
+                    <label for="requester-phone" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.PHONE' | translate }}</label>
                     <input
+                      id="requester-phone"
                       type="tel"
                       [(ngModel)]="requesterPhone"
                       class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
@@ -85,8 +88,9 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</label>
+                    <label for="needed-by-date" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</label>
                     <input
+                      id="needed-by-date"
                       type="date"
                       [(ngModel)]="neededByDate"
                       class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
@@ -94,8 +98,9 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.JUSTIFICATION' | translate }}</label>
+                  <label for="justification" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.PUBLIC_FORM.JUSTIFICATION' | translate }}</label>
                   <textarea
+                    id="justification"
                     [(ngModel)]="justification"
                     rows="2"
                     class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-variant)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none transition-all"

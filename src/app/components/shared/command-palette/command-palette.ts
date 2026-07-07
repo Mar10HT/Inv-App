@@ -31,6 +31,7 @@ interface CommandItem {
       <!-- Backdrop -->
       <div
         class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        role="presentation"
         (click)="close()">
       </div>
 
@@ -248,13 +249,14 @@ export class CommandPalette implements OnInit, OnDestroy {
         event.preventDefault();
         this.selectedIndex.update(i => Math.max(i - 1, 0));
         break;
-      case 'Enter':
+      case 'Enter': {
         event.preventDefault();
         const selectedItem = items[this.selectedIndex()];
         if (selectedItem) {
           this.executeCommand(selectedItem);
         }
         break;
+      }
     }
   }
 
@@ -273,7 +275,6 @@ export class CommandPalette implements OnInit, OnDestroy {
   }
 
   getGlobalIndex(type: string, localIndex: number): number {
-    const items = this.filteredItems();
     let offset = 0;
 
     if (type === 'action') {

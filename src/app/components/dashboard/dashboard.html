@@ -111,7 +111,7 @@
                   <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-primary)] mb-2"></div>
                   <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.LOADING' | translate }}...</p>
                 </div>
-              } @else if (customChartConfigs().get(chart.id)?.data?.series?.length! > 0 || customChartConfigs().get(chart.id)?.data?.series?.[0]?.data?.length! > 0) {
+              } @else if (hasChartData(chart)) {
                 @defer (on viewport) {
                   <apx-chart
                     [series]="customChartConfigs().get(chart.id)!.data.series"
@@ -298,7 +298,10 @@
             @for (item of items(); track trackByFn($index, item)) {
               <div
                 class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors cursor-pointer"
-                (click)="viewItem(item)">
+                role="button"
+                tabindex="0"
+                (click)="viewItem(item)"
+                (keydown.enter)="viewItem(item)">
                 <!-- Status Badge -->
                 <div class="flex justify-between items-start mb-2">
                   <div class="w-8 h-8 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
@@ -328,7 +331,11 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]">
+                <div
+                  class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]"
+                  role="presentation"
+                  (click)="$event.stopPropagation()"
+                  (keydown)="$event.stopPropagation()">
                   <button
                     type="button"
                     (click)="$event.stopPropagation(); viewItem(item)"

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface';
+import { CrudDialogData, CrudFieldConfig, CrudTranslateParams } from './crud-dialog-config.interface';
 
 @Component({
   selector: 'app-crud-dialog',
@@ -46,12 +46,13 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
         @for (field of data.config.fields; track field.key) {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label [for]="field.key" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ field.labelKey | translate }}{{ field.required ? ' *' : '' }}
             </label>
 
             @if (field.type === 'textarea') {
               <textarea
+                [id]="field.key"
                 [formControlName]="field.key"
                 [rows]="field.rows || 3"
                 class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
@@ -60,6 +61,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
               ></textarea>
             } @else if (field.type === 'select') {
               <select
+                [id]="field.key"
                 [formControlName]="field.key"
                 class="select-chevron w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched">
@@ -70,6 +72,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
               </select>
             } @else {
               <input
+                [id]="field.key"
                 [type]="field.type"
                 [formControlName]="field.key"
                 class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
@@ -131,7 +134,7 @@ export class CrudDialog implements OnInit {
   form!: FormGroup;
 
   ngOnInit(): void {
-    const controls: Record<string, any> = {};
+    const controls: Record<string, [string, ValidatorFn[]]> = {};
     for (const field of this.data.config.fields) {
       const validators = field.validators || [];
       controls[field.key] = ['', validators];
@@ -139,15 +142,16 @@ export class CrudDialog implements OnInit {
     this.form = this.fb.group(controls);
 
     if (this.data.mode === 'edit' && this.data.entity) {
-      const patchValue: Record<string, any> = {};
+      const patchValue: Record<string, string> = {};
       for (const field of this.data.config.fields) {
-        patchValue[field.key] = this.data.entity[field.key] ?? '';
+        const value = this.data.entity[field.key];
+        patchValue[field.key] = value === undefined || value === null ? '' : String(value);
       }
       this.form.patchValue(patchValue);
     }
   }
 
-  getErrorEntries(field: CrudFieldConfig): Array<{ errorKey: string; translationKey: string; params?: Record<string, any> }> {
+  getErrorEntries(field: CrudFieldConfig): { errorKey: string; translationKey: string; params?: CrudTranslateParams }[] {
     if (!field.errorMessages) return [];
     return Object.entries(field.errorMessages).map(([errorKey, config]) => ({
       errorKey,
@@ -163,7 +167,7 @@ export class CrudDialog implements OnInit {
     const formValue = this.form.value;
 
     // Clean empty strings to undefined
-    const cleanedValue: Record<string, any> = {};
+    const cleanedValue: Record<string, unknown> = {};
     for (const field of this.data.config.fields) {
       const val = formValue[field.key];
       cleanedValue[field.key] = (val === '' && !field.required) ? undefined : val;
@@ -181,7 +185,7 @@ export class CrudDialog implements OnInit {
         }
       });
     } else if (this.data.entity) {
-      this.data.updateFn(this.data.entity[idField], cleanedValue).subscribe({
+      this.data.updateFn(String(this.data.entity[idField]), cleanedValue).subscribe({
         next: () => {
           this.dialogRef.close({ saved: true });
         },

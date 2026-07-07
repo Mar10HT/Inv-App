@@ -13,7 +13,7 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
   if (value.length > 0 && value.length < 8)      errors['minLength']  = true;
   if (!/[A-Z]/.test(value))                       errors['uppercase']  = true;
   if (!/[0-9]/.test(value))                       errors['number']     = true;
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) errors['special'] = true;
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) errors['special'] = true;
   return Object.keys(errors).length ? errors : null;
 }
 
@@ -45,11 +45,12 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
         <div class="space-y-4">
           <!-- Current Password -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="current-password" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'PROFILE.CURRENT_PASSWORD' | translate }} *
             </label>
             <input
               type="password"
+              id="current-password"
               formControlName="currentPassword"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [class.!border-rose-500]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched"
@@ -65,11 +66,12 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
 
           <!-- New Password -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="new-password" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'PROFILE.NEW_PASSWORD' | translate }} *
             </label>
             <input
               type="password"
+              id="new-password"
               formControlName="newPassword"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [class.!border-rose-500]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
@@ -95,11 +97,12 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
 
           <!-- Confirm Password -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="confirm-password" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'PROFILE.CONFIRM_PASSWORD' | translate }} *
             </label>
             <input
               type="password"
+              id="confirm-password"
               formControlName="confirmPassword"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
               [class.!border-rose-500]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched"

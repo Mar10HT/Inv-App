@@ -1,5 +1,7 @@
 import { Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { CrudDialogConfig, CrudDialogData } from '../shared/crud-dialog';
+import { Supplier, CreateSupplierDto, UpdateSupplierDto } from '../../interfaces/supplier.interface';
 
 export { CrudDialog as SupplierFormDialog } from '../shared/crud-dialog';
 
@@ -48,15 +50,17 @@ export const SUPPLIER_DIALOG_CONFIG: CrudDialogConfig = {
 
 export function buildSupplierDialogData(
   mode: 'add' | 'edit',
-  createFn: (data: any) => import('rxjs').Observable<any>,
-  updateFn: (id: string, data: any) => import('rxjs').Observable<any>,
-  entity?: any,
-): CrudDialogData {
+  createFn: (data: CreateSupplierDto) => Observable<Supplier>,
+  updateFn: (id: string, data: UpdateSupplierDto) => Observable<Supplier>,
+  entity?: Supplier,
+): CrudDialogData<Supplier> {
   return {
     mode,
     config: SUPPLIER_DIALOG_CONFIG,
     entity,
-    createFn,
-    updateFn,
+    // The dialog only knows the raw, dynamically-keyed form value; the field config above
+    // guarantees its keys line up with CreateSupplierDto/UpdateSupplierDto, so this narrowing is safe.
+    createFn: (data: Record<string, unknown>) => createFn(data as unknown as CreateSupplierDto),
+    updateFn: (id: string, data: Record<string, unknown>) => updateFn(id, data as unknown as UpdateSupplierDto),
   };
 }

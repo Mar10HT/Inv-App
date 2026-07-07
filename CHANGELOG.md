@@ -10,13 +10,12 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ### Fixed
 - Unit test suite (0/12 passing) — `TestBed` setup across all specs never accounted for `provideZonelessChangeDetection()` or `TranslateService`, so every spec crashed on `NG0908`/`NG0201` instead of running.
+- Cleared the entire lint backlog (~270 findings → 0), almost all `@typescript-eslint/no-explicit-any` resolved with real types (reusing existing interfaces where they exist) rather than suppressions, plus real `@angular-eslint/template` accessibility fixes (label/control association, keyboard support on clickable cards, dialog `role`/`aria` attributes) across ~50 components. CI now fails on lint instead of just reporting it.
+- `dashboard.ts`: the custom-chart-builder's `ApexOptions` return type declared several sub-options optional even though the implementation always populates them, and a template data-presence check assumed one series shape (`{name, data}[]`) when pie/donut charts actually use a plain `number[]` — both were previously invisible type gaps that only surfaced once lint (and therefore full template type-checking) started running.
 
 ### Added
-- CI (`.github/workflows/ci.yml`): install, lint (non-blocking — see below), unit tests, production build on every push/PR to `main`.
+- CI (`.github/workflows/ci.yml`): install, lint, unit tests, production build on every push/PR to `main`.
 - ESLint via `@angular-eslint`, wired to `npm run lint` (`ng lint`) — this project had no linting configured at all before.
-
-### Known backlog
-- Enabling lint surfaced ~270 pre-existing findings (mostly `@typescript-eslint/no-explicit-any`) that were never enforced before. CI runs lint but doesn't fail on it yet — needs a dedicated cleanup pass.
 
 ## [0.5.0] - 2026-07-07
 

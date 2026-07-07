@@ -20,13 +20,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Non-blocking for now: this is the first time lint has ever been
-      # configured/run on this codebase, and it surfaced a pre-existing
-      # backlog of ~270 findings (mostly @typescript-eslint/no-explicit-any).
-      # Flip to blocking once that backlog is cleaned up.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Unit tests
         run: npx ng test --watch=false --browsers=ChromeHeadless

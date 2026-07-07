@@ -11,7 +11,9 @@ test.describe('Reports', () => {
   });
 
   test('renders report section cards or tabs', async ({ page }) => {
-    const sections = page.locator('[class*="card"], mat-tab-group, [class*="tab"]').first();
+    // Reports uses a custom ARIA tablist (role="tablist"/"tab"), not
+    // mat-tab-group or a "tab"-named CSS class.
+    const sections = page.getByRole('tab').first();
     await expect(sections).toBeVisible();
   });
 

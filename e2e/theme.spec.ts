@@ -5,7 +5,7 @@ test.describe('Theme Switching', () => {
     await page.goto('/dashboard');
 
     // Should have a theme toggle button
-    const themeToggle = page.locator('button').filter({ has: page.locator('mat-icon:has-text("dark_mode"), mat-icon:has-text("light_mode")') });
+    const themeToggle = page.getByRole('button', { name: /toggle theme/i });
     await expect(themeToggle.first()).toBeVisible();
   });
 
@@ -16,8 +16,16 @@ test.describe('Theme Switching', () => {
     const initialTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
 
     // Click theme toggle
-    const themeToggle = page.locator('button').filter({ has: page.locator('mat-icon:has-text("dark_mode"), mat-icon:has-text("light_mode")') }).first();
+    const themeToggle = page.getByRole('button', { name: /toggle theme/i }).first();
     await themeToggle.click();
+
+    // ThemeService applies the change via an effect(), which flushes on the
+    // next tick rather than synchronously within the click handler — wait for
+    // the actual attribute change instead of racing it.
+    await page.waitForFunction(
+      (prev) => document.documentElement.getAttribute('data-theme') !== prev,
+      initialTheme,
+    );
 
     // Theme should have changed
     const newTheme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));

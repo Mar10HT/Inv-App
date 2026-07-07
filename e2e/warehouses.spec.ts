@@ -11,7 +11,8 @@ test.describe('Warehouses', () => {
   });
 
   test('has an add/create button', async ({ page }) => {
-    const addBtn = page.getByRole('button', { name: /add|create|nuevo|agregar/i });
+    // Two "Add Warehouse" buttons can render at once (header action + empty-state CTA).
+    const addBtn = page.getByRole('button', { name: /add|create|new|nuevo|agregar/i }).first();
     await expect(addBtn).toBeVisible();
   });
 
@@ -25,7 +26,7 @@ test.describe('Warehouses', () => {
   });
 
   test('opens add warehouse dialog/form on add button click', async ({ page }) => {
-    const addBtn = page.getByRole('button', { name: /add|create|nuevo|agregar/i }).first();
+    const addBtn = page.getByRole('button', { name: /add|create|new|nuevo|agregar/i }).first();
     await addBtn.click();
 
     // Either a dialog or a navigation to a form should appear

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as Sentry from '@sentry/angular';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -28,17 +29,19 @@ export class LoggerService {
   /**
    * Log error messages
    * Logs in both development and production
-   * In production, you could send errors to a tracking service (Sentry, LogRocket, etc.)
+   * In production, errors are also reported to Sentry (no-op if Sentry was never
+   * initialized, e.g. no DSN configured — see sentry-init.ts).
    */
   error(message: string, error?: any, ...args: any[]): void {
     const errorMessage = `[ERROR] ${message}`;
+    console.error(errorMessage, error, ...args);
 
     if (environment.production) {
-      // In production, send to error tracking service
-      // Example: Sentry.captureException(error, { extra: { message, ...args } });
-      console.error(errorMessage, error, ...args);
-    } else {
-      console.error(errorMessage, error, ...args);
+      if (error instanceof Error) {
+        Sentry.captureException(error, { extra: { message, args } });
+      } else {
+        Sentry.captureMessage(errorMessage, { level: 'error', extra: { error, args } });
+      }
     }
   }
 

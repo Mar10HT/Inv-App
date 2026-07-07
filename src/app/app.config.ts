@@ -1,9 +1,10 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { LucideAngularModule } from 'lucide-angular';
+import * as Sentry from '@sentry/angular';
 import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
@@ -31,6 +32,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    { provide: ErrorHandler, useValue: Sentry.createErrorHandler() },
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideClientHydration(withEventReplay()),
     provideHttpClient(

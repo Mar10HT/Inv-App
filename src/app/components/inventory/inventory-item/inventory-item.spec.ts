@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InventoryItem } from './inventory-item';  // Changed to import the component
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { provideTestBedDefaults } from '../../../../testing/test-providers';
 
 describe('InventoryItem', () => {  // Updated name
   let component: InventoryItem;  // Changed type
@@ -7,7 +9,12 @@ describe('InventoryItem', () => {  // Updated name
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InventoryItem]  // Changed to component
+      imports: [InventoryItem],  // Changed to component
+      providers: [
+        ...provideTestBedDefaults(),
+        { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
+        { provide: MAT_DIALOG_DATA, useValue: { itemId: 'test-item-id' } }
+      ]
     })
     .compileComponents();
 

@@ -1,6 +1,6 @@
 {
   "name": "inv-icn",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -10,6 +10,7 @@
     "analyze": "ng build --configuration production --stats-json && npx webpack-bundle-analyzer dist/INV-ICN/browser/stats.json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "lint": "ng lint",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:headed": "npx playwright test --headed",
@@ -40,6 +41,7 @@
     "@angular/ssr": "^20.1.4",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
+    "@sentry/angular": "^10.63.0",
     "@tailwindcss/postcss": "^4.1.11",
     "apexcharts": "^5.3.6",
     "express": "^5.1.0",
@@ -56,13 +58,18 @@
     "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^20.7.0",
+    "@angular-eslint/schematics": "^20.7.0",
     "@angular/build": "^20.3.22",
     "@angular/cli": "^20.1.4",
     "@angular/compiler-cli": "^20.3.18",
+    "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.50.0",
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
+    "angular-eslint": "^20.7.0",
+    "eslint": "^9.39.4",
     "jasmine-core": "~5.8.0",
     "json-server": "^1.0.0-beta.3",
     "karma": "~6.4.0",
@@ -71,6 +78,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.5.6",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "typescript-eslint": "^8.63.0"
   }
 }

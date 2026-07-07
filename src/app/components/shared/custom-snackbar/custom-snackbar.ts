@@ -2,6 +2,7 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface CustomSnackbarData {
   message: string;
@@ -13,7 +14,7 @@ export interface CustomSnackbarData {
   selector: 'app-custom-snackbar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, TranslateModule],
   template: `
     <div
       class="flex items-stretch overflow-hidden rounded-xl min-w-[360px] max-w-[520px] border-[5px]"
@@ -31,6 +32,7 @@ export interface CustomSnackbarData {
 
         <button
           (click)="dismiss()"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
           class="text-[var(--color-on-surface-variant)] hover:text-white transition-colors flex-shrink-0 p-1">
           <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
         </button>

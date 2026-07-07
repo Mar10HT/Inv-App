@@ -36,6 +36,7 @@ import { CrudDialogData, CrudFieldConfig } from './crud-dialog-config.interface'
         <button
           type="button"
           (click)="dialogRef.close()"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
           class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
           <lucide-icon name="X"></lucide-icon>
         </button>

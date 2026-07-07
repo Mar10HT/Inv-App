@@ -330,7 +330,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
         <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" class="rounded-xl w-full max-w-md border border-theme" [style.background-color]="'var(--color-surface-variant)'" (click)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
             <h2 id="share-dialog-title" class="text-xl font-semibold" [style.color]="'var(--color-foreground)'">{{ 'DISCHARGES.SHARE_FORM.TITLE' | translate }}</h2>
-            <button (click)="closeShareDialog()" class="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
+            <button (click)="closeShareDialog()" [attr.aria-label]="'COMMON.CLOSE' | translate" class="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
               <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
             </button>
           </div>

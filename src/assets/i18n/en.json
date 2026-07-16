@@ -385,6 +385,20 @@
       "COPIED": "Copied!",
       "EXPIRES_IN": "Expires in 1 hour"
     },
+    "SET_PASSWORD": "Set Password",
+    "SET_PASSWORD_DIALOG": {
+      "TITLE": "Set Password",
+      "DESCRIPTION": "Set a new password for this user. Their active sessions will be revoked and they can sign in immediately.",
+      "NEW_PASSWORD": "New password",
+      "NEW_PASSWORD_PLACEHOLDER": "At least 12 characters",
+      "CONFIRM_PASSWORD": "Confirm password",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat the password",
+      "SUBMIT": "Save Password",
+      "PASSWORD_RULES": "At least 12 characters, with uppercase, lowercase, number and symbol (@$!%*?&).",
+      "PASSWORDS_MISMATCH": "Passwords do not match",
+      "SUCCESS": "Password updated for {{name}}",
+      "SELF_NOT_ALLOWED": "To change your own password, use your profile."
+    },
     "ROLES": {
       "ADMIN": "Administrator",
       "SYSTEM_ADMIN": "Administrator",

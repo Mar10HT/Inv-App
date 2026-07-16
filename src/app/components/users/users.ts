@@ -15,6 +15,7 @@ import { PendingReset } from '../../interfaces/auth.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { UserFormDialog } from './user-form-dialog';
 import { ResetLinkDialog } from './reset-link-dialog';
+import { SetPasswordDialog } from './set-password-dialog';
 
 @Component({
   selector: 'app-users',
@@ -99,6 +100,30 @@ export class Users implements OnInit {
       },
       error: (err) => {
         this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.USER');
+      }
+    });
+  }
+
+  setPassword(user: User): void {
+    // Self password changes must go through the profile change-password flow
+    // (which verifies the current password); the backend rejects self via this path.
+    if (user.id === this.authService.currentUser()?.id) {
+      this.notifications.info('USER.SET_PASSWORD_DIALOG.SELF_NOT_ALLOWED');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(SetPasswordDialog, {
+      width: '440px',
+      maxWidth: '95vw',
+      panelClass: 'item-detail-dialog',
+      data: { userId: user.id, userName: user.name || user.email }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.success) {
+        this.notifications.success('USER.SET_PASSWORD_DIALOG.SUCCESS', {
+          interpolateParams: { name: user.name || user.email }
+        });
       }
     });
   }

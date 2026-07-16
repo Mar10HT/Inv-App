@@ -385,6 +385,20 @@
       "COPIED": "¡Copiado!",
       "EXPIRES_IN": "Expira en 1 hora"
     },
+    "SET_PASSWORD": "Cambiar Contraseña",
+    "SET_PASSWORD_DIALOG": {
+      "TITLE": "Cambiar Contraseña",
+      "DESCRIPTION": "Establece una nueva contraseña para este usuario. Sus sesiones activas se cerrarán y podrá iniciar sesión de inmediato.",
+      "NEW_PASSWORD": "Nueva contraseña",
+      "NEW_PASSWORD_PLACEHOLDER": "Mínimo 12 caracteres",
+      "CONFIRM_PASSWORD": "Confirmar contraseña",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Repite la contraseña",
+      "SUBMIT": "Guardar Contraseña",
+      "PASSWORD_RULES": "Mínimo 12 caracteres, con mayúscula, minúscula, número y símbolo (@$!%*?&).",
+      "PASSWORDS_MISMATCH": "Las contraseñas no coinciden",
+      "SUCCESS": "Contraseña actualizada para {{name}}",
+      "SELF_NOT_ALLOWED": "Para cambiar tu propia contraseña usa tu perfil."
+    },
     "ROLES": {
       "ADMIN": "Administrador",
       "SYSTEM_ADMIN": "Administrador",

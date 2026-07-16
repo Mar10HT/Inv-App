@@ -25,6 +25,14 @@ export class UserService extends BaseCrudService<User, CreateUserDto, UpdateUser
     return this.http.get<Warehouse[]>(`${this.apiUrl}/${userId}/warehouses`);
   }
 
+  /**
+   * Admin: directly set another user's password (bypasses the reset-link/email flow).
+   * Backed by PATCH /users/:id/password.
+   */
+  setPassword(userId: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/${userId}/password`, { newPassword });
+  }
+
   assignWarehouses(userId: string, warehouseIds: string[]): Observable<Warehouse[]> {
     return this.http.post<Warehouse[]>(`${this.apiUrl}/${userId}/warehouses`, { warehouseIds });
   }

@@ -193,7 +193,7 @@ export class ResetPasswordComponent implements OnInit {
   private token = '';
 
   form: FormGroup = this.fb.group({
-    newPassword: ['', [Validators.required, Validators.minLength(12), Validators.pattern(STRONG_PASSWORD_PATTERN)]],
+    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.pattern(STRONG_PASSWORD_PATTERN)]],
     confirmPassword: ['', [Validators.required]]
   });
 

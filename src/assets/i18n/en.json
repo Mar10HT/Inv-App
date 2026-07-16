@@ -620,6 +620,7 @@
       "SUBTITLE": "Enter your new password below.",
       "NEW_PASSWORD": "New Password",
       "NEW_PASSWORD_PLACEHOLDER": "Enter new password",
+      "PASSWORD_RULES": "At least 12 characters, with an uppercase, a lowercase, a number and a symbol (@$!%*?&).",
       "CONFIRM_PASSWORD": "Confirm Password",
       "CONFIRM_PASSWORD_PLACEHOLDER": "Confirm your new password",
       "SUBMIT": "Reset Password",

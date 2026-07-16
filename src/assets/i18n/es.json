@@ -620,6 +620,7 @@
       "SUBTITLE": "Ingresa tu nueva contraseña a continuación.",
       "NEW_PASSWORD": "Nueva Contraseña",
       "NEW_PASSWORD_PLACEHOLDER": "Ingresa nueva contraseña",
+      "PASSWORD_RULES": "Mínimo 12 caracteres, con una mayúscula, una minúscula, un número y un símbolo (@$!%*?&).",
       "CONFIRM_PASSWORD": "Confirmar Contraseña",
       "CONFIRM_PASSWORD_PLACEHOLDER": "Confirma tu nueva contraseña",
       "SUBMIT": "Restablecer Contraseña",

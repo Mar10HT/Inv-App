@@ -7,6 +7,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 
+// Mirrors the backend @IsStrongPassword policy so the UI enforces (and communicates)
+// the same rules instead of letting a weak password through to a confusing 400.
+const STRONG_PASSWORD_PATTERN =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
 @Component({
   selector: 'app-reset-password',
   standalone: true,
@@ -82,9 +87,10 @@ import { AuthService } from '../../services/auth.service';
                     <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
                   </button>
                 </div>
-                @if (form.get('newPassword')?.invalid && form.get('newPassword')?.touched) {
-                  <p class="text-[var(--color-status-error)] text-xs mt-0.5">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
-                }
+                <p class="text-xs mt-0.5"
+                   [style.color]="(form.get('newPassword')?.invalid && form.get('newPassword')?.touched) ? 'var(--color-status-error)' : 'var(--color-on-surface-variant)'">
+                  {{ 'AUTH.RESET_PASSWORD.PASSWORD_RULES' | translate }}
+                </p>
               </div>
 
               <!-- Confirm Password -->
@@ -187,8 +193,8 @@ export class ResetPasswordComponent implements OnInit {
   private token = '';
 
   form: FormGroup = this.fb.group({
-    newPassword: ['', [Validators.required, Validators.minLength(6)]],
-    confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
+    newPassword: ['', [Validators.required, Validators.minLength(12), Validators.pattern(STRONG_PASSWORD_PATTERN)]],
+    confirmPassword: ['', [Validators.required]]
   });
 
   ngOnInit(): void {

@@ -185,6 +185,14 @@
                         </button>
                         <button
                           type="button"
+                          (click)="setPassword(user)"
+                          class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-colors flex items-center justify-center"
+                          [title]="'USER.SET_PASSWORD' | translate"
+                          [attr.aria-label]="('USER.SET_PASSWORD' | translate) + ' ' + (user.name || user.email)">
+                          <lucide-icon name="Lock" class="!w-5 !h-5"></lucide-icon>
+                        </button>
+                        <button
+                          type="button"
                           (click)="resetPassword(user)"
                           class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-accent-amber)] hover:bg-[var(--color-accent-amber-bg)] transition-colors flex items-center justify-center"
                           [title]="'USER.RESET_PASSWORD' | translate"
@@ -244,6 +252,13 @@
                       [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + (user.name || user.email)"
                       class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
                       <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                    </button>
+                    <button
+                      type="button"
+                      (click)="setPassword(user)"
+                      [attr.aria-label]="('USER.SET_PASSWORD' | translate) + ' ' + (user.name || user.email)"
+                      class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-colors">
+                      <lucide-icon name="Lock" class="!w-4 !h-4"></lucide-icon>
                     </button>
                     <button
                       type="button"

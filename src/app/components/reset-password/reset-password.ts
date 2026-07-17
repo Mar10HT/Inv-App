@@ -7,6 +7,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 
+// Mirrors the backend @IsStrongPassword policy so the UI enforces (and communicates)
+// the same rules instead of letting a weak password through to a confusing 400.
+const STRONG_PASSWORD_PATTERN =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
 @Component({
   selector: 'app-reset-password',
   standalone: true,
@@ -83,9 +88,10 @@ import { AuthService } from '../../services/auth.service';
                     <lucide-icon [name]="showPassword() ? 'EyeOff' : 'Eye'" class="!w-[18px] !h-[18px]"></lucide-icon>
                   </button>
                 </div>
-                @if (form.get('newPassword')?.invalid && form.get('newPassword')?.touched) {
-                  <p class="text-[var(--color-status-error)] text-xs mt-0.5">{{ 'LOGIN.VALIDATION.PASSWORD_MIN' | translate }}</p>
-                }
+                <p class="text-xs mt-0.5"
+                   [style.color]="(form.get('newPassword')?.invalid && form.get('newPassword')?.touched) ? 'var(--color-status-error)' : 'var(--color-on-surface-variant)'">
+                  {{ 'AUTH.RESET_PASSWORD.PASSWORD_RULES' | translate }}
+                </p>
               </div>
 
               <!-- Confirm Password -->
@@ -151,7 +157,9 @@ import { AuthService } from '../../services/auth.service';
               </div>
               <div>
                 <h2 class="text-2xl font-bold text-foreground mb-2">{{ 'AUTH.RESET_PASSWORD.ERROR_TITLE' | translate }}</h2>
-                <p class="text-[var(--color-on-surface-variant)] text-sm leading-relaxed">{{ 'AUTH.RESET_PASSWORD.INVALID_TOKEN' | translate }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-sm leading-relaxed">
+                  {{ errorMessage() || ('AUTH.RESET_PASSWORD.INVALID_TOKEN' | translate) }}
+                </p>
               </div>
             </div>
           }
@@ -180,12 +188,15 @@ export class ResetPasswordComponent implements OnInit {
   showPassword = signal(false);
   showConfirmPassword = signal(false);
   state = signal<'form' | 'success' | 'error'>('form');
+  // Real server-side error message, shown instead of the generic "invalid token"
+  // text so the actual failure (expired / used / throttled / server error) is visible.
+  errorMessage = signal('');
 
   private token = '';
 
   form: FormGroup = this.fb.group({
-    newPassword: ['', [Validators.required, Validators.minLength(6)]],
-    confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
+    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.pattern(STRONG_PASSWORD_PATTERN)]],
+    confirmPassword: ['', [Validators.required]]
   });
 
   ngOnInit(): void {
@@ -216,8 +227,12 @@ export class ResetPasswordComponent implements OnInit {
         // Auto-redirect to login after 3 seconds
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
+        // Surface the backend's real message (e.g. "Reset token has expired",
+        // "This reset token has already been used", throttle/server errors)
+        // instead of a blanket "invalid token".
+        this.errorMessage.set(err?.error?.message || '');
         this.state.set('error');
       }
     });

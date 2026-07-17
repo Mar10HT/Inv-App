@@ -25,6 +25,6 @@ export async function loginAsAdmin(page: import('@playwright/test').Page) {
   await page.goto('/login');
   await page.fill('input[type="email"]', 'admin@example.com');
   await page.fill('input[type="password"]', 'password123');
-  await page.getByRole('button', { name: /login|iniciar/i }).click();
+  await page.getByRole('button', { name: /sign in|login|iniciar/i }).click();
   await expect(page).toHaveURL(/dashboard/, { timeout: 10000 });
 }

@@ -7,8 +7,10 @@ test.describe('Command Palette', () => {
     // Press Ctrl+K (Cmd+K on Mac)
     await page.keyboard.press('Control+k');
 
-    // Command palette should be visible
-    await expect(page.locator('app-command-palette, [class*="command-palette"]')).toBeVisible({ timeout: 2000 });
+    // Command palette should be visible. Not `[class*="command-palette"]` too —
+    // the CDK overlay pane wrapper also carries a "command-palette-dialog"
+    // class, so that broader selector matches 2 elements (strict-mode violation).
+    await expect(page.locator('app-command-palette')).toBeVisible({ timeout: 2000 });
 
     // Search input should be focused
     await expect(page.locator('input[placeholder*="search" i], input[placeholder*="buscar" i]').first()).toBeFocused();
@@ -55,8 +57,10 @@ test.describe('Command Palette', () => {
     // Type search query
     await page.keyboard.type('inventory');
 
-    // Should show filtered results
-    await expect(page.locator('app-command-palette button, app-command-palette a')).toHaveCount.greaterThan(0);
+    // Should show filtered results — `toHaveCount` takes an exact number, there's
+    // no `.greaterThan` chain on it (this line never actually ran a real assertion).
+    const resultCount = await page.locator('app-command-palette button, app-command-palette a').count();
+    expect(resultCount).toBeGreaterThan(0);
   });
 
   test('should navigate to page when clicked', async ({ page }) => {

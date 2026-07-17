@@ -11,12 +11,12 @@ test.describe('Categories', () => {
   });
 
   test('has an add/create button', async ({ page }) => {
-    const addBtn = page.getByRole('button', { name: /add|create|nuevo|agregar/i });
+    const addBtn = page.getByRole('button', { name: /add|create|new|nuevo|agregar/i });
     await expect(addBtn).toBeVisible();
   });
 
   test('opens add category dialog on button click', async ({ page }) => {
-    const addBtn = page.getByRole('button', { name: /add|create|nuevo|agregar/i }).first();
+    const addBtn = page.getByRole('button', { name: /add|create|new|nuevo|agregar/i }).first();
     await addBtn.click();
 
     const dialog = page.locator('[role="dialog"], mat-dialog-container');

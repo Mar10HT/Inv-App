@@ -14,7 +14,7 @@ import { TransferRequestService } from '../../services/transfer-request.service'
 import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
-import { TransferRequest, TransferRequestStatus, TransferRequestWithQr } from '../../interfaces/transfer-request.interface';
+import { TransferRequest, TransferRequestStatus } from '../../interfaces/transfer-request.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { TransferFormDialog, TransferFormResult } from './transfer-form-dialog';
 import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRejectDialog, TransferRejectResult } from './transfer-qr-dialog';
@@ -603,8 +603,10 @@ export class TransfersComponent implements OnInit {
   }
 
   onRequestCreated(result: TransferFormResult): void {
-    this.closeNewRequestDialog();
-    this.applyFilters();
+    if (result.success) {
+      this.closeNewRequestDialog();
+      this.applyFilters();
+    }
   }
 
   // ==================== Actions ====================
@@ -806,8 +808,10 @@ export class TransfersComponent implements OnInit {
   }
 
   onQrScanned(result: TransferScanQrResult): void {
-    this.closeScanDialog();
-    this.applyFilters();
+    if (result.success) {
+      this.closeScanDialog();
+      this.applyFilters();
+    }
   }
 
   // ==================== Helper Methods ====================

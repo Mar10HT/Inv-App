@@ -80,12 +80,12 @@ export interface RawDischargeRequest {
   resolvedAt?: string;
   rejectedReason?: string;
   notes?: string;
-  items: Array<{
+  items: {
     id: string;
     inventoryItemId: string;
     quantity: number;
     inventoryItem?: { name: string; serviceTag?: string };
-  }>;
+  }[];
   createdAt: string;
   updatedAt: string;
 }

@@ -42,11 +42,12 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Name -->
             <div>
-              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              <label for="profile-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'USER.NAME' | translate }} *
               </label>
               @if (editMode()) {
                 <input
+                  id="profile-name"
                   type="text"
                   formControlName="name"
                   class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
@@ -66,11 +67,12 @@
 
             <!-- Email -->
             <div>
-              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              <label for="profile-email" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'USER.EMAIL' | translate }} *
               </label>
               @if (editMode()) {
                 <input
+                  id="profile-email"
                   type="email"
                   formControlName="email"
                   class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
@@ -90,17 +92,17 @@
 
             <!-- Role (read-only) -->
             <div>
-              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'USER.ROLE' | translate }}
-              </label>
+              </span>
               <p class="text-foreground py-3">{{ getRoleDisplay(user()?.role) }}</p>
             </div>
 
             <!-- Member Since -->
             <div>
-              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'PROFILE.MEMBER_SINCE' | translate }}
-              </label>
+              </span>
               <p class="text-foreground py-3">{{ formatDate(user()?.createdAt) }}</p>
             </div>
           </div>

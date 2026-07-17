@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { CustomSnackbar, CustomSnackbarData } from '../components/shared/custom-snackbar/custom-snackbar';
@@ -131,7 +132,7 @@ export class NotificationService {
   /**
    * Handle HTTP error and show appropriate message
    */
-  handleError(error: any, entityKey?: string): void {
+  handleError(error: HttpErrorResponse, entityKey?: string): void {
     const errorMessage = error?.error?.message || error?.message;
 
     if (error?.status === 0) {

@@ -10,6 +10,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { LoggerService } from '../../services/logger.service';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { PendingReset } from '../../interfaces/auth.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
@@ -38,6 +39,7 @@ export class Users implements OnInit {
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
+  private logger = inject(LoggerService);
 
   users = computed(() => this.userService.users());
   loading = computed(() => this.userService.loading());
@@ -74,7 +76,8 @@ export class Users implements OnInit {
   private loadPendingResets(): void {
     this.authService.getPendingResets().subscribe({
       next: (resets) => this.pendingResets.set(resets),
-      error: () => {} // Silently fail for non-admins
+      // Silently fail for non-admins (expected 403); still logged for debugging.
+      error: (err) => this.logger.debug('Failed to load pending password resets', err)
     });
   }
 

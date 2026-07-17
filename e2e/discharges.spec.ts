@@ -7,7 +7,7 @@ test.describe('Discharge requests — admin view', () => {
 
   test('shows discharge requests page heading', async ({ page }) => {
     await expect(page.locator('h1')).toBeVisible();
-    await expect(page.locator('h1')).toContainText(/discharge|descarga|solicitud/i);
+    await expect(page.locator('h1')).toContainText(/material request|discharge|descarga|solicitud/i);
   });
 
   test('displays list or empty state', async ({ page }) => {

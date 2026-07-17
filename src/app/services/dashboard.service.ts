@@ -59,14 +59,16 @@ export class DashboardService {
     return this.http.get<StatsResponse>(`${this.inventoryUrl}/stats`);
   }
 
-  getRecentItems(limit: number = 5): Observable<InventoryItemInterface[]> {
+  getRecentItems(limit = 5): Observable<InventoryItemInterface[]> {
     return this.http.get<PaginatedResponse<InventoryItemInterface>>(`${this.inventoryUrl}`).pipe(
       map(res => (res.data || []).slice(0, limit))
     );
   }
 
-  getLowStockItems(limit: number = 10): Observable<InventoryItemInterface[]> {
-    return this.http.get<InventoryItemInterface[]>(`${this.inventoryUrl}/low-stock`);
+  getLowStockItems(limit = 10): Observable<InventoryItemInterface[]> {
+    return this.http.get<InventoryItemInterface[]>(`${this.inventoryUrl}/low-stock`).pipe(
+      map(items => (items || []).slice(0, limit))
+    );
   }
 
   getItemsByCategory(): Observable<StatsResponse> {

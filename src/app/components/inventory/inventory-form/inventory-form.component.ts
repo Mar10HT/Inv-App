@@ -337,12 +337,12 @@ export class InventoryFormComponent implements OnInit {
     }
   }
 
-  private calculateStatus(formValue: any): InventoryStatus {
+  private calculateStatus(formValue: Pick<CreateInventoryItemDto, 'itemType' | 'assignedToUserId' | 'quantity' | 'minQuantity'>): InventoryStatus {
     if (formValue.itemType === ItemType.UNIQUE && formValue.assignedToUserId) {
       return InventoryStatus.IN_USE;
     }
     if (formValue.quantity === 0) return InventoryStatus.OUT_OF_STOCK;
-    if (formValue.quantity <= formValue.minQuantity) return InventoryStatus.LOW_STOCK;
+    if (formValue.quantity <= (formValue.minQuantity ?? 0)) return InventoryStatus.LOW_STOCK;
     return InventoryStatus.IN_STOCK;
   }
 

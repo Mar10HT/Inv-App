@@ -9,7 +9,9 @@ export interface WsEvent {
   entity: string;
   action: string;
   entityId?: string;
-  data?: any;
+  /** Payload shape varies by entity (inventory, loan, transaction, alert) and is
+   * not currently consumed by callers — they only use the event as a change signal. */
+  data?: unknown;
 }
 
 @Injectable({

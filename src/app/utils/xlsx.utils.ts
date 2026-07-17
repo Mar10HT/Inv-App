@@ -22,6 +22,10 @@ const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
   RESTORE:        { bg: 'EDE9FE', fg: '4C1D95' },
 };
 
+/** A single exported row: column header -> cell value. Mirrors the cell value
+ *  types xlsx-js-style itself accepts (`CellObject.v`). */
+export type XlsxRow = Record<string, string | number | boolean | Date>;
+
 export interface XlsxSheetConfig {
   sheetName: string;
   filename: string;
@@ -34,7 +38,7 @@ export interface XlsxSheetConfig {
   statusColIndex?: number;
 }
 
-export function downloadStyledXLSX(rows: Record<string, any>[], config: XlsxSheetConfig): void {
+export function downloadStyledXLSX(rows: XlsxRow[], config: XlsxSheetConfig): void {
   const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{}]);
   ws['!cols'] = config.colWidths.map(w => ({ wch: w }));
 
@@ -56,7 +60,7 @@ export function downloadStyledXLSX(rows: Record<string, any>[], config: XlsxShee
         const isAlt = R % 2 === 0;
         const baseFill = isAlt ? 'F1F5F9' : 'FFFFFF';
 
-        let cellStyle: any = {
+        let cellStyle: XLSX.CellStyle = {
           fill: { patternType: 'solid', fgColor: { rgb: baseFill } },
           font: { sz: 10, name: 'Calibri', color: { rgb: '111827' } },
           alignment: { vertical: 'center' },

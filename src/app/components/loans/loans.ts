@@ -677,10 +677,12 @@ export class LoansComponent implements OnInit {
   }
 
   onLoanCreated(result: LoanFormResult): void {
-    this.closeNewLoanDialog();
-    // The WebSocket subscription in LoanService already reloads on changes;
-    // calling loadLoans() here would cause a double HTTP request.
-    this.applyFilters();
+    if (result.success) {
+      this.closeNewLoanDialog();
+      // The WebSocket subscription in LoanService already reloads on changes;
+      // calling loadLoans() here would cause a double HTTP request.
+      this.applyFilters();
+    }
   }
 
   // ==================== QR Operations ====================
@@ -892,8 +894,10 @@ export class LoansComponent implements OnInit {
   }
 
   onQrScanned(result: ScanQrResult): void {
-    this.closeScanDialog();
-    this.applyFilters();
+    if (result.success) {
+      this.closeScanDialog();
+      this.applyFilters();
+    }
   }
 
   // ==================== Helper Methods ====================

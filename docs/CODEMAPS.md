@@ -23,9 +23,11 @@ src/app/
 │   ├── loans/               # Warehouse lending with QR + manual confirm
 │   ├── login/               # Authentication
 │   ├── not-found/           # 404 page
+│   ├── outflows/            # Permanent write-offs with stock decrement
 │   ├── profile/             # User profile management
 │   ├── reports/             # Analytics & export
 │   ├── roles/               # Role/permission management
+│   ├── sales/               # Sales recording with stock decrement
 │   ├── settings/            # User preferences
 │   ├── shared/              # Reusable dialogs & utilities
 │   ├── stock-take/          # Physical inventory counts

@@ -8,6 +8,23 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ## [Unreleased]
 
+### Fixed
+- Unit test suite (0/12 passing) — `TestBed` setup across all specs never accounted for `provideZonelessChangeDetection()` or `TranslateService`, so every spec crashed on `NG0908`/`NG0201` instead of running.
+- Cleared the entire lint backlog (~270 findings → 0), almost all `@typescript-eslint/no-explicit-any` resolved with real types (reusing existing interfaces where they exist) rather than suppressions, plus real `@angular-eslint/template` accessibility fixes (label/control association, keyboard support on clickable cards, dialog `role`/`aria` attributes) across ~50 components. CI now fails on lint instead of just reporting it.
+- `dashboard.ts`: the custom-chart-builder's `ApexOptions` return type declared several sub-options optional even though the implementation always populates them, and a template data-presence check assumed one series shape (`{name, data}[]`) when pie/donut charts actually use a plain `number[]` — both were previously invisible type gaps that only surfaced once lint (and therefore full template type-checking) started running.
+
+### Added
+- CI (`.github/workflows/ci.yml`): install, lint, unit tests, production build on every push/PR to `main`.
+- ESLint via `@angular-eslint`, wired to `npm run lint` (`ng lint`) — this project had no linting configured at all before.
+
+## [0.5.0] - 2026-07-07
+
+### Added
+- **Sales module** (`/sales`): record sales with per-customer-tier pricing (wholesale / distributor / retail) and manual per-line unit prices
+  - List with stats (recorded, revenue per currency, cancelled, total), warehouse / status / customer-type filters, desktop table + mobile cards
+  - Create dialog with customer name + type, currency (USD/HNL), per-line quantity and unit price (pre-filled from the item's price), and a live total
+  - PDF sale receipt download and cancel-to-restore-stock, gated by `sales:view` / `sales:create` / `sales:cancel`
+
 ### Architecture
 - **Manual Confirm UI Pattern**: Added manual receipt/return confirmation dialogs for loans and transfers (fallback to QR scanning)
 - **Reactive Filtering with Signals**: Implemented `effect()` with `allowSignalWrites: true` for responsive filter updates across loans and transfers lists

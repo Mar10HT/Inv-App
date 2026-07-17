@@ -54,10 +54,14 @@ test.describe('User Profile', () => {
   });
 
   test('displays user email', async ({ page }) => {
-    await expect(page.getByText(/admin@test\.com/i)).toBeVisible({ timeout: 5000 });
+    // Matches the seeded admin used across all e2e fixtures (fixtures.ts).
+    await expect(page.getByText(/admin@example\.com/i).first()).toBeVisible({ timeout: 5000 });
   });
 
   test('change password form is accessible', async ({ page }) => {
+    // Change-password is a dialog (ChangePasswordDialog), not an inline
+    // section — open it first via its trigger button.
+    await page.getByRole('button', { name: /change password/i }).click();
     const pwSection = page.locator(
       'input[type="password"], [formcontrolname*="password" i]',
     ).first();

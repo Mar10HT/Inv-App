@@ -2,12 +2,13 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-error-alert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, LucideAngularModule, MatButtonModule],
+  imports: [CommonModule, LucideAngularModule, MatButtonModule, TranslateModule],
   template: `
     <div
       class="flex items-start gap-3 p-4 rounded-lg"
@@ -35,6 +36,7 @@ import { MatButtonModule } from '@angular/material/button';
           <button
             mat-icon-button
             (click)="dismiss.emit()"
+            [attr.aria-label]="'COMMON.CLOSE' | translate"
             class="!w-8 !h-8"
             [ngClass]="iconClass">
             <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>

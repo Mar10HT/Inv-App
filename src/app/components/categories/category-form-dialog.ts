@@ -1,5 +1,7 @@
 import { Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { CrudDialogConfig, CrudDialogData } from '../shared/crud-dialog';
+import { Category, CreateCategoryDto, UpdateCategoryDto } from '../../interfaces/category.interface';
 
 export { CrudDialog as CategoryFormDialog } from '../shared/crud-dialog';
 
@@ -34,15 +36,17 @@ export const CATEGORY_DIALOG_CONFIG: CrudDialogConfig = {
 
 export function buildCategoryDialogData(
   mode: 'add' | 'edit',
-  createFn: (data: any) => import('rxjs').Observable<any>,
-  updateFn: (id: string, data: any) => import('rxjs').Observable<any>,
-  entity?: any,
-): CrudDialogData {
+  createFn: (data: CreateCategoryDto) => Observable<Category>,
+  updateFn: (id: string, data: UpdateCategoryDto) => Observable<Category>,
+  entity?: Category,
+): CrudDialogData<Category> {
   return {
     mode,
     config: CATEGORY_DIALOG_CONFIG,
     entity,
-    createFn,
-    updateFn,
+    // The dialog only knows the raw, dynamically-keyed form value; the field config above
+    // guarantees its keys line up with CreateCategoryDto/UpdateCategoryDto, so this narrowing is safe.
+    createFn: (data: Record<string, unknown>) => createFn(data as unknown as CreateCategoryDto),
+    updateFn: (id: string, data: Record<string, unknown>) => updateFn(id, data as unknown as UpdateCategoryDto),
   };
 }

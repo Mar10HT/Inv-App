@@ -52,11 +52,12 @@ const STRONG_PASSWORD_PATTERN =
 
           <!-- New Password -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'USER.SET_PASSWORD_DIALOG.NEW_PASSWORD' | translate }}</label>
+            <label for="set-new-password" class="text-[13px] font-medium text-foreground">{{ 'USER.SET_PASSWORD_DIALOG.NEW_PASSWORD' | translate }}</label>
             <div class="flex items-center gap-2.5 bg-[var(--color-surface)] border border-theme rounded-lg px-3.5 py-3
                         focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="Lock" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
               <input
+                id="set-new-password"
                 [type]="showPassword() ? 'text' : 'password'"
                 formControlName="newPassword"
                 autocomplete="new-password"
@@ -77,11 +78,12 @@ const STRONG_PASSWORD_PATTERN =
 
           <!-- Confirm Password -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-[13px] font-medium text-foreground">{{ 'USER.SET_PASSWORD_DIALOG.CONFIRM_PASSWORD' | translate }}</label>
+            <label for="set-confirm-password" class="text-[13px] font-medium text-foreground">{{ 'USER.SET_PASSWORD_DIALOG.CONFIRM_PASSWORD' | translate }}</label>
             <div class="flex items-center gap-2.5 bg-[var(--color-surface)] border border-theme rounded-lg px-3.5 py-3
                         focus-within:border-[var(--color-primary)] transition-colors">
               <lucide-icon name="Lock" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
               <input
+                id="set-confirm-password"
                 [type]="showConfirm() ? 'text' : 'password'"
                 formControlName="confirmPassword"
                 autocomplete="new-password"

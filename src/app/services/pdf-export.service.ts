@@ -3,7 +3,14 @@ import { TranslateService } from '@ngx-translate/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Transaction, TransactionType } from '../interfaces/transaction.interface';
-import { InventoryItemInterface, InventoryStatus, ItemType } from '../interfaces/inventory-item.interface';
+import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
+
+/** jsPDF instance augmented with the `lastAutoTable` property that jspdf-autotable
+ * attaches at runtime after each `autoTable()` call. The jspdf-autotable type
+ * definitions don't expose this on the `jsPDF` type, so we extend it locally. */
+interface JsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: { finalY: number };
+}
 
 interface TransactionPDFOptions {
   transactions: Transaction[];
@@ -231,7 +238,7 @@ export class PdfExportService {
     });
 
     // Value by Warehouse (right column)
-    const leftTableHeight = (doc as any).lastAutoTable.finalY - yPos;
+    const leftTableHeight = (doc as JsPDFWithAutoTable).lastAutoTable.finalY - yPos;
 
     autoTable(doc, {
       startY: yPos,
@@ -247,7 +254,7 @@ export class PdfExportService {
       tableWidth: (pageWidth - 30) / 2 - 5
     });
 
-    yPos = Math.max((doc as any).lastAutoTable.finalY, yPos + leftTableHeight) + 10;
+    yPos = Math.max((doc as JsPDFWithAutoTable).lastAutoTable.finalY, yPos + leftTableHeight) + 10;
 
     // Check for new page
     if (yPos > 200) {
@@ -275,7 +282,7 @@ export class PdfExportService {
       margin: { left: 15, right: 15 }
     });
 
-    yPos = (doc as any).lastAutoTable.finalY + 10;
+    yPos = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
 
     // Check for new page
     if (yPos > 180) {
@@ -381,7 +388,7 @@ export class PdfExportService {
         margin: { left: 15, right: 15 }
       });
 
-      yPos = (doc as any).lastAutoTable.finalY + 10;
+      yPos = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
     }
 
     // Check for new page
@@ -491,7 +498,7 @@ export class PdfExportService {
         }
       });
 
-      yPos = (doc as any).lastAutoTable.finalY + 10;
+      yPos = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
     } else {
       doc.setTextColor(...this.TEXT_LIGHT);
       doc.setFontSize(10);

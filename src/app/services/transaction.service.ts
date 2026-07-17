@@ -23,7 +23,7 @@ export class TransactionService {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  getAll(page: number = 1, limit: number = 50): Observable<Transaction[]> {
+  getAll(page = 1, limit = 50): Observable<Transaction[]> {
     this.loading.set(true);
     this.error.set(null);
 
@@ -46,7 +46,7 @@ export class TransactionService {
     );
   }
 
-  getRecent(limit: number = 10): Observable<Transaction[]> {
+  getRecent(limit = 10): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.apiUrl}/recent?limit=${limit}`);
   }
 

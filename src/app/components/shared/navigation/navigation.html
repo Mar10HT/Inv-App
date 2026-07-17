@@ -11,6 +11,7 @@
 <!-- Mobile overlay -->
 <div
   class="sidebar-overlay"
+  role="presentation"
   [class.visible]="isMobileMenuOpen()"
   (click)="closeMobileMenu()">
 </div>
@@ -80,7 +81,7 @@
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'loans:view', 'transfers:view', 'discharges:view', 'outflows:view', 'stocktake:view']">
+      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'loans:view', 'transfers:view', 'discharges:view', 'outflows:view', 'sales:view', 'stocktake:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -204,6 +205,21 @@
           <lucide-icon name="PackageMinus" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
             <span class="nav-text">{{ 'NAV.OUTFLOWS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['sales:view']">
+        <a
+          routerLink="/sales"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SALES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="ShoppingCart" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.SALES' | translate }}</span>
           }
         </a>
       </ng-container>

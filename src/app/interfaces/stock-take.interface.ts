@@ -79,3 +79,33 @@ export interface VarianceReport {
   };
   items: VarianceReportItem[];
 }
+
+/** Raw API response shape for a stock take item before mapping to the frontend model. */
+export interface RawStockTakeItem {
+  id: string;
+  stockTakeId: string;
+  itemId: string;
+  item?: {
+    name?: string;
+    warehouse?: { name?: string };
+  };
+  expectedQty: number;
+  countedQty?: number | null;
+  variance?: number | null;
+  notes?: string;
+}
+
+/** Raw API response shape for a stock take before mapping to the frontend model. */
+export interface RawStockTake {
+  id: string;
+  warehouseId: string;
+  warehouse?: { name?: string };
+  status: StockTakeStatus;
+  notes?: string;
+  startedBy?: { name?: string; email?: string };
+  items?: RawStockTakeItem[];
+  _count?: { items?: number };
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+}

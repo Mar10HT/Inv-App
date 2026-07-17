@@ -50,7 +50,8 @@ const REASONS: OutflowReason[] = [
   imports: [CommonModule, FormsModule, A11yModule, LucideAngularModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
+    <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
       <div
         #dialogEl
         role="dialog"
@@ -59,8 +60,7 @@ const REASONS: OutflowReason[] = [
         tabindex="-1"
         cdkTrapFocus
         cdkTrapFocusAutoCapture
-        class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto focus:outline-none"
-        (click)="$event.stopPropagation()"
+        class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto focus:outline-none"
       >
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="outflow-form-dialog-title" class="text-xl font-semibold text-foreground">
@@ -74,10 +74,11 @@ const REASONS: OutflowReason[] = [
         <div class="p-6 space-y-4">
           <!-- Name -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="outflow-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'OUTFLOWS.NAME' | translate }}
             </label>
             <input
+              id="outflow-name"
               type="text"
               [ngModel]="name()"
               (ngModelChange)="name.set($event)"
@@ -89,10 +90,11 @@ const REASONS: OutflowReason[] = [
 
           <!-- Warehouse -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="outflow-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'OUTFLOWS.WAREHOUSE' | translate }} *
             </label>
             <select
+              id="outflow-warehouse"
               [ngModel]="warehouseId()"
               (ngModelChange)="onWarehouseChange($event)"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
@@ -106,10 +108,11 @@ const REASONS: OutflowReason[] = [
 
           <!-- Reason -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="outflow-reason" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'OUTFLOWS.REASON' | translate }} *
             </label>
             <select
+              id="outflow-reason"
               [ngModel]="reason()"
               (ngModelChange)="reason.set($event)"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
@@ -123,10 +126,11 @@ const REASONS: OutflowReason[] = [
 
           <!-- Notes -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="outflow-notes" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'OUTFLOWS.NOTES' | translate }}
             </label>
             <textarea
+              id="outflow-notes"
               [ngModel]="notes()"
               (ngModelChange)="notes.set($event)"
               rows="2"
@@ -138,9 +142,9 @@ const REASONS: OutflowReason[] = [
           <!-- Items -->
           <div>
             <div class="flex items-center justify-between mb-3">
-              <label class="text-sm font-medium text-[var(--color-on-surface-variant)]">
+              <span class="text-sm font-medium text-[var(--color-on-surface-variant)]">
                 {{ 'TRANSACTION.ITEMS' | translate }} *
-              </label>
+              </span>
               <button
                 type="button"
                 (click)="addItem()"

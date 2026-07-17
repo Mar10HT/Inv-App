@@ -38,8 +38,8 @@ import { SkeletonComponent } from './skeleton';
   `
 })
 export class SkeletonTableComponent {
-  @Input() rows: number = 5;
-  @Input() columns: number = 5;
+  @Input() rows = 5;
+  @Input() columns = 5;
 
   get rowsArray(): number[] {
     return Array(this.rows).fill(0);

@@ -38,10 +38,10 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class SkeletonComponent {
-  @Input() width: string = '100%';
-  @Input() height: string = '1rem';
-  @Input() circle: boolean = false;
-  @Input() customClass: string = '';
+  @Input() width = '100%';
+  @Input() height = '1rem';
+  @Input() circle = false;
+  @Input() customClass = '';
 
   get baseClasses(): string {
     return `skeleton-shimmer ${this.circle ? 'rounded-full' : 'rounded'}`;

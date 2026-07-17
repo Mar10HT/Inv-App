@@ -5,7 +5,16 @@ import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/materia
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../services/theme.service';
-import { NgApexchartsModule } from 'ng-apexcharts';
+import {
+  NgApexchartsModule,
+  ApexAxisChartSeries,
+  ApexNonAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexYAxis,
+  ApexPlotOptions,
+  ApexTooltip
+} from 'ng-apexcharts';
 
 export type ChartType = 'bar' | 'line' | 'area' | 'pie' | 'donut' | 'radialBar';
 export type DataSource =
@@ -80,10 +89,11 @@ export interface CustomChartDialogData {
         <form [formGroup]="chartForm" class="space-y-6">
           <!-- Title -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="chart-title" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.TITLE' | translate }} *
             </label>
             <input
+              id="chart-title"
               type="text"
               formControlName="title"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
@@ -93,9 +103,9 @@ export interface CustomChartDialogData {
 
           <!-- Data Source - Quantity -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.DATA_SOURCE' | translate }} *
-            </label>
+            </span>
             <p class="text-xs text-[var(--color-on-surface-variant)] mb-2">{{ 'DASHBOARD.CUSTOM_CHART.BY_QUANTITY' | translate }}</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               @for (source of quantitySources; track source.value) {
@@ -135,9 +145,9 @@ export interface CustomChartDialogData {
           <!-- Currency Selector (only for value sources) -->
           @if (isValueSource(chartForm.get('dataSource')?.value)) {
             <div>
-              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'DASHBOARD.CUSTOM_CHART.CURRENCY' | translate }} *
-              </label>
+              </span>
               <div class="grid grid-cols-3 gap-3">
                 @for (curr of currencyOptions; track curr.value) {
                   <button
@@ -157,9 +167,9 @@ export interface CustomChartDialogData {
 
           <!-- Chart Type -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.CHART_TYPE' | translate }} *
-            </label>
+            </span>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
               @for (type of chartTypes; track type.value) {
                 <button
@@ -178,9 +188,9 @@ export interface CustomChartDialogData {
 
           <!-- Color -->
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'DASHBOARD.CUSTOM_CHART.COLOR' | translate }}
-            </label>
+            </span>
             <div class="flex flex-wrap gap-2">
               @for (color of colorOptions; track color) {
                 <button
@@ -199,9 +209,9 @@ export interface CustomChartDialogData {
           <!-- Preview -->
           @if (chartForm.valid && previewData().length > 0) {
             <div>
-              <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'DASHBOARD.CUSTOM_CHART.PREVIEW' | translate }}
-              </label>
+              </span>
               <div class="bg-[var(--color-surface)] rounded-lg p-4 border border-[var(--color-border-subtle)]">
                 <apx-chart
                   [series]="previewSeries()"
@@ -309,13 +319,13 @@ export class CustomChartDialog implements OnInit {
 
   // Preview signals - updated when form changes
   previewData = signal<{ name: string; count: number }[]>([]);
-  previewSeries = signal<any>([]);
+  previewSeries = signal<ApexAxisChartSeries | ApexNonAxisChartSeries>([]);
   previewLabels = signal<string[]>([]);
-  previewChartOptions = signal<any>({});
-  previewXAxis = signal<any>({});
-  previewYAxis = signal<any>({});
-  previewPlotOptions = signal<any>({});
-  previewTooltip = signal<any>({});
+  previewChartOptions = signal<ApexChart>({ type: 'bar' });
+  previewXAxis = signal<ApexXAxis>({});
+  previewYAxis = signal<ApexYAxis>({});
+  previewPlotOptions = signal<ApexPlotOptions>({});
+  previewTooltip = signal<ApexTooltip>({});
   previewColor = signal<string>('#4d7c6f');
   previewColors = signal<string[]>(['#4d7c6f']);
 

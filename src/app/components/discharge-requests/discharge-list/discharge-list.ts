@@ -227,7 +227,12 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
           <!-- Mobile Cards -->
           <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
             @for (request of paginatedRequests(); track request.id) {
-              <div class="p-4" (click)="viewDetail(request)">
+              <div
+                class="p-4"
+                role="button"
+                tabindex="0"
+                (click)="viewDetail(request)"
+                (keydown.enter)="viewDetail(request)">
                 <div class="flex justify-between items-start mb-3">
                   <div>
                     <p class="text-foreground font-medium">{{ request.requesterName }}</p>
@@ -249,7 +254,11 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
                 </div>
                 <ng-container *ngxPermissionsOnly="['discharges:manage']">
                   @if (request.status === Status.PENDING) {
-                    <div class="flex gap-2" (click)="$event.stopPropagation()">
+                    <div
+                      class="flex gap-2"
+                      role="presentation"
+                      (click)="$event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()">
                       <button
                         (click)="completeRequest(request)"
                         class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
@@ -294,14 +303,15 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
     <!-- Reject Dialog -->
     @if (showRejectDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeRejectDialog()">
-        <div role="dialog" aria-modal="true" aria-labelledby="reject-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closeRejectDialog()">
+        <div role="dialog" aria-modal="true" aria-labelledby="reject-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 id="reject-dialog-title" class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>
           </div>
           <div class="p-6">
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.REJECT_REASON' | translate }}</label>
+            <label for="reject-reason" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'DISCHARGES.REJECT_REASON' | translate }}</label>
             <textarea
+              id="reject-reason"
               [(ngModel)]="rejectReason"
               rows="3"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none"
@@ -326,11 +336,11 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
     <!-- Share Form Dialog -->
     @if (showShareDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeShareDialog()">
-        <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" class="rounded-xl w-full max-w-md border border-theme" [style.background-color]="'var(--color-surface-variant)'" (click)="$event.stopPropagation()">
+      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closeShareDialog()">
+        <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" class="rounded-xl w-full max-w-md border border-theme" [style.background-color]="'var(--color-surface-variant)'" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
             <h2 id="share-dialog-title" class="text-xl font-semibold" [style.color]="'var(--color-foreground)'">{{ 'DISCHARGES.SHARE_FORM.TITLE' | translate }}</h2>
-            <button (click)="closeShareDialog()" class="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
+            <button (click)="closeShareDialog()" [attr.aria-label]="'COMMON.CLOSE' | translate" class="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
               <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
             </button>
           </div>

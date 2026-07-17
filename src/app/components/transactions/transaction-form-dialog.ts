@@ -53,10 +53,11 @@ export interface TransactionFormDialogData {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 space-y-6 overflow-y-auto flex-1">
         <!-- Type -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="transaction-type" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.TYPE' | translate }} *
           </label>
           <select
+            id="transaction-type"
             formControlName="type"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
             <option value="IN">{{ 'TRANSACTION.TYPES.IN' | translate }}</option>
@@ -68,10 +69,11 @@ export interface TransactionFormDialogData {
         <!-- Source Warehouse (for OUT and TRANSFER) -->
         @if (form.get('type')?.value === 'OUT' || form.get('type')?.value === 'TRANSFER') {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="transaction-source-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'TRANSACTION.SOURCE_WAREHOUSE' | translate }} *
             </label>
             <select
+              id="transaction-source-warehouse"
               formControlName="sourceWarehouseId"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
               [class.!border-rose-500]="form.get('sourceWarehouseId')?.invalid && form.get('sourceWarehouseId')?.touched">
@@ -89,10 +91,11 @@ export interface TransactionFormDialogData {
         <!-- Destination Warehouse (for IN and TRANSFER) -->
         @if (form.get('type')?.value === 'IN' || form.get('type')?.value === 'TRANSFER') {
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+            <label for="transaction-dest-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
               {{ 'TRANSACTION.DEST_WAREHOUSE' | translate }} *
             </label>
             <select
+              id="transaction-dest-warehouse"
               formControlName="destinationWarehouseId"
               class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
               [class.!border-rose-500]="form.get('destinationWarehouseId')?.invalid && form.get('destinationWarehouseId')?.touched">
@@ -109,10 +112,11 @@ export interface TransactionFormDialogData {
 
         <!-- User -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="transaction-user" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.USER' | translate }} *
           </label>
           <select
+            id="transaction-user"
             formControlName="userId"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
             [class.!border-rose-500]="form.get('userId')?.invalid && form.get('userId')?.touched">
@@ -128,11 +132,12 @@ export interface TransactionFormDialogData {
 
         <!-- Date -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="transaction-date" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.DATE' | translate }} *
           </label>
           <input
             type="datetime-local"
+            id="transaction-date"
             formControlName="date"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [class.!border-rose-500]="form.get('date')?.invalid && form.get('date')?.touched"
@@ -144,10 +149,11 @@ export interface TransactionFormDialogData {
 
         <!-- Notes -->
         <div>
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+          <label for="transaction-notes" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
             {{ 'TRANSACTION.NOTES' | translate }}
           </label>
           <textarea
+            id="transaction-notes"
             formControlName="notes"
             rows="2"
             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
@@ -158,9 +164,9 @@ export interface TransactionFormDialogData {
         <!-- Items -->
         <div>
           <div class="flex items-center justify-between mb-3">
-            <label class="text-sm font-medium text-[var(--color-on-surface-variant)]">
+            <div class="text-sm font-medium text-[var(--color-on-surface-variant)]">
               {{ 'TRANSACTION.ITEMS' | translate }} *
-            </label>
+            </div>
             <button
               type="button"
               (click)="addItem()"

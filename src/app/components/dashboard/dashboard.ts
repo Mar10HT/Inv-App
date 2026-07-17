@@ -9,7 +9,18 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { forkJoin, catchError, of } from 'rxjs';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { ApexNonAxisChartSeries, ApexAxisChartSeries } from 'ng-apexcharts';
+import { ApexNonAxisChartSeries, ApexAxisChartSeries, ApexOptions } from 'ng-apexcharts';
+
+// getCustomChartOptions() always populates these sub-options (unlike ApexOptions'
+// own all-optional fields) — narrowing them to required matches what's actually
+// returned and satisfies <apx-chart>'s required @Input()s in the template.
+type CustomChartOptions = ApexOptions &
+  Required<
+    Pick<
+      ApexOptions,
+      'chart' | 'xaxis' | 'yaxis' | 'colors' | 'grid' | 'plotOptions' | 'dataLabels' | 'legend' | 'tooltip'
+    >
+  >;
 
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { DashboardService, DashboardStats, CategoryStats, WarehouseStats } from '../../services/dashboard.service';
@@ -17,7 +28,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../services/logger.service';
 import { ThemeService } from '../../services/theme.service';
-import { InventoryItemInterface, InventoryStatus, Currency, StatsResponse } from '../../interfaces/inventory-item.interface';
+import { InventoryItemInterface, InventoryStatus, StatsResponse } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory/inventory-item/inventory-item';
@@ -103,7 +114,7 @@ export class Dashboard implements OnInit {
   // Memoized custom chart configs - avoids recalculation on every change detection
   customChartConfigs = computed(() => {
     const charts = this.customCharts();
-    const configs = new Map<string, { data: { labels: string[]; series: any }; options: any }>();
+    const configs = new Map<string, { data: { labels: string[]; series: ApexAxisChartSeries | ApexNonAxisChartSeries }; options: CustomChartOptions }>();
     // Access reactive dependencies to track changes
     this.categoryStats();
     this.warehouseStats();
@@ -118,6 +129,16 @@ export class Dashboard implements OnInit {
     }
     return configs;
   });
+
+  // ApexNonAxisChartSeries (pie/donut/radialBar) is number[]; ApexAxisChartSeries
+  // is {name, data}[] — narrow on the actual runtime shape rather than fighting
+  // the union type in the template.
+  hasChartData(chart: CustomChart): boolean {
+    const series = this.customChartConfigs().get(chart.id)?.data?.series;
+    if (!series || series.length === 0) return false;
+    const first = series[0];
+    return typeof first === 'number' ? true : (first?.data?.length ?? 0) > 0;
+  }
 
   // Value calculations from inventory items
   allItems = signal<InventoryItemInterface[]>([]);
@@ -388,7 +409,7 @@ export class Dashboard implements OnInit {
       .slice(0, 10);
   }
 
-  getCustomChartData(chart: CustomChart): { labels: string[]; series: any } {
+  getCustomChartData(chart: CustomChart): { labels: string[]; series: ApexAxisChartSeries | ApexNonAxisChartSeries } {
     let data: { name: string; count: number }[] = [];
     const currency = chart.currency || 'USD';
 
@@ -459,7 +480,7 @@ export class Dashboard implements OnInit {
     }).format(value);
   }
 
-  getCustomChartOptions(chart: CustomChart): any {
+  getCustomChartOptions(chart: CustomChart): CustomChartOptions {
     const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
     const isValueChart = this.isValueSource(chart.dataSource);
     const currency = chart.currency || 'USD';
@@ -560,7 +581,7 @@ export class Dashboard implements OnInit {
                 label: this.translate.instant('DASHBOARD.TOTAL_ITEMS'),
                 fontSize: '12px',
                 color: foreColor,
-                formatter: (w: any) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0)
+                formatter: (w) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0)
               }
             }
           }
@@ -686,12 +707,12 @@ export class Dashboard implements OnInit {
         };
 
         this.stats.set(dashboardStats);
-        this.categoryStats.set((data?.categories || []).map((cat: any) => ({
+        this.categoryStats.set((data?.categories || []).map((cat) => ({
           category: cat.name,
           count: cat.count,
           totalQuantity: cat.count
         })));
-        this.warehouseStats.set((data?.locations || []).map((loc: any, index: number) => ({
+        this.warehouseStats.set((data?.locations || []).map((loc, index: number) => ({
           id: `warehouse-${index}`,
           name: loc.name,
           itemCount: loc.count,
@@ -784,7 +805,7 @@ export class Dashboard implements OnInit {
     }
   }
 
-  formatCurrency(value: number, currency: string = 'USD'): string {
+  formatCurrency(value: number, currency = 'USD'): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,

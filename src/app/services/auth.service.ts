@@ -58,7 +58,7 @@ export class AuthService implements OnDestroy {
     );
   }
 
-  logout(): Observable<any> {
+  logout(): Observable<void> {
     return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
       catchError(() => of(null)),
       tap(() => {
@@ -71,7 +71,8 @@ export class AuthService implements OnDestroy {
         this.permissionsVersion.set(0);
         this.permissionsService.clearPermissions();
         this.router.navigate(['/login']);
-      })
+      }),
+      map(() => void 0)
     );
   }
 
@@ -115,7 +116,7 @@ export class AuthService implements OnDestroy {
    */
   private loadMeAndPermissions(): Observable<void> {
     return this.http.get<MeResponse>(`${this.apiUrl}/me`, { withCredentials: true }).pipe(
-      catchError((err) => {
+      catchError(() => {
         // Any failure on /auth/me means the session cannot be verified.
         // Clear auth state and redirect to login so the guard doesn't loop.
         this.stopPermissionsPolling();

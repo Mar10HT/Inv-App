@@ -1,4 +1,4 @@
-import { Component, signal, inject, output, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, output, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -20,8 +20,9 @@ import { TransferRequest } from '../../interfaces/transfer-request.interface';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div role="dialog" aria-modal="true" aria-labelledby="transfer-qr-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-qr-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-md">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="transfer-qr-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.TITLE' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.QR.INSTRUCTIONS' | translate }}</p>
@@ -135,16 +136,18 @@ export interface TransferScanQrResult {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div role="dialog" aria-modal="true" aria-labelledby="transfer-scan-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-scan-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-md">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="transfer-scan-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.QR.SCAN_TITLE' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.QR.SCAN_INSTRUCTIONS' | translate }}</p>
         </div>
         <div class="p-6">
           <div class="mb-4">
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">QR Code Data</label>
+            <label for="transfer-scan-qr-data" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">QR Code Data</label>
             <textarea
+              id="transfer-scan-qr-data"
               [(ngModel)]="scannedQrData"
               rows="4"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none font-mono text-sm"
@@ -223,14 +226,16 @@ export interface TransferRejectResult {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="close()">
-      <div role="dialog" aria-modal="true" aria-labelledby="transfer-reject-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div role="dialog" aria-modal="true" aria-labelledby="transfer-reject-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-md">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="transfer-reject-dialog-title" class="text-xl font-semibold text-foreground">{{ 'TRANSFERS.REJECT_TITLE' | translate }}</h2>
         </div>
         <div class="p-6">
-          <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.REJECT_REASON' | translate }}</label>
+          <label for="transfer-reject-reason" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.REJECT_REASON' | translate }}</label>
           <textarea
+            id="transfer-reject-reason"
             [(ngModel)]="rejectReason"
             rows="3"
             class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none"

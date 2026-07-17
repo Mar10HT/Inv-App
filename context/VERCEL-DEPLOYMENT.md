@@ -312,7 +312,7 @@ Already configured in `vercel.json`:
 
 ✅ **HTTPS Only:** Vercel forces HTTPS
 ✅ **CORS Configured:** Limited to your domains
-✅ **JWT Tokens:** Stored in memory (not localStorage)
+✅ **JWT Tokens:** Stored in an HttpOnly cookie with a double-submit CSRF token (not localStorage/memory)
 ✅ **API Proxy:** All API calls go through backend
 ✅ **No Secrets in Frontend:** All sensitive data on backend
 

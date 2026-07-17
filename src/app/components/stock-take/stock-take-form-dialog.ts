@@ -1,4 +1,4 @@
-import { Component, input, output, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -21,16 +21,17 @@ export interface Warehouse {
     TranslateModule,
   ],
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closed.emit()">
-      <div class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closed.emit()">
+      <div role="dialog" aria-modal="true" aria-labelledby="stock-take-form-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-lg" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
-          <h2 class="text-xl font-semibold text-foreground">{{ 'STOCK_TAKE.NEW' | translate }}</h2>
+          <h2 id="stock-take-form-dialog-title" class="text-xl font-semibold text-foreground">{{ 'STOCK_TAKE.NEW' | translate }}</h2>
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'STOCK_TAKE.NEW_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.WAREHOUSE' | translate }} *</label>
+            <label for="stock-take-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.WAREHOUSE' | translate }} *</label>
             <select
+              id="stock-take-warehouse"
               [(ngModel)]="warehouseId"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
             >
@@ -41,8 +42,9 @@ export interface Warehouse {
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.DESCRIPTION' | translate }}</label>
+            <label for="stock-take-notes" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'STOCK_TAKE.DESCRIPTION' | translate }}</label>
             <textarea
+              id="stock-take-notes"
               [(ngModel)]="notes"
               rows="2"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] resize-none"

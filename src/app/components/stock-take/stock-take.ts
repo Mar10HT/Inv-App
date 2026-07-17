@@ -224,7 +224,14 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
             <!-- Mobile Cards -->
             <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
               @for (st of paginatedItems(); track st.id) {
-                <div class="p-4 cursor-pointer" (click)="openDetail(st)">
+                <div
+                  class="p-4 cursor-pointer"
+                  role="button"
+                  tabindex="0"
+                  (click)="openDetail(st)"
+                  (keydown.enter)="openDetail(st)"
+                  (keydown.space)="openDetail(st)"
+                >
                   <div class="flex justify-between items-start mb-3">
                     <div>
                       <p class="text-foreground font-medium">{{ st.warehouseName }}</p>

@@ -61,13 +61,14 @@ import { AuthService } from '../../services/auth.service';
             <!-- Form -->
             <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
               <div class="flex flex-col gap-1.5">
-                <label class="text-[13px] font-medium text-foreground">
+                <label for="forgot-password-email" class="text-[13px] font-medium text-foreground">
                   {{ 'LOGIN.EMAIL' | translate }}
                 </label>
                 <div class="flex items-center gap-2.5 bg-surface-variant border border-theme rounded-lg px-3.5 py-3
                             focus-within:border-[var(--color-primary)] transition-colors">
                   <lucide-icon name="Mail" class="!w-[18px] !h-[18px] !text-[var(--color-on-surface-variant)] shrink-0"></lucide-icon>
                   <input
+                    id="forgot-password-email"
                     type="email"
                     formControlName="email"
                     class="flex-1 bg-transparent text-foreground text-sm placeholder-[var(--color-on-surface-variant)] outline-none"

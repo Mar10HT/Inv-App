@@ -10,7 +10,6 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { HttpClient } from '@angular/common/http';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
-import { UserService } from '../../services/user.service';
 import { PdfExportService } from '../../services/pdf-export.service';
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
@@ -18,35 +17,7 @@ import { triggerBlobDownload } from '../../utils/download.utils';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { environment } from '../../../environments/environment';
-
-type ReportCurrency = 'USD' | 'HNL' | 'ALL';
-
-interface ValueSummary {
-  label: string;
-  value: number;
-  count: number;
-}
-
-interface StatusSummary {
-  status: InventoryStatus;
-  count: number;
-  items: InventoryItemInterface[];
-}
-
-interface AssignmentSummary {
-  userId: string;
-  userName: string;
-  userEmail: string;
-  itemCount: number;
-  items: InventoryItemInterface[];
-}
-
-interface TrendPoint {
-  date: string;
-  in: number;
-  out: number;
-  transfer: number;
-}
+import { AssignmentSummary, ReportCurrency, StatusSummary, TrendPoint, ValueSummary } from './reports.types';
 
 @Component({
   selector: 'app-reports',
@@ -927,7 +898,6 @@ interface TrendPoint {
 export class Reports implements OnInit {
   private inventoryService = inject(InventoryService);
   private transactionService = inject(TransactionService);
-  private userService = inject(UserService);
   private translate = inject(TranslateService);
   private pdfExportService = inject(PdfExportService);
   private notifications = inject(NotificationService);
@@ -975,8 +945,6 @@ export class Reports implements OnInit {
 
   // Enums for template
   InventoryStatus = InventoryStatus;
-  TransactionType = TransactionType;
-  ItemType = ItemType;
 
   currencyOptions: { value: ReportCurrency; label: string }[] = [
     { value: 'USD', label: 'USD' },
@@ -1337,16 +1305,6 @@ export class Reports implements OnInit {
     return `${d.getDate()}/${d.getMonth() + 1}`;
   }
 
-  getStatusColor(status: InventoryStatus): string {
-    switch (status) {
-      case InventoryStatus.IN_STOCK: return 'emerald';
-      case InventoryStatus.LOW_STOCK: return 'orange';
-      case InventoryStatus.OUT_OF_STOCK: return 'rose';
-      case InventoryStatus.IN_USE: return 'blue';
-      default: return 'slate';
-    }
-  }
-
   getStatusIcon(status: InventoryStatus): string {
     switch (status) {
       case InventoryStatus.IN_STOCK: return 'CheckCircle2';
@@ -1363,15 +1321,6 @@ export class Reports implements OnInit {
       case TransactionType.OUT: return 'ArrowUp';
       case TransactionType.TRANSFER: return 'ArrowLeftRight';
       default: return 'Receipt';
-    }
-  }
-
-  getTransactionColor(type: TransactionType): string {
-    switch (type) {
-      case TransactionType.IN: return 'emerald';
-      case TransactionType.OUT: return 'rose';
-      case TransactionType.TRANSFER: return 'blue';
-      default: return 'slate';
     }
   }
 

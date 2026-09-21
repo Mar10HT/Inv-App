@@ -12,6 +12,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import { UserService } from '../../services/user.service';
 import { PdfExportService } from '../../services/pdf-export.service';
+import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
 import { triggerBlobDownload } from '../../utils/download.utils';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
@@ -929,6 +930,7 @@ export class Reports implements OnInit {
   private userService = inject(UserService);
   private translate = inject(TranslateService);
   private pdfExportService = inject(PdfExportService);
+  private notifications = inject(NotificationService);
   private themeService = inject(ThemeService);
   private http = inject(HttpClient);
 
@@ -1393,12 +1395,12 @@ export class Reports implements OnInit {
       [t('COMMON.STATUS')]:            t(`STATUS.${item.status}`),
     }));
 
-    await downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Inventory',
       filename:    `inventario-valor-${currency}-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor: '4D7C6F',
       colWidths:   [30, 12, 18, 22, 22, 8, 10, 12, 12, 8, 14],
-    });
+    }));
   }
 
   async exportTransactions(): Promise<void> {
@@ -1422,12 +1424,12 @@ export class Reports implements OnInit {
       }
     }
 
-    await downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Transactions',
       filename:    `transacciones-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor: '60A5FA',
       colWidths:   [18, 12, 22, 22, 20, 30, 12, 8, 30, 30],
-    });
+    }));
   }
 
   async exportStatusReport(): Promise<void> {
@@ -1445,12 +1447,12 @@ export class Reports implements OnInit {
       [t('REPORTS.CSV.NEEDS_RESTOCK')]:  item.quantity <= item.minQuantity ? t('COMMON.YES') : t('COMMON.NO'),
     }));
 
-    await downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:        'Stock Status',
       filename:         `estado-stock-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:      'B45309',
       colWidths:        [30, 12, 18, 22, 12, 10, 14, 14],
-    });
+    }));
   }
 
   async exportAssignments(): Promise<void> {
@@ -1471,17 +1473,17 @@ export class Reports implements OnInit {
         [t('REPORTS.CSV.ASSIGNMENT_STATUS')]:   item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED'),
       }));
 
-    await downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Assignments',
       filename:    `asignaciones-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor: 'A78BFA',
       colWidths:   [30, 14, 14, 18, 22, 22, 28, 16, 14],
-    });
+    }));
   }
 
   async exportTransactionsPDF(): Promise<void> {
     const transactions = this.filteredTransactions();
-    await this.pdfExportService.exportTransactionsToPDF({
+    await this.notifications.guardExport(() => this.pdfExportService.exportTransactionsToPDF({
       transactions,
       title: this.translate.instant('REPORTS.PDF.TITLE'),
       dateRange: {
@@ -1489,12 +1491,12 @@ export class Reports implements OnInit {
         to: this.dateTo() || undefined
       },
       typeFilter: this.transactionTypeFilter()
-    });
+    }));
   }
 
   async exportValueReportPDF(): Promise<void> {
     const currency = this.selectedCurrency();
-    await this.pdfExportService.exportValueReportToPDF({
+    await this.notifications.guardExport(() => this.pdfExportService.exportValueReportToPDF({
       currency: currency === 'ALL' ? 'USD' : currency,
       totalValue: this.totalValue(),
       totalItems: this.totalItemsCount(),
@@ -1502,29 +1504,29 @@ export class Reports implements OnInit {
       valueByWarehouse: this.valueByWarehouse(),
       valueBySupplier: this.valueBySupplier(),
       topItems: this.topItems()
-    });
+    }));
   }
 
   async exportStatusReportPDF(): Promise<void> {
-    await this.pdfExportService.exportStatusReportToPDF({
+    await this.notifications.guardExport(() => this.pdfExportService.exportStatusReportToPDF({
       inStockCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_STOCK)?.count || 0,
       lowStockCount: this.statusSummary().find(s => s.status === InventoryStatus.LOW_STOCK)?.count || 0,
       outOfStockCount: this.statusSummary().find(s => s.status === InventoryStatus.OUT_OF_STOCK)?.count || 0,
       inUseCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_USE)?.count || 0,
       lowStockItems: this.lowStockItems(),
       outOfStockItems: this.outOfStockItems()
-    });
+    }));
   }
 
   async exportAssignmentsReportPDF(): Promise<void> {
     const totalUniqueItems = this.assignedItems().length + this.unassignedUniqueItems().length;
-    await this.pdfExportService.exportAssignmentsReportToPDF({
+    await this.notifications.guardExport(() => this.pdfExportService.exportAssignmentsReportToPDF({
       totalUniqueItems,
       assignedCount: this.assignedItems().length,
       unassignedCount: this.unassignedUniqueItems().length,
       assignmentsByUser: this.assignmentsByUser(),
       unassignedItems: this.unassignedUniqueItems()
-    });
+    }));
   }
 
   // ============ SERVER-SIDE EXCEL DOWNLOADS ============

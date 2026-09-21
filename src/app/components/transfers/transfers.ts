@@ -838,7 +838,7 @@ export class TransfersComponent implements OnInit {
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
-  exportToXLSX(): void {
-    this.transferService.exportToXLSX(this.filteredRequests());
+  async exportToXLSX(): Promise<void> {
+    await this.notifications.guardExport(() => this.transferService.exportToXLSX(this.filteredRequests()));
   }
 }

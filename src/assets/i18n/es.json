@@ -557,6 +557,7 @@
       "FORBIDDEN": "No tienes permiso para realizar esta acción.",
       "NOT_FOUND": "{{entity}} no encontrado.",
       "NOT_FOUND_RESOURCE": "El recurso solicitado no fue encontrado.",
+      "EXPORT_FAILED": "No se pudo exportar el archivo. Inténtalo de nuevo.",
       "VALIDATION_FAILED": "Error de validación.",
       "TOO_MANY_REQUESTS": "Demasiadas solicitudes. Por favor espera un momento.",
       "CONFLICT": "Este registro ya existe o hay un conflicto con datos existentes.",

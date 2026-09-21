@@ -801,13 +801,13 @@ export class InventoryList implements OnInit, AfterViewInit {
       [this.translate.instant('DASHBOARD.TABLE.LAST_UPDATED')]: this.formatDate(item.updatedAt),
     }));
 
-    await downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:      'Inventory',
       filename:       `inventory-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:    '4D7C6F',
       colWidths:      [30, 40, 10, 20, 22, 14, 18],
       statusColIndex: 5, // Status column
-    });
+    }));
   }
 
   trackByFn(index: number, item: InventoryItemInterface): string {

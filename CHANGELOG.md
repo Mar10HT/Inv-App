@@ -23,6 +23,7 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ### Changed
 - `jsPDF`, `jspdf-autotable` and `xlsx-js-style` are now loaded with a dynamic `import()` the first time the user exports, instead of being bundled into the route chunks that use them. xlsx (~1.2 MB raw) and jsPDF (~400 KB raw) become on-demand chunks; the initial bundle is unchanged. `downloadStyledXLSX`, the PDF export methods and the report and list export methods that call them are now async.
+- Export failures (for example a chunk that cannot be loaded offline) are now caught by `NotificationService.guardExport`, logged through `LoggerService` (Sentry in production) and shown as a translated error notification (`NOTIFICATIONS.ERRORS.EXPORT_FAILED`, EN/ES) instead of becoming an unhandled promise rejection with no feedback. Applied to the reports, inventory, loans, transfers and audit exports.
 - The skeleton components use signal `input()` instead of `@Input()`.
 - Fifteen older components that loaded an external `templateUrl` now use inline templates, matching the project convention.
 

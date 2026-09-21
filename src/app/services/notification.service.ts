@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { CustomSnackbar, CustomSnackbarData } from '../components/shared/custom-snackbar/custom-snackbar';
+import { LoggerService } from './logger.service';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -18,6 +19,21 @@ export interface NotificationOptions {
 export class NotificationService {
   private snackBar = inject(MatSnackBar);
   private translate = inject(TranslateService);
+  private logger = inject(LoggerService);
+
+  /**
+   * Run a user-triggered export. The export helpers are async (they load their libraries on
+   * demand), so a failure would otherwise be an unhandled rejection with no feedback: log it
+   * and show a translated error instead.
+   */
+  async guardExport(task: () => Promise<unknown>): Promise<void> {
+    try {
+      await task();
+    } catch (err) {
+      this.logger.error('Export failed', err);
+      this.error('NOTIFICATIONS.ERRORS.EXPORT_FAILED');
+    }
+  }
 
   private readonly defaultDuration = {
     success: 3000,

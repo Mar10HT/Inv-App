@@ -169,7 +169,6 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
   </div>
 </div>
   `,
-  styleUrl: './profile.css'
 })
 export class Profile implements OnInit {
   private fb = inject(FormBuilder);

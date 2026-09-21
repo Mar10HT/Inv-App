@@ -299,7 +299,6 @@ export interface InventoryItemDialogData {
   }
 </div>
   `,
-  styleUrl: './inventory-item.css'
 })
 export class InventoryItem implements OnInit {
   private dialogRef = inject(MatDialogRef<InventoryItem>);

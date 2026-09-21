@@ -369,7 +369,6 @@ import { ScheduledReportsService, ScheduledReport } from '../../services/schedul
   </div>
 </div>
   `,
-  styleUrl: './settings.css'
 })
 export class Settings implements OnInit {
   private http = inject(HttpClient);

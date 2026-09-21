@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SkeletonComponent } from './skeleton';
 
@@ -38,15 +38,15 @@ import { SkeletonComponent } from './skeleton';
   `
 })
 export class SkeletonTableComponent {
-  @Input() rows = 5;
-  @Input() columns = 5;
+  rows = input(5);
+  columns = input(5);
 
   get rowsArray(): number[] {
-    return Array(this.rows).fill(0);
+    return Array(this.rows()).fill(0);
   }
 
   get columnsArray(): number[] {
-    return Array(this.columns).fill(0);
+    return Array(this.columns()).fill(0);
   }
 
   getColumnWidth(index: number): string {

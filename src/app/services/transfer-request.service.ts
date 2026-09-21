@@ -392,7 +392,7 @@ export class TransferRequestService implements OnDestroy {
   /**
    * Export to XLSX
    */
-  exportToXLSX(requests?: TransferRequest[]): void {
+  async exportToXLSX(requests?: TransferRequest[]): Promise<void> {
     const data = requests || this.requestsSignal();
 
     const rows = data.map(req => ({
@@ -407,7 +407,7 @@ export class TransferRequestService implements OnDestroy {
       Notes:          req.notes || '',
     }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:      'Transfer Requests',
       filename:       `transfer-requests-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:    '3B82F6',

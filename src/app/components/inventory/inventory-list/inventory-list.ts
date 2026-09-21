@@ -357,7 +357,7 @@ export class InventoryList implements OnInit, AfterViewInit {
   }
 
   // Export functionality
-  exportData(): void {
+  async exportData(): Promise<void> {
     const rows = this.dataSource.data.map(item => ({
       [this.translate.instant('DASHBOARD.TABLE.ITEM')]:         item.name,
       [this.translate.instant('ITEM_DETAIL.DESCRIPTION')]:      item.description ?? '',
@@ -368,7 +368,7 @@ export class InventoryList implements OnInit, AfterViewInit {
       [this.translate.instant('DASHBOARD.TABLE.LAST_UPDATED')]: this.formatDate(item.updatedAt),
     }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:      'Inventory',
       filename:       `inventory-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:    '4D7C6F',

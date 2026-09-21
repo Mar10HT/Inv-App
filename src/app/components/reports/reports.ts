@@ -511,7 +511,7 @@ export class Reports implements OnInit {
     }
   }
 
-  exportReport(): void {
+  async exportReport(): Promise<void> {
     const currency = this.selectedCurrency();
     const warehouses = this.inventoryService.warehouses();
     const suppliers = this.inventoryService.suppliers();
@@ -531,7 +531,7 @@ export class Reports implements OnInit {
       [t('COMMON.STATUS')]:            t(`STATUS.${item.status}`),
     }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:   'Inventory',
       filename:    `inventario-valor-${currency}-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor: '4D7C6F',
@@ -539,7 +539,7 @@ export class Reports implements OnInit {
     });
   }
 
-  exportTransactions(): void {
+  async exportTransactions(): Promise<void> {
     const t = (key: string) => this.translate.instant(key);
     const rows: XlsxRow[] = [];
 
@@ -560,7 +560,7 @@ export class Reports implements OnInit {
       }
     }
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:   'Transactions',
       filename:    `transacciones-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor: '60A5FA',
@@ -568,7 +568,7 @@ export class Reports implements OnInit {
     });
   }
 
-  exportStatusReport(): void {
+  async exportStatusReport(): Promise<void> {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
 
@@ -583,7 +583,7 @@ export class Reports implements OnInit {
       [t('REPORTS.CSV.NEEDS_RESTOCK')]:  item.quantity <= item.minQuantity ? t('COMMON.YES') : t('COMMON.NO'),
     }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:        'Stock Status',
       filename:         `estado-stock-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:      'B45309',
@@ -591,7 +591,7 @@ export class Reports implements OnInit {
     });
   }
 
-  exportAssignments(): void {
+  async exportAssignments(): Promise<void> {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
 
@@ -609,7 +609,7 @@ export class Reports implements OnInit {
         [t('REPORTS.CSV.ASSIGNMENT_STATUS')]:   item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED'),
       }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:   'Assignments',
       filename:    `asignaciones-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor: 'A78BFA',
@@ -617,9 +617,9 @@ export class Reports implements OnInit {
     });
   }
 
-  exportTransactionsPDF(): void {
+  async exportTransactionsPDF(): Promise<void> {
     const transactions = this.filteredTransactions();
-    this.pdfExportService.exportTransactionsToPDF({
+    await this.pdfExportService.exportTransactionsToPDF({
       transactions,
       title: this.translate.instant('REPORTS.PDF.TITLE'),
       dateRange: {
@@ -630,9 +630,9 @@ export class Reports implements OnInit {
     });
   }
 
-  exportValueReportPDF(): void {
+  async exportValueReportPDF(): Promise<void> {
     const currency = this.selectedCurrency();
-    this.pdfExportService.exportValueReportToPDF({
+    await this.pdfExportService.exportValueReportToPDF({
       currency: currency === 'ALL' ? 'USD' : currency,
       totalValue: this.totalValue(),
       totalItems: this.totalItemsCount(),
@@ -643,8 +643,8 @@ export class Reports implements OnInit {
     });
   }
 
-  exportStatusReportPDF(): void {
-    this.pdfExportService.exportStatusReportToPDF({
+  async exportStatusReportPDF(): Promise<void> {
+    await this.pdfExportService.exportStatusReportToPDF({
       inStockCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_STOCK)?.count || 0,
       lowStockCount: this.statusSummary().find(s => s.status === InventoryStatus.LOW_STOCK)?.count || 0,
       outOfStockCount: this.statusSummary().find(s => s.status === InventoryStatus.OUT_OF_STOCK)?.count || 0,
@@ -654,9 +654,9 @@ export class Reports implements OnInit {
     });
   }
 
-  exportAssignmentsReportPDF(): void {
+  async exportAssignmentsReportPDF(): Promise<void> {
     const totalUniqueItems = this.assignedItems().length + this.unassignedUniqueItems().length;
-    this.pdfExportService.exportAssignmentsReportToPDF({
+    await this.pdfExportService.exportAssignmentsReportToPDF({
       totalUniqueItems,
       assignedCount: this.assignedItems().length,
       unassignedCount: this.unassignedUniqueItems().length,

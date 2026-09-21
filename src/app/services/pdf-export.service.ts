@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import type jsPDF from 'jspdf';
 import { Transaction, TransactionType } from '../interfaces/transaction.interface';
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
 
@@ -68,7 +67,21 @@ export class PdfExportService {
     return this.translate.instant(key);
   }
 
-  exportTransactionsToPDF(options: TransactionPDFOptions): void {
+  /** jsPDF and jspdf-autotable are heavy and only needed when a PDF is exported, so they
+   *  are loaded on demand instead of being part of the initial bundle. */
+  private async loadPdfLibs(): Promise<{
+    jsPDF: typeof import('jspdf').default;
+    autoTable: typeof import('jspdf-autotable').default;
+  }> {
+    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+    return { jsPDF, autoTable };
+  }
+
+  async exportTransactionsToPDF(options: TransactionPDFOptions): Promise<void> {
+    const { jsPDF } = await this.loadPdfLibs();
     const { transactions, title, dateRange, typeFilter } = options;
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -180,7 +193,8 @@ export class PdfExportService {
   }
 
   // ============ VALUE REPORT PDF ============
-  exportValueReportToPDF(options: ValueReportPDFOptions): void {
+  async exportValueReportToPDF(options: ValueReportPDFOptions): Promise<void> {
+    const { jsPDF, autoTable } = await this.loadPdfLibs();
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPos = 20;
@@ -327,7 +341,8 @@ export class PdfExportService {
   }
 
   // ============ STATUS REPORT PDF ============
-  exportStatusReportToPDF(options: StatusReportPDFOptions): void {
+  async exportStatusReportToPDF(options: StatusReportPDFOptions): Promise<void> {
+    const { jsPDF, autoTable } = await this.loadPdfLibs();
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPos = 20;
@@ -434,7 +449,8 @@ export class PdfExportService {
   }
 
   // ============ ASSIGNMENTS REPORT PDF ============
-  exportAssignmentsReportToPDF(options: AssignmentsReportPDFOptions): void {
+  async exportAssignmentsReportToPDF(options: AssignmentsReportPDFOptions): Promise<void> {
+    const { jsPDF, autoTable } = await this.loadPdfLibs();
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPos = 20;
@@ -869,71 +885,5 @@ export class PdfExportService {
 
   private getTransactionTypeName(type: TransactionType): string {
     return this.t(`TRANSACTIONS.TYPE.${type}`);
-  }
-
-  // Generic method for simple table PDFs
-  exportTableToPDF(options: {
-    title: string;
-    headers: string[];
-    data: string[][];
-    filename: string;
-    subtitle?: string;
-  }): void {
-    const { title, headers, data, filename, subtitle } = options;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    // Header
-    doc.setFillColor(...this.HEADER_BG);
-    doc.rect(0, 0, pageWidth, 35, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, 15, 22);
-
-    if (subtitle) {
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text(subtitle, 15, 30);
-    }
-
-    // Table
-    autoTable(doc, {
-      startY: 45,
-      head: [headers],
-      body: data,
-      theme: 'grid',
-      headStyles: {
-        fillColor: this.PRIMARY_COLOR,
-        textColor: [255, 255, 255],
-        fontStyle: 'bold',
-        fontSize: 10
-      },
-      bodyStyles: {
-        textColor: this.TEXT_DARK,
-        fontSize: 9
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252]
-      },
-      margin: { left: 15, right: 15 }
-    });
-
-    // Footer
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(...this.TEXT_LIGHT);
-      doc.text(
-        `${this.t('REPORTS.PDF.PAGE')} ${i} ${this.t('REPORTS.PDF.OF')} ${pageCount} | INV-APP`,
-        pageWidth / 2,
-        doc.internal.pageSize.getHeight() - 10,
-        { align: 'center' }
-      );
-    }
-
-    doc.save(filename);
   }
 }

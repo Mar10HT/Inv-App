@@ -22,6 +22,14 @@ export interface AssignmentSummary {
   items: InventoryItemInterface[];
 }
 
+export interface TransactionStats {
+  total: number;
+  inCount: number;
+  outCount: number;
+  transferCount: number;
+  totalItems: number;
+}
+
 export interface TrendPoint {
   date: string;
   in: number;

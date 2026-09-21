@@ -8,6 +8,8 @@ export interface ValueSummary {
   count: number;
 }
 
+export type TopItem = InventoryItemInterface & { totalValue: number };
+
 export interface StatusSummary {
   status: InventoryStatus;
   count: number;

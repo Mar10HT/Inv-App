@@ -2,6 +2,8 @@ import { Loan, LoanFilter, LoanItem, LoanStatus, RawLoan } from '../interfaces/l
 import {
   filterLoans,
   getActiveLoanForItem,
+  getLoanDueDateClass,
+  getLoanStatusClass,
   isItemOnLoan,
   summarizeLoanItems,
   totalLoanQuantity,
@@ -226,6 +228,53 @@ describe('loan.utils', () => {
       const filter: LoanFilter = { status: LoanStatus.SENT, dateFrom: new Date('2026-02-01') };
 
       expect(filterLoans(all(), filter).map((l) => l.id)).toEqual(['newest']);
+    });
+  });
+
+  describe('getLoanStatusClass', () => {
+    it('gives every known status its own badge style', () => {
+      const classes = Object.values(LoanStatus).map((status) => getLoanStatusClass(status));
+
+      expect(classes.every((c) => c.length > 0)).toBeTrue();
+      expect(getLoanStatusClass(LoanStatus.OVERDUE)).toContain('--color-status-error');
+      expect(getLoanStatusClass(LoanStatus.RETURNED)).toContain('--color-status-success');
+      expect(getLoanStatusClass(LoanStatus.SENT)).toContain('--color-status-info');
+    });
+
+    it('treats the legacy ACTIVE status like a success state', () => {
+      expect(getLoanStatusClass(LoanStatus.ACTIVE)).toBe(getLoanStatusClass(LoanStatus.RETURNED));
+    });
+
+    it('falls back to a neutral style for an unknown status', () => {
+      expect(getLoanStatusClass('SOMETHING' as LoanStatus)).toContain('--color-surface-elevated');
+    });
+  });
+
+  describe('getLoanDueDateClass', () => {
+    const now = new Date('2026-06-01T12:00:00Z');
+    const inDays = (days: number): Date => new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+    it('is muted once the loan is closed, however late it is', () => {
+      const late = inDays(-10);
+
+      expect(getLoanDueDateClass(loan({ status: LoanStatus.RETURNED, dueDate: late }), now)).toContain('on-surface-variant');
+      expect(getLoanDueDateClass(loan({ status: LoanStatus.CANCELLED, dueDate: late }), now)).toContain('on-surface-variant');
+    });
+
+    it('is red and bold for an overdue loan', () => {
+      expect(getLoanDueDateClass(loan({ status: LoanStatus.OVERDUE, dueDate: inDays(-2) }), now)).toBe(
+        'text-[var(--color-status-error)] font-medium'
+      );
+    });
+
+    it('warns in amber within three days, yellow within a week, and stays neutral after that', () => {
+      const open = (days: number) => loan({ status: LoanStatus.RECEIVED, dueDate: inDays(days) });
+
+      expect(getLoanDueDateClass(open(2), now)).toBe('text-amber-400 font-medium');
+      expect(getLoanDueDateClass(open(3), now)).toBe('text-amber-400 font-medium');
+      expect(getLoanDueDateClass(open(5), now)).toBe('text-yellow-400');
+      expect(getLoanDueDateClass(open(7), now)).toBe('text-yellow-400');
+      expect(getLoanDueDateClass(open(30), now)).toBe('text-foreground');
     });
   });
 

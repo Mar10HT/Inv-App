@@ -113,3 +113,33 @@ export function summarizeLoanItems(loan: Loan): string {
 export function totalLoanQuantity(loan: Loan): number {
   return loan.items.reduce((sum, i) => sum + i.quantity, 0);
 }
+
+/** Tailwind classes for a loan status badge. */
+export function getLoanStatusClass(status: LoanStatus): string {
+  const classes: Record<string, string> = {
+    [LoanStatus.PENDING]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
+    [LoanStatus.SENT]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]',
+    [LoanStatus.RECEIVED]: 'bg-[var(--color-accent-violet-bg)] text-[var(--color-accent-violet)] border border-[var(--color-accent-violet-bg)]',
+    [LoanStatus.RETURN_PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-accent-amber-bg)]',
+    [LoanStatus.RETURNED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
+    [LoanStatus.OVERDUE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
+    [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
+    [LoanStatus.ACTIVE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
+  };
+  return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
+}
+
+/** Text color of a loan's due date: muted once closed, red when overdue, amber or yellow when close. */
+export function getLoanDueDateClass(loan: Loan, now: Date = new Date()): string {
+  if (loan.status === LoanStatus.RETURNED || loan.status === LoanStatus.CANCELLED) {
+    return 'text-[var(--color-on-surface-variant)]';
+  }
+  if (loan.status === LoanStatus.OVERDUE) return 'text-[var(--color-status-error)] font-medium';
+
+  const dueDate = new Date(loan.dueDate);
+  const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (daysUntilDue <= 3) return 'text-amber-400 font-medium';
+  if (daysUntilDue <= 7) return 'text-yellow-400';
+  return 'text-foreground';
+}

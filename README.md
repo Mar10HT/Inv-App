@@ -11,7 +11,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](./LICENSE)
 
-[Documentation](./context/COMPONENT_GUIDE.md) · [Roadmap](./context/ROADMAP.md) · [Changelog](./CHANGELOG.md) · [Backend API](https://github.com/mherrerabl/Inv-App-API)
+[Documentation](./context/COMPONENT_GUIDE.md) · [Roadmap](./context/ROADMAP.md) · [Changelog](./CHANGELOG.md) · [Backend API](https://github.com/Mar10HT/Inv-App-API)
 
 </div>
 

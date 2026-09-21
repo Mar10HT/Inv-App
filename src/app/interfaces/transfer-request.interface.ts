@@ -95,14 +95,6 @@ export interface CreateTransferRequestDto {
   notes?: string;
 }
 
-export interface TransferRequestFilter {
-  status?: TransferRequestStatus;
-  sourceWarehouseId?: string;
-  destinationWarehouseId?: string;
-  requestedById?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-}
 
 export interface TransferRequestStats {
   total: number;

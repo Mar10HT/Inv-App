@@ -32,10 +32,6 @@ export interface WarehouseStats {
   totalQuantity: number;
 }
 
-export interface StatusStats {
-  status: string;
-  count: number;
-}
 
 export interface MonthlyTransactions {
   month: string;

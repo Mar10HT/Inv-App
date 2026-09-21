@@ -7,4 +7,3 @@ export * from './confirm-dialog/confirm-dialog';
 export * from './language-selector/language-selector.component';
 export * from './navigation/navigation';
 export * from './command-palette/command-palette';
-export * from './theme-toggle/theme-toggle';

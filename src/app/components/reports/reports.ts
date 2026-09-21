@@ -59,7 +59,869 @@ interface TrendPoint {
     TranslateModule,
     NgApexchartsModule,
   ],
-  templateUrl: './reports.html'
+  template: `
+<div class="min-h-screen bg-surface p-6">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-[var(--color-primary-container)] rounded-xl flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="BarChart3" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-foreground mb-1">{{ 'REPORTS.TITLE' | translate }}</h1>
+          <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'REPORTS.SUBTITLE' | translate }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global warehouse filter — applies to every tab -->
+    <div class="mb-4 flex flex-col sm:flex-row sm:items-end gap-3">
+      <div class="flex flex-col gap-1.5 w-full sm:max-w-xs">
+        <label for="reports-warehouse-filter" class="text-xs font-medium uppercase tracking-wider" style="color: var(--color-on-surface-variant);">
+          {{ 'REPORTS.FILTER_WAREHOUSE' | translate }}
+        </label>
+        <select
+          id="reports-warehouse-filter"
+          [value]="selectedWarehouseId()"
+          (change)="selectedWarehouseId.set($any($event.target).value)"
+          class="select-chevron w-full rounded-lg border px-3 py-2 text-sm focus:outline-none transition-colors"
+          style="background-color: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-on-surface);">
+          <option value="">{{ 'REPORTS.ALL_WAREHOUSES' | translate }}</option>
+          @for (w of warehouseOptions(); track w.id) {
+            <option [value]="w.id">{{ w.name }}</option>
+          }
+        </select>
+      </div>
+      @if (selectedWarehouseId()) {
+        <button
+          type="button"
+          (click)="selectedWarehouseId.set('')"
+          class="text-xs px-3 py-2 rounded-lg border transition-colors"
+          style="border-color: var(--color-border); color: var(--color-on-surface-variant);">
+          {{ 'COMMON.CLEAR' | translate }}
+        </button>
+      }
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6">
+      <div class="flex flex-wrap gap-2 border-b border-theme pb-2" role="tablist" [attr.aria-label]="'REPORTS.TITLE' | translate">
+        <button
+          (click)="onTabChange(0)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 0"
+          [class]="activeTab() === 0 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_VALUE' | translate }}
+        </button>
+        <button
+          (click)="onTabChange(1)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 1"
+          [class]="activeTab() === 1 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="ArrowLeftRight" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_TRANSACTIONS' | translate }}
+        </button>
+        <button
+          (click)="onTabChange(2)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 2"
+          [class]="activeTab() === 2 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="Package" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_STATUS' | translate }}
+        </button>
+        <button
+          (click)="onTabChange(3)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 3"
+          [class]="activeTab() === 3 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="UserCheck" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_ASSIGNMENTS' | translate }}
+        </button>
+        <button
+          (click)="onTabChange(4)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 4"
+          [class]="activeTab() === 4 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="TrendingUp" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_TRENDS' | translate }}
+        </button>
+        <button
+          (click)="onTabChange(5)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 5"
+          [class]="activeTab() === 5 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_DOWNLOADS' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading() && activeTab() !== 1) {
+      <div class="flex items-center justify-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
+      </div>
+    } @else {
+      <!-- ========== TAB 0: VALUE REPORT ========== -->
+      @if (activeTab() === 0) {
+        <!-- Actions Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <select
+              [value]="selectedCurrency()"
+              (change)="onCurrencyChange($any($event.target).value)"
+              class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer">
+              @for (option of currencyOptions; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label.includes('.') ? (option.label | translate) : option.label }}
+                </option>
+              }
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              (click)="exportReport()"
+              class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+              <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
+              CSV
+            </button>
+            <button
+              (click)="exportValueReportPDF()"
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+              <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
+              PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_VALUE' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-primary)]">{{ formatCurrency(totalValue()) }}</p>
+              </div>
+              <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <lucide-icon name="DollarSign" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_ITEMS' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ totalItemsCount() }}</p>
+              </div>
+              <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <lucide-icon name="Package" class="!text-sky-500 !w-6 !h-6"></lucide-icon>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.CATEGORIES' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-accent-purple)]">{{ valueByCategory().length }}</p>
+              </div>
+              <div class="bg-[var(--color-accent-purple-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <lucide-icon name="Tag" class="!text-[var(--color-accent-purple)] !w-6 !h-6"></lucide-icon>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.WAREHOUSES' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-status-warning)]">{{ valueByWarehouse().length }}</p>
+              </div>
+              <div class="bg-[var(--color-warning-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <lucide-icon name="Warehouse" class="!text-orange-500 !w-6 !h-6"></lucide-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          @for (section of [{title: 'REPORTS.BY_CATEGORY', icon: 'Tag', data: valueByCategory()}, {title: 'REPORTS.BY_WAREHOUSE', icon: 'Warehouse', data: valueByWarehouse()}, {title: 'REPORTS.BY_SUPPLIER', icon: 'Truck', data: valueBySupplier()}]; track section.title) {
+            <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+              <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
+                <lucide-icon [name]="section.icon" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
+                <h2 class="text-lg font-semibold text-foreground">{{ section.title | translate }}</h2>
+              </div>
+              <div class="p-4 max-h-[400px] overflow-y-auto">
+                <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-2 text-xs font-semibold text-[var(--color-on-surface-variant)] uppercase tracking-wider border-b border-theme">
+                  <span>{{ 'REPORTS.TABLE.NAME' | translate }}</span>
+                  <span class="text-center">{{ 'REPORTS.TABLE.ITEMS' | translate }}</span>
+                  <span class="text-right">{{ 'REPORTS.TABLE.VALUE' | translate }}</span>
+                </div>
+                @for (item of section.data; track item.label) {
+                  <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-3 text-sm hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
+                    <span class="text-foreground truncate">{{ item.label }}</span>
+                    <span class="text-center text-[var(--color-on-surface-variant)]">{{ item.count }}</span>
+                    <span class="text-right text-[var(--color-primary)] font-semibold">{{ formatCurrency(item.value) }}</span>
+                  </div>
+                } @empty {
+                  <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Top Items -->
+        <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
+            <lucide-icon name="TrendingUp" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
+            <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TOP_ITEMS' | translate }}</h2>
+          </div>
+
+          <!-- Desktop Table -->
+          <div class="hidden lg:block overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="bg-[var(--color-surface)]">
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.ITEM' | translate }}</th>
+                  <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.CATEGORY' | translate }}</th>
+                  <th class="text-center px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.QTY' | translate }}</th>
+                  <th class="text-right px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.UNIT_PRICE' | translate }}</th>
+                  <th class="text-right px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TOTAL' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--color-border-subtle)]">
+                @for (item of topItems(); track item.id; let i = $index) {
+                  <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 bg-[var(--color-surface-variant)] rounded-md flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">{{ i + 1 }}</span>
+                        <span class="text-foreground font-medium">{{ item.name }}</span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ item.category }}</td>
+                    <td class="px-6 py-4 text-center text-foreground">{{ item.quantity }}</td>
+                    <td class="px-6 py-4 text-right text-[var(--color-on-surface-variant)]">{{ formatCurrency(item.price || 0) }}</td>
+                    <td class="px-6 py-4 text-right text-[var(--color-primary)] font-bold">{{ formatCurrency(item.totalValue) }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Card View - GRID 2 COLUMNS -->
+          <div class="lg:hidden p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              @for (item of topItems(); track item.id; let i = $index) {
+                <div class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors">
+                  <!-- Rank Badge -->
+                  <div class="flex justify-between items-start mb-2">
+                    <span class="w-6 h-6 bg-[var(--color-primary-container)] rounded-md flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">{{ i + 1 }}</span>
+                    <span class="text-[var(--color-primary)] font-bold text-sm">{{ formatCurrency(item.totalValue) }}</span>
+                  </div>
+
+                  <!-- Item Name -->
+                  <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
+                  <p class="text-[var(--color-on-surface-variant)] text-xs truncate mb-2">{{ item.category }}</p>
+
+                  <!-- Quick Info -->
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.QTY_SHORT' | translate }}: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ formatCurrency(item.price || 0) }}/u</span>
+                  </div>
+                </div>
+              } @empty {
+                <div class="col-span-2 py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ========== TAB 1: TRANSACTIONS REPORT ========== -->
+      @if (activeTab() === 1) {
+        @if (transactionsLoading()) {
+          <div class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+            <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
+          </div>
+        } @else {
+          <!-- Filters -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div class="flex flex-wrap items-center gap-3">
+              <input
+                type="date"
+                [value]="dateFrom()"
+                (change)="onDateFromChange($any($event.target).value)"
+                class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all"
+                placeholder="Desde">
+              <input
+                type="date"
+                [value]="dateTo()"
+                (change)="onDateToChange($any($event.target).value)"
+                class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all"
+                placeholder="Hasta">
+              <select
+                [value]="transactionTypeFilter()"
+                (change)="onTransactionTypeChange($any($event.target).value)"
+                class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer">
+                <option value="ALL">{{ 'REPORTS.ALL_TYPES' | translate }}</option>
+                <option value="IN">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</option>
+                <option value="OUT">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</option>
+                <option value="TRANSFER">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</option>
+              </select>
+              @if (dateFrom() || dateTo() || transactionTypeFilter() !== 'ALL') {
+                <button
+                  (click)="clearTransactionFilters()"
+                  class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors flex items-center gap-1">
+                  <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
+                  {{ 'COMMON.CLEAR' | translate }}
+                </button>
+              }
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                (click)="exportTransactions()"
+                class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+                <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
+                CSV
+              </button>
+              <button
+                (click)="exportTransactionsPDF()"
+                class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+                <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
+                PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Transaction Stats -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div class="bg-surface-variant border border-theme rounded-xl p-4">
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'REPORTS.TOTAL_TRANSACTIONS' | translate }}</p>
+              <p class="text-2xl font-bold text-foreground">{{ transactionStats().total }}</p>
+            </div>
+            <div class="bg-surface-variant border border-theme rounded-xl p-4">
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ transactionStats().inCount }}</p>
+            </div>
+            <div class="bg-surface-variant border border-theme rounded-xl p-4">
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ transactionStats().outCount }}</p>
+            </div>
+            <div class="bg-surface-variant border border-theme rounded-xl p-4">
+              <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</p>
+              <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ transactionStats().transferCount }}</p>
+            </div>
+          </div>
+
+          <!-- Transactions Table -->
+          <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+            <!-- Desktop Table -->
+            <div class="hidden lg:block overflow-x-auto max-h-[600px] overflow-y-auto">
+              <table class="w-full">
+                <thead class="sticky top-0 z-10">
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TYPE' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.FROM' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TO' | translate }}</th>
+                    <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.USER' | translate }}</th>
+                    <th class="text-center px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.ITEMS' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
+                  @for (tx of filteredTransactions(); track tx.id) {
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
+                      <td class="px-6 py-4 text-foreground">{{ formatDateTime(tx.date) }}</td>
+                      <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                          [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-[var(--color-status-success)]' : tx.type === 'OUT' ? 'bg-rose-500/20 text-[var(--color-status-error)]' : 'bg-blue-500/20 text-[var(--color-status-info)]'">
+                          <lucide-icon [name]="getTransactionIcon(tx.type)" class="!text-sm !w-4 !h-4"></lucide-icon>
+                          {{ tx.type }}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.sourceWarehouse?.name || '-' }}</td>
+                      <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.destinationWarehouse?.name || '-' }}</td>
+                      <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.user?.name || tx.user?.email || '-' }}</td>
+                      <td class="px-6 py-4 text-center text-foreground">{{ tx.items.length }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="px-6 py-12 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Card View - GRID 2 COLUMNS -->
+            <div class="lg:hidden p-4 max-h-[600px] overflow-y-auto">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @for (tx of filteredTransactions(); track tx.id) {
+                  <div class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors">
+                    <!-- Type Badge -->
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium"
+                        [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-[var(--color-status-success)]' : tx.type === 'OUT' ? 'bg-rose-500/20 text-[var(--color-status-error)]' : 'bg-blue-500/20 text-[var(--color-status-info)]'">
+                        <lucide-icon [name]="getTransactionIcon(tx.type)" class="!w-3 !h-3"></lucide-icon>
+                        {{ tx.type }}
+                      </span>
+                      <span class="text-foreground font-medium text-xs">{{ tx.items.length }} items</span>
+                    </div>
+
+                    <!-- Date -->
+                    <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ formatDateTime(tx.date) }}</p>
+
+                    <!-- Warehouses -->
+                    <div class="text-xs space-y-0.5 mb-1">
+                      @if (tx.sourceWarehouse) {
+                        <div class="text-[var(--color-on-surface-variant)] truncate">
+                          <span class="text-[var(--color-on-surface-muted)]">{{ 'TRANSACTION.FROM' | translate }}:</span> {{ tx.sourceWarehouse.name }}
+                        </div>
+                      }
+                      @if (tx.destinationWarehouse) {
+                        <div class="text-[var(--color-on-surface-variant)] truncate">
+                          <span class="text-[var(--color-on-surface-muted)]">{{ 'TRANSACTION.TO' | translate }}:</span> {{ tx.destinationWarehouse.name }}
+                        </div>
+                      }
+                    </div>
+
+                    <!-- User -->
+                    <p class="text-[var(--color-on-surface-muted)] text-[10px] truncate">{{ tx.user?.name || tx.user?.email || '-' }}</p>
+                  </div>
+                } @empty {
+                  <div class="col-span-2 py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ========== TAB 2: STATUS REPORT ========== -->
+      @if (activeTab() === 2) {
+        <!-- Actions -->
+        <div class="flex justify-end mb-6">
+          <div class="flex items-center gap-2">
+            <button
+              (click)="exportStatusReport()"
+              class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+              <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
+              CSV
+            </button>
+            <button
+              (click)="exportStatusReportPDF()"
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+              <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
+              PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          @for (summary of statusSummary(); track summary.status) {
+            <div class="bg-surface-variant border border-theme rounded-xl p-6"
+              [class]="summary.status === InventoryStatus.IN_STOCK ? 'border-emerald-800/50' : summary.status === InventoryStatus.LOW_STOCK ? 'border-orange-800/50' : 'border-rose-800/50'">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="p-3 rounded-lg"
+                  [class]="summary.status === InventoryStatus.IN_STOCK ? 'bg-emerald-500/20' : summary.status === InventoryStatus.LOW_STOCK ? 'bg-orange-500/20' : 'bg-rose-500/20'">
+                  <lucide-icon
+                    [name]="getStatusIcon(summary.status)"
+                    [class]="summary.status === InventoryStatus.IN_STOCK ? '!text-[var(--color-status-success)]' : summary.status === InventoryStatus.LOW_STOCK ? '!text-[var(--color-status-warning)]' : '!text-[var(--color-status-error)]'"
+                    class="!w-6 !h-6"></lucide-icon>
+                </div>
+                <div>
+                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STATUS.' + summary.status | translate }}</p>
+                  <p class="text-3xl font-bold"
+                    [class]="summary.status === InventoryStatus.IN_STOCK ? 'text-[var(--color-status-success)]' : summary.status === InventoryStatus.LOW_STOCK ? 'text-[var(--color-status-warning)]' : 'text-[var(--color-status-error)]'">
+                    {{ summary.count }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Low Stock & Out of Stock Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Out of Stock -->
+          <div class="bg-surface-variant border border-[var(--color-error-border)] rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-[var(--color-error-bg)]">
+              <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-[var(--color-status-error)]">{{ 'REPORTS.OUT_OF_STOCK_ITEMS' | translate }}</h2>
+              <span class="ml-auto bg-[var(--color-error-bg)] text-[var(--color-status-error)] px-2 py-0.5 rounded text-sm font-medium">{{ outOfStockItems().length }}</span>
+            </div>
+            <div class="p-4 max-h-[400px] overflow-y-auto">
+              @for (item of outOfStockItems(); track item.id) {
+                <div class="flex items-center justify-between px-3 py-3 hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-foreground font-medium truncate">{{ item.name }}</p>
+                    <p class="text-sm text-[var(--color-on-surface-variant)]">{{ item.category }} - {{ item.warehouse?.name || '-' }}</p>
+                  </div>
+                  <span class="text-sm text-[var(--color-on-surface-variant)] ml-4">Min: {{ item.minQuantity }}</span>
+                </div>
+              } @empty {
+                <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'REPORTS.NO_OUT_OF_STOCK' | translate }}</div>
+              }
+            </div>
+          </div>
+
+          <!-- Low Stock -->
+          <div class="bg-surface-variant border border-[var(--color-warning-border)] rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3 bg-[var(--color-warning-bg)]">
+              <lucide-icon name="AlertTriangle" class="!text-[var(--color-status-warning)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-[var(--color-status-warning)]">{{ 'REPORTS.LOW_STOCK_ITEMS' | translate }}</h2>
+              <span class="ml-auto bg-[var(--color-warning-bg)] text-[var(--color-status-warning)] px-2 py-0.5 rounded text-sm font-medium">{{ lowStockItems().length }}</span>
+            </div>
+            <div class="p-4 max-h-[400px] overflow-y-auto">
+              @for (item of lowStockItems(); track item.id) {
+                <div class="flex items-center justify-between px-3 py-3 hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-foreground font-medium truncate">{{ item.name }}</p>
+                    <p class="text-sm text-[var(--color-on-surface-variant)]">{{ item.category }} - {{ item.warehouse?.name || '-' }}</p>
+                  </div>
+                  <div class="text-right ml-4">
+                    <p class="text-[var(--color-status-warning)] font-medium">{{ item.quantity }} / {{ item.minQuantity }}</p>
+                  </div>
+                </div>
+              } @empty {
+                <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'REPORTS.NO_LOW_STOCK' | translate }}</div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ========== TAB 3: ASSIGNMENTS REPORT ========== -->
+      @if (activeTab() === 3) {
+        <!-- Actions -->
+        <div class="flex justify-end mb-6">
+          <div class="flex items-center gap-2">
+            <button
+              (click)="exportAssignments()"
+              class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
+              <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
+              CSV
+            </button>
+            <button
+              (click)="exportAssignmentsReportPDF()"
+              class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium">
+              <lucide-icon name="FileText" class="!w-4 !h-4"></lucide-icon>
+              PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Assignment Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          <div class="bg-surface-variant border border-theme rounded-xl p-6">
+            <div class="flex items-center gap-4">
+              <div class="bg-[var(--color-primary-container)] p-3 rounded-lg">
+                <lucide-icon name="Monitor" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
+              </div>
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_UNIQUE_ITEMS' | translate }}</p>
+                <p class="text-3xl font-bold text-foreground">{{ assignedItems().length + unassignedUniqueItems().length }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-6">
+            <div class="flex items-center gap-4">
+              <div class="bg-emerald-500/20 p-3 rounded-lg">
+                <lucide-icon name="UserCheck" class="!text-[var(--color-status-success)] !w-6 !h-6"></lucide-icon>
+              </div>
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'REPORTS.ASSIGNED' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ assignedItems().length }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-variant border border-theme rounded-xl p-6">
+            <div class="flex items-center gap-4">
+              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
+                <lucide-icon name="UserX" class="!text-[var(--color-on-surface-variant)] !w-6 !h-6"></lucide-icon>
+              </div>
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'REPORTS.UNASSIGNED' | translate }}</p>
+                <p class="text-3xl font-bold text-[var(--color-on-surface-variant)]">{{ unassignedUniqueItems().length }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignments by User -->
+        <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden mb-6">
+          <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
+            <lucide-icon name="Users" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
+            <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.ASSIGNMENTS_BY_USER' | translate }}</h2>
+          </div>
+          <div class="divide-y divide-[var(--color-border-subtle)]">
+            @for (user of assignmentsByUser(); track user.userId) {
+              <div class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-bold">
+                      {{ user.userName.charAt(0).toUpperCase() }}
+                    </div>
+                    <div>
+                      <p class="text-foreground font-medium">{{ user.userName }}</p>
+                      <p class="text-sm text-[var(--color-on-surface-variant)]">{{ user.userEmail }}</p>
+                    </div>
+                  </div>
+                  <span class="bg-[var(--color-primary-container)] text-[var(--color-primary)] px-3 py-1 rounded-full text-sm font-medium">
+                    {{ user.itemCount }} {{ 'REPORTS.ITEMS' | translate }}
+                  </span>
+                </div>
+                <div class="flex flex-wrap gap-2 ml-13">
+                  @for (item of user.items.slice(0, 5); track item.id) {
+                    <span class="bg-[var(--color-surface-variant)] text-[var(--color-on-surface-variant)] px-2 py-1 rounded text-xs">
+                      {{ item.name }}
+                    </span>
+                  }
+                  @if (user.items.length > 5) {
+                    <span class="text-[var(--color-on-surface-variant)] text-xs py-1">+{{ user.items.length - 5 }} {{ 'REPORTS.MORE' | translate }}</span>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="p-8 text-center text-[var(--color-on-surface-variant)]">{{ 'REPORTS.NO_ASSIGNMENTS' | translate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Unassigned Items -->
+        @if (unassignedUniqueItems().length > 0) {
+          <div class="bg-surface-variant border border-[var(--color-border)] rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
+              <lucide-icon name="UserX" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-[var(--color-on-surface-variant)]">{{ 'REPORTS.UNASSIGNED_ITEMS' | translate }}</h2>
+              <span class="ml-auto bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] px-2 py-0.5 rounded text-sm font-medium">{{ unassignedUniqueItems().length }}</span>
+            </div>
+            <div class="p-4 max-h-[300px] overflow-y-auto">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                @for (item of unassignedUniqueItems(); track item.id) {
+                  <div class="bg-[var(--color-surface-variant)] rounded-lg p-3">
+                    <p class="text-foreground font-medium truncate">{{ item.name }}</p>
+                    <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.serviceTag || item.serialNumber || '-' }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ========== TAB 4: TRENDS ========== -->
+      @if (activeTab() === 4) {
+        @if (transactionsLoading()) {
+          <div class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+            <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
+          </div>
+        } @else {
+          <!-- Trend Chart -->
+          <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
+              <lucide-icon name="LineChart" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.TRANSACTIONS_LAST_30_DAYS' | translate }}</h2>
+            </div>
+            <div class="p-6">
+              <apx-chart
+                [series]="trendChartOptions().series"
+                [chart]="trendChartOptions().chart"
+                [colors]="trendChartOptions().colors"
+                [dataLabels]="trendChartOptions().dataLabels"
+                [stroke]="trendChartOptions().stroke"
+                [fill]="trendChartOptions().fill"
+                [xaxis]="trendChartOptions().xaxis"
+                [yaxis]="trendChartOptions().yaxis"
+                [grid]="trendChartOptions().grid"
+                [legend]="trendChartOptions().legend"
+                [tooltip]="trendChartOptions().tooltip">
+              </apx-chart>
+            </div>
+          </div>
+
+          <!-- Daily Summary -->
+          <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-theme flex items-center gap-3">
+              <lucide-icon name="Calendar" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
+              <h2 class="text-lg font-semibold text-foreground">{{ 'REPORTS.DAILY_SUMMARY' | translate }}</h2>
+            </div>
+            <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+              <table class="w-full">
+                <thead class="sticky top-0 z-10">
+                  <tr class="bg-[var(--color-surface)]">
+                    <th class="text-left px-6 py-3 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
+                    <th class="text-center px-6 py-3 text-xs font-medium text-emerald-500 uppercase">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</th>
+                    <th class="text-center px-6 py-3 text-xs font-medium text-rose-500 uppercase">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</th>
+                    <th class="text-center px-6 py-3 text-xs font-medium text-blue-500 uppercase">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</th>
+                    <th class="text-center px-6 py-3 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase">Total</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--color-border-subtle)]">
+                  @for (day of transactionTrends().slice().reverse(); track day.date) {
+                    <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
+                      <td class="px-6 py-3 text-foreground">{{ formatDate(day.date) }}</td>
+                      <td class="px-6 py-3 text-center">
+                        <span class="text-[var(--color-status-success)] font-medium">{{ day.in }}</span>
+                      </td>
+                      <td class="px-6 py-3 text-center">
+                        <span class="text-[var(--color-status-error)] font-medium">{{ day.out }}</span>
+                      </td>
+                      <td class="px-6 py-3 text-center">
+                        <span class="text-[var(--color-status-info)] font-medium">{{ day.transfer }}</span>
+                      </td>
+                      <td class="px-6 py-3 text-center text-foreground font-medium">{{ day.in + day.out + day.transfer }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      }
+    }
+    <!-- Tab 5: Downloads -->
+    @if (activeTab() === 5) {
+      <div>
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold" style="color: var(--color-on-surface);">{{ 'REPORTS.TAB_DOWNLOADS' | translate }}</h2>
+          <p class="text-sm mt-1" style="color: var(--color-on-surface-variant);">{{ 'REPORTS.DOWNLOAD_EXCEL' | translate }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <!-- Inventory -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: var(--color-primary-container);">
+                <lucide-icon name="Package" class="!w-5 !h-5" style="color: var(--color-primary);"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_INVENTORY' | translate }}</span>
+            </div>
+            <button (click)="exportInventoryExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: var(--color-primary); color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Low Stock -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(245,158,11,0.12);">
+                <lucide-icon name="AlertTriangle" class="!w-5 !h-5" style="color: #f59e0b;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_LOW_STOCK' | translate }}</span>
+            </div>
+            <button (click)="exportLowStockExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #f59e0b; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Transactions -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(96,165,250,0.12);">
+                <lucide-icon name="ArrowLeftRight" class="!w-5 !h-5" style="color: #60a5fa;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_TRANSACTIONS' | translate }}</span>
+            </div>
+            <button (click)="exportTransactionsExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #60a5fa; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Loans -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(107,123,181,0.12);">
+                <lucide-icon name="HandCoins" class="!w-5 !h-5" style="color: #6b7bb5;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_LOANS' | translate }}</span>
+            </div>
+            <button (click)="exportLoansExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #6b7bb5; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Transfers -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(139,92,246,0.12);">
+                <lucide-icon name="Truck" class="!w-5 !h-5" style="color: #8b5cf6;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_TRANSFERS' | translate }}</span>
+            </div>
+            <button (click)="exportTransfersExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #8b5cf6; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Stock Takes -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(14,165,233,0.12);">
+                <lucide-icon name="ClipboardCheck" class="!w-5 !h-5" style="color: #0ea5e9;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_STOCK_TAKES' | translate }}</span>
+            </div>
+            <button (click)="exportStockTakesExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #0ea5e9; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Discharges -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(239,68,68,0.12);">
+                <lucide-icon name="ClipboardList" class="!w-5 !h-5" style="color: #ef4444;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_DISCHARGES' | translate }}</span>
+            </div>
+            <button (click)="exportDischargesExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #ef4444; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+
+          <!-- Outflows -->
+          <div class="rounded-xl border p-5 flex flex-col gap-4" style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(234,88,12,0.12);">
+                <lucide-icon name="PackageMinus" class="!w-5 !h-5" style="color: #ea580c;"></lucide-icon>
+              </div>
+              <span class="font-medium text-sm" style="color: var(--color-on-surface);">{{ 'REPORTS.EXCEL_OUTFLOWS' | translate }}</span>
+            </div>
+            <button (click)="exportOutflowsExcel()" class="mt-auto w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-80" style="background-color: #ea580c; color: #fff;">
+              <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
+              Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+  `,
 })
 export class Reports implements OnInit {
   private inventoryService = inject(InventoryService);

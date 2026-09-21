@@ -20,7 +20,155 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
     MatDialogModule,
     TranslateModule
   ],
-  templateUrl: './profile.html',
+  template: `
+<div class="min-h-screen bg-surface p-6">
+  <div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-foreground">{{ 'NAV.PROFILE' | translate }}</h1>
+      <p class="text-[var(--color-on-surface-variant)] mt-1">{{ 'PROFILE.SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- Profile Card -->
+    @if (user()) {
+    <div class="bg-surface-variant rounded-xl border border-theme overflow-hidden mb-6">
+      <!-- Profile Header -->
+      <div class="bg-gradient-to-r from-[var(--color-primary-container)] to-[var(--color-surface)] p-6">
+        <div class="flex items-center gap-4">
+          <div class="w-20 h-20 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+            <span class="text-white text-2xl font-bold">{{ userInitials() }}</span>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">{{ user()?.name || ('COMMON.USER' | translate) }}</h2>
+            <p class="text-white/80">{{ user()?.email }}</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-[var(--color-primary)] rounded-full text-xs font-medium text-white">
+              {{ getRoleDisplay(user()?.role) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-foreground">{{ 'PROFILE.INFO' | translate }}</h3>
+          <button
+            (click)="toggleEditMode()"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            [class]="editMode() ? 'bg-[var(--color-surface-elevated)] text-foreground hover:bg-[var(--color-surface-variant)]' : 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]'">
+            <lucide-icon [name]="editMode() ? 'X' : 'Pencil'" class="!w-4 !h-4"></lucide-icon>
+            {{ editMode() ? ('COMMON.CANCEL' | translate) : ('COMMON.EDIT' | translate) }}
+          </button>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Name -->
+            <div>
+              <label for="profile-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'USER.NAME' | translate }} *
+              </label>
+              @if (editMode()) {
+                <input
+                  id="profile-name"
+                  type="text"
+                  formControlName="name"
+                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                  [class.!border-rose-500]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
+                />
+                @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+                  @if (profileForm.get('name')?.errors?.['required']) {
+                    <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                  } @else if (profileForm.get('name')?.errors?.['minlength']) {
+                    <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: {length: 2} }}</p>
+                  }
+                }
+              } @else {
+                <p class="text-foreground py-3">{{ user()?.name }}</p>
+              }
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="profile-email" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'USER.EMAIL' | translate }} *
+              </label>
+              @if (editMode()) {
+                <input
+                  id="profile-email"
+                  type="email"
+                  formControlName="email"
+                  class="w-full bg-surface border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                  [class.!border-rose-500]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+                />
+                @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+                  @if (profileForm.get('email')?.errors?.['required']) {
+                    <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                  } @else if (profileForm.get('email')?.errors?.['email']) {
+                    <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
+                  }
+                }
+              } @else {
+                <p class="text-foreground py-3">{{ user()?.email }}</p>
+              }
+            </div>
+
+            <!-- Role (read-only) -->
+            <div>
+              <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'USER.ROLE' | translate }}
+              </span>
+              <p class="text-foreground py-3">{{ getRoleDisplay(user()?.role) }}</p>
+            </div>
+
+            <!-- Member Since -->
+            <div>
+              <span class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'PROFILE.MEMBER_SINCE' | translate }}
+              </span>
+              <p class="text-foreground py-3">{{ formatDate(user()?.createdAt) }}</p>
+            </div>
+          </div>
+
+          @if (editMode()) {
+            <div class="flex justify-end mt-6 pt-4 border-t border-theme">
+              <button
+                type="submit"
+                [disabled]="profileForm.invalid || saving()"
+                class="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
+                @if (saving()) {
+                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                }
+                {{ 'COMMON.SAVE' | translate }}
+              </button>
+            </div>
+          }
+        </form>
+      </div>
+    </div>
+
+    <!-- Security Section -->
+    <div class="bg-surface-variant rounded-xl border border-theme overflow-hidden">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4">{{ 'PROFILE.SECURITY' | translate }}</h3>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-foreground">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</p>
+            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'PROFILE.CHANGE_PASSWORD_DESC' | translate }}</p>
+          </div>
+          <button
+            (click)="openChangePasswordDialog()"
+            class="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-surface-elevated)] text-foreground rounded-lg hover:bg-[var(--color-surface-variant)] transition-colors font-medium">
+            <lucide-icon name="Lock" class="!w-4 !h-4"></lucide-icon>
+            {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+  `,
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit {

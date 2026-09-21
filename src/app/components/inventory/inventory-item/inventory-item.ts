@@ -27,7 +27,278 @@ export interface InventoryItemDialogData {
     MatSnackBarModule,
     TranslateModule
   ],
-  templateUrl: './inventory-item.html',
+  template: `
+<div class="bg-surface-variant rounded-xl max-h-[90vh] overflow-hidden flex flex-col">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex items-center justify-center py-24 px-12">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--color-primary)]"></div>
+      <span class="ml-4 text-[var(--color-on-surface-variant)] text-lg">{{ 'COMMON.LOADING' | translate }}...</span>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="p-6">
+      <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <lucide-icon name="AlertCircle" class="!w-8 !h-8 text-[var(--color-status-error)]"></lucide-icon>
+          <span class="text-[var(--color-status-error)] text-lg">{{ error() }}</span>
+        </div>
+        <button
+          (click)="close()"
+          class="text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-2">
+          <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Item Detail -->
+  @if (item(); as item) {
+    <!-- Header -->
+    <div class="p-6 border-b border-theme flex items-start justify-between gap-4">
+      <div class="flex items-start gap-4 flex-1 min-w-0">
+        <div class="w-14 h-14 bg-[var(--color-primary-container)] rounded-xl flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="Package" class="!w-6 !h-6 text-[var(--color-primary)]"></lucide-icon>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h1 class="text-2xl font-bold text-foreground truncate">{{ item.name }}</h1>
+          <p class="text-[var(--color-on-surface-variant)] mt-1 line-clamp-2">{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
+
+          <!-- Status Badge -->
+          <div class="mt-3">
+            <span
+              [ngClass]="{
+                'text-[var(--color-status-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]': item.status === InventoryStatus.IN_STOCK,
+                'text-[var(--color-status-warning)] bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)]': item.status === InventoryStatus.LOW_STOCK,
+                'text-[var(--color-status-error)] bg-[var(--color-error-bg)] border border-[var(--color-error-border)]': item.status === InventoryStatus.OUT_OF_STOCK
+              }"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5">
+              @switch (item.status) {
+                @case (InventoryStatus.IN_STOCK) {
+                  <lucide-icon name="CheckCircle2" class="!w-3.5 !h-3.5"></lucide-icon>
+                }
+                @case (InventoryStatus.LOW_STOCK) {
+                  <lucide-icon name="AlertTriangle" class="!w-3.5 !h-3.5"></lucide-icon>
+                }
+                @case (InventoryStatus.OUT_OF_STOCK) {
+                  <lucide-icon name="AlertCircle" class="!w-3.5 !h-3.5"></lucide-icon>
+                }
+              }
+              {{ getStatusKey(item.status) | translate }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Close Button -->
+      <button
+        (click)="close()"
+        [attr.aria-label]="'COMMON.CLOSE' | translate"
+        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors flex-shrink-0">
+        <lucide-icon name="X" class="!w-5 !h-5"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto p-6">
+      <!-- Main Info Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- Basic Info -->
+        <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-xl p-5">
+          <h2 class="text-sm font-semibold text-[var(--color-on-surface-variant)] mb-4 flex items-center gap-2">
+            <lucide-icon name="Info" class="!w-4 !h-4 text-[var(--color-on-surface-variant)]"></lucide-icon>
+            {{ 'ITEM_DETAIL.BASIC_INFO' | translate }}
+          </h2>
+
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.CATEGORY' | translate }}</span>
+              <span class="text-foreground text-sm">{{ item.category }}</span>
+            </div>
+
+            <div class="flex justify-between">
+              <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.TYPE.LABEL' | translate }}</span>
+              <span class="text-foreground text-sm">{{ getItemTypeKey(item.itemType) | translate }}</span>
+            </div>
+
+            @if (item.sku) {
+              <div class="flex justify-between">
+                <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'COMMON.SKU' | translate }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.sku }}</span>
+              </div>
+            }
+
+            @if (item.barcode) {
+              <div class="flex justify-between">
+                <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.BARCODE' | translate }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.barcode }}</span>
+              </div>
+            }
+
+            @if (item.serialNumber) {
+              <div class="flex justify-between">
+                <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.SERIAL_NUMBER' | translate }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.serialNumber }}</span>
+              </div>
+            }
+
+            @if (item.serviceTag) {
+              <div class="flex justify-between">
+                <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.SERVICE_TAG' | translate }}</span>
+                <span class="text-foreground text-sm font-mono">{{ item.serviceTag }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Stock & Price -->
+        <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-xl p-5">
+          <h2 class="text-sm font-semibold text-[var(--color-on-surface-variant)] mb-4 flex items-center gap-2">
+            <lucide-icon name="Package" class="!w-4 !h-4 text-[var(--color-on-surface-variant)]"></lucide-icon>
+            {{ 'ITEM_DETAIL.STOCK_PRICE' | translate }}
+          </h2>
+
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-surface-variant rounded-lg">
+              <div>
+                <p class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.QUANTITY' | translate }}</p>
+                <p class="text-2xl font-bold text-foreground">{{ item.quantity }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.MIN_QUANTITY' | translate }}</p>
+                <p class="text-lg font-semibold text-[var(--color-on-surface-variant)]">{{ item.minQuantity }}</p>
+              </div>
+            </div>
+
+            <div class="flex justify-between">
+              <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.UNIT_PRICE' | translate }}</span>
+              <span class="text-lg font-bold text-[var(--color-primary)]">{{ formatCurrency(item.price, item.currency) }}</span>
+            </div>
+
+            @if (item.price) {
+              <div class="flex justify-between">
+                <span class="text-xs text-[var(--color-on-surface-variant)] uppercase">{{ 'ITEM_DETAIL.TOTAL_VALUE' | translate }}</span>
+                <span class="text-foreground font-semibold">{{ formatCurrency(item.price * item.quantity, item.currency) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Location & Supplier -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- Warehouse -->
+        <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-xl p-5">
+          <h2 class="text-sm font-semibold text-[var(--color-on-surface-variant)] mb-4 flex items-center gap-2">
+            <lucide-icon name="Warehouse" class="!w-4 !h-4 text-[var(--color-on-surface-variant)]"></lucide-icon>
+            {{ 'ITEM_DETAIL.WAREHOUSE' | translate }}
+          </h2>
+
+          @if (item.warehouse) {
+            <div class="space-y-2">
+              <p class="text-foreground font-medium">{{ item.warehouse.name }}</p>
+              <p class="text-[var(--color-on-surface-variant)] text-sm">{{ item.warehouse.location }}</p>
+              @if (item.warehouse.description) {
+                <p class="text-[var(--color-on-surface-muted)] text-xs">{{ item.warehouse.description }}</p>
+              }
+            </div>
+          } @else {
+            <p class="text-[var(--color-on-surface-muted)] text-sm">{{ 'ITEM_DETAIL.NO_WAREHOUSE' | translate }}</p>
+          }
+        </div>
+
+        <!-- Supplier -->
+        <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-xl p-5">
+          <h2 class="text-sm font-semibold text-[var(--color-on-surface-variant)] mb-4 flex items-center gap-2">
+            <lucide-icon name="Truck" class="!w-4 !h-4 text-[var(--color-on-surface-variant)]"></lucide-icon>
+            {{ 'ITEM_DETAIL.SUPPLIER' | translate }}
+          </h2>
+
+          @if (item.supplier) {
+            <div class="space-y-2">
+              <p class="text-foreground font-medium">{{ item.supplier.name }}</p>
+              <p class="text-[var(--color-on-surface-variant)] text-sm">{{ item.supplier.location }}</p>
+              @if (item.supplier.email) {
+                <p class="text-[var(--color-status-info)] text-sm">{{ item.supplier.email }}</p>
+              }
+              @if (item.supplier.phone) {
+                <p class="text-[var(--color-on-surface-variant)] text-sm">{{ item.supplier.phone }}</p>
+              }
+            </div>
+          } @else {
+            <p class="text-[var(--color-on-surface-muted)] text-sm">{{ 'ITEM_DETAIL.NO_SUPPLIER' | translate }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Assignment (for UNIQUE items) -->
+      @if (item.itemType === ItemType.UNIQUE && item.assignedToUser) {
+        <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-xl p-5 mb-4">
+          <h2 class="text-sm font-semibold text-[var(--color-on-surface-variant)] mb-4 flex items-center gap-2">
+            <lucide-icon name="User" class="!w-4 !h-4 text-[var(--color-on-surface-variant)]"></lucide-icon>
+            {{ 'ITEM_DETAIL.ASSIGNMENT' | translate }}
+          </h2>
+
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[var(--color-info-bg)] rounded-full flex items-center justify-center">
+              <lucide-icon name="User" class="!w-4 !h-4 text-[var(--color-status-info)]"></lucide-icon>
+            </div>
+            <div>
+              <p class="text-foreground font-medium">{{ item.assignedToUser.name || item.assignedToUser.email }}</p>
+              <p class="text-[var(--color-on-surface-variant)] text-sm">{{ item.assignedToUser.email }}</p>
+              @if (item.assignedAt) {
+                <p class="text-[var(--color-on-surface-muted)] text-xs mt-1">{{ 'ITEM_DETAIL.ASSIGNED_ON' | translate }}: {{ formatDate(item.assignedAt) }}</p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Timestamps -->
+      <div class="flex flex-wrap gap-4 text-xs text-[var(--color-on-surface-muted)]">
+        <div class="flex items-center gap-1">
+          <lucide-icon name="PlusCircle" class="!w-3.5 !h-3.5"></lucide-icon>
+          <span>{{ 'ITEM_DETAIL.CREATED' | translate }}: {{ formatDate(item.createdAt) }}</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <lucide-icon name="RefreshCw" class="!w-3.5 !h-3.5"></lucide-icon>
+          <span>{{ 'ITEM_DETAIL.UPDATED' | translate }}: {{ formatDate(item.updatedAt) }}</span>
+        </div>
+        @if (item.createdBy) {
+          <div class="flex items-center gap-1">
+            <lucide-icon name="User" class="!w-3.5 !h-3.5"></lucide-icon>
+            <span>{{ 'ITEM_DETAIL.CREATED_BY' | translate }}: {{ item.createdBy.name || item.createdBy.email }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="p-4 border-t border-theme flex items-center justify-end gap-3">
+      <button
+        (click)="close()"
+        class="px-4 py-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button
+        (click)="deleteItem()"
+        class="px-4 py-2 rounded-lg text-[var(--color-status-error)] border border-[var(--color-error-border)] hover:bg-[var(--color-error-bg)] transition-colors flex items-center gap-2">
+        <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+        {{ 'COMMON.DELETE' | translate }}
+      </button>
+      <button
+        (click)="editItem()"
+        class="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-colors flex items-center gap-2">
+        <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+        {{ 'COMMON.EDIT' | translate }}
+      </button>
+    </div>
+  }
+</div>
+  `,
   styleUrl: './inventory-item.css'
 })
 export class InventoryItem implements OnInit {

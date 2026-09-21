@@ -32,10 +32,6 @@ export interface CustomChart {
   createdAt: Date;
 }
 
-export interface ValueData {
-  name: string;
-  value: number;
-}
 
 export interface InventoryItemData {
   name: string;

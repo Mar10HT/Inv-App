@@ -11,12 +11,6 @@ import { summarizeLoanItems } from '../../utils/loan.utils';
 
 // ==================== QR Code Display Dialog ====================
 
-/** Data required to display a QR code */
-export interface LoanQrData {
-  loan: Loan;
-  type: 'send' | 'return';
-  qrDataUrl: string | null;
-}
 
 @Component({
   selector: 'app-loan-qr-dialog',

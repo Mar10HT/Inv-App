@@ -101,12 +101,6 @@ export interface LoanWithQr extends Loan {
   qrCodeDataUrl?: string;
 }
 
-// QR scan response
-export interface QrScanResult {
-  type: 'LOAN_SEND' | 'LOAN_RETURN';
-  loan: Loan;
-  message: string;
-}
 
 /** Raw API response shape for a Loan before date transformation. */
 export interface RawLoanItem {

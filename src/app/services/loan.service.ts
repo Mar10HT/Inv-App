@@ -469,7 +469,7 @@ export class LoanService implements OnDestroy {
   /**
    * Export loans to XLSX
    */
-  exportToXLSX(loans?: Loan[]): void {
+  async exportToXLSX(loans?: Loan[]): Promise<void> {
     const data = loans || this.loansSignal();
 
     const rows = data.map(loan => ({
@@ -484,7 +484,7 @@ export class LoanService implements OnDestroy {
       Notes: loan.notes || '',
     }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:      'Loans',
       filename:       `loans-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:    '6B7BB5',

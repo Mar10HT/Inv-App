@@ -12,10 +12,23 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 - Unit test suite (0/12 passing) — `TestBed` setup across all specs never accounted for `provideZonelessChangeDetection()` or `TranslateService`, so every spec crashed on `NG0908`/`NG0201` instead of running.
 - Cleared the entire lint backlog (~270 findings → 0), almost all `@typescript-eslint/no-explicit-any` resolved with real types (reusing existing interfaces where they exist) rather than suppressions, plus real `@angular-eslint/template` accessibility fixes (label/control association, keyboard support on clickable cards, dialog `role`/`aria` attributes) across ~50 components. CI now fails on lint instead of just reporting it.
 - `dashboard.ts`: the custom-chart-builder's `ApexOptions` return type declared several sub-options optional even though the implementation always populates them, and a template data-presence check assumed one series shape (`{name, data}[]`) when pie/donut charts actually use a plain `number[]` — both were previously invisible type gaps that only surfaced once lint (and therefore full template type-checking) started running.
+- `filterLoans` sorted the caller's array in place whenever no filter criterion removed a loan; it now sorts a copy.
+- The `analyze` and `serve:ssr` npm scripts pointed at `dist/INV-ICN`, but the build outputs `dist/inv-app`. `serve:ssr:INV-ICN` is now `serve:ssr:inv-app`.
+- README and CODEMAPS linked to a backend repository that does not exist; they now point to `Mar10HT/Inv-App-API`. `context/ROADMAP.md` is refreshed for v0.5.0 and no longer lists shipped features as planned.
 
 ### Added
 - CI (`.github/workflows/ci.yml`): install, lint, unit tests, production build on every push/PR to `main`.
 - ESLint via `@angular-eslint`, wired to `npm run lint` (`ng lint`) — this project had no linting configured at all before.
+- Unit specs for the xlsx download flow, the four PDF exports, `BaseCrudService`, `triggerBlobDownload`, `loan.utils` and the skeleton components (unit suite from 12 to 58 specs).
+
+### Changed
+- `jsPDF`, `jspdf-autotable` and `xlsx-js-style` are now loaded with a dynamic `import()` the first time the user exports, instead of being bundled into the route chunks that use them. xlsx (~1.2 MB raw) and jsPDF (~400 KB raw) become on-demand chunks; the initial bundle is unchanged. `downloadStyledXLSX`, the PDF export methods and the report and list export methods that call them are now async.
+- Export failures (for example a chunk that cannot be loaded offline) are now caught by `NotificationService.guardExport`, logged through `LoggerService` (Sentry in production) and shown as a translated error notification (`NOTIFICATIONS.ERRORS.EXPORT_FAILED`, EN/ES) instead of becoming an unhandled promise rejection with no feedback. Applied to the reports, inventory, loans, transfers and audit exports.
+- The skeleton components use signal `input()` instead of `@Input()`.
+- Fifteen older components that loaded an external `templateUrl` now use inline templates, matching the project convention.
+
+### Removed
+- Unused code found in a code-graph review: eight unreferenced types and constants, the `ThemeToggle`, `EmptyState`, `ErrorAlert` and `LoadingSpinner` components, `SanitizerService`, `SharedData`, the unused `components/shared` barrel, `PdfExportService.exportTableToPDF`, and three empty component stylesheets.
 
 ## [0.5.0] - 2026-07-07
 

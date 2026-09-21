@@ -475,7 +475,7 @@ effect(() => {
 
 ## Related Areas
 
-- **Backend API:** [Inv-App-API](https://github.com/mherrerabl/Inv-App-API) (NestJS)
+- **Backend API:** [Inv-App-API](https://github.com/Mar10HT/Inv-App-API) (NestJS)
 - **Database:** PostgreSQL (prod) / SQLite (dev)
 - **Deployment:** Vercel (see context/VERCEL-DEPLOYMENT.md)
 - **Security:** JWT + HttpOnly cookies (see context/SECURITY.md)

@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx-js-style';
+import type { CellStyle } from 'xlsx-js-style';
 
 // Status-based cell colors (enum values, not translated)
 const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
@@ -38,7 +38,20 @@ export interface XlsxSheetConfig {
   statusColIndex?: number;
 }
 
-export function downloadStyledXLSX(rows: XlsxRow[], config: XlsxSheetConfig): void {
+type XlsxModule = typeof import('xlsx-js-style');
+
+/** xlsx-js-style is a CommonJS package: a dynamic `import()` exposes its API under
+ *  `default`, while a static `import * as` (or another bundler) exposes it directly. */
+async function loadXlsx(): Promise<XlsxModule> {
+  const mod = (await import('xlsx-js-style')) as XlsxModule & { default?: XlsxModule };
+  return mod.default ?? mod;
+}
+
+/** Builds a styled workbook and triggers the browser download. The xlsx library is
+ *  heavy and only needed when the user exports, so it is loaded on demand instead of
+ *  being part of the initial bundle. */
+export async function downloadStyledXLSX(rows: XlsxRow[], config: XlsxSheetConfig): Promise<void> {
+  const XLSX = await loadXlsx();
   const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{}]);
   ws['!cols'] = config.colWidths.map(w => ({ wch: w }));
 
@@ -60,7 +73,7 @@ export function downloadStyledXLSX(rows: XlsxRow[], config: XlsxSheetConfig): vo
         const isAlt = R % 2 === 0;
         const baseFill = isAlt ? 'F1F5F9' : 'FFFFFF';
 
-        let cellStyle: XLSX.CellStyle = {
+        let cellStyle: CellStyle = {
           fill: { patternType: 'solid', fgColor: { rgb: baseFill } },
           font: { sz: 10, name: 'Calibri', color: { rgb: '111827' } },
           alignment: { vertical: 'center' },

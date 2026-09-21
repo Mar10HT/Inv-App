@@ -65,7 +65,391 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
     DashboardLowStockComponent,
     NgClass
   ],
-  templateUrl: './dashboard.html',
+  template: `
+<div class="min-h-screen bg-surface p-6">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Welcome Section -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-foreground mb-2">
+        {{ 'DASHBOARD.WELCOME' | translate }}, {{ userName() }}!
+      </h1>
+      <p class="text-[var(--color-on-surface-variant)] text-lg">
+        {{ 'DASHBOARD.SUBTITLE' | translate }}
+      </p>
+    </div>
+
+    <!-- Error State -->
+    @if (error()) {
+      <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
+        <div class="flex items-center gap-3">
+          <lucide-icon name="AlertCircle" class="!w-5 !h-5 text-[var(--color-status-error)]"></lucide-icon>
+          <span class="text-[var(--color-status-error)]">{{ error() }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Loading State with Skeleton -->
+    @if (loading()) {
+      <app-skeleton-dashboard />
+    } @else {
+    <!-- Primary Stats Cards -->
+    <app-dashboard-stats [stats]="stats()" />
+
+    <!-- Charts Section Component - Lazy loaded with @defer -->
+    @defer (on viewport; prefetch on idle) {
+      <app-dashboard-charts
+        [widgets]="chartWidgets()"
+        [stats]="stats()"
+        [categoryStats]="categoryStats()"
+        [warehouseStats]="warehouseStats()"
+        [statusChartSeries]="statusChartSeries()"
+        [statusChartOptions]="statusChartOptions()"
+        [categoryChartSeries]="categoryChartSeries()"
+        [categoryChartOptions]="categoryChartOptions()"
+        [warehouseChartSeries]="warehouseChartSeries()"
+        [warehouseChartOptions]="warehouseChartOptions()"
+        (widgetDrop)="onChartWidgetDrop($event)" />
+    } @placeholder {
+      <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 mb-8">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="bg-surface-variant rounded-xl border border-theme p-6 animate-pulse">
+            <div class="h-6 bg-[var(--color-surface-elevated)] rounded w-1/3 mb-4"></div>
+            <div class="h-64 bg-[var(--color-surface-elevated)] rounded"></div>
+          </div>
+        }
+      </div>
+    } @loading (minimum 200ms) {
+      <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 mb-8">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="bg-surface-variant rounded-xl border border-theme p-6">
+            <div class="flex items-center justify-center h-72">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Custom Charts Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-foreground">{{ 'DASHBOARD.CUSTOM_CHART.SECTION_TITLE' | translate }}</h3>
+        <button
+          (click)="openCustomChartDialog()"
+          class="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors text-sm font-medium">
+          <lucide-icon name="Plus" class="!w-4 !h-4"></lucide-icon>
+          {{ 'DASHBOARD.CUSTOM_CHART.ADD' | translate }}
+        </button>
+      </div>
+
+      @if (customCharts().length === 0) {
+        <div class="bg-surface-variant rounded-xl border border-dashed border-[var(--color-border)] p-8 text-center">
+          <lucide-icon name="BarChart3" class="!w-10 !h-10 text-[var(--color-on-surface-muted)] mb-3 mx-auto"></lucide-icon>
+          <p class="text-[var(--color-on-surface-variant)] text-sm mb-4">{{ 'DASHBOARD.CUSTOM_CHART.EMPTY' | translate }}</p>
+          <button
+            (click)="openCustomChartDialog()"
+            class="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] text-sm font-medium transition-colors">
+            {{ 'DASHBOARD.CUSTOM_CHART.CREATE_FIRST' | translate }}
+          </button>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (chart of customCharts(); track chart.id) {
+            <div class="bg-surface-variant rounded-xl border border-theme p-6 hover:border-[var(--color-border)] transition-colors">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-md font-semibold text-foreground truncate">{{ chart.title }}</h4>
+                <div class="flex items-center gap-1">
+                  <button
+                    (click)="openCustomChartDialog(chart)"
+                    [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + chart.title"
+                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
+                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    (click)="deleteCustomChart(chart)"
+                    [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + chart.title"
+                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
+                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                </div>
+              </div>
+
+              @if (!dataReady()) {
+                <div class="flex flex-col items-center justify-center py-8">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-primary)] mb-2"></div>
+                  <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.LOADING' | translate }}...</p>
+                </div>
+              } @else if (hasChartData(chart)) {
+                @defer (on viewport) {
+                  <apx-chart
+                    [series]="customChartConfigs().get(chart.id)!.data.series"
+                    [chart]="customChartConfigs().get(chart.id)!.options.chart"
+                    [xaxis]="customChartConfigs().get(chart.id)!.options.xaxis"
+                    [yaxis]="customChartConfigs().get(chart.id)!.options.yaxis"
+                    [colors]="customChartConfigs().get(chart.id)!.options.colors"
+                    [grid]="customChartConfigs().get(chart.id)!.options.grid"
+                    [plotOptions]="customChartConfigs().get(chart.id)!.options.plotOptions"
+                    [dataLabels]="customChartConfigs().get(chart.id)!.options.dataLabels"
+                    [legend]="customChartConfigs().get(chart.id)!.options.legend"
+                    [labels]="customChartConfigs().get(chart.id)!.data.labels"
+                    [tooltip]="customChartConfigs().get(chart.id)!.options.tooltip">
+                  </apx-chart>
+                } @placeholder {
+                  <div class="h-64 bg-[var(--color-surface-elevated)] rounded animate-pulse"></div>
+                }
+              } @else {
+                <div class="flex flex-col items-center justify-center py-8">
+                  <lucide-icon name="BarChart2" class="!w-8 !h-8 text-[var(--color-on-surface-muted)] mb-2"></lucide-icon>
+                  <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Two Column Layout for Tables (Drag & Drop) -->
+    <div
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="onTableWidgetDrop($event)"
+      class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      @for (widget of tableWidgets(); track widget) {
+        <div cdkDrag class="bg-surface-variant border border-theme rounded-xl overflow-hidden transition-colors">
+          <!-- Transactions Widget -->
+          @if (widget === 'transactions') {
+            <app-dashboard-transactions
+              [transactions]="recentTransactions()"
+              (viewAll)="viewAllTransactions()" />
+          }
+
+          <!-- Low Stock Widget -->
+          @if (widget === 'lowStock') {
+            <app-dashboard-low-stock
+              [items]="lowStockItems()"
+              (viewAll)="viewAllInventory()"
+              (itemClick)="viewItem($event)" />
+          }
+
+          <!-- Drag Placeholder -->
+          <div *cdkDragPlaceholder class="bg-[var(--color-surface-elevated)] rounded-xl border-2 border-dashed border-[var(--color-primary)] h-full min-h-[300px]"></div>
+        </div>
+      }
+    </div>
+
+    <!-- Recent Items Table -->
+    <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-semibold text-foreground">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
+          <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
+        </div>
+        <button
+          (click)="viewAllInventory()"
+          class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+          {{ 'COMMON.VIEW_ALL' | translate }}
+        </button>
+      </div>
+
+      @if (items().length === 0 && !loading()) {
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-16">
+          <lucide-icon name="Package" class="!w-14 !h-14 text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
+          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'INVENTORY.NO_ITEMS' | translate }}</p>
+          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'INVENTORY.NO_ITEMS_DESC' | translate }}</p>
+          <button
+            (click)="addNewItem()"
+            class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
+            {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
+          </button>
+        </div>
+      } @else {
+        <!-- Desktop Table View -->
+        <div class="hidden lg:block overflow-x-auto">
+          <table class="w-full" [attr.aria-label]="'DASHBOARD.RECENT_ITEMS' | translate">
+            <thead>
+              <tr class="bg-surface-container">
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[300px]">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[120px]">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[100px]">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--color-border-subtle)]">
+              @for (item of items(); track trackByFn($index, item)) {
+                <tr
+                  (click)="viewItem(item)"
+                  class="hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer group">
+                  <!-- Item Column -->
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
+                        <lucide-icon name="Package" class="!w-5 !h-5 text-[var(--color-primary)]"></lucide-icon>
+                      </div>
+                      <div class="min-w-0 max-w-[350px]">
+                        <p class="font-medium text-foreground truncate">{{ item.name }}</p>
+                        <p class="text-sm text-[var(--color-on-surface-variant)] truncate">{{ item.description || '-' }}</p>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Category Column -->
+                  <td class="px-6 py-4">
+                    <span class="text-[var(--color-on-surface-variant)]">{{ item.category }}</span>
+                  </td>
+
+                  <!-- Quantity Column -->
+                  <td class="px-6 py-4">
+                    <span class="text-foreground font-medium">{{ item.quantity }}</span>
+                  </td>
+
+                  <!-- Price Column -->
+                  <td class="px-6 py-4">
+                    @if (item.price) {
+                      <span class="text-foreground font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
+                    } @else {
+                      <span class="text-[var(--color-on-surface-muted)]">-</span>
+                    }
+                  </td>
+
+                  <!-- Status Column -->
+                  <td class="px-6 py-4">
+                    <span
+                      [ngClass]="{
+                        'text-[var(--color-status-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]': item.status === 'IN_STOCK',
+                        'text-[var(--color-status-warning)] bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)]': item.status === 'LOW_STOCK',
+                        'text-[var(--color-status-error)] bg-[var(--color-error-bg)] border border-[var(--color-error-border)]': item.status === 'OUT_OF_STOCK'
+                      }"
+                      class="px-3 py-1 rounded-md text-xs font-medium inline-block">
+                      {{ getStatusKey(item.status) | translate }}
+                    </span>
+                  </td>
+
+                  <!-- Actions Column -->
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-1">
+                      <button
+                        type="button"
+                        (click)="$event.stopPropagation(); viewItem(item)"
+                        [attr.aria-label]="('COMMON.VIEW' | translate) + ' ' + item.name"
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors">
+                        <lucide-icon name="Eye" class="!w-5 !h-5"></lucide-icon>
+                      </button>
+                      <button
+                        type="button"
+                        (click)="$event.stopPropagation(); editItem(item)"
+                        [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + item.name"
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
+                        <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
+                      </button>
+                      <button
+                        type="button"
+                        (click)="$event.stopPropagation(); deleteItem(item)"
+                        [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + item.name"
+                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
+                        <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card View - GRID 2 COLUMNS -->
+        <div class="lg:hidden p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @for (item of items(); track trackByFn($index, item)) {
+              <div
+                class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors cursor-pointer"
+                role="button"
+                tabindex="0"
+                (click)="viewItem(item)"
+                (keydown.enter)="viewItem(item)">
+                <!-- Status Badge -->
+                <div class="flex justify-between items-start mb-2">
+                  <div class="w-8 h-8 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <lucide-icon name="Package" class="!text-[var(--color-primary)] !w-4 !h-4"></lucide-icon>
+                  </div>
+                  <span
+                    [ngClass]="{
+                      'bg-[var(--color-success-bg)] text-[var(--color-status-success)]': item.status === 'IN_STOCK',
+                      'bg-[var(--color-warning-bg)] text-[var(--color-status-warning)]': item.status === 'LOW_STOCK',
+                      'bg-[var(--color-error-bg)] text-[var(--color-status-error)]': item.status === 'OUT_OF_STOCK'
+                    }"
+                    class="px-1.5 py-0.5 rounded text-[10px] font-medium">
+                    {{ getStatusKey(item.status) | translate }}
+                  </span>
+                </div>
+
+                <!-- Item Name -->
+                <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
+                <p class="text-[var(--color-on-surface-variant)] text-xs truncate mb-2">{{ item.category }}</p>
+
+                <!-- Quick Info -->
+                <div class="flex items-center justify-between text-xs mb-2">
+                  <span class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.QTY_SHORT' | translate }}: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
+                  @if (item.price) {
+                    <span class="text-[var(--color-status-success)] font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
+                  }
+                </div>
+
+                <!-- Actions -->
+                <div
+                  class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]"
+                  role="presentation"
+                  (click)="$event.stopPropagation()"
+                  (keydown)="$event.stopPropagation()">
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); viewItem(item)"
+                    [attr.aria-label]="('COMMON.VIEW' | translate) + ' ' + item.name"
+                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors">
+                    <lucide-icon name="Eye" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); editItem(item)"
+                    [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + item.name"
+                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
+                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); deleteItem(item)"
+                    [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + item.name"
+                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
+                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+      <!-- Quick Actions -->
+      <div class="mt-6 flex flex-wrap gap-4">
+        <button
+          (click)="addNewItem()"
+          class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
+          {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
+        </button>
+        <button
+          (click)="viewAllInventory()"
+          class="bg-[var(--color-surface-elevated)] text-foreground px-6 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-all font-medium">
+          {{ 'COMMON.VIEW_ALL' | translate }} {{ 'NAV.INVENTORY' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+</div>
+  `,
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit {

@@ -7,6 +7,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuditService } from '../../services/audit.service';
+import { NotificationService } from '../../services/notification.service';
 import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.interface';
 
 @Component({
@@ -231,6 +232,7 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
 export class AuditLogComponent implements OnInit {
   auditService = inject(AuditService);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
 
   // Expose enums
   AuditAction = AuditAction;
@@ -448,7 +450,7 @@ export class AuditLogComponent implements OnInit {
     return classes[action] || 'text-[var(--color-on-surface-variant)]';
   }
 
-  exportToCSV(): void {
-    this.auditService.exportToXLSX(this.filteredLogs());
+  async exportToCSV(): Promise<void> {
+    await this.notifications.guardExport(() => this.auditService.exportToXLSX(this.filteredLogs()));
   }
 }

@@ -97,7 +97,8 @@ export function filterLoans(loans: Loan[], filter?: LoanFilter): Loan[] {
     result = result.filter((l) => l.loanDate <= filter.dateTo!);
   }
 
-  return result.sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
+  // Copy before sorting: when no criteria removed anything, `result` is still the caller's array.
+  return [...result].sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
 }
 
 /** Summary text for a loan's items: "Laptop x2; Mouse x1" or single item name. */

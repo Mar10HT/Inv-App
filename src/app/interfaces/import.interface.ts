@@ -38,27 +38,4 @@ export interface ImportError {
   message: string;
 }
 
-export interface ImportPreview {
-  rows: ImportRow[];
-  validCount: number;
-  invalidCount: number;
-  totalCount: number;
-}
 
-export const IMPORT_TEMPLATE_HEADERS = [
-  'Name*',
-  'Description',
-  'Quantity*',
-  'Min Quantity',
-  'Category*',
-  'Model',
-  'Item Type',
-  'Service Tag',
-  'Serial Number',
-  'SKU',
-  'Barcode',
-  'Price',
-  'Currency',
-  'Warehouse*',
-  'Supplier'
-];

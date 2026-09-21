@@ -155,7 +155,7 @@ export class AuditService {
   /**
    * Export logs to CSV
    */
-  exportToXLSX(logs?: AuditLog[]): void {
+  async exportToXLSX(logs?: AuditLog[]): Promise<void> {
     const data = logs || this.logsSignal();
 
     const rows = data.map(log => ({
@@ -168,7 +168,7 @@ export class AuditService {
       Changes:       log.changes.map(c => `${c.field}: ${c.oldValue} → ${c.newValue}`).join(' | '),
     }));
 
-    downloadStyledXLSX(rows, {
+    await downloadStyledXLSX(rows, {
       sheetName:      'Audit Log',
       filename:       `audit-log-${new Date().toISOString().split('T')[0]}.xlsx`,
       headerColor:    '64748B',

@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,9 +8,9 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div
-      [class]="baseClasses + ' ' + customClass"
-      [style.width]="width"
-      [style.height]="height"
+      [class]="baseClasses + ' ' + customClass()"
+      [style.width]="width()"
+      [style.height]="height()"
     ></div>
   `,
   styles: [`
@@ -38,12 +38,12 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class SkeletonComponent {
-  @Input() width = '100%';
-  @Input() height = '1rem';
-  @Input() circle = false;
-  @Input() customClass = '';
+  width = input('100%');
+  height = input('1rem');
+  circle = input(false);
+  customClass = input('');
 
   get baseClasses(): string {
-    return `skeleton-shimmer ${this.circle ? 'rounded-full' : 'rounded'}`;
+    return `skeleton-shimmer ${this.circle() ? 'rounded-full' : 'rounded'}`;
   }
 }

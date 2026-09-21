@@ -948,7 +948,7 @@ export class LoansComponent implements OnInit {
     return 'text-foreground';
   }
 
-  exportToXLSX(): void {
-    this.loanService.exportToXLSX(this.filteredLoans());
+  async exportToXLSX(): Promise<void> {
+    await this.notifications.guardExport(() => this.loanService.exportToXLSX(this.filteredLoans()));
   }
 }

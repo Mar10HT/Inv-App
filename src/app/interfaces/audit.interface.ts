@@ -53,14 +53,6 @@ export interface AuditLogFilter {
   dateTo?: Date;
 }
 
-export interface CreateAuditLogDto {
-  action: AuditAction;
-  entity: AuditEntity;
-  entityId: string;
-  entityName: string;
-  changes?: AuditChange[];
-  metadata?: Record<string, unknown>;
-}
 
 // Backend API types
 export interface BackendAuditLog {

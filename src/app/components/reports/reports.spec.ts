@@ -9,56 +9,11 @@ import {
   Currency,
   InventoryItemInterface,
   InventoryStatus,
-  ItemType,
-  Supplier,
-  Warehouse
+  ItemType
 } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
-
-const warehouse = (id: string, name: string): Warehouse => ({
-  id,
-  name,
-  location: '',
-  isActive: true,
-  createdAt: new Date(0),
-  updatedAt: new Date(0)
-});
-
-const supplier = (id: string, name: string): Supplier => ({
-  id,
-  name,
-  location: '',
-  createdAt: new Date(0),
-  updatedAt: new Date(0)
-});
-
-const item = (overrides: Partial<InventoryItemInterface> = {}): InventoryItemInterface => ({
-  id: 'i',
-  name: 'Item',
-  quantity: 1,
-  minQuantity: 0,
-  category: 'Cat',
-  status: InventoryStatus.IN_STOCK,
-  createdAt: new Date(0),
-  updatedAt: new Date(0),
-  itemType: ItemType.BULK,
-  price: 10,
-  currency: Currency.USD,
-  warehouseId: 'w1',
-  ...overrides
-});
-
-const tx = (overrides: Partial<Transaction> = {}): Transaction => ({
-  id: 't',
-  type: TransactionType.IN,
-  userId: 'u',
-  date: new Date('2026-01-15T12:00:00Z'),
-  createdAt: new Date(0),
-  updatedAt: new Date(0),
-  items: [],
-  ...overrides
-});
+import { item, supplier, tx, warehouse } from '../../../testing/report-fixtures';
 
 const daysAgo = (days: number): Date => {
   const d = new Date();

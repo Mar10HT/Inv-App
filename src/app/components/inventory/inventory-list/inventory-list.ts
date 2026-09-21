@@ -24,6 +24,7 @@ import { InventoryService } from '.././../../services/inventory/inventory.servic
 import { NotificationService } from '../../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { InventoryStatsCards } from '../inventory-stats/inventory-stats';
 import { InventoryItem } from '../inventory-item/inventory-item';
 import { ImportDialog } from '../../import/import-dialog';
 import { SkeletonCardComponent } from '../../shared/skeleton/skeleton-card';
@@ -49,7 +50,8 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
     ScrollingModule,
     NgxPermissionsModule,
     SkeletonCardComponent,
-    SkeletonTableComponent
+    SkeletonTableComponent,
+    InventoryStatsCards
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -73,67 +75,7 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
     </div>
 
     <!-- Stats Cards -->
-    @if (loading()) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        @for (card of [1, 2, 3, 4]; track $index) {
-          <app-skeleton-card />
-        }
-      </div>
-    } @else {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Items -->
-        <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'DASHBOARD.TOTAL_ITEMS' | translate }}</p>
-            <p class="text-3xl font-bold text-foreground">{{ stats().total }}</p>
-          </div>
-          <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Package" class="!text-[var(--color-on-surface-variant)] !w-6 !h-6"></lucide-icon>
-          </div>
-        </div>
-      </div>
-
-      <!-- In Stock -->
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-foreground">{{ stats().inStock }}</p>
-          </div>
-          <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="CheckCircle2" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
-          </div>
-        </div>
-      </div>
-
-      <!-- Low Stock -->
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-foreground">{{ stats().lowStock }}</p>
-          </div>
-          <div class="bg-[var(--color-warning-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="AlertTriangle" class="!text-orange-600 !w-6 !h-6"></lucide-icon>
-          </div>
-        </div>
-      </div>
-
-      <!-- Out of Stock -->
-      <div class="bg-surface-variant border border-theme rounded-xl p-6 hover:border-[var(--color-border)] transition-all">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'DASHBOARD.OUT_OF_STOCK' | translate }}</p>
-            <p class="text-3xl font-bold text-foreground">{{ stats().outOfStock }}</p>
-          </div>
-          <div class="p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0" style="background-color: var(--color-error-bg)">
-            <lucide-icon name="AlertCircle" class="!w-6 !h-6" style="color: var(--color-status-error)"></lucide-icon>
-          </div>
-        </div>
-      </div>
-      </div>
-    }
+    <app-inventory-stats [stats]="stats()" [loading]="loading()" />
 
     <!-- Filters Section - REDESIGNED -->
     <div class="bg-surface-variant border border-theme rounded-xl p-6 mb-8">

@@ -55,3 +55,6 @@ test-results/
 # Local agent tooling
 .agents/
 skills-lock.json
+
+# Graphify
+graphify-out/

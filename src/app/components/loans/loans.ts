@@ -16,7 +16,9 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { Loan, LoanStatus } from '../../interfaces/loan.interface';
-import { summarizeLoanItems, totalLoanQuantity } from '../../utils/loan.utils';
+import { getLoanDueDateClass, getLoanStatusClass, summarizeLoanItems, totalLoanQuantity } from '../../utils/loan.utils';
+import { LoanStatsCards } from './loan-stats';
+import { LoanMobileCards } from './loan-mobile-cards';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { LoanFormDialog, LoanFormResult } from './loan-form-dialog';
 import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
@@ -37,7 +39,9 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
     LoanFormDialog,
     LoanQrDialog,
     LoanScanDialog,
-    DatePipe
+    DatePipe,
+    LoanStatsCards,
+    LoanMobileCards
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -75,63 +79,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOANS.PENDING' | translate }}</p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().totalPending }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOANS.SENT' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ stats().totalSent }}</p>
-              </div>
-              <div class="bg-[var(--color-info-bg)] p-3 rounded-lg">
-                <lucide-icon name="Send" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOANS.RECEIVED' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-accent-violet)]">{{ stats().totalReceived }}</p>
-              </div>
-              <div class="bg-[var(--color-accent-violet-bg)] p-3 rounded-lg">
-                <lucide-icon name="PackageCheck" class="!text-[var(--color-accent-violet)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOANS.OVERDUE' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().totalOverdue }}</p>
-              </div>
-              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
-                <lucide-icon name="AlertTriangle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'LOANS.RETURNED' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().totalReturned }}</p>
-              </div>
-              <div class="bg-[var(--color-success-bg)] p-3 rounded-lg">
-                <lucide-icon name="CheckCircle2" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-loan-stats [stats]="stats()" />
 
         <!-- Filters -->
         <div class="bg-surface-variant border border-theme rounded-xl p-6 mb-8">
@@ -355,162 +303,16 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
           </div>
 
           <!-- Mobile Cards -->
-          <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
-            @for (loan of paginatedLoans(); track loan.id) {
-              <div class="p-4">
-                <div class="flex justify-between items-start mb-3">
-                  <div>
-                    <p class="text-foreground font-medium">{{ loan.name || summarize(loan) }}</p>
-                    @if (loan.name) {
-                      <p class="text-[var(--color-on-surface-variant)] text-xs mb-1">{{ summarize(loan) }}</p>
-                    }
-                    <p class="text-[var(--color-on-surface-variant)] text-sm">
-                      {{ 'DASHBOARD.TABLE.QUANTITY' | translate }}: {{ totalQty(loan) }}
-                      @if (loan.items.length === 1 && loan.items[0].inventoryItemServiceTag) {
-                        · {{ loan.items[0].inventoryItemServiceTag }}
-                      } @else if (loan.items.length > 1) {
-                        · {{ loan.items.length }} {{ 'TRANSACTION.ITEMS' | translate }}
-                      }
-                    </p>
-                  </div>
-                  <span [class]="getStatusClass(loan.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
-                    {{ getStatusLabel(loan.status) }}
-                  </span>
-                </div>
-                <div class="grid grid-cols-2 gap-3 text-sm mb-3">
-                  <div>
-                    <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.SOURCE_WAREHOUSE' | translate }}</p>
-                    <p class="text-foreground">{{ loan.sourceWarehouseName }}</p>
-                  </div>
-                  <div>
-                    <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.DEST_WAREHOUSE' | translate }}</p>
-                    <p class="text-foreground">{{ loan.destinationWarehouseName }}</p>
-                  </div>
-                  <div>
-                    <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.DUE_DATE' | translate }}</p>
-                    <p [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</p>
-                  </div>
-                </div>
-                <!-- PDF download — always available -->
-                <div class="mb-2 flex justify-end">
-                  <button
-                    type="button"
-                    (click)="downloadPdf(loan)"
-                    class="ds-btn ds-btn--ghost ds-btn--sm">
-                    <lucide-icon name="FileText" class="shrink-0"></lucide-icon>
-                    <span>PDF</span>
-                  </button>
-                </div>
-                <!-- Mobile Actions -->
-                @switch (loan.status) {
-                  @case (LoanStatus.PENDING) {
-                    <ng-container *ngxPermissionsOnly="['loans:manage']">
-                      <div class="flex gap-2">
-                        <button
-                          (click)="sendLoan(loan)"
-                          [disabled]="loanService.loading()"
-                          class="flex-1 ds-btn ds-btn--send ds-btn--sm justify-center">
-                          <lucide-icon name="Send" class="shrink-0"></lucide-icon>
-                          <span>{{ 'LOANS.SEND' | translate }}</span>
-                        </button>
-                        <button
-                          (click)="cancelLoan(loan)"
-                          [disabled]="loanService.loading()"
-                          [attr.aria-label]="'COMMON.CANCEL' | translate"
-                          class="ds-btn ds-btn--danger-ghost ds-btn--sm">
-                          <lucide-icon name="X" class="shrink-0"></lucide-icon>
-                        </button>
-                      </div>
-                    </ng-container>
-                  }
-                  @case (LoanStatus.SENT) {
-                    <div class="flex gap-2">
-                      <button
-                        (click)="showQrCode(loan, 'send')"
-                        class="flex-1 ds-btn ds-btn--qr ds-btn--sm justify-center">
-                        <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                        <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
-                      </button>
-                      <ng-container *ngxPermissionsOnly="['loans:manage']">
-                        <button
-                          (click)="manualConfirmReceipt(loan)"
-                          [disabled]="loanService.loading()"
-                          [attr.title]="'LOANS.MANUAL_CONFIRM_RECEIPT' | translate"
-                          class="ds-btn ds-btn--ghost ds-btn--sm">
-                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                        </button>
-                      </ng-container>
-                    </div>
-                  }
-                  @case (LoanStatus.RECEIVED) {
-                    <ng-container *ngxPermissionsOnly="['loans:manage']">
-                      <button
-                        (click)="initiateReturn(loan)"
-                        [disabled]="loanService.loading()"
-                        class="w-full ds-btn ds-btn--return ds-btn--sm justify-center">
-                        <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
-                        <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                      </button>
-                    </ng-container>
-                  }
-                  @case (LoanStatus.OVERDUE) {
-                    <ng-container *ngxPermissionsOnly="['loans:manage']">
-                      @if (!loan.receivedAt) {
-                        <button
-                          (click)="manualConfirmReceipt(loan)"
-                          [disabled]="loanService.loading()"
-                          class="w-full ds-btn ds-btn--ghost ds-btn--sm justify-center">
-                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                          <span>{{ 'LOANS.MANUAL_CONFIRM_RECEIPT' | translate }}</span>
-                        </button>
-                      } @else {
-                        <div class="flex gap-2">
-                          <button
-                            (click)="initiateReturn(loan)"
-                            [disabled]="loanService.loading()"
-                            class="flex-1 ds-btn ds-btn--danger ds-btn--sm justify-center">
-                            <lucide-icon name="CornerDownLeft" class="shrink-0"></lucide-icon>
-                            <span>{{ 'LOANS.INITIATE_RETURN' | translate }}</span>
-                          </button>
-                          <button
-                            (click)="manualConfirmReturn(loan)"
-                            [disabled]="loanService.loading()"
-                            [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
-                            class="ds-btn ds-btn--ghost ds-btn--sm">
-                            <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                          </button>
-                        </div>
-                      }
-                    </ng-container>
-                  }
-                  @case (LoanStatus.RETURN_PENDING) {
-                    <div class="flex gap-2">
-                      <button
-                        (click)="showQrCode(loan, 'return')"
-                        class="flex-1 ds-btn ds-btn--approve ds-btn--sm justify-center">
-                        <lucide-icon name="QrCode" class="shrink-0"></lucide-icon>
-                        <span>{{ 'LOANS.QR.SHOW_QR' | translate }}</span>
-                      </button>
-                      <ng-container *ngxPermissionsOnly="['loans:manage']">
-                        <button
-                          (click)="manualConfirmReturn(loan)"
-                          [disabled]="loanService.loading()"
-                          [attr.title]="'LOANS.MANUAL_CONFIRM_RETURN' | translate"
-                          class="ds-btn ds-btn--ghost ds-btn--sm">
-                          <lucide-icon name="CheckCircle" class="shrink-0"></lucide-icon>
-                        </button>
-                      </ng-container>
-                    </div>
-                  }
-                }
-              </div>
-            } @empty {
-              <div class="p-8 text-center">
-                <lucide-icon name="ClipboardList" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-                <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NO_LOANS' | translate }}</h3>
-              </div>
-            }
-          </div>
+          <app-loan-mobile-cards
+            [loans]="paginatedLoans()"
+            [loading]="loanService.loading()"
+            (sendRequested)="sendLoan($event)"
+            (cancelRequested)="cancelLoan($event)"
+            (showQrRequested)="showQrCode($event.loan, $event.type)"
+            (confirmReceiptRequested)="manualConfirmReceipt($event)"
+            (confirmReturnRequested)="manualConfirmReturn($event)"
+            (initiateReturnRequested)="initiateReturn($event)"
+            (downloadPdfRequested)="downloadPdf($event)" />
 
           <!-- Pagination -->
           @if (filteredLoans().length > pageSize()) {
@@ -908,17 +710,7 @@ export class LoansComponent implements OnInit {
   }
 
   getStatusClass(status: LoanStatus): string {
-    const classes: Record<string, string> = {
-      [LoanStatus.PENDING]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
-      [LoanStatus.SENT]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)] border border-[var(--color-info-border)]',
-      [LoanStatus.RECEIVED]: 'bg-[var(--color-accent-violet-bg)] text-[var(--color-accent-violet)] border border-[var(--color-accent-violet-bg)]',
-      [LoanStatus.RETURN_PENDING]: 'bg-[var(--color-accent-amber-bg)] text-[var(--color-accent-amber)] border border-[var(--color-accent-amber-bg)]',
-      [LoanStatus.RETURNED]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]',
-      [LoanStatus.OVERDUE]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
-      [LoanStatus.CANCELLED]: 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)] border border-[var(--color-border)]',
-      [LoanStatus.ACTIVE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)] border border-[var(--color-success-border)]'
-    };
-    return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
+    return getLoanStatusClass(status);
   }
 
   summarize(loan: Loan): string {
@@ -934,18 +726,7 @@ export class LoansComponent implements OnInit {
   }
 
   getDueDateClass(loan: Loan): string {
-    if (loan.status === LoanStatus.RETURNED || loan.status === LoanStatus.CANCELLED) {
-      return 'text-[var(--color-on-surface-variant)]';
-    }
-    if (loan.status === LoanStatus.OVERDUE) return 'text-[var(--color-status-error)] font-medium';
-
-    const now = new Date();
-    const dueDate = new Date(loan.dueDate);
-    const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (daysUntilDue <= 3) return 'text-amber-400 font-medium';
-    if (daysUntilDue <= 7) return 'text-yellow-400';
-    return 'text-foreground';
+    return getLoanDueDateClass(loan);
   }
 
   async exportToXLSX(): Promise<void> {

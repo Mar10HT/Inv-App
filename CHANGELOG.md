@@ -15,17 +15,19 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 - `filterLoans` sorted the caller's array in place whenever no filter criterion removed a loan; it now sorts a copy.
 - The `analyze` and `serve:ssr` npm scripts pointed at `dist/INV-ICN`, but the build outputs `dist/inv-app`. `serve:ssr:INV-ICN` is now `serve:ssr:inv-app`.
 - README and CODEMAPS linked to a backend repository that does not exist; they now point to `Mar10HT/Inv-App-API`. `context/ROADMAP.md` is refreshed for v0.5.0 and no longer lists shipped features as planned.
+- Eleven templates (loans, transfers, forgot-password, reset-password) render `<lucide-icon name="CheckCircle">`, but only `CheckCircle2` was registered, and lucide-angular throws when an icon is not provided. `CheckCircle` is now registered next to it.
 
 ### Added
 - CI (`.github/workflows/ci.yml`): install, lint, unit tests, production build on every push/PR to `main`.
 - ESLint via `@angular-eslint`, wired to `npm run lint` (`ng lint`) — this project had no linting configured at all before.
-- Unit specs for the xlsx download flow, the four PDF exports, `BaseCrudService`, `triggerBlobDownload`, `loan.utils` and the skeleton components (unit suite from 12 to 58 specs).
+- Unit specs for the xlsx download flow, the four PDF exports, `BaseCrudService`, `triggerBlobDownload`, `loan.utils` and the skeleton components, and for every component and helper extracted in the file split (unit suite from 12 to 102 specs).
 
 ### Changed
 - `jsPDF`, `jspdf-autotable` and `xlsx-js-style` are now loaded with a dynamic `import()` the first time the user exports, instead of being bundled into the route chunks that use them. xlsx (~1.2 MB raw) and jsPDF (~400 KB raw) become on-demand chunks; the initial bundle is unchanged. `downloadStyledXLSX`, the PDF export methods and the report and list export methods that call them are now async.
 - Export failures (for example a chunk that cannot be loaded offline) are now caught by `NotificationService.guardExport`, logged through `LoggerService` (Sentry in production) and shown as a translated error notification (`NOTIFICATIONS.ERRORS.EXPORT_FAILED`, EN/ES) instead of becoming an unhandled promise rejection with no feedback. Applied to the reports, inventory, loans, transfers and audit exports.
 - The skeleton components use signal `input()` instead of `@Input()`.
 - Fifteen older components that loaded an external `templateUrl` now use inline templates, matching the project convention.
+- Files over the 800-line limit were split without changing behavior: `pdf-export.service.ts` (890 to 559 lines; the drawing helpers moved to `services/pdf/pdf-drawing.base.ts`), `inventory-list.ts` (818 to 760), `stock-take.ts` (811 to 768), `transfers.ts` (845 to 791) and `loans.ts` (955 to 735). The stat cards became `InventoryStatsCards`, `StockTakeStatsCards`, `LoanStatsCards` and `TransferStatsCards`, and the loans mobile list became `LoanMobileCards` (inputs for the data, outputs for the row actions). `getLoanStatusClass` and `getLoanDueDateClass` moved to `loan.utils`. `reports.ts` and `dashboard.ts` are still over the limit.
 
 ### Removed
 - Unused code found in a code-graph review: eight unreferenced types and constants, the `ThemeToggle`, `EmptyState`, `ErrorAlert` and `LoadingSpinner` components, `SanitizerService`, `SharedData`, the unused `components/shared` barrel, `PdfExportService.exportTableToPDF`, and three empty component stylesheets.

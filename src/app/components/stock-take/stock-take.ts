@@ -21,6 +21,7 @@ import {
 import { StockTakeFormDialogComponent } from './stock-take-form-dialog';
 import { StockTakeCompleteDialogComponent } from './stock-take-complete-dialog';
 import { StockTakeVarianceComponent } from './stock-take-variance';
+import { StockTakeStatsCards } from './stock-take-stats';
 
 @Component({
   selector: 'app-stock-take',
@@ -38,6 +39,7 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
     StockTakeCompleteDialogComponent,
     StockTakeVarianceComponent,
     DatePipe,
+    StockTakeStatsCards
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -65,52 +67,7 @@ import { StockTakeVarianceComponent } from './stock-take-variance';
           </div>
 
           <!-- Stats Cards -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.TOTAL' | translate }}</p>
-                  <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
-                </div>
-                <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                  <lucide-icon name="ClipboardCheck" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
-                </div>
-              </div>
-            </div>
-            <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.IN_PROGRESS' | translate }}</p>
-                  <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ stats().inProgress }}</p>
-                </div>
-                <div class="bg-[var(--color-info-bg)] p-3 rounded-lg">
-                  <lucide-icon name="Clock" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
-                </div>
-              </div>
-            </div>
-            <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.COMPLETED' | translate }}</p>
-                  <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().completed }}</p>
-                </div>
-                <div class="bg-[var(--color-success-bg)] p-3 rounded-lg">
-                  <lucide-icon name="CheckCircle2" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
-                </div>
-              </div>
-            </div>
-            <div class="bg-surface-variant border border-theme rounded-xl p-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STOCK_TAKE.STATS.CANCELLED' | translate }}</p>
-                  <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().cancelled }}</p>
-                </div>
-                <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
-                  <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
-                </div>
-              </div>
-            </div>
-          </div>
+          <app-stock-take-stats [stats]="stats()" />
 
           <!-- Filters -->
           <div class="bg-surface-variant border border-theme rounded-xl p-6 mb-8">

@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, effect } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
@@ -9,18 +8,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { forkJoin, catchError, of } from 'rxjs';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { ApexNonAxisChartSeries, ApexAxisChartSeries, ApexOptions } from 'ng-apexcharts';
-
-// getCustomChartOptions() always populates these sub-options (unlike ApexOptions'
-// own all-optional fields) — narrowing them to required matches what's actually
-// returned and satisfies <apx-chart>'s required @Input()s in the template.
-type CustomChartOptions = ApexOptions &
-  Required<
-    Pick<
-      ApexOptions,
-      'chart' | 'xaxis' | 'yaxis' | 'colors' | 'grid' | 'plotOptions' | 'dataLabels' | 'legend' | 'tooltip'
-    >
-  >;
+import { ApexNonAxisChartSeries, ApexAxisChartSeries } from 'ng-apexcharts';
 
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { DashboardService, DashboardStats, CategoryStats, WarehouseStats } from '../../services/dashboard.service';
@@ -32,7 +20,7 @@ import { InventoryItemInterface, InventoryStatus, StatsResponse } from '../../in
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { InventoryItem } from '../inventory/inventory-item/inventory-item';
-import { CustomChartDialog, CustomChart, CustomChartDialogData, InventoryItemData, ChartCurrency } from './custom-chart-dialog/custom-chart-dialog';
+import { CustomChartDialog, CustomChart, CustomChartDialogData, InventoryItemData } from './custom-chart-dialog/custom-chart-dialog';
 import { NotificationService } from '../../services/notification.service';
 import {
   DashboardStatsComponent,
@@ -44,6 +32,8 @@ import {
   LowStockItem
 } from './components';
 import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboard';
+import { DashboardRecentItems } from './components/dashboard-recent-items/dashboard-recent-items';
+import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base';
 
 @Component({
   selector: 'app-dashboard',
@@ -63,7 +53,7 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
     SkeletonDashboardComponent,
     DashboardTransactionsComponent,
     DashboardLowStockComponent,
-    NgClass
+    DashboardRecentItems
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -239,199 +229,14 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
     </div>
 
     <!-- Recent Items Table -->
-    <div class="bg-surface-variant border border-theme rounded-xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-semibold text-foreground">{{ 'DASHBOARD.RECENT_ITEMS' | translate }}</h2>
-          <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'DASHBOARD.MANAGE_ITEMS' | translate }}</p>
-        </div>
-        <button
-          (click)="viewAllInventory()"
-          class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
-          {{ 'COMMON.VIEW_ALL' | translate }}
-        </button>
-      </div>
-
-      @if (items().length === 0 && !loading()) {
-        <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Package" class="!w-14 !h-14 text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'INVENTORY.NO_ITEMS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'INVENTORY.NO_ITEMS_DESC' | translate }}</p>
-          <button
-            (click)="addNewItem()"
-            class="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-primary-hover)] transition-all font-medium">
-            {{ 'DASHBOARD.ADD_NEW_ITEM' | translate }}
-          </button>
-        </div>
-      } @else {
-        <!-- Desktop Table View -->
-        <div class="hidden lg:block overflow-x-auto">
-          <table class="w-full" [attr.aria-label]="'DASHBOARD.RECENT_ITEMS' | translate">
-            <thead>
-              <tr class="bg-surface-container">
-                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[300px]">{{ 'DASHBOARD.TABLE.ITEM' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[120px]">{{ 'DASHBOARD.TABLE.CATEGORY' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'DASHBOARD.TABLE.QUANTITY' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'DASHBOARD.TABLE.PRICE' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[100px]">{{ 'DASHBOARD.TABLE.STATUS' | translate }}</th>
-                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'DASHBOARD.TABLE.ACTIONS' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[var(--color-border-subtle)]">
-              @for (item of items(); track trackByFn($index, item)) {
-                <tr
-                  (click)="viewItem(item)"
-                  class="hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer group">
-                  <!-- Item Column -->
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
-                        <lucide-icon name="Package" class="!w-5 !h-5 text-[var(--color-primary)]"></lucide-icon>
-                      </div>
-                      <div class="min-w-0 max-w-[350px]">
-                        <p class="font-medium text-foreground truncate">{{ item.name }}</p>
-                        <p class="text-sm text-[var(--color-on-surface-variant)] truncate">{{ item.description || '-' }}</p>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Category Column -->
-                  <td class="px-6 py-4">
-                    <span class="text-[var(--color-on-surface-variant)]">{{ item.category }}</span>
-                  </td>
-
-                  <!-- Quantity Column -->
-                  <td class="px-6 py-4">
-                    <span class="text-foreground font-medium">{{ item.quantity }}</span>
-                  </td>
-
-                  <!-- Price Column -->
-                  <td class="px-6 py-4">
-                    @if (item.price) {
-                      <span class="text-foreground font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
-                    } @else {
-                      <span class="text-[var(--color-on-surface-muted)]">-</span>
-                    }
-                  </td>
-
-                  <!-- Status Column -->
-                  <td class="px-6 py-4">
-                    <span
-                      [ngClass]="{
-                        'text-[var(--color-status-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]': item.status === 'IN_STOCK',
-                        'text-[var(--color-status-warning)] bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)]': item.status === 'LOW_STOCK',
-                        'text-[var(--color-status-error)] bg-[var(--color-error-bg)] border border-[var(--color-error-border)]': item.status === 'OUT_OF_STOCK'
-                      }"
-                      class="px-3 py-1 rounded-md text-xs font-medium inline-block">
-                      {{ getStatusKey(item.status) | translate }}
-                    </span>
-                  </td>
-
-                  <!-- Actions Column -->
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-1">
-                      <button
-                        type="button"
-                        (click)="$event.stopPropagation(); viewItem(item)"
-                        [attr.aria-label]="('COMMON.VIEW' | translate) + ' ' + item.name"
-                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors">
-                        <lucide-icon name="Eye" class="!w-5 !h-5"></lucide-icon>
-                      </button>
-                      <button
-                        type="button"
-                        (click)="$event.stopPropagation(); editItem(item)"
-                        [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + item.name"
-                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
-                        <lucide-icon name="Pencil" class="!w-5 !h-5"></lucide-icon>
-                      </button>
-                      <button
-                        type="button"
-                        (click)="$event.stopPropagation(); deleteItem(item)"
-                        [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + item.name"
-                        class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
-                        <lucide-icon name="Trash2" class="!w-5 !h-5"></lucide-icon>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Mobile Card View - GRID 2 COLUMNS -->
-        <div class="lg:hidden p-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            @for (item of items(); track trackByFn($index, item)) {
-              <div
-                class="bg-[var(--color-surface)] border border-theme rounded-xl p-3 hover:border-[var(--color-border)] transition-colors cursor-pointer"
-                role="button"
-                tabindex="0"
-                (click)="viewItem(item)"
-                (keydown.enter)="viewItem(item)">
-                <!-- Status Badge -->
-                <div class="flex justify-between items-start mb-2">
-                  <div class="w-8 h-8 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <lucide-icon name="Package" class="!text-[var(--color-primary)] !w-4 !h-4"></lucide-icon>
-                  </div>
-                  <span
-                    [ngClass]="{
-                      'bg-[var(--color-success-bg)] text-[var(--color-status-success)]': item.status === 'IN_STOCK',
-                      'bg-[var(--color-warning-bg)] text-[var(--color-status-warning)]': item.status === 'LOW_STOCK',
-                      'bg-[var(--color-error-bg)] text-[var(--color-status-error)]': item.status === 'OUT_OF_STOCK'
-                    }"
-                    class="px-1.5 py-0.5 rounded text-[10px] font-medium">
-                    {{ getStatusKey(item.status) | translate }}
-                  </span>
-                </div>
-
-                <!-- Item Name -->
-                <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ item.name }}</h3>
-                <p class="text-[var(--color-on-surface-variant)] text-xs truncate mb-2">{{ item.category }}</p>
-
-                <!-- Quick Info -->
-                <div class="flex items-center justify-between text-xs mb-2">
-                  <span class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.QTY_SHORT' | translate }}: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
-                  @if (item.price) {
-                    <span class="text-[var(--color-status-success)] font-medium">{{ formatCurrency(item.price, item.currency) }}</span>
-                  }
-                </div>
-
-                <!-- Actions -->
-                <div
-                  class="flex justify-end gap-1 pt-2 border-t border-[var(--color-border-subtle)]"
-                  role="presentation"
-                  (click)="$event.stopPropagation()"
-                  (keydown)="$event.stopPropagation()">
-                  <button
-                    type="button"
-                    (click)="$event.stopPropagation(); viewItem(item)"
-                    [attr.aria-label]="('COMMON.VIEW' | translate) + ' ' + item.name"
-                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-info)] hover:bg-[var(--color-info-bg)] transition-colors">
-                    <lucide-icon name="Eye" class="!w-4 !h-4"></lucide-icon>
-                  </button>
-                  <button
-                    type="button"
-                    (click)="$event.stopPropagation(); editItem(item)"
-                    [attr.aria-label]="('COMMON.EDIT' | translate) + ' ' + item.name"
-                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)] transition-colors">
-                    <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
-                  </button>
-                  <button
-                    type="button"
-                    (click)="$event.stopPropagation(); deleteItem(item)"
-                    [attr.aria-label]="('COMMON.DELETE' | translate) + ' ' + item.name"
-                    class="p-1.5 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors">
-                    <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
+    <app-dashboard-recent-items
+      [items]="items()"
+      [loading]="loading()"
+      (viewRequested)="viewItem($event)"
+      (editRequested)="editItem($event)"
+      (deleteRequested)="deleteItem($event)"
+      (addRequested)="addNewItem()"
+      (viewAllRequested)="viewAllInventory()" />
 
       <!-- Quick Actions -->
       <div class="mt-6 flex flex-wrap gap-4">
@@ -452,7 +257,7 @@ import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboar
   `,
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit {
+export class Dashboard extends DashboardChartsBase implements OnInit {
   private inventoryService = inject(InventoryService);
   private dashboardService = inject(DashboardService);
   private transactionService = inject(TransactionService);
@@ -460,10 +265,10 @@ export class Dashboard implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
-  private translate = inject(TranslateService);
+  protected readonly translate = inject(TranslateService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggerService);
-  private themeService = inject(ThemeService);
+  protected readonly themeService = inject(ThemeService);
 
   userName = computed(() => this.authService.currentUser()?.name || 'User');
 
@@ -540,28 +345,8 @@ export class Dashboard implements OnInit {
   warehouseChartSeries = signal<ApexAxisChartSeries>([]);
   warehouseChartOptions = signal<BarChartOptions | null>(null);
 
-  // Resolve CSS variable to hex for ApexCharts (which needs resolved values)
-  private getCssVar(name: string, fallback: string): string {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-  }
-
-  private get chartForeColor(): string {
-    return this.getCssVar('--color-on-surface-variant', '#94a3b8');
-  }
-
-  private get chartGridColor(): string {
-    return this.getCssVar('--color-border-subtle', '#2a2a2a');
-  }
-
-  private get chartTextColor(): string {
-    return this.getCssVar('--color-on-surface', '#e2e8f0');
-  }
-
-  private get chartTooltipTheme(): string {
-    return this.themeService.isDark() ? 'dark' : 'light';
-  }
-
   constructor() {
+    super();
     this.initChartOptions();
     this.loadSavedLayout();
     this.loadCustomCharts();
@@ -652,7 +437,7 @@ export class Dashboard implements OnInit {
     }));
   }
 
-  private getStatusLabel(status: InventoryStatus): string {
+  protected getStatusLabel(status: InventoryStatus): string {
     switch (status) {
       case InventoryStatus.IN_STOCK:
         return this.translate.instant('DASHBOARD.IN_STOCK');
@@ -735,329 +520,6 @@ export class Dashboard implements OnInit {
         this.notifications.success('DASHBOARD.CUSTOM_CHART.DELETED', { interpolateParams: { name: chartTitle } });
       }
     });
-  }
-
-  // Custom chart data methods
-  private isValueSource(source: string): boolean {
-    return ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue'].includes(source);
-  }
-
-  private getFilteredItemsByCurrency(currency: ChartCurrency = 'USD'): InventoryItemInterface[] {
-    const items = this.allItems();
-    if (currency === 'ALL') {
-      return items;
-    }
-    return items.filter(item => item.currency === currency);
-  }
-
-  private calculateValueDataForChart(
-    groupBy: 'category' | 'warehouse' | 'supplier' | 'status',
-    currency: ChartCurrency = 'USD'
-  ): { name: string; count: number }[] {
-    const items = this.getFilteredItemsByCurrency(currency);
-    const grouped = new Map<string, number>();
-
-    items.forEach(item => {
-      let key: string;
-      switch (groupBy) {
-        case 'category':
-          key = item.category || this.translate.instant('COMMON.NO_CATEGORY');
-          break;
-        case 'warehouse':
-          key = item.warehouse?.name || this.translate.instant('COMMON.NO_WAREHOUSE');
-          break;
-        case 'supplier':
-          key = item.supplier?.name || this.translate.instant('COMMON.NO_SUPPLIER');
-          break;
-        case 'status':
-          key = this.getStatusLabel(item.status);
-          break;
-      }
-      const value = (item.price || 0) * item.quantity;
-      grouped.set(key, (grouped.get(key) || 0) + value);
-    });
-
-    return Array.from(grouped.entries())
-      .map(([name, count]) => ({ name, count: Math.round(count * 100) / 100 }))
-      .sort((a, b) => b.count - a.count);
-  }
-
-  private calculateTopItemsForChart(currency: ChartCurrency = 'USD'): { name: string; count: number }[] {
-    const items = this.getFilteredItemsByCurrency(currency);
-    return items
-      .map(item => ({
-        name: item.name,
-        count: Math.round((item.price || 0) * item.quantity * 100) / 100
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-  }
-
-  getCustomChartData(chart: CustomChart): { labels: string[]; series: ApexAxisChartSeries | ApexNonAxisChartSeries } {
-    let data: { name: string; count: number }[] = [];
-    const currency = chart.currency || 'USD';
-
-    switch (chart.dataSource) {
-      case 'categories':
-        data = this.categoryStats().map(c => ({ name: c.category || this.translate.instant('COMMON.NO_CATEGORY'), count: c.count }));
-        break;
-      case 'warehouses':
-        data = this.warehouseStats().map(w => ({ name: w.name || this.translate.instant('COMMON.NO_WAREHOUSE'), count: w.itemCount }));
-        break;
-      case 'status':
-        data = [
-          { name: this.translate.instant('DASHBOARD.IN_STOCK'), count: this.stats()?.inStockItems || 0 },
-          { name: this.translate.instant('DASHBOARD.LOW_STOCK'), count: this.stats()?.lowStockItems || 0 },
-          { name: this.translate.instant('DASHBOARD.OUT_OF_STOCK'), count: this.stats()?.outOfStockItems || 0 },
-          { name: this.translate.instant('DASHBOARD.IN_USE'), count: this.stats()?.inUseItems || 0 }
-        ];
-        break;
-      case 'lowStock':
-        data = this.lowStockItems().slice(0, 5).map(item => ({ name: item.name, count: item.quantity }));
-        break;
-      case 'valueByCategory':
-        data = this.calculateValueDataForChart('category', currency);
-        break;
-      case 'valueByWarehouse':
-        data = this.calculateValueDataForChart('warehouse', currency);
-        break;
-      case 'valueBySupplier':
-        data = this.calculateValueDataForChart('supplier', currency);
-        break;
-      case 'valueByStatus':
-        data = this.calculateValueDataForChart('status', currency);
-        break;
-      case 'topItemsByValue':
-        data = this.calculateTopItemsForChart(currency);
-        break;
-    }
-
-    const labels = data.map(d => d.name);
-    const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
-    let seriesName = 'Items';
-    if (this.isValueSource(chart.dataSource)) {
-      const currencySymbol = currency === 'HNL' ? 'L' : '$';
-      seriesName = `Value (${currencySymbol})`;
-    }
-    const series = isPieType ? data.map(d => d.count) : [{ name: seriesName, data: data.map(d => d.count) }];
-
-    return { labels, series };
-  }
-
-  private readonly customChartPalettes: Record<string, string[]> = {
-    '#4d7c6f': ['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308'],
-    '#10b981': ['#10b981', '#ef4444', '#8b5cf6', '#f97316', '#3b82f6', '#ec4899'],
-    '#06b6d4': ['#06b6d4', '#f97316', '#10b981', '#ec4899', '#eab308', '#8b5cf6'],
-    '#3b82f6': ['#3b82f6', '#f97316', '#10b981', '#ec4899', '#eab308', '#06b6d4'],
-    '#8b5cf6': ['#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ef4444', '#eab308'],
-    '#ec4899': ['#ec4899', '#10b981', '#3b82f6', '#f97316', '#06b6d4', '#8b5cf6'],
-    '#f97316': ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#ec4899'],
-    '#eab308': ['#eab308', '#8b5cf6', '#3b82f6', '#ec4899', '#06b6d4', '#10b981'],
-    '#ef4444': ['#ef4444', '#10b981', '#3b82f6', '#eab308', '#8b5cf6', '#06b6d4'],
-    '#64748b': ['#64748b', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#3b82f6']
-  };
-
-  private formatNumber(value: number): string {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  }
-
-  getCustomChartOptions(chart: CustomChart): CustomChartOptions {
-    const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
-    const isValueChart = this.isValueSource(chart.dataSource);
-    const currency = chart.currency || 'USD';
-    const currencySymbol = currency === 'HNL' ? 'L' : '$';
-    const colors = isPieType
-      ? (this.customChartPalettes[chart.color] || [chart.color])
-      : [chart.color];
-
-    const formatValue = (val: number) => {
-      if (isValueChart) {
-        return `${currencySymbol}${this.formatNumber(val)}`;
-      }
-      return val.toLocaleString('en-US');
-    };
-
-    const foreColor = this.chartForeColor;
-    const gridColor = this.chartGridColor;
-
-    return {
-      chart: {
-        type: chart.chartType,
-        height: 250,
-        background: 'transparent',
-        foreColor,
-        toolbar: { show: false }
-      },
-      colors: colors,
-      grid: { borderColor: gridColor, strokeDashArray: 4 },
-      dataLabels: { enabled: false },
-      legend: { show: true, position: 'bottom', labels: { colors: foreColor } },
-      plotOptions: isPieType ? {
-        pie: { donut: { size: chart.chartType === 'donut' ? '60%' : '0%' } },
-        radialBar: { hollow: { size: '50%' } }
-      } : {
-        bar: { borderRadius: 4, columnWidth: '60%' }
-      },
-      xaxis: isPieType ? {} : {
-        labels: { style: { colors: foreColor, fontSize: '10px' }, rotate: -45 }
-      },
-      yaxis: {
-        labels: {
-          style: { colors: foreColor },
-          formatter: (val: number) => formatValue(val)
-        }
-      },
-      tooltip: {
-        theme: this.chartTooltipTheme,
-        y: {
-          formatter: (val: number) => formatValue(val)
-        }
-      }
-    };
-  }
-
-  private initChartOptions(): void {
-    const foreColor = this.chartForeColor;
-    const gridColor = this.chartGridColor;
-    const textColor = this.chartTextColor;
-
-    this.statusChartOptions.set({
-      chart: {
-        type: 'donut',
-        height: 280,
-        background: 'transparent',
-        foreColor
-      },
-      labels: [
-        this.translate.instant('DASHBOARD.IN_STOCK'),
-        this.translate.instant('DASHBOARD.LOW_STOCK'),
-        this.translate.instant('DASHBOARD.OUT_OF_STOCK'),
-        this.translate.instant('DASHBOARD.IN_USE')
-      ],
-      colors: [
-        this.getCssVar('--color-status-success', '#10b981'),
-        this.getCssVar('--color-status-warning', '#f59e0b'),
-        this.getCssVar('--color-status-error', '#ef4444'),
-        this.getCssVar('--color-status-info', '#3b82f6'),
-      ],
-      legend: {
-        position: 'bottom',
-        labels: { colors: foreColor }
-      },
-      dataLabels: {
-        enabled: true,
-        style: { fontSize: '12px', fontWeight: 600 },
-        dropShadow: { enabled: false }
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '65%',
-            labels: {
-              show: true,
-              name: { show: true, fontSize: '14px', color: foreColor },
-              value: { show: true, fontSize: '20px', fontWeight: 700, color: textColor },
-              total: {
-                show: true,
-                label: this.translate.instant('DASHBOARD.TOTAL_ITEMS'),
-                fontSize: '12px',
-                color: foreColor,
-                formatter: (w) => w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0)
-              }
-            }
-          }
-        }
-      },
-      responsive: [{
-        breakpoint: 480,
-        options: { chart: { height: 250 }, legend: { position: 'bottom' } }
-      }]
-    });
-
-    this.categoryChartOptions.set({
-      chart: {
-        type: 'bar',
-        height: 280,
-        background: 'transparent',
-        foreColor,
-        toolbar: { show: false }
-      },
-      xaxis: {
-        categories: [],
-        labels: { style: { colors: foreColor, fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
-        axisBorder: { show: false },
-        axisTicks: { show: false }
-      },
-      yaxis: { labels: { style: { colors: foreColor } } },
-      colors: [this.getCssVar('--color-primary', '#4d7c6f')],
-      grid: { borderColor: gridColor, strokeDashArray: 4 },
-      plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%', distributed: true } },
-      dataLabels: { enabled: false },
-      tooltip: { theme: this.chartTooltipTheme, y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } }
-    });
-
-    this.warehouseChartOptions.set({
-      chart: {
-        type: 'bar',
-        height: 280,
-        background: 'transparent',
-        foreColor,
-        toolbar: { show: false }
-      },
-      xaxis: {
-        categories: [],
-        labels: { style: { colors: foreColor, fontSize: '11px' }, rotate: -45, rotateAlways: false, trim: true, maxHeight: 80 },
-        axisBorder: { show: false },
-        axisTicks: { show: false }
-      },
-      yaxis: { labels: { style: { colors: foreColor } } },
-      colors: [this.getCssVar('--color-accent-cyan', '#06b6d4')],
-      grid: { borderColor: gridColor, strokeDashArray: 4 },
-      plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
-      dataLabels: { enabled: false },
-      tooltip: { theme: this.chartTooltipTheme, y: { formatter: (val: number) => this.translate.instant('COMMON.ITEMS_COUNT', { count: val }) } },
-      fill: { type: 'gradient', gradient: { shade: 'dark', type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.8 } }
-    });
-  }
-
-  private updateCharts(): void {
-    const currentStats = this.stats();
-    const categories = this.categoryStats();
-    const warehouses = this.warehouseStats();
-
-    if (currentStats) {
-      this.statusChartSeries.set([
-        currentStats.inStockItems || 0,
-        currentStats.lowStockItems || 0,
-        currentStats.outOfStockItems || 0,
-        currentStats.inUseItems || 0
-      ]);
-    }
-
-    if (categories.length > 0) {
-      const categoryOptions = this.categoryChartOptions();
-      if (categoryOptions) {
-        this.categoryChartOptions.set({
-          ...categoryOptions,
-          xaxis: { ...categoryOptions.xaxis, categories: categories.map(c => c.category || this.translate.instant('COMMON.NO_CATEGORY')) }
-        });
-        this.categoryChartSeries.set([{ name: 'Items', data: categories.map(c => c.count) }]);
-      }
-    }
-
-    if (warehouses.length > 0) {
-      const warehouseOptions = this.warehouseChartOptions();
-      if (warehouseOptions) {
-        this.warehouseChartOptions.set({
-          ...warehouseOptions,
-          xaxis: { ...warehouseOptions.xaxis, categories: warehouses.map(w => w.name || this.translate.instant('COMMON.NO_WAREHOUSE')) }
-        });
-        this.warehouseChartSeries.set([{ name: 'Items', data: warehouses.map(w => w.itemCount) }]);
-      }
-    }
   }
 
   private loadDashboardData(): void {
@@ -1179,26 +641,4 @@ export class Dashboard implements OnInit {
   }
 
   // Utility methods
-  getStatusKey(status: InventoryStatus): string {
-    switch (status) {
-      case InventoryStatus.IN_STOCK: return 'INVENTORY.STATUS.IN_STOCK';
-      case InventoryStatus.LOW_STOCK: return 'INVENTORY.STATUS.LOW_STOCK';
-      case InventoryStatus.OUT_OF_STOCK: return 'INVENTORY.STATUS.OUT_OF_STOCK';
-      case InventoryStatus.IN_USE: return 'INVENTORY.STATUS.IN_USE';
-      default: return status;
-    }
-  }
-
-  formatCurrency(value: number, currency = 'USD'): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }).format(value);
-  }
-
-  trackByFn(index: number, item: InventoryItemInterface): string {
-    return item.id;
-  }
 }

@@ -80,7 +80,9 @@ describe('ReportsTrendsTab', () => {
     });
 
     it('labels the x axis as day/month', () => {
-      fixture.componentRef.setInput('trends', [{ date: '2026-03-05T12:00:00Z', in: 0, out: 0, transfer: 0 }]);
+      // No timezone designator: parsed as local time, so the assertion holds
+      // regardless of the machine's UTC offset (unlike a 'Z' or date-only string).
+      fixture.componentRef.setInput('trends', [{ date: '2026-03-05T12:00:00', in: 0, out: 0, transfer: 0 }]);
 
       expect(component.trendChartOptions().xaxis.categories).toEqual(['5/3']);
     });

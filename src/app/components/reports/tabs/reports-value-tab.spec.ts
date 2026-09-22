@@ -98,9 +98,10 @@ describe('ReportsValueTab', () => {
       render();
 
       const category = section('REPORTS.BY_CATEGORY');
+      const rows = Array.from(category.querySelectorAll('div.py-3'));
       expect(text(category.querySelectorAll('span.truncate'))).toEqual(['Parts', 'Tools']);
       expect(text(category.querySelectorAll('span.font-semibold'))).toEqual(['$1,200.00', '$34.50']);
-      expect(category.textContent).toContain('3');
+      expect(rows.map((row) => row.querySelector('span.text-center')?.textContent?.trim())).toEqual(['3', '1']);
     });
 
     it('shows an empty message for a section without rows', () => {

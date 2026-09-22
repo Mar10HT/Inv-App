@@ -1,8 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { By } from '@angular/platform-browser';
+import { signal, Type } from '@angular/core';
+import { NEVER, of, throwError } from 'rxjs';
 
 import { Reports } from './reports';
+import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
+import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
+import { ReportsStatusTab } from './tabs/reports-status-tab';
+import { ReportsTransactionsTab } from './tabs/reports-transactions-tab';
+import { ReportsTrendsTab } from './tabs/reports-trends-tab';
+import { ReportsValueTab } from './tabs/reports-value-tab';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import {
@@ -31,7 +38,8 @@ describe('Reports', () => {
   const setup = async (
     items: InventoryItemInterface[],
     transactions: Transaction[] = [],
-    itemsSource = of(items)
+    itemsSource = of(items),
+    transactionsSource = of(transactions)
   ): Promise<void> => {
     await TestBed.configureTestingModule({
       imports: [Reports],
@@ -45,7 +53,7 @@ describe('Reports', () => {
             getItemsObservable: () => itemsSource
           }
         },
-        { provide: TransactionService, useValue: { getAll: () => of(transactions) } }
+        { provide: TransactionService, useValue: { getAll: () => transactionsSource } }
       ]
     }).compileComponents();
 
@@ -341,6 +349,117 @@ describe('Reports', () => {
       component.onTabChange(3);
 
       expect(component.activeTab()).toBe(3);
+    });
+  });
+
+  describe('tab wiring', () => {
+    // Guards the split: a swapped input/output between reports.ts and a tab
+    // (wrong signal, or csvRequested wired to the PDF export) still passes
+    // strictTemplates because the types line up. Only calling through the
+    // real DOM catches it.
+    const child = <T>(type: Type<T>): T =>
+      fixture.debugElement.query(By.directive(type)).componentInstance as T;
+
+    it('passes the value tab its data and forwards its outputs', async () => {
+      await setup([item({ id: 'a', price: 10, quantity: 2 })]);
+
+      const tab = child(ReportsValueTab);
+      expect(tab.totalValue()).toBe(component.totalValue());
+      expect(tab.topItems()).toEqual(component.topItems());
+
+      spyOn(component, 'exportReport');
+      spyOn(component, 'exportValueReportPDF');
+      tab.csvRequested.emit();
+      expect(component.exportReport).toHaveBeenCalledTimes(1);
+      expect(component.exportValueReportPDF).not.toHaveBeenCalled();
+      tab.pdfRequested.emit();
+      expect(component.exportValueReportPDF).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes the status tab its data and forwards its outputs', async () => {
+      await setup([item({ status: InventoryStatus.LOW_STOCK })]);
+      component.onTabChange(2);
+      fixture.detectChanges();
+
+      const tab = child(ReportsStatusTab);
+      expect(tab.summaries()).toEqual(component.statusSummary());
+      expect(tab.lowStockItems()).toEqual(component.lowStockItems());
+
+      spyOn(component, 'exportStatusReport');
+      spyOn(component, 'exportStatusReportPDF');
+      tab.csvRequested.emit();
+      expect(component.exportStatusReport).toHaveBeenCalledTimes(1);
+      expect(component.exportStatusReportPDF).not.toHaveBeenCalled();
+      tab.pdfRequested.emit();
+      expect(component.exportStatusReportPDF).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes the assignments tab its data and forwards its outputs', async () => {
+      await setup([item({ itemType: ItemType.UNIQUE, assignedToUserId: 'u1' })]);
+      component.onTabChange(3);
+      fixture.detectChanges();
+
+      const tab = child(ReportsAssignmentsTab);
+      expect(tab.assignedItems()).toEqual(component.assignedItems());
+      expect(tab.assignmentsByUser()).toEqual(component.assignmentsByUser());
+
+      spyOn(component, 'exportAssignments');
+      spyOn(component, 'exportAssignmentsReportPDF');
+      tab.csvRequested.emit();
+      expect(component.exportAssignments).toHaveBeenCalledTimes(1);
+      expect(component.exportAssignmentsReportPDF).not.toHaveBeenCalled();
+      tab.pdfRequested.emit();
+      expect(component.exportAssignmentsReportPDF).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes the transactions tab its own loading flag, not the items one', async () => {
+      // Items never resolve (loading() stuck true) while transactions do
+      // (transactionsLoading() false), so a swap between the two signals
+      // shows up as the tab rendering its spinner forever.
+      await setup([], [tx({ id: 't1' })], NEVER);
+      component.onTabChange(1);
+      fixture.detectChanges();
+
+      const tab = child(ReportsTransactionsTab);
+      expect(tab.loading()).toBe(false);
+      expect(tab.transactions()).toEqual(component.filteredTransactions());
+      expect(tab.stats()).toEqual(component.transactionStats());
+
+      spyOn(component, 'exportTransactions');
+      spyOn(component, 'exportTransactionsPDF');
+      tab.csvRequested.emit();
+      expect(component.exportTransactions).toHaveBeenCalledTimes(1);
+      expect(component.exportTransactionsPDF).not.toHaveBeenCalled();
+      tab.pdfRequested.emit();
+      expect(component.exportTransactionsPDF).toHaveBeenCalledTimes(1);
+
+      const dateSpy = jasmine.createSpy();
+      spyOn(component, 'onDateFromChange').and.callFake(dateSpy);
+      tab.dateFromChange.emit('2026-01-01');
+      expect(dateSpy).toHaveBeenCalledOnceWith('2026-01-01');
+    });
+
+    it('passes the trends tab its own loading flag, not the items one', async () => {
+      // Transactions never resolve (transactionsLoading() stuck true) while
+      // items do (loading() false, so the tab is not hidden behind the
+      // parent's own spinner). A swap between the two signals shows up as
+      // the tab missing its spinner.
+      await setup([], [], undefined, NEVER);
+      component.onTabChange(4);
+      fixture.detectChanges();
+
+      const tab = child(ReportsTrendsTab);
+      expect(tab.loading()).toBe(true);
+      expect(tab.trends()).toEqual(component.transactionTrends());
+    });
+
+    it('passes the downloads tab the selected warehouse', async () => {
+      await setup([]);
+      component.onTabChange(5);
+      component.selectedWarehouseId.set('w1');
+      fixture.detectChanges();
+
+      expect(child(ReportsDownloadsTab).warehouseId()).toBe('w1');
     });
   });
 });

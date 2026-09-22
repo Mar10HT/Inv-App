@@ -205,20 +205,13 @@ export class ReportsValueTab {
     { value: 'ALL', label: 'REPORTS.ALL_CURRENCIES' }
   ];
 
-  getCurrencySymbol(): string {
-    const currency = this.currency();
-    if (currency === 'ALL') return '$';
-    return currency === 'USD' ? '$' : 'L';
-  }
-
-  formatNumber(value: number): string {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  }
+  private static readonly NUMBER_FORMAT = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 
   formatCurrency(value: number): string {
-    return `${this.getCurrencySymbol()}${this.formatNumber(value)}`;
+    const symbol = this.currency() === 'HNL' ? 'L' : '$';
+    return `${symbol}${ReportsValueTab.NUMBER_FORMAT.format(value)}`;
   }
 }

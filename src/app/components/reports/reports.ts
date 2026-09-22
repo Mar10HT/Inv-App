@@ -1,8 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatTabsModule } from '@angular/material/tabs';
-import { FormsModule } from '@angular/forms';
 import { downloadStyledXLSX, XlsxRow } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -26,10 +23,7 @@ import { ReportsValueTab } from './tabs/reports-value-tab';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     LucideAngularModule,
-    MatTabsModule,
-    FormsModule,
     TranslateModule,
     ReportsAssignmentsTab,
     ReportsDownloadsTab,

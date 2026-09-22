@@ -1,17 +1,9 @@
+const DATE_STYLE: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+
 export function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleDateString('es-HN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+  return new Date(date).toLocaleDateString('es-HN', DATE_STYLE);
 }
 
 export function formatDateTime(date: Date | string): string {
-  return new Date(date).toLocaleDateString('es-HN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  return new Date(date).toLocaleDateString('es-HN', { ...DATE_STYLE, hour: '2-digit', minute: '2-digit' });
 }

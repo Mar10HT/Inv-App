@@ -75,21 +75,20 @@ describe('ReportsValueTab', () => {
   describe('currency formatting', () => {
     it('uses $ for USD and ALL and L for HNL', () => {
       render({ currency: 'USD' });
-      expect(component.getCurrencySymbol()).toBe('$');
+      expect(component.formatCurrency(5)).toBe('$5.00');
 
       fixture.componentRef.setInput('currency', 'ALL');
-      expect(component.getCurrencySymbol()).toBe('$');
+      expect(component.formatCurrency(5)).toBe('$5.00');
 
       fixture.componentRef.setInput('currency', 'HNL');
-      expect(component.getCurrencySymbol()).toBe('L');
+      expect(component.formatCurrency(5)).toBe('L5.00');
     });
 
     it('always shows two decimals with thousands separators', () => {
       render();
 
-      expect(component.formatNumber(0)).toBe('0.00');
-      expect(component.formatNumber(1234567.891)).toBe('1,234,567.89');
-      expect(component.formatCurrency(5)).toBe('$5.00');
+      expect(component.formatCurrency(0)).toBe('$0.00');
+      expect(component.formatCurrency(1234567.891)).toBe('$1,234,567.89');
     });
   });
 

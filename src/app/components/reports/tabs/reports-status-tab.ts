@@ -113,13 +113,14 @@ export class ReportsStatusTab {
 
   InventoryStatus = InventoryStatus;
 
+  private static readonly ICONS: Partial<Record<InventoryStatus, string>> = {
+    [InventoryStatus.IN_STOCK]: 'CheckCircle2',
+    [InventoryStatus.LOW_STOCK]: 'AlertTriangle',
+    [InventoryStatus.OUT_OF_STOCK]: 'XCircle',
+    [InventoryStatus.IN_USE]: 'User'
+  };
+
   getStatusIcon(status: InventoryStatus): string {
-    switch (status) {
-      case InventoryStatus.IN_STOCK: return 'CheckCircle2';
-      case InventoryStatus.LOW_STOCK: return 'AlertTriangle';
-      case InventoryStatus.OUT_OF_STOCK: return 'XCircle';
-      case InventoryStatus.IN_USE: return 'User';
-      default: return 'HelpCircle';
-    }
+    return ReportsStatusTab.ICONS[status] ?? 'HelpCircle';
   }
 }

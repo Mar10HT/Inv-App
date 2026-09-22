@@ -119,7 +119,10 @@ export class ReportsTrendsTab {
         }
       },
       xaxis: {
-        categories: trends.map(t => this.formatShortDate(t.date)),
+        categories: trends.map(t => {
+          const d = new Date(t.date);
+          return `${d.getDate()}/${d.getMonth() + 1}`;
+        }),
         labels: {
           style: { colors: isDark ? '#94a3b8' : '#64748b' },
           rotate: -45,
@@ -145,9 +148,4 @@ export class ReportsTrendsTab {
       }
     };
   });
-
-  private formatShortDate(date: string): string {
-    const d = new Date(date);
-    return `${d.getDate()}/${d.getMonth() + 1}`;
-  }
 }

@@ -187,12 +187,13 @@ export class ReportsTransactionsTab {
 
   formatDateTime = formatDateTime;
 
+  private static readonly ICONS: Partial<Record<TransactionType, string>> = {
+    [TransactionType.IN]: 'ArrowDown',
+    [TransactionType.OUT]: 'ArrowUp',
+    [TransactionType.TRANSFER]: 'ArrowLeftRight'
+  };
+
   getTransactionIcon(type: TransactionType): string {
-    switch (type) {
-      case TransactionType.IN: return 'ArrowDown';
-      case TransactionType.OUT: return 'ArrowUp';
-      case TransactionType.TRANSFER: return 'ArrowLeftRight';
-      default: return 'Receipt';
-    }
+    return ReportsTransactionsTab.ICONS[type] ?? 'Receipt';
   }
 }

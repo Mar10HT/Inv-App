@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -214,12 +214,12 @@ import { StockTakeStatsCards } from './stock-take-stats';
             </div>
 
             <!-- Pagination -->
-            @if (filteredItems().length > pageSize) {
+            @if (filteredItems().length > pageSize()) {
               <div class="border-t border-theme px-4 py-2">
                 <mat-paginator
                   [length]="filteredItems().length"
-                  [pageIndex]="pageIndex"
-                  [pageSize]="pageSize"
+                  [pageIndex]="pageIndex()"
+                  [pageSize]="pageSize()"
                   [pageSizeOptions]="[10, 25, 50]"
                   (page)="onPageChange($event)"
                   showFirstLastButtons
@@ -489,8 +489,9 @@ export class StockTakeComponent implements OnInit {
   // List state
   searchQuery = '';
   selectedStatus = 'all';
-  pageIndex = 0;
-  pageSize = 10;
+  // Signals: paginatedItems only re-evaluates when a signal it reads changes
+  pageIndex = signal(0);
+  pageSize = signal(10);
 
   // Dialog visibility
   showNewDialog = false;
@@ -509,16 +510,23 @@ export class StockTakeComponent implements OnInit {
 
   paginatedItems = computed(() => {
     const items = this.filteredItemsSignal();
-    const start = this.pageIndex * this.pageSize;
-    return items.slice(start, start + this.pageSize);
+    const start = this.pageIndex() * this.pageSize();
+    return items.slice(start, start + this.pageSize());
   });
+
+  constructor() {
+    // Re-apply filters whenever the stock takes change (e.g. when the API responds)
+    effect(() => {
+      this.stockTakeService.stockTakes(); // Track the signal
+      this.applyFilters();
+    });
+  }
 
   ngOnInit(): void {
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
     this.stockTakeService.loadStockTakes();
-    setTimeout(() => this.applyFilters(), 100);
   }
 
   applyFilters(): void {
@@ -538,9 +546,10 @@ export class StockTakeComponent implements OnInit {
       items = items.filter((st) => st.status === this.selectedStatus);
     }
 
-    items = items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    // Sort a copy: with no filter active `items` is the service's own array
+    items = [...items].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     this.filteredItemsSignal.set(items);
-    this.pageIndex = 0;
+    this.pageIndex.set(0);
   }
 
   clearFilters(): void {
@@ -554,8 +563,8 @@ export class StockTakeComponent implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   // ==================== Navigation ====================
@@ -576,7 +585,6 @@ export class StockTakeComponent implements OnInit {
     this.selectedStockTake.set(null);
     this.editingItems = {};
     this.stockTakeService.loadStockTakes();
-    setTimeout(() => this.applyFilters(), 100);
   }
 
   openVarianceReport(st: StockTake): void {

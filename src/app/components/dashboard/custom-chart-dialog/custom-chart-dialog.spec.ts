@@ -78,12 +78,6 @@ describe('CustomChartDialog', () => {
       expect(component.previewData()).toEqual([{ name: 'In stock', count: 8 }]);
     });
 
-    it('shows the first five categories for low stock', () => {
-      pick('lowStock');
-
-      expect(component.previewData().length).toBe(2);
-    });
-
     it('adds up price times quantity per category for USD items, rounded and highest first', () => {
       pick('valueByCategory');
 
@@ -254,6 +248,15 @@ describe('CustomChartDialog', () => {
 
       expect((dialogRef.close.calls.mostRecent().args[0] as { currency?: string }).currency).toBeUndefined();
     });
+  });
+
+  it('shows the first five categories for low stock', async () => {
+    const categories = Array.from({ length: 7 }, (_, i) => ({ name: `Category ${i}`, count: 10 - i }));
+    await create(dialogData({ availableData: { categories, warehouses: [], status: [] } }));
+
+    pick('lowStock');
+
+    expect(component.previewData().map((d) => d.name)).toEqual(categories.slice(0, 5).map((c) => c.name));
   });
 
   it('opens an existing chart with its values', async () => {

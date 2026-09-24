@@ -189,6 +189,7 @@ describe('LoanService', () => {
       let result: unknown;
 
       service.createLoan(dto as never).subscribe((loan) => (result = loan));
+      expect(service.loading()).toBeTrue();
       backend.expectOne((r) => r.url === loansUrl() && r.method === 'POST').flush(raw({ id: 'new' }));
 
       expect((result as { id: string }).id).toBe('new');
@@ -238,6 +239,7 @@ describe('LoanService', () => {
         const service = create(raw({ id: 'a', status: 'SENT' }), raw({ id: 'b', status: 'SENT' }));
 
         call(service).subscribe();
+        expect(service.loading()).toBeTrue();
         backend.expectOne(loansUrl(path)).flush(raw({ id: 'a', status: apiStatus }));
 
         expect(service.loans().map((l) => [l.id, l.status])).toEqual([
@@ -266,6 +268,7 @@ describe('LoanService', () => {
 
       service.sendLoan('a').subscribe((loan) => answers.push(loan));
       backend.expectOne(loansUrl('/a/send')).flush(raw({ id: 'a', status: 'SENT', qrCodeDataUrl: 'data:image/png;base64,AAA' }));
+      expect(service.loans()[0]).toEqual(jasmine.objectContaining({ qrCodeDataUrl: 'data:image/png;base64,AAA' }));
       service.initiateReturn('a').subscribe((loan) => answers.push(loan));
       backend.expectOne(loansUrl('/a/initiate-return')).flush(raw({ id: 'a', status: 'RETURN_PENDING', qrCodeDataUrl: 'data:image/png;base64,BBB' }));
 

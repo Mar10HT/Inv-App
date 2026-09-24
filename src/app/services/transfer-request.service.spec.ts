@@ -133,6 +133,7 @@ describe('TransferRequestService', () => {
         const service = create(raw({ id: 'a' }), raw({ id: 'b' }));
 
         call(service).subscribe();
+        expect(service.loading()).toBeTrue();
         backend.expectOne(url(path)).flush(raw({ id: 'a', status: apiStatus }));
 
         expect(service.requests().map((r) => [r.id, r.status])).toEqual([

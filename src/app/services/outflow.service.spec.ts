@@ -103,6 +103,7 @@ describe('OutflowService', () => {
       let result: Outflow | null = null;
 
       service.create(dto).subscribe((created) => (result = created));
+      expect(service.loading()).toBeTrue();
       backend.expectOne((r) => r.method === 'POST').flush(outflow({ id: 'new' }));
 
       expect((result as Outflow | null)?.id).toBe('new');

@@ -9,10 +9,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
+import { Observable, catchError, map, of, switchMap } from 'rxjs';
 
 import { UserService } from '../../services/user.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { RolesService } from '../../services/roles.service';
+import { NotificationService } from '../../services/notification.service';
+import { ApiError } from '../../interfaces/api-error.interface';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { Warehouse } from '../../interfaces/warehouse.interface';
 import { RoleSummary } from '../../interfaces/role.interface';
@@ -154,7 +157,7 @@ export interface UserFormDialogData {
                 id="user-role-id"
                 formControlName="roleId"
                 class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
-                <option [value]="null">{{ 'USER.NO_CUSTOM_ROLE' | translate }}</option>
+                <option [ngValue]="null">{{ 'USER.NO_CUSTOM_ROLE' | translate }}</option>
                 @for (r of availableRoles(); track r.id) {
                   <option [value]="r.id">{{ r.displayName }}</option>
                 }
@@ -216,7 +219,7 @@ export interface UserFormDialogData {
           </button>
           <button
             type="submit"
-            [disabled]="form.invalid || saving()"
+            [disabled]="form.invalid || saving() || !assignmentsReady()"
             class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -235,8 +238,11 @@ export class UserFormDialog implements OnInit {
   private userService = inject(UserService);
   private warehouseService = inject(WarehouseService);
   private rolesService = inject(RolesService);
+  private notifications = inject(NotificationService);
 
   saving = signal(false);
+  // When editing, saving before the user's warehouses have loaded would replace them with an empty list
+  assignmentsReady = signal(this.data?.mode !== 'edit');
   selectedRole = signal<UserRole>(UserRole.USER);
   roles = Object.values(UserRole);
 
@@ -366,16 +372,24 @@ export class UserFormDialog implements OnInit {
     this.userService.getUserWarehouses(userId).subscribe({
       next: (warehouses) => {
         this.selectedWarehouseIds.set(new Set(warehouses.map(w => w.id)));
-      }
+        this.assignmentsReady.set(true);
+      },
+      // Save stays disabled: without the current assignments they cannot be edited safely
+      error: (err: ApiError) => this.notifications.error(err.message)
     });
   }
 
-  private saveWarehouseAssignments(userId: string): void {
+  private saveWarehouseAssignments(userId: string): Observable<unknown> {
     const role = this.selectedRole();
-    if (role === 'SYSTEM_ADMIN' || role === 'EXTERNAL') return;
+    if (role === 'SYSTEM_ADMIN' || role === 'EXTERNAL') return of(null);
 
-    const warehouseIds = Array.from(this.selectedWarehouseIds());
-    this.userService.assignWarehouses(userId, warehouseIds).subscribe();
+    return this.userService.assignWarehouses(userId, Array.from(this.selectedWarehouseIds())).pipe(
+      // The user itself is already saved, so report this and let the dialog close
+      catchError((err: ApiError) => {
+        this.notifications.error(err.error?.message || err.message);
+        return of(null);
+      })
+    );
   }
 
   onSubmit(): void {
@@ -389,31 +403,21 @@ export class UserFormDialog implements OnInit {
       delete formValue.password;
     }
 
-    // Remove null roleId — backend @IsString() rejects null; omitting it means "no change"
+    // Remove null roleId, backend @IsString() rejects null; omitting it means "no change"
     if (formValue.roleId == null) {
       delete formValue.roleId;
     }
 
-    if (this.data.mode === 'add') {
-      this.userService.create(formValue).subscribe({
-        next: (newUser) => {
-          this.saveWarehouseAssignments(newUser.id);
-          this.dialogRef.close({ saved: true });
-        },
-        error: () => {
-          this.saving.set(false);
-        }
-      });
-    } else if (this.data.user) {
-      this.userService.update(this.data.user.id, formValue).subscribe({
-        next: () => {
-          this.saveWarehouseAssignments(this.data.user!.id);
-          this.dialogRef.close({ saved: true });
-        },
-        error: () => {
-          this.saving.set(false);
-        }
-      });
-    }
+    const save$: Observable<string> = this.data.mode === 'add'
+      ? this.userService.create(formValue).pipe(map((newUser) => newUser.id))
+      : this.userService.update(this.data.user!.id, formValue).pipe(map(() => this.data.user!.id));
+
+    save$.pipe(switchMap((userId) => this.saveWarehouseAssignments(userId))).subscribe({
+      next: () => this.dialogRef.close({ saved: true }),
+      error: (err: ApiError) => {
+        this.saving.set(false);
+        this.notifications.error(err.error?.message || err.message);
+      }
+    });
   }
 }

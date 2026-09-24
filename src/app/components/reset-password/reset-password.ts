@@ -37,7 +37,7 @@ const STRONG_PASSWORD_PATTERN =
           </div>
           <h1 class="text-[42px] font-bold text-white font-[Outfit]">Obsid</h1>
           <p class="text-lg text-[var(--color-on-surface-variant)] text-center leading-relaxed">
-            {{ 'LOGIN.TAGLINE' | translate }}
+            {{ 'LOGIN.SUBTITLE' | translate }}
           </p>
         </div>
         <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>

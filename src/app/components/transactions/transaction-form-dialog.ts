@@ -317,7 +317,7 @@ export class TransactionFormDialog implements OnInit {
 
     this.transactionService.create(formValue).subscribe({
       next: () => {
-        this.notifications.success('TRANSACTION.CREATED');
+        // The list shows the "created" notification once the dialog closes as saved
         this.dialogRef.close({ saved: true });
       },
       error: (err) => {

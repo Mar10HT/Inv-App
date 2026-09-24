@@ -1,10 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, Subject, of } from 'rxjs';
 
 import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 import { RolesService } from '../../services/roles.service';
-import { RoleSummary } from '../../interfaces/role.interface';
+import { NotificationService } from '../../services/notification.service';
+import { ApiError } from '../../interfaces/api-error.interface';
+import { RoleDetail, RoleSummary } from '../../interfaces/role.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 
 const role: RoleSummary = {
@@ -24,20 +27,27 @@ describe('RoleFormDialog', () => {
   let el: HTMLElement;
   let close: jasmine.Spy;
   let roles: jasmine.SpyObj<RolesService>;
+  let notifications: jasmine.SpyObj<NotificationService>;
 
-  const setup = async (data: RoleFormDialogData): Promise<void> => {
+  const setup = async (
+    data: RoleFormDialogData,
+    configure: (r: jasmine.SpyObj<RolesService>) => void = () => undefined
+  ): Promise<void> => {
     close = jasmine.createSpy('close');
     roles = jasmine.createSpyObj<RolesService>('RolesService', ['getPermissions', 'getOne', 'create', 'update']);
     roles.getPermissions.and.returnValue(of([]));
     roles.create.and.returnValue(of({ ...role, permissions: [] }));
     roles.update.and.returnValue(of({ ...role, permissions: [] }));
     roles.getOne.and.returnValue(of({ ...role, permissions: [] }));
+    configure(roles);
+    notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error']);
 
     await TestBed.configureTestingModule({
       imports: [RoleFormDialog],
       providers: [
         ...provideTestBedDefaults(),
         { provide: RolesService, useValue: roles },
+        { provide: NotificationService, useValue: notifications },
         { provide: MatDialogRef, useValue: { close } },
         { provide: MAT_DIALOG_DATA, useValue: data }
       ]
@@ -110,6 +120,70 @@ describe('RoleFormDialog', () => {
       type('#role-display-name', '');
 
       expect(saveButton().disabled).toBeTrue();
+    });
+  });
+
+  describe('editing safely', () => {
+    const apiError = (status: number, serverMessage: string | null): ApiError => ({
+      status,
+      message: 'A generic message',
+      error: serverMessage ? { message: serverMessage } : null,
+      originalError: new HttpErrorResponse({ status })
+    });
+    const failing = (error: ApiError): Observable<never> => new Observable((subscriber) => subscriber.error(error));
+    const detail = (ids: string[]): RoleDetail => ({
+      ...role,
+      permissions: ids.map((id) => ({ id, key: 'x:' + id, module: 'x', action: id, description: '' }))
+    });
+
+    it('keeps Save disabled until the current permissions have loaded', async () => {
+      const current = new Subject<RoleDetail>();
+      await setup({ mode: 'edit', role }, (r) => r.getOne.and.returnValue(current));
+      expect(saveButton().disabled).toBeTrue();
+
+      current.next(detail(['p1']));
+      fixture.detectChanges();
+
+      expect(saveButton().disabled).toBeFalse();
+    });
+
+    it('says so and keeps Save disabled when the current permissions cannot be loaded', async () => {
+      await setup({ mode: 'edit', role }, (r) => r.getOne.and.returnValue(failing(apiError(500, null))));
+      fixture.detectChanges();
+
+      expect(notifications.error).toHaveBeenCalledTimes(1);
+      expect(saveButton().disabled).toBeTrue();
+    });
+
+    it('says so and keeps Save disabled when the permission list cannot be loaded', async () => {
+      await setup({ mode: 'edit', role }, (r) => r.getPermissions.and.returnValue(failing(apiError(500, null))));
+      fixture.detectChanges();
+
+      expect(notifications.error).toHaveBeenCalledTimes(1);
+      expect(saveButton().disabled).toBeTrue();
+    });
+
+    it('saves with the permissions it loaded, not an empty list', async () => {
+      await setup({ mode: 'edit', role }, (r) => r.getOne.and.returnValue(of(detail(['p1', 'p2']))));
+      fixture.detectChanges();
+
+      saveButton().click();
+
+      expect(roles.update).toHaveBeenCalledOnceWith('r1', {
+        displayName: 'Auditor',
+        description: 'Reads audit logs',
+        permissionIds: ['p1', 'p2']
+      });
+    });
+
+    it('shows the server message when saving fails and keeps the dialog open', async () => {
+      await setup({ mode: 'edit', role }, (r) => r.update.and.returnValue(failing(apiError(409, 'Role name already exists'))));
+      fixture.detectChanges();
+
+      saveButton().click();
+
+      expect(notifications.error).toHaveBeenCalledOnceWith('Role name already exists');
+      expect(close).not.toHaveBeenCalled();
     });
   });
 });

@@ -446,6 +446,39 @@ openDialog(): void {
 }
 ```
 
+### Asking for a confirmation
+
+Use `ConfirmService` instead of opening `ConfirmDialog` by hand. It answers with a boolean (false when the user cancels or dismisses):
+
+```typescript
+private confirm = inject(ConfirmService);
+
+delete(item: Item): void {
+  this.confirm.ask({
+    title: this.translate.instant('ITEM.DELETE_CONFIRM.TITLE'),
+    message: this.translate.instant('ITEM.DELETE_CONFIRM.MESSAGE', { name: item.name }),
+    confirmText: this.translate.instant('COMMON.DELETE'),
+    type: 'danger'
+  }).subscribe(confirmed => {
+    if (confirmed) { /* delete */ }
+  });
+}
+```
+
+---
+
+## Shared Components (components/shared)
+
+Do not repeat this markup, use the component:
+
+| Component | Use it for | Example |
+|-----------|------------|---------|
+| `Spinner` | Loading circle, sizes `sm` `md` `lg` `xl`, tone `primary` or `white` (inside a colored button) | `<app-spinner size="sm" tone="white" />` |
+| `StatCard` | Number card of a stats row, tones `neutral` `info` `success` `error` `amber` `violet` | `<app-stat-card [label]="'LOANS.SENT' | translate" [value]="stats().totalSent" icon="Send" tone="info" />` |
+| `EmptyState` | Centered icon, heading and description when a list is empty, the action button goes inside | `<app-empty-state icon="Tag" [heading]="..." [description]="...">...</app-empty-state>` |
+
+Pass already translated text. Icon names must be registered in `APP_ICONS`.
+
 ---
 
 ## List Page Structure (CRUD)

@@ -8,7 +8,7 @@ import { LoanService } from '../../services/loan.service';
 import { NotificationService } from '../../services/notification.service';
 import { Loan } from '../../interfaces/loan.interface';
 import { summarizeLoanItems } from '../../utils/loan.utils';
-import { buildQrPrintHtml } from '../../utils/qr-print.utils';
+import { buildQrPrintHtml, isImageDataUrl } from '../../utils/qr-print.utils';
 
 // ==================== QR Code Display Dialog ====================
 
@@ -97,7 +97,7 @@ export class LoanQrDialog {
   printQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentLoan = this.loan();
-    if (!dataUrl || !currentLoan) return;
+    if (!isImageDataUrl(dataUrl) || !currentLoan) return;
 
     const summary = this.summaryFor(currentLoan);
     const printWindow = window.open('', '_blank');
@@ -116,7 +116,7 @@ export class LoanQrDialog {
   downloadQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentLoan = this.loan();
-    if (!dataUrl || !currentLoan) return;
+    if (!isImageDataUrl(dataUrl) || !currentLoan) return;
 
     const link = document.createElement('a');
     link.href = dataUrl;

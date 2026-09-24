@@ -61,4 +61,23 @@ describe('TransferQrDialog printing', () => {
 
     expect(written).toEqual([]);
   });
+
+  it('does not print a QR value that is not an image', () => {
+    fixture.componentRef.setInput('qrDataUrl', 'javascript:alert(1)');
+    fixture.componentRef.setInput('request', request('Main', 'Backup'));
+
+    component.printQrCode();
+
+    expect(written).toEqual([]);
+  });
+
+  it('does not download a QR value that is not an image', () => {
+    const click = spyOn(HTMLAnchorElement.prototype, 'click');
+    fixture.componentRef.setInput('qrDataUrl', 'javascript:alert(1)');
+    fixture.componentRef.setInput('request', request('Main', 'Backup'));
+
+    component.downloadQrCode();
+
+    expect(click).not.toHaveBeenCalled();
+  });
 });

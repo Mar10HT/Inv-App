@@ -7,7 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TransferRequestService } from '../../services/transfer-request.service';
 import { NotificationService } from '../../services/notification.service';
 import { TransferRequest } from '../../interfaces/transfer-request.interface';
-import { buildQrPrintHtml } from '../../utils/qr-print.utils';
+import { buildQrPrintHtml, isImageDataUrl } from '../../utils/qr-print.utils';
 
 // ==================== QR Code Display Dialog ====================
 
@@ -79,7 +79,7 @@ export class TransferQrDialog {
   printQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentRequest = this.request();
-    if (!dataUrl || !currentRequest) return;
+    if (!isImageDataUrl(dataUrl) || !currentRequest) return;
 
     const printWindow = window.open('', '_blank');
     if (printWindow) {
@@ -97,7 +97,7 @@ export class TransferQrDialog {
   downloadQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentRequest = this.request();
-    if (!dataUrl || !currentRequest) return;
+    if (!isImageDataUrl(dataUrl) || !currentRequest) return;
 
     const link = document.createElement('a');
     link.href = dataUrl;

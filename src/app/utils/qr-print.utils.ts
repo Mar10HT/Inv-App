@@ -11,6 +11,14 @@ export function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ESCAPES[char]);
 }
 
+/**
+ * True for the base64 raster image the API sends as a QR code. The value is written into a page and
+ * used as a download link, so anything else (javascript:, text/html, svg, stray quotes) is refused.
+ */
+export function isImageDataUrl(value: string | null): value is string {
+  return value !== null && /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(value);
+}
+
 export interface QrPrintContent {
   title: string;
   dataUrl: string;

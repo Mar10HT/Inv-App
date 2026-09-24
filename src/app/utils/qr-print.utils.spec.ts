@@ -1,4 +1,4 @@
-import { buildQrPrintHtml, escapeHtml } from './qr-print.utils';
+import { buildQrPrintHtml, escapeHtml, isImageDataUrl } from './qr-print.utils';
 
 const parse = (html: string): Document => new DOMParser().parseFromString(html, 'text/html');
 
@@ -76,6 +76,25 @@ describe('qr-print.utils', () => {
         expect(img?.getAttribute('src')).toBe(hostile.dataUrl);
         expect(img?.hasAttribute('onerror')).toBeFalse();
       });
+    });
+  });
+
+  describe('isImageDataUrl', () => {
+    it('accepts the base64 PNG the API generates', () => {
+      expect(isImageDataUrl('data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==')).toBeTrue();
+    });
+
+    it('rejects nothing, a plain URL and other schemes', () => {
+      expect(isImageDataUrl(null)).toBeFalse();
+      expect(isImageDataUrl('')).toBeFalse();
+      expect(isImageDataUrl('https://example.com/qr.png')).toBeFalse();
+      expect(isImageDataUrl('javascript:alert(1)')).toBeFalse();
+    });
+
+    it('rejects data URLs that are not raster images, or that carry more than base64', () => {
+      expect(isImageDataUrl('data:text/html;base64,PHNjcmlwdD4=')).toBeFalse();
+      expect(isImageDataUrl('data:image/svg+xml;base64,PHN2Zz4=')).toBeFalse();
+      expect(isImageDataUrl('data:image/png;base64,AAAA" onerror="alert(1)')).toBeFalse();
     });
   });
 });

@@ -9,6 +9,7 @@ import {
   ResetPasswordResponse, PendingReset, GeneratedResetLink, MeResponse
 } from '../interfaces/auth.interface';
 import { PermissionsService } from './permissions.service';
+import { WebSocketService } from './websocket.service';
 
 const POLL_INTERVAL_MS = 60_000; // 60 seconds
 
@@ -19,6 +20,7 @@ export class AuthService implements OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
   private permissionsService = inject(PermissionsService);
+  private wsService = inject(WebSocketService);
 
   private readonly USER_KEY = 'auth_user';
 
@@ -63,6 +65,8 @@ export class AuthService implements OnDestroy {
       catchError(() => of(null)),
       tap(() => {
         this.stopPermissionsPolling();
+        // The socket keeps the rooms of the user who opened it: drop it before the next user signs in
+        this.wsService.disconnect();
         localStorage.removeItem(this.USER_KEY);
         this.currentUser.set(null);
         this.isAuthenticated.set(false);
@@ -120,6 +124,7 @@ export class AuthService implements OnDestroy {
         // Any failure on /auth/me means the session cannot be verified.
         // Clear auth state and redirect to login so the guard doesn't loop.
         this.stopPermissionsPolling();
+        this.wsService.disconnect();
         localStorage.removeItem(this.USER_KEY);
         this.currentUser.set(null);
         this.isAuthenticated.set(false);
@@ -139,6 +144,8 @@ export class AuthService implements OnDestroy {
         this.permissionsLoaded.set(true);
         this.permissionsLoaded$.next(true);
 
+        // Open the real time socket for this session (a no-op if one is already open)
+        this.wsService.connect();
         this.startPermissionsPolling();
       }),
       map((): void => { /* convert to void */ })

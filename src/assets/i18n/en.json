@@ -17,7 +17,6 @@
     "ROLES": "Roles",
     "AUDIT": "History",
     "TRANSACTIONS": "Transactions",
-    "TRANSACTIONS_LIST": "Transaction List",
     "REPORTS": "Reports",
     "SETTINGS": "Settings",
     "PROFILE": "Profile",
@@ -29,9 +28,6 @@
     "CANCEL": "Cancel",
     "DELETE": "Delete",
     "EDIT": "Edit",
-    "ADD": "Add",
-    "SEARCH": "Search",
-    "FILTER": "Filter",
     "EXPORT": "Export",
     "IMPORT": "Import",
     "LOADING": "Loading",
@@ -40,9 +36,7 @@
     "YES": "Yes",
     "NO": "No",
     "CREATE": "Create",
-    "UPDATE": "Update",
     "NONE": "None",
-    "UNASSIGNED": "Unassigned",
     "NO_CATEGORY": "No Category",
     "NO_WAREHOUSE": "No Warehouse",
     "NO_SUPPLIER": "No Supplier",
@@ -52,10 +46,7 @@
     "TOTAL": "Total",
     "VIEW": "View",
     "VIEW_ALL": "View All",
-    "VIEW_REPORTS": "View Reports",
-    "ADD_NEW": "Add New",
     "BACK": "Back",
-    "BACK_TO_INVENTORY": "Back to Inventory",
     "CLOSE": "Close",
     "SKU": "SKU",
     "USER": "User",
@@ -68,17 +59,12 @@
     "QTY_SHORT": "Qty",
     "EXPAND": "Expand",
     "ITEMS_COUNT": "{{count}} items",
-    "NO_DATA_FOUND": "No data found",
-    "NO_DATA_DESC": "There are no items to display",
     "SKIP_NAV": "Skip to main content",
     "NO_NAME": "No name",
     "SHOW_PASSWORD": "Show password",
     "HIDE_PASSWORD": "Hide password",
     "TOGGLE_SIDEBAR": "Toggle sidebar",
-    "TOGGLE_THEME": "Toggle theme",
-    "CHANGE_LANGUAGE": "Change language",
-    "DELETE_ITEM": "Delete {{item}}",
-    "EDIT_ITEM": "Edit {{item}}"
+    "TOGGLE_THEME": "Toggle theme"
   },
   "IMPORT": {
     "TITLE": "Import Items",
@@ -90,16 +76,6 @@
     "OR": "or",
     "SELECT_FILE": "Select File",
     "SUPPORTED_FORMATS": "Supported format: Excel (.xlsx)",
-    "TOTAL_ROWS": "Total Rows",
-    "VALID_ROWS": "Valid Rows",
-    "INVALID_ROWS": "Invalid Rows",
-    "COL_STATUS": "Status",
-    "COL_NAME": "Name",
-    "COL_CATEGORY": "Category",
-    "COL_QTY": "Qty",
-    "COL_WAREHOUSE": "Warehouse",
-    "COL_ERRORS": "Errors",
-    "INVALID_WARNING": "Invalid rows will be ignored during import.",
     "IMPORTING": "Importing items...",
     "SUCCESS": "Import Successful",
     "PARTIAL_SUCCESS": "Partial Import",
@@ -107,7 +83,6 @@
     "ERRORS": "Errors",
     "ERROR_DETAILS": "Error details",
     "ROW": "Row",
-    "IMPORT_VALID": "Import Valid",
     "INVALID_FORMAT": "Invalid format. Please upload an Excel file (.xlsx).",
     "FILE_TOO_LARGE": "File is too large. Maximum size is 10MB.",
     "GENERIC_ERROR": "Error importing the file. Please try again.",
@@ -128,8 +103,6 @@
     "MANAGE_ITEMS": "Manage your inventory items",
     "SHOWING_LOW_STOCK": "Showing {{count}} of {{total}} low stock items",
     "ADD_NEW_ITEM": "Add New Item",
-    "EXPORT_DATA": "Export Data",
-    "VIEW_REPORTS": "View Reports",
     "TABLE": {
       "ITEM": "Item",
       "CATEGORY": "Category",
@@ -169,10 +142,6 @@
     }
   },
   "INVENTORY": {
-    "TITLE": "Inventory",
-    "ADD_ITEM": "Add Item",
-    "EDIT_ITEM": "Edit Item",
-    "DELETE_ITEM": "Delete Item",
     "SEARCH_PLACEHOLDER": "Search by name, category or description...",
     "ALL_CATEGORIES": "All Categories",
     "ALL_LOCATIONS": "All Locations",
@@ -183,7 +152,6 @@
       "NO_ITEMS_FOUND": "No items found",
       "ADJUST_FILTERS": "Try adjusting your search or filter criteria",
       "CLEAR_FILTERS": "Clear",
-      "UNITS": "units",
       "ITEMS_COUNT": "Showing {{count}} items"
     },
     "STATUS": {
@@ -204,7 +172,6 @@
       "ADD_SUBTITLE": "Fill in the details to add a new item",
       "EDIT_SUBTITLE": "Update the item details below",
       "ITEM_TYPE": {
-        "TITLE": "Item Type",
         "BULK": "Bulk Item (BULK)",
         "BULK_HINT": "Items counted by units (e.g., screws, paper)",
         "UNIQUE": "Unique Item (UNIQUE)",
@@ -219,11 +186,7 @@
         "DESCRIPTION": "Description",
         "DESCRIPTION_PLACEHOLDER": "Describe the item...",
         "MODEL": "Model / SKU",
-        "MODEL_OPTIONAL": "optional",
-        "MODEL_PLACEHOLDER": "E.g., Dell Latitude 5430, iPhone 13 Pro Max",
-        "MODEL_HINT": "Useful for grouping similar products (e.g., all Dell Latitude 5430 laptops)",
-        "LOCATION": "Physical Location",
-        "LOCATION_PLACEHOLDER": "E.g., Shelf A-5, Aisle 3"
+        "MODEL_PLACEHOLDER": "E.g., Dell Latitude 5430, iPhone 13 Pro Max"
       },
       "WAREHOUSE": {
         "LABEL": "Warehouse",
@@ -233,10 +196,8 @@
         "TITLE": "Identifiers",
         "SERVICE_TAG": "Service Tag",
         "SERVICE_TAG_PLACEHOLDER": "E.g., DEL123456AB",
-        "SERVICE_TAG_HINT": "Required for UNIQUE items",
         "SERIAL_NUMBER": "Serial Number",
         "SERIAL_NUMBER_PLACEHOLDER": "E.g., SN123456789",
-        "SERIAL_NUMBER_HINT": "Optional",
         "SKU": "SKU",
         "SKU_PLACEHOLDER": "E.g., LAP-DELL-5420",
         "BARCODE": "Barcode",
@@ -256,8 +217,7 @@
       },
       "SUPPLIER": {
         "LABEL": "Supplier",
-        "NONE": "No supplier",
-        "HINT": "Optional"
+        "NONE": "No supplier"
       },
       "ASSIGNMENT": {
         "TITLE": "Item Assignment",
@@ -285,11 +245,7 @@
     "TOTAL_VALUE": "Total Value",
     "WAREHOUSE": "Warehouse",
     "SUPPLIER": "Supplier",
-    "NAME": "Name",
-    "LOCATION": "Location",
     "DESCRIPTION": "Description",
-    "EMAIL": "Email",
-    "PHONE": "Phone",
     "ASSIGNMENT": "Assignment",
     "ASSIGNED_ON": "Assigned on",
     "CREATED": "Created",
@@ -317,8 +273,7 @@
     },
     "MANAGER": "Manager",
     "MANAGER_PLACEHOLDER": "No manager assigned",
-    "NO_MANAGER": "No manager",
-    "SET_MANAGER": "Set Manager"
+    "NO_MANAGER": "No manager"
   },
   "SUPPLIER": {
     "TITLE": "Suppliers",
@@ -345,9 +300,6 @@
     "EDIT": "Edit Category",
     "NAME": "Name",
     "DESCRIPTION": "Description",
-    "COLOR": "Color",
-    "COLOR_INVALID": "Invalid hex color format (e.g., #FF5733)",
-    "PREVIEW": "Preview",
     "TOTAL": "Total Categories",
     "LIST": "Category List",
     "NO_CATEGORIES": "No categories found",
@@ -415,11 +367,6 @@
     "CUSTOM_ROLE": "Custom Role",
     "CUSTOM_ROLE_DESC": "Override permissions with a specific role",
     "NO_CUSTOM_ROLE": "None (use legacy role)"
-  },
-  "USERS": {
-    "TITLE": "Users",
-    "ADD": "Add User",
-    "EDIT": "Edit User"
   },
   "ROLES": {
     "TITLE": "Roles",
@@ -506,7 +453,6 @@
     "LANGUAGE": "Language",
     "LANGUAGE_DESC": "Select your preferred language",
     "APPEARANCE": "Appearance",
-    "THEME": "Theme",
     "THEME_DESC": "Choose between light and dark mode",
     "DARK_MODE": "Dark Mode",
     "LIGHT_MODE": "Light Mode",
@@ -534,9 +480,7 @@
       "MIN_LENGTH": "Minimum {{length}} characters",
       "MAX_LENGTH": "Maximum {{length}} characters",
       "EMAIL": "Invalid email",
-      "MIN_VALUE": "Minimum value: {{value}}",
-      "MAX_VALUE": "Maximum value: {{value}}",
-      "REQUIRE_EITHER": "At least one of these fields is required"
+      "MIN_VALUE": "Minimum value: {{value}}"
     }
   },
   "NOTIFICATIONS": {
@@ -546,13 +490,6 @@
     "UPDATED_WITH_NAME": "{{entity}} \"{{name}}\" updated successfully",
     "DELETED": "{{entity}} deleted successfully",
     "DELETED_WITH_NAME": "\"{{name}}\" has been deleted",
-    "OPERATION_FAILED": "Failed to {{operation}} {{entity}}",
-    "OPERATIONS": {
-      "CREATE": "create",
-      "UPDATE": "update",
-      "DELETE": "delete",
-      "LOAD": "load"
-    },
     "ERRORS": {
       "CONNECTION": "Connection error. Please check your internet connection.",
       "UNAUTHORIZED": "Session expired. Please log in again.",
@@ -579,7 +516,6 @@
     }
   },
   "LOGIN": {
-    "TITLE": "Obsid",
     "SIGN_IN": "Sign in",
     "SUBTITLE": "Access your inventory workspace.",
     "EMAIL": "Email",
@@ -590,13 +526,7 @@
     "FORGOT_PASSWORD": "Forgot password?",
     "CAPS_LOCK_ON": "Caps Lock is on",
     "SUPPORT": "Support",
-    "PRIVACY": "Privacy",
     "VERSION": "v0.4.5",
-    "STATUS": {
-      "OPERATIONAL": "All systems operational",
-      "DEGRADED": "Service unreachable",
-      "CHECKING": "Checking status..."
-    },
     "VALIDATION": {
       "INVALID_EMAIL": "Please enter a valid email address",
       "PASSWORD_MIN": "Password must be at least 6 characters"
@@ -639,10 +569,8 @@
   "REPORTS": {
     "TITLE": "Reports",
     "SUBTITLE": "Inventory value reports and analytics",
-    "CURRENCY": "Currency",
     "ALL_CURRENCIES": "All Currencies",
     "ALL_TYPES": "All Types",
-    "EXPORT": "Export CSV",
     "TOTAL_VALUE": "Total Value",
     "TOTAL_ITEMS": "Total Items",
     "TOTAL_TRANSACTIONS": "Total Transactions",
@@ -671,8 +599,6 @@
     "MORE": "more",
     "TRANSACTIONS_LAST_30_DAYS": "Transactions - Last 30 Days",
     "DAILY_SUMMARY": "Daily Summary",
-    "EXPORT_CSV": "Export CSV",
-    "EXPORT_PDF": "Export PDF",
     "CSV": {
       "NEEDS_RESTOCK": "Needs Restock",
       "ASSIGNED_TO": "Assigned To",
@@ -810,34 +736,19 @@
     "DEST_WAREHOUSE": "Destination Warehouse",
     "SELECT_SOURCE_WAREHOUSE": "Select source warehouse...",
     "SELECT_DEST_WAREHOUSE": "Select destination warehouse...",
-    "LOAN_DATE": "Loan Date",
     "DUE_DATE": "Due Date",
-    "RETURN": "Return",
-    "ACTIVE": "Active",
     "OVERDUE": "Overdue",
-    "DUE_SOON": "Due Soon",
     "RETURNED": "Returned",
     "PENDING": "Pending",
     "SENT": "Sent",
     "RECEIVED": "Received",
-    "RETURN_PENDING": "Return Pending",
     "NO_LOANS": "No loans",
     "NO_LOANS_DESC": "Registered loans will appear here",
-    "SELECT_ITEM": "Select Item",
-    "SELECT_ITEM_PLACEHOLDER": "Select an item...",
-    "NO_ITEMS_IN_WAREHOUSE": "No available items in this warehouse",
-    "NO_ITEMS_ADDED": "Click 'Add Item' to add items to this loan",
-    "SELECT_SOURCE_FIRST": "Select the source warehouse first",
-    "LOANS_CREATED": "{{count}} loans created successfully",
     "NOTES": "Notes",
     "NOTES_PLACEHOLDER": "Additional notes (optional)",
     "CREATE_LOAN": "Create Loan",
     "LOAN_CREATED": "Loan created successfully",
     "LOAN_ERROR": "Error creating loan",
-    "CONFIRM_RETURN_TITLE": "Confirm Return",
-    "CONFIRM_RETURN_MESSAGE": "Confirm the return of \"{{item}}\" from {{from}} to {{to}}?",
-    "RETURN_SUCCESS": "Item returned successfully",
-    "RETURN_ERROR": "Error returning loan",
     "SEND": "Send",
     "SEND_SUCCESS": "Loan sent successfully",
     "SEND_ERROR": "Error sending loan",
@@ -852,11 +763,9 @@
     "CANCEL_SUCCESS": "Loan cancelled successfully",
     "CANCEL_ERROR": "Error cancelling loan",
     "LOADING_ERROR": "Error loading loans",
-    "DELETE_ERROR": "Error deleting loan",
     "CONFIRM_CANCEL_TITLE": "Cancel Loan",
     "CONFIRM_CANCEL_MESSAGE": "Cancel the loan of \"{{item}}\"? This action cannot be undone.",
     "QR": {
-      "TITLE": "QR Code",
       "SEND_TITLE": "Send QR Code",
       "RETURN_TITLE": "Return QR Code",
       "SEND_INSTRUCTIONS": "Attach this QR code to the package. The recipient must scan it to confirm receipt.",
@@ -868,9 +777,7 @@
       "SCAN_INSTRUCTIONS": "Scan the QR code on the package to confirm receipt or return.",
       "SCAN_SUCCESS": "QR code processed successfully",
       "SCAN_ERROR": "Error processing QR code",
-      "INVALID_CODE": "Invalid QR code",
-      "SHOW_QR": "Show QR",
-      "NO_QR": "No QR generated"
+      "SHOW_QR": "Show QR"
     },
     "STATUS": {
       "PENDING": "Pending",
@@ -881,13 +788,6 @@
       "OVERDUE": "Overdue",
       "CANCELLED": "Cancelled",
       "ACTIVE": "Active"
-    },
-    "WORKFLOW": {
-      "STEP1": "Create loan",
-      "STEP2": "Send (generates QR)",
-      "STEP3": "Recipient scans QR",
-      "STEP4": "Initiate return (generates QR)",
-      "STEP5": "Sender scans QR"
     },
     "MANUAL_CONFIRM_RECEIPT": "Confirm Receipt (No QR)",
     "MANUAL_CONFIRM_RETURN": "Confirm Return (No QR)",
@@ -929,7 +829,6 @@
     "SENT": "Sent",
     "COMPLETED": "Completed",
     "REJECTED": "Rejected",
-    "CANCELLED": "Cancelled",
     "NO_REQUESTS": "No requests",
     "NO_REQUESTS_DESC": "Transfer requests will appear here",
     "APPROVE": "Approve",
@@ -1173,15 +1072,11 @@
     "SEARCH_PLACEHOLDER": "Search by name or warehouse...",
     "ALL_STATUS": "All Status",
     "LIST": "Stock Take List",
-    "NAME": "Name",
-    "NAME_PLACEHOLDER": "E.g., Monthly Count - January",
     "DESCRIPTION": "Description",
     "DESCRIPTION_PLACEHOLDER": "Optional description...",
     "WAREHOUSE": "Warehouse",
     "SELECT_WAREHOUSE": "All warehouses",
     "CREATED_BY": "Created by",
-    "PROGRESS": "Progress",
-    "ITEMS_COUNTED": "items counted",
     "NO_STOCK_TAKES": "No stock takes",
     "NO_STOCK_TAKES_DESC": "Physical inventory counts will appear here",
     "STATUS": {
@@ -1277,13 +1172,6 @@
   "ERRORS": {
     "LOADING_DATA": "Error loading data"
   },
-  "THEME": {
-    "SWITCH_TO_LIGHT": "Switch to light mode",
-    "SWITCH_TO_DARK": "Switch to dark mode",
-    "LIGHT": "Light",
-    "DARK": "Dark",
-    "SYSTEM": "System"
-  },
   "ALERTS": {
     "TITLE": "Alerts",
     "NO_ALERTS": "No active alerts",
@@ -1292,8 +1180,7 @@
     "OUT_OF_STOCK": "Out of stock",
     "EXPIRING_SOON": "Expiring soon",
     "ITEM_IN": "in",
-    "RESOLVE": "Resolve",
-    "RESOLVED": "Resolved"
+    "RESOLVE": "Resolve"
   },
   "SCHEDULED_REPORTS": {
     "TITLE": "Scheduled Reports",
@@ -1303,11 +1190,8 @@
     "REPORT_TYPE": "Report Type",
     "FREQUENCY_LABEL": "Frequency",
     "RECIPIENTS": "Recipient Emails",
-    "WAREHOUSE": "Warehouse",
     "LOCALE": "Language",
     "NEXT_SEND": "Next send",
-    "LAST_SENT": "Last sent",
-    "NEVER_SENT": "Never sent",
     "SEND_NOW": "Send Now",
     "ACTIVE": "Active",
     "INACTIVE": "Inactive",

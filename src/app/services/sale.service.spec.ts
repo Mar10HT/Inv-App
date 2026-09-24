@@ -109,14 +109,10 @@ describe('SaleService', () => {
     });
 
     it('does not let floating point drift show up in the revenue', () => {
-      load(
-        sale({ id: '1', totalAmount: 0.1 }),
-        sale({ id: '2', totalAmount: 0.2 }),
-        sale({ id: '3', totalAmount: 0.7 })
-      );
+      load(sale({ id: '1', totalAmount: 0.1 }), sale({ id: '2', totalAmount: 0.2 }));
 
-      // 0.1 + 0.2 + 0.7 is 0.9999999999999999 in floating point
-      expect(service.stats().revenueByCurrency['USD']).toBe(1);
+      // 0.1 + 0.2 is 0.30000000000000004 in floating point
+      expect(service.stats().revenueByCurrency['USD']).toBe(0.3);
     });
 
     it('is empty when there are no sales', () => {

@@ -2,13 +2,13 @@ import { Component, OnInit, ChangeDetectionStrategy, signal, inject } from '@ang
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule } from '@ngx-translate/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { InventoryService } from '../../../services/inventory/inventory.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
-import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../../services/confirm.service';
+import { NotificationService } from '../../../services/notification.service';
 
 export interface InventoryItemDialogData {
   itemId: string;
@@ -301,8 +301,9 @@ export class InventoryItem implements OnInit {
   private data: InventoryItemDialogData = inject(MAT_DIALOG_DATA);
   private router = inject(Router);
   private inventoryService = inject(InventoryService);
-  private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private confirm = inject(ConfirmService);
+  private notifications = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   // Reactive state
   item = signal<InventoryItemInterface | null>(null);
@@ -354,35 +355,20 @@ export class InventoryItem implements OnInit {
     const item = this.item();
     if (!item) return;
 
-    const confirmDialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: 'Delete Item',
-        message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    confirmDialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.inventoryService.deleteItem(item.id).subscribe({
-          next: () => {
-            this.snackBar.open(`"${item.name}" has been deleted`, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-success']
-            });
-            this.dialogRef.close({ deleted: true });
-          },
-          error: (err) => {
-            this.snackBar.open(`Error deleting item: ${err.message}`, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error']
-            });
-          }
-        });
-      }
+    this.confirm.ask({
+      title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.inventoryService.deleteItem(item.id).subscribe({
+        next: () => {
+          this.notifications.deleted('NOTIFICATIONS.ENTITIES.ITEM', item.name);
+          this.dialogRef.close({ deleted: true });
+        },
+        error: (err) => this.notifications.handleError(err, 'NOTIFICATIONS.ENTITIES.ITEM')
+      });
     });
   }
 

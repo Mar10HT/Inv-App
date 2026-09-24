@@ -12,6 +12,7 @@ import { NotificationService } from '../../../services/notification.service';
 import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/discharge-request.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { Spinner } from '../../shared/spinner/spinner';
+import { StatCard } from '../../shared/stat-card/stat-card';
 
 @Component({
   selector: 'app-discharge-list',
@@ -25,6 +26,7 @@ import { Spinner } from '../../shared/spinner/spinner';
     TranslateModule,
     DatePipe,
     Spinner,
+    StatCard,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -49,50 +51,10 @@ import { Spinner } from '../../shared/spinner/spinner';
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'COMMON.TOTAL' | translate }}</p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="ClipboardList" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.PENDING' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-accent-amber)]">{{ stats().byStatus.pending }}</p>
-              </div>
-              <div class="bg-[var(--color-accent-amber-bg)] p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-[var(--color-accent-amber)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.COMPLETED' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().byStatus.completed }}</p>
-              </div>
-              <div class="bg-[var(--color-success-bg)] p-3 rounded-lg">
-                <lucide-icon name="CheckCircle2" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.REJECTED' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().byStatus.rejected }}</p>
-              </div>
-              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
-                <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
+          <app-stat-card [label]="'COMMON.TOTAL' | translate" [value]="stats().total" icon="ClipboardList"></app-stat-card>
+          <app-stat-card [label]="'DISCHARGES.STATUS.PENDING' | translate" [value]="stats().byStatus.pending" icon="Clock" tone="amber"></app-stat-card>
+          <app-stat-card [label]="'DISCHARGES.STATUS.COMPLETED' | translate" [value]="stats().byStatus.completed" icon="CheckCircle2" tone="success"></app-stat-card>
+          <app-stat-card [label]="'DISCHARGES.STATUS.REJECTED' | translate" [value]="stats().byStatus.rejected" icon="XCircle" tone="error"></app-stat-card>
         </div>
 
         <!-- Filters -->

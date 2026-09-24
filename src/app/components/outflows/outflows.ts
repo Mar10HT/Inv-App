@@ -26,6 +26,7 @@ import {
 } from '../../interfaces/outflow.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
+import { StatCard } from '../shared/stat-card/stat-card';
 
 @Component({
   selector: 'app-outflows',
@@ -38,6 +39,7 @@ import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
     TranslateModule,
     NgxPermissionsModule,
     OutflowFormDialog,
+    StatCard,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -62,45 +64,9 @@ import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">
-                  {{ 'OUTFLOWS.STATS.ACTIVE' | translate }}
-                </p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().active }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="PackageMinus" class="!w-5 !h-5 !text-[var(--color-on-surface-variant)]"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">
-                  {{ 'OUTFLOWS.STATS.CANCELLED' | translate }}
-                </p>
-                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().cancelled }}</p>
-              </div>
-              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
-                <lucide-icon name="Ban" class="!w-5 !h-5 !text-[var(--color-status-error)]"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">
-                  {{ 'OUTFLOWS.STATS.TOTAL' | translate }}
-                </p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="List" class="!w-5 !h-5 !text-[var(--color-on-surface-variant)]"></lucide-icon>
-              </div>
-            </div>
-          </div>
+          <app-stat-card [label]="'OUTFLOWS.STATS.ACTIVE' | translate" [value]="stats().active" icon="PackageMinus"></app-stat-card>
+          <app-stat-card [label]="'OUTFLOWS.STATS.CANCELLED' | translate" [value]="stats().cancelled" icon="Ban" tone="error"></app-stat-card>
+          <app-stat-card [label]="'OUTFLOWS.STATS.TOTAL' | translate" [value]="stats().total" icon="List"></app-stat-card>
         </div>
 
         <!-- Filters -->

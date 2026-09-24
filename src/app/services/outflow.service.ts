@@ -14,6 +14,7 @@ import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
+import { RequestTracker, trackRequest } from '../utils/track-request';
 
 const MAX_OUTFLOWS_LIMIT = 200;
 
@@ -28,6 +29,12 @@ export class OutflowService {
   private outflowsSignal = signal<Outflow[]>([]);
   private loadingSignal = signal(false);
   private errorSignal = signal<string | null>(null);
+  private tracker: RequestTracker = {
+    loading: this.loadingSignal,
+    error: this.errorSignal,
+    logger: this.logger,
+    translate: this.translate
+  };
 
   outflows = computed(() => this.outflowsSignal());
   loading = computed(() => this.loadingSignal());
@@ -77,47 +84,21 @@ export class OutflowService {
   }
 
   create(dto: CreateOutflowDto): Observable<Outflow | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-    return this.http.post<Outflow>(this.apiUrl, dto).pipe(
-      tap((created) => {
-        this.outflowsSignal.update((list) => [created, ...list]);
-      }),
-      catchError((err) => {
-        this.logger.error('Error creating outflow', err);
-        this.errorSignal.set(
-          err.error?.message ||
-            err.message ||
-            this.translate.instant('OUTFLOWS.CREATE_ERROR'),
-        );
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false)),
+    return trackRequest(
+      this.http.post<Outflow>(this.apiUrl, dto).pipe(
+        tap((created) => this.outflowsSignal.update((list) => [created, ...list]))
+      ),
+      this.tracker, 'Error creating outflow', 'OUTFLOWS.CREATE_ERROR'
     );
   }
 
   cancel(id: string, dto: CancelOutflowDto = {}): Observable<Outflow | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-    return this.http
-      .patch<Outflow>(`${this.apiUrl}/${id}/cancel`, dto)
-      .pipe(
-        tap((updated) => {
-          this.outflowsSignal.update((list) =>
-            list.map((o) => (o.id === id ? updated : o)),
-          );
-        }),
-        catchError((err) => {
-          this.logger.error('Error cancelling outflow', err);
-          this.errorSignal.set(
-            err.error?.message ||
-              err.message ||
-              this.translate.instant('OUTFLOWS.CANCEL_ERROR'),
-          );
-          return of(null);
-        }),
-        finalize(() => this.loadingSignal.set(false)),
-      );
+    return trackRequest(
+      this.http.patch<Outflow>(`${this.apiUrl}/${id}/cancel`, dto).pipe(
+        tap((updated) => this.outflowsSignal.update((list) => list.map((o) => (o.id === id ? updated : o))))
+      ),
+      this.tracker, 'Error cancelling outflow', 'OUTFLOWS.CANCEL_ERROR'
+    );
   }
 
   downloadPdf(id: string): void {

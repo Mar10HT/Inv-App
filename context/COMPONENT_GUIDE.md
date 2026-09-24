@@ -7,7 +7,7 @@ This project uses a combination of technologies for styling:
 | Technology | Usage |
 |------------|-------|
 | **Tailwind CSS** | Layout, spacing, colors, responsive, utilities |
-| **Angular Material** | Icons, Dialogs, Snackbars, Spinners, Tables |
+| **Angular Material** | Icons, Dialogs, Snackbars, Tables |
 | **Custom CSS** | Complex animations, themes, specific components |
 
 ---
@@ -83,7 +83,7 @@ imports: [
 | Icons | `MatIconModule` | `<mat-icon>name</mat-icon>` |
 | Dialogs | `MatDialog` service (no module import) | Modals and confirmations |
 | Snackbar | `NotificationService` (no module import) | Toast notifications |
-| Spinner | `MatProgressSpinnerModule` | `<mat-spinner diameter="20">` |
+| Spinner | `Spinner` component (see Shared Components) | `<app-spinner size="md" />` |
 | Tables | `MatTableModule` | Tables with sort/paginator |
 | Paginator | `MatPaginatorModule` | Table pagination |
 | Sort | `MatSortModule` | Table sorting |
@@ -228,7 +228,7 @@ bg-[#1a1a1a]          /* ❌ Use bg-surface-variant instead */
          hover:bg-[#5d8c7f] disabled:opacity-50 disabled:cursor-not-allowed
          transition-colors font-medium flex items-center gap-2">
   @if (saving()) {
-    <mat-spinner diameter="16"></mat-spinner>
+    <app-spinner size="sm" tone="white" />
   }
   {{ 'COMMON.SAVE' | translate }}
 </button>
@@ -474,7 +474,7 @@ Do not repeat this markup, use the component:
 | Component | Use it for | Example |
 |-----------|------------|---------|
 | `Spinner` | Loading circle, sizes `sm` `md` `lg` `xl`, tone `primary` or `white` (inside a colored button) | `<app-spinner size="sm" tone="white" />` |
-| `StatCard` | Number card of a stats row, tones `neutral` `info` `success` `error` `amber` `violet` | `<app-stat-card [label]="'LOANS.SENT' | translate" [value]="stats().totalSent" icon="Send" tone="info" />` |
+| `StatCard` | Number card of a stats row, tones `neutral` `info` `success` `error` `amber` `violet` | `<app-stat-card [label]="'LOANS.SENT' \| translate" [value]="stats().totalSent" icon="Send" tone="info" />` |
 | `EmptyState` | Centered icon, heading and description when a list is empty, the action button goes inside | `<app-empty-state icon="Tag" [heading]="..." [description]="...">...</app-empty-state>` |
 
 Pass already translated text. Icon names must be registered in `APP_ICONS`.
@@ -505,38 +505,25 @@ Pass already translated text. Icon names must be registered in `APP_ICONS`.
       </button>
     </div>
 
-    <!-- Stats Card -->
-    <div class="bg-surface-variant rounded-xl border border-theme p-6 mb-6">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-[#4d7c6f]/20 flex items-center justify-center">
-          <mat-icon class="!text-[#4d7c6f]">icon_name</mat-icon>
-        </div>
-        <div>
-          <p class="text-sm text-slate-400">{{ 'ENTITY.TOTAL' | translate }}</p>
-          <p class="text-2xl font-bold text-foreground">{{ items().length }}</p>
-        </div>
-      </div>
+    <!-- Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <app-stat-card [label]="'ENTITY.TOTAL' | translate" [value]="items().length" icon="Package" />
     </div>
 
     <!-- Loading -->
     @if (loading()) {
       <div class="flex justify-center py-12">
-        <mat-spinner diameter="40"></mat-spinner>
+        <app-spinner size="xl" />
       </div>
     } @else if (items().length === 0) {
-      <!-- Empty State -->
-      <div class="bg-surface-variant rounded-xl border border-theme p-12 text-center">
-        <mat-icon class="!text-6xl !w-16 !h-16 text-slate-600 mb-4">icon</mat-icon>
-        <h3 class="text-xl font-semibold text-foreground mb-2">
-          {{ 'ENTITY.NO_ITEMS' | translate }}
-        </h3>
-        <p class="text-slate-500 mb-6">
-          {{ 'ENTITY.NO_ITEMS_DESC' | translate }}
-        </p>
+      <app-empty-state
+        icon="Package"
+        [heading]="'ENTITY.NO_ITEMS' | translate"
+        [description]="'ENTITY.NO_ITEMS_DESC' | translate">
         <button (click)="add()" class="...">
           {{ 'ENTITY.ADD' | translate }}
         </button>
-      </div>
+      </app-empty-state>
     } @else {
       <!-- Table (Desktop) -->
       <div class="hidden md:block bg-surface-variant rounded-xl border border-theme overflow-hidden">

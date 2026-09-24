@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import { InventoryItem } from './inventory-item';
@@ -50,9 +51,11 @@ describe('InventoryItem', () => {
 
     it('asks for confirmation with translated texts', () => {
       const ask = spyOn(confirm, 'ask').and.returnValue(of(false));
+      const instant = spyOn(TestBed.inject(TranslateService), 'instant').and.callThrough();
 
       component.deleteItem();
 
+      expect(instant).toHaveBeenCalledWith('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: 'Laptop' });
       expect(ask).toHaveBeenCalledOnceWith({
         title: 'INVENTORY.DELETE_CONFIRM.TITLE',
         message: 'INVENTORY.DELETE_CONFIRM.MESSAGE',

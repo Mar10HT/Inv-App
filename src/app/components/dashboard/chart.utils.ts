@@ -1,3 +1,5 @@
+import { currencySymbol, formatNumber } from '../../utils/money.utils';
+
 // Helpers shared by the dashboard charts and the custom chart dialog preview.
 
 const PIE_CHART_TYPES = ['pie', 'donut', 'radialBar'];
@@ -21,13 +23,6 @@ export const isPieChartType = (chartType: string): boolean => PIE_CHART_TYPES.in
 
 /** A value source adds up money (price times quantity), the others count items. */
 export const isValueSource = (source: string): boolean => VALUE_SOURCES.includes(source);
-
-export const currencySymbol = (currency: string | undefined): string => (currency === 'HNL' ? 'L' : '$');
-
-/** Thousands separator and two decimals. */
-export function formatNumber(value: number): string {
-  return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-}
 
 /** Formats the values of an axis or a tooltip: money for a value chart, a plain count otherwise. */
 export function chartValueFormatter(isValueChart: boolean, currency: string | undefined): (value: number) => string {

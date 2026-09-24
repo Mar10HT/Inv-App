@@ -3,8 +3,6 @@ import {
   chartColors,
   chartValueFormatter,
   cssVar,
-  currencySymbol,
-  formatNumber,
   isPieChartType,
   isValueSource,
   seriesName
@@ -32,23 +30,6 @@ describe('chart.utils', () => {
       for (const source of ['categories', 'warehouses', 'status', 'lowStock']) {
         expect(isValueSource(source)).withContext(source).toBeFalse();
       }
-    });
-  });
-
-  describe('currencySymbol', () => {
-    it('is L for lempiras and $ for anything else', () => {
-      expect(currencySymbol('HNL')).toBe('L');
-      expect(currencySymbol('USD')).toBe('$');
-      expect(currencySymbol('ALL')).toBe('$');
-      expect(currencySymbol(undefined)).toBe('$');
-    });
-  });
-
-  describe('formatNumber', () => {
-    it('groups thousands and always shows two decimals', () => {
-      expect(formatNumber(1234.5)).toBe('1,234.50');
-      expect(formatNumber(0)).toBe('0.00');
-      expect(formatNumber(1234567.891)).toBe('1,234,567.89');
     });
   });
 

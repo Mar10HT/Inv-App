@@ -13,12 +13,8 @@ export class TransactionService {
   private apiUrl = `${environment.apiUrl}/transactions`;
 
   private transactionsSignal = signal<Transaction[]>([]);
-  private totalSignal = signal<number>(0);
-  private pageSignal = signal<number>(1);
 
   transactions = computed(() => this.transactionsSignal());
-  total = computed(() => this.totalSignal());
-  currentPage = computed(() => this.pageSignal());
 
   loading = signal<boolean>(false);
   error = signal<string | null>(null);

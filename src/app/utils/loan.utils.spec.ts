@@ -1,10 +1,7 @@
-import { Loan, LoanFilter, LoanItem, LoanStatus, RawLoan } from '../interfaces/loan.interface';
+import { Loan, LoanItem, LoanStatus, RawLoan } from '../interfaces/loan.interface';
 import {
-  filterLoans,
-  getActiveLoanForItem,
   getLoanDueDateClass,
   getLoanStatusClass,
-  isItemOnLoan,
   summarizeLoanItems,
   totalLoanQuantity,
   transformLoan
@@ -137,97 +134,6 @@ describe('loan.utils', () => {
       for (const status of Object.values(LoanStatus)) {
         expect(transformLoan(rawLoan({ status })).status).toBe(status);
       }
-    });
-  });
-
-  describe('getActiveLoanForItem / isItemOnLoan', () => {
-    const loans = [
-      loan({ id: 'returned', status: LoanStatus.RETURNED, items: [item({ inventoryItemId: 'item-1' })] }),
-      loan({ id: 'cancelled', status: LoanStatus.CANCELLED, items: [item({ inventoryItemId: 'item-2' })] }),
-      loan({ id: 'sent', status: LoanStatus.SENT, items: [item({ inventoryItemId: 'item-3' })] }),
-      loan({ id: 'overdue', status: LoanStatus.OVERDUE, items: [item({ inventoryItemId: 'item-4' })] })
-    ];
-
-    it('finds the active loan that contains the item', () => {
-      expect(getActiveLoanForItem(loans, 'item-3')?.id).toBe('sent');
-      expect(getActiveLoanForItem(loans, 'item-4')?.id).toBe('overdue');
-    });
-
-    it('ignores returned and cancelled loans', () => {
-      expect(getActiveLoanForItem(loans, 'item-1')).toBeUndefined();
-      expect(getActiveLoanForItem(loans, 'item-2')).toBeUndefined();
-    });
-
-    it('reports whether an item is on loan', () => {
-      expect(isItemOnLoan(loans, 'item-3')).toBeTrue();
-      expect(isItemOnLoan(loans, 'item-1')).toBeFalse();
-      expect(isItemOnLoan(loans, 'unknown')).toBeFalse();
-    });
-  });
-
-  describe('filterLoans', () => {
-    const older = loan({ id: 'older', loanDate: new Date('2026-01-05'), status: LoanStatus.SENT });
-    const newer = loan({
-      id: 'newer',
-      loanDate: new Date('2026-03-01'),
-      status: LoanStatus.OVERDUE,
-      sourceWarehouseId: 'wh-x',
-      destinationWarehouseId: 'wh-y',
-      items: [item({ inventoryItemId: 'item-7' })]
-    });
-    const newest = loan({ id: 'newest', loanDate: new Date('2026-05-20'), status: LoanStatus.SENT });
-    const all = (): Loan[] => [older, newer, newest];
-
-    it('returns the list untouched when there is no filter', () => {
-      const input = all();
-
-      expect(filterLoans(input)).toBe(input);
-    });
-
-    it('sorts by loan date, newest first', () => {
-      expect(filterLoans(all(), {}).map((l) => l.id)).toEqual(['newest', 'newer', 'older']);
-    });
-
-    it('does not mutate the array it receives', () => {
-      const input = all();
-      const before = input.map((l) => l.id);
-
-      filterLoans(input, {});
-
-      expect(input.map((l) => l.id)).toEqual(before);
-    });
-
-    it('filters by status', () => {
-      const filter: LoanFilter = { status: LoanStatus.SENT };
-
-      expect(filterLoans(all(), filter).map((l) => l.id)).toEqual(['newest', 'older']);
-    });
-
-    it('lets the overdue flag take precedence over status', () => {
-      const filter: LoanFilter = { overdue: true, status: LoanStatus.SENT };
-
-      expect(filterLoans(all(), filter).map((l) => l.id)).toEqual(['newer']);
-    });
-
-    it('filters by source and destination warehouse', () => {
-      expect(filterLoans(all(), { sourceWarehouseId: 'wh-x' }).map((l) => l.id)).toEqual(['newer']);
-      expect(filterLoans(all(), { destinationWarehouseId: 'wh-y' }).map((l) => l.id)).toEqual(['newer']);
-    });
-
-    it('filters by inventory item', () => {
-      expect(filterLoans(all(), { inventoryItemId: 'item-7' }).map((l) => l.id)).toEqual(['newer']);
-    });
-
-    it('filters by an inclusive date range', () => {
-      const filter: LoanFilter = { dateFrom: new Date('2026-03-01'), dateTo: new Date('2026-05-20') };
-
-      expect(filterLoans(all(), filter).map((l) => l.id)).toEqual(['newest', 'newer']);
-    });
-
-    it('combines several filters', () => {
-      const filter: LoanFilter = { status: LoanStatus.SENT, dateFrom: new Date('2026-02-01') };
-
-      expect(filterLoans(all(), filter).map((l) => l.id)).toEqual(['newest']);
     });
   });
 

@@ -173,12 +173,6 @@ describe('LoanService', () => {
 
       expect(service.activeLoans().map((l) => l.id)).toEqual(['1', '4']);
     });
-
-    it('lists the overdue loans', () => {
-      const service = create(raw({ id: '1', status: 'SENT' }), raw({ id: '2', status: 'OVERDUE' }));
-
-      expect(service.overdueLoans().map((l) => l.id)).toEqual(['2']);
-    });
   });
 
   describe('createLoan', () => {
@@ -226,31 +220,6 @@ describe('LoanService', () => {
 
       expect(service.error()).toBeNull();
       backend.expectOne((r) => r.method === 'POST');
-    });
-  });
-
-  describe('returnLoan', () => {
-    it('replaces only the loan that was returned', () => {
-      const service = create(raw({ id: 'a', status: 'SENT' }), raw({ id: 'b', status: 'SENT' }));
-
-      service.returnLoan('a').subscribe();
-      backend.expectOne(loansUrl('/a/return')).flush(raw({ id: 'a', status: 'RETURNED' }));
-
-      expect(service.loans().map((l) => [l.id, l.status])).toEqual([
-        ['a', LoanStatus.RETURNED],
-        ['b', LoanStatus.SENT]
-      ]);
-    });
-
-    it('leaves the list alone and resolves with null when the API refuses', () => {
-      const service = create(raw({ id: 'a', status: 'SENT' }));
-      let result: unknown = 'unset';
-
-      service.returnLoan('a').subscribe((loan) => (result = loan));
-      backend.expectOne(loansUrl('/a/return')).flush(null, { status: 409, statusText: 'Conflict' });
-
-      expect(result).toBeNull();
-      expect(service.loans()[0].status).toBe(LoanStatus.SENT);
     });
   });
 });

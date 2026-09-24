@@ -90,25 +90,6 @@ describe('TransferRequestService', () => {
         byStatus: { pending: 2, approved: 1, sent: 1, completed: 1, rejected: 1, cancelled: 1 }
       });
     });
-
-    it('lists the pending requests', () => {
-      const service = create(raw({ id: '1', status: 'PENDING' }), raw({ id: '2', status: 'SENT' }));
-
-      expect(service.pendingRequests().map((r) => r.id)).toEqual(['1']);
-    });
-
-    it('lists the pending, approved and sent requests as active', () => {
-      const service = create(
-        raw({ id: '1', status: 'PENDING' }),
-        raw({ id: '2', status: 'APPROVED' }),
-        raw({ id: '3', status: 'SENT' }),
-        raw({ id: '4', status: 'COMPLETED' }),
-        raw({ id: '5', status: 'REJECTED' }),
-        raw({ id: '6', status: 'CANCELLED' })
-      );
-
-      expect(service.activeRequests().map((r) => r.id)).toEqual(['1', '2', '3']);
-    });
   });
 
   describe('createRequest', () => {

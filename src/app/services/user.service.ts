@@ -14,13 +14,6 @@ export class UserService extends BaseCrudService<User, CreateUserDto, UpdateUser
 
   readonly users = this.items;
 
-  getUsersByRole(role?: string): User[] {
-    if (!role) {
-      return this.users();
-    }
-    return this.users().filter(user => user.role === role);
-  }
-
   getUserWarehouses(userId: string): Observable<Warehouse[]> {
     return this.http.get<Warehouse[]>(`${this.apiUrl}/${userId}/warehouses`);
   }

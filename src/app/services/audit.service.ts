@@ -7,7 +7,6 @@ import {
   AuditAction,
   AuditEntity,
   AuditChange,
-  AuditLogFilter,
   BackendAuditLog,
   BackendAuditResponse
 } from '../interfaces/audit.interface';
@@ -115,41 +114,6 @@ export class AuditService {
       changes,
       createdAt: new Date(log.createdAt)
     };
-  }
-
-  /**
-   * Get filtered logs (client-side filtering for search)
-   */
-  getFilteredLogs(filter?: AuditLogFilter): AuditLog[] {
-    let logs = this.logsSignal();
-
-    if (!filter) return logs;
-
-    if (filter.action) {
-      logs = logs.filter(l => l.action === filter.action);
-    }
-
-    if (filter.entity) {
-      logs = logs.filter(l => l.entity === filter.entity);
-    }
-
-    if (filter.userId) {
-      logs = logs.filter(l => l.userId === filter.userId);
-    }
-
-    if (filter.entityId) {
-      logs = logs.filter(l => l.entityId === filter.entityId);
-    }
-
-    if (filter.dateFrom) {
-      logs = logs.filter(l => l.createdAt >= filter.dateFrom!);
-    }
-
-    if (filter.dateTo) {
-      logs = logs.filter(l => l.createdAt <= filter.dateTo!);
-    }
-
-    return logs;
   }
 
   /**

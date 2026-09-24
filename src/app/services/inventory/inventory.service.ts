@@ -6,7 +6,6 @@ import {
   CreateInventoryItemDto,
   UpdateInventoryItemDto,
   InventoryStatus,
-  StatsResponse,
   Warehouse,
   Supplier,
   RawInventoryItem,
@@ -48,7 +47,6 @@ export class InventoryService implements OnDestroy {
   private categoriesSignal = signal<string[]>([]);
 
   items = computed(() => this.itemsSignal());
-  total = computed(() => this.totalSignal());
   warehouses = computed(() => this.warehousesSignal());
   suppliers = computed(() => this.suppliersSignal());
   categories = computed(() => this.categoriesSignal());
@@ -175,10 +173,6 @@ export class InventoryService implements OnDestroy {
     };
   }
 
-  getStats(): Observable<StatsResponse> {
-    return this.http.get<StatsResponse>(this.apiUrl + '/inventory/stats');
-  }
-
   // Get all items as Observable for dashboard calculations
   getItemsObservable(): Observable<InventoryItemInterface[]> {
     const params = new HttpParams().set('limit', '1000');
@@ -246,53 +240,6 @@ export class InventoryService implements OnDestroy {
           this.loading.set(false);
         }
       })
-    );
-  }
-
-  getFilteredItems(filters: {
-    search?: string;
-    category?: string;
-    warehouseId?: string;
-    status?: string;
-  }): InventoryItemInterface[] {
-    let filtered = this.items();
-
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(searchLower) ||
-        (item.description?.toLowerCase().includes(searchLower)) ||
-        (item.sku?.toLowerCase().includes(searchLower))
-      );
-    }
-
-    if (filters.category && filters.category !== 'all') {
-      filtered = filtered.filter(item => item.category === filters.category);
-    }
-
-    if (filters.warehouseId && filters.warehouseId !== 'all') {
-      filtered = filtered.filter(item => item.warehouseId === filters.warehouseId);
-    }
-
-    if (filters.status && filters.status !== 'all') {
-      filtered = filtered.filter(item => item.status === filters.status);
-    }
-
-    return filtered;
-  }
-
-  getTotalItems(): number {
-    return this.items().length;
-  }
-
-  getItemsByStatus(status: InventoryStatus): InventoryItemInterface[] {
-    return this.items().filter(item => item.status === status);
-  }
-
-  getLowStockItems(): InventoryItemInterface[] {
-    return this.items().filter(item => 
-      item.status === InventoryStatus.LOW_STOCK || 
-      item.status === InventoryStatus.OUT_OF_STOCK
     );
   }
 

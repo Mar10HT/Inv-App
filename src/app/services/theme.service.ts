@@ -30,13 +30,6 @@ export class ThemeService {
   }
 
   /**
-   * Set specific theme
-   */
-  setTheme(theme: Theme): void {
-    this.themeSignal.set(theme);
-  }
-
-  /**
    * Get initial theme from storage or system preference
    */
   private getInitialTheme(): Theme {

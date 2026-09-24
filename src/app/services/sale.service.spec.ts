@@ -120,12 +120,6 @@ describe('SaleService', () => {
 
       expect(service.stats()).toEqual({ total: 0, active: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} });
     });
-
-    it('lists only the active sales as active', () => {
-      load(sale({ id: '1' }), sale({ id: '2', status: SaleStatus.CANCELLED }));
-
-      expect(service.active().map((s) => s.id)).toEqual(['1']);
-    });
   });
 
   describe('create', () => {

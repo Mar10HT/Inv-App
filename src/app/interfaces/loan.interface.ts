@@ -70,21 +70,6 @@ export interface CreateLoanDto {
   notes?: string;
 }
 
-export interface ReturnLoanDto {
-  returnDate?: Date;
-  notes?: string;
-}
-
-export interface LoanFilter {
-  status?: LoanStatus;
-  sourceWarehouseId?: string;
-  destinationWarehouseId?: string;
-  inventoryItemId?: string;
-  overdue?: boolean;
-  dateFrom?: Date;
-  dateTo?: Date;
-}
-
 export interface LoanStats {
   totalPending: number;
   totalSent: number;

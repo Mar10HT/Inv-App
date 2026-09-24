@@ -6,12 +6,6 @@ export interface LoginRequest {
   rememberMe?: boolean;
 }
 
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  name?: string;
-}
-
 export interface AuthResponse {
   user: AuthUser;
   expires_in: number;

@@ -94,16 +94,8 @@ export class WebSocketService implements OnDestroy {
     return this.on('loan:change');
   }
 
-  onTransactionChange(): Observable<WsEvent> {
-    return this.on('transaction:change');
-  }
-
   onAlertChange(): Observable<WsEvent> {
     return this.on('alert:change');
-  }
-
-  isConnected(): Observable<boolean> {
-    return this.connected$.asObservable();
   }
 
   ngOnDestroy(): void {

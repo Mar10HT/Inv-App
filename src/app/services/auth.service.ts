@@ -1,12 +1,19 @@
-import { Injectable, InjectionToken, inject, signal, computed, OnDestroy } from '@angular/core';
+import { Injectable, InjectionToken, inject, signal, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, defer, of, Subscription, interval, switchMap, map, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
-  LoginRequest, RegisterRequest, AuthResponse, AuthUser,
-  UpdateProfileResponse, ChangePasswordResponse, ForgotPasswordResponse,
-  ResetPasswordResponse, PendingReset, GeneratedResetLink, MeResponse
+  LoginRequest,
+  AuthResponse,
+  AuthUser,
+  UpdateProfileResponse,
+  ChangePasswordResponse,
+  ForgotPasswordResponse,
+  ResetPasswordResponse,
+  PendingReset,
+  GeneratedResetLink,
+  MeResponse
 } from '../interfaces/auth.interface';
 import { PermissionsService } from './permissions.service';
 import { WebSocketService } from './websocket.service';
@@ -37,9 +44,6 @@ export class AuthService implements OnDestroy {
   /** Observable version — use in guards where toObservable() is unreliable */
   readonly permissionsLoaded$ = new BehaviorSubject<boolean>(false);
 
-  userWarehouseIds = computed(() => this.currentUser()?.warehouseIds ?? []);
-  isAdmin = computed(() => this.currentUser()?.role === 'SYSTEM_ADMIN');
-
   /** Tracks the current permissionsVersion so polling can detect changes. */
   private permissionsVersion = signal<number>(0);
 
@@ -57,12 +61,6 @@ export class AuthService implements OnDestroy {
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
-      switchMap(response => this.loadMeAndPermissions().pipe(map(() => response)))
-    );
-  }
-
-  register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data, { withCredentials: true }).pipe(
       switchMap(response => this.loadMeAndPermissions().pipe(map(() => response)))
     );
   }

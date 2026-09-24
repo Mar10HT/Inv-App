@@ -50,21 +50,6 @@ export class TransactionService {
     return this.http.get<Transaction[]>(`${this.apiUrl}/recent?limit=${limit}`);
   }
 
-  getById(id: string): Observable<Transaction> {
-    this.loading.set(true);
-    this.error.set(null);
-
-    return this.http.get<Transaction>(`${this.apiUrl}/${id}`).pipe(
-      tap({
-        next: () => this.loading.set(false),
-        error: (error) => {
-          this.error.set(error.message);
-          this.loading.set(false);
-        }
-      })
-    );
-  }
-
   create(transaction: CreateTransactionDto): Observable<Transaction> {
     this.loading.set(true);
     this.error.set(null);

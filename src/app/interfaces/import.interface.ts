@@ -1,28 +1,3 @@
-import { ItemType, Currency, InventoryStatus } from './inventory-item.interface';
-
-export interface ImportRow {
-  rowNumber: number;
-  name: string;
-  description?: string;
-  quantity: number;
-  minQuantity: number;
-  category: string;
-  model?: string;
-  itemType: ItemType;
-  serviceTag?: string;
-  serialNumber?: string;
-  sku?: string;
-  barcode?: string;
-  price?: number;
-  currency?: Currency;
-  warehouseName: string;
-  supplierName?: string;
-  status?: InventoryStatus;
-  // Validation
-  isValid: boolean;
-  errors: string[];
-}
-
 export interface ImportResult {
   success: boolean;
   totalRows: number;
@@ -37,5 +12,3 @@ export interface ImportError {
   field: string;
   message: string;
 }
-
-

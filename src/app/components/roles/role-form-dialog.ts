@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RolesService } from '../../services/roles.service';
@@ -18,7 +17,7 @@ export interface RoleFormDialogData {
   selector: 'app-role-form-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatDialogModule, LucideAngularModule, TranslateModule],
+  imports: [FormsModule, LucideAngularModule, TranslateModule],
   template: `
     <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden w-full">
       <!-- Header -->

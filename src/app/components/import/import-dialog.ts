@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs/operators';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -19,7 +19,6 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatDialogModule,
     LucideAngularModule,
     MatProgressBarModule,
     TranslateModule

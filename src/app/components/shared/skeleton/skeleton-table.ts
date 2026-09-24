@@ -1,12 +1,11 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { SkeletonComponent } from './skeleton';
 
 @Component({
   selector: 'app-skeleton-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, SkeletonComponent],
+  imports: [SkeletonComponent],
   template: `
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y" style="border-color: var(--color-border-subtle)">

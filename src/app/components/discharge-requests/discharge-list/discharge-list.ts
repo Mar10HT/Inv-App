@@ -3,8 +3,7 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -21,8 +20,6 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
   imports: [
     FormsModule,
     LucideAngularModule,
-    MatButtonModule,
-    MatDialogModule,
     MatPaginatorModule,
     NgxPermissionsModule,
     TranslateModule,

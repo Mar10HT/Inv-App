@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { DashboardStats } from '../../../../services/dashboard.service';
@@ -8,7 +7,7 @@ import { DashboardStats } from '../../../../services/dashboard.service';
   selector: 'app-dashboard-stats',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, LucideAngularModule, TranslateModule],
+  imports: [LucideAngularModule, TranslateModule],
   template: `
     <!-- Primary Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

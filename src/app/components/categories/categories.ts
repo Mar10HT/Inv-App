@@ -1,8 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -19,10 +17,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     LucideAngularModule,
-    MatButtonModule,
-    MatDialogModule,
     MatSnackBarModule,
     TranslateModule,
     NgxPermissionsModule,

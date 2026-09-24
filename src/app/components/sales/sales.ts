@@ -12,7 +12,7 @@ import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -36,7 +36,6 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
     FormsModule,
     DatePipe,
     LucideAngularModule,
-    MatDialogModule,
     TranslateModule,
     NgxPermissionsModule,
     SaleFormDialog,

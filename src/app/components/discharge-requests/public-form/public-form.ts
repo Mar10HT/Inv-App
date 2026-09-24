@@ -1,5 +1,4 @@
 import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -12,7 +11,7 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
   selector: 'app-public-form',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule, LanguageSelectorComponent],
+  imports: [FormsModule, LucideAngularModule, TranslateModule, LanguageSelectorComponent],
   template: `
     <div class="min-h-screen bg-surface p-4">
       <!-- Top bar with language selector aligned right -->

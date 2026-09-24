@@ -1,5 +1,4 @@
 import { Component, inject, output, input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -17,7 +16,6 @@ import { buildQrPrintHtml, isImageDataUrl } from '../../utils/qr-print.utils';
   selector: 'app-loan-qr-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     LucideAngularModule,
     TranslateModule
   ],
@@ -136,7 +134,6 @@ export interface ScanQrResult {
   selector: 'app-loan-scan-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     TranslateModule

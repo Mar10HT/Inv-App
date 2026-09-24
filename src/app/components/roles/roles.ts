@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -16,9 +15,7 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     LucideAngularModule,
-    MatDialogModule,
     TranslateModule,
     NgxPermissionsModule,
   ],

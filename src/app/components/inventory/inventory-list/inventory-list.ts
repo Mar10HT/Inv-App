@@ -1,21 +1,18 @@
 import { Component, computed, signal, effect, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { downloadStyledXLSX } from '../../../utils/xlsx.utils';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 // Angular Material imports - only what's actually used
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatButtonModule } from '@angular/material/button';
+import { MatSort } from '@angular/material/sort';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -36,16 +33,9 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterModule,
-    FormsModule,
-    MatTableModule,
     MatPaginatorModule,
-    MatSortModule,
-    MatButtonModule,
     LucideAngularModule,
-    MatDialogModule,
     MatSnackBarModule,
-    MatTooltipModule,
     TranslateModule,
     ScrollingModule,
     NgxPermissionsModule,

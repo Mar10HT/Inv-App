@@ -2,8 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, signal, inject } from '@ang
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -22,8 +21,6 @@ export interface InventoryItemDialogData {
   imports: [
     CommonModule,
     LucideAngularModule,
-    MatButtonModule,
-    MatDialogModule,
     MatSnackBarModule,
     TranslateModule
   ],

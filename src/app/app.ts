@@ -7,13 +7,11 @@ import { SidebarService } from './services/sidebar.service';
 import { CommandPaletteService } from './services/command-palette.service';
 import { CsrfService } from './services/csrf.service';
 import { LoggerService } from './services/logger.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule,
     RouterOutlet,
     Navigation,
     TranslateModule,

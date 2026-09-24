@@ -2,8 +2,7 @@ import { Component, ChangeDetectionStrategy, computed, inject, signal, OnInit, e
 import { Router } from '@angular/router';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { forkJoin, catchError, of } from 'rxjs';
@@ -43,8 +42,6 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
     CdkDropList,
     CdkDragPlaceholder,
     LucideAngularModule,
-    MatButtonModule,
-    MatDialogModule,
     MatSnackBarModule,
     TranslateModule,
     NgApexchartsModule,

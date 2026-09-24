@@ -1,10 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { TransactionService } from '../../services/transaction.service';
@@ -24,12 +21,8 @@ export interface TransactionFormDialogData {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
     LucideAngularModule,
-    MatSelectModule,
     TranslateModule
   ],
   template: `

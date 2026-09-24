@@ -1,9 +1,7 @@
 import { Component, inject, computed, signal, effect, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -19,11 +17,9 @@ import { PermissionsService } from '../../../services/permissions.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterLink,
     RouterLinkActive,
     LucideAngularModule,
-    MatButtonModule,
     MatTooltipModule,
     TranslateModule,
     NgxPermissionsModule,

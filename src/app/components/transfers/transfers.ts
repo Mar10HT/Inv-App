@@ -4,7 +4,6 @@ import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -14,7 +13,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { TransferRequest, TransferRequestStatus } from '../../interfaces/transfer-request.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { TransferStatsCards } from './transfer-stats';
 import { TransferFormDialog, TransferFormResult } from './transfer-form-dialog';
 import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRejectDialog, TransferRejectResult } from './transfer-qr-dialog';
@@ -432,7 +431,7 @@ export class TransfersComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
 
   // Expose enum
@@ -555,18 +554,12 @@ export class TransfersComponent implements OnInit {
   // ==================== Actions ====================
 
   approveRequest(request: TransferRequest): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('TRANSFERS.CONFIRM_APPROVE_TITLE'),
-        message: this.translate.instant('TRANSFERS.CONFIRM_APPROVE_MESSAGE'),
-        confirmText: this.translate.instant('TRANSFERS.APPROVE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'info'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('TRANSFERS.CONFIRM_APPROVE_TITLE'),
+      message: this.translate.instant('TRANSFERS.CONFIRM_APPROVE_MESSAGE'),
+      confirmText: this.translate.instant('TRANSFERS.APPROVE'),
+      type: 'info'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.approveRequest(request.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -613,18 +606,12 @@ export class TransfersComponent implements OnInit {
   }
 
   sendTransfer(request: TransferRequest): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('TRANSFERS.CONFIRM_SEND_TITLE'),
-        message: this.translate.instant('TRANSFERS.CONFIRM_SEND_MESSAGE'),
-        confirmText: this.translate.instant('TRANSFERS.SEND'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'info'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('TRANSFERS.CONFIRM_SEND_TITLE'),
+      message: this.translate.instant('TRANSFERS.CONFIRM_SEND_MESSAGE'),
+      confirmText: this.translate.instant('TRANSFERS.SEND'),
+      type: 'info'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.sendTransfer(request.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -647,18 +634,13 @@ export class TransfersComponent implements OnInit {
   }
 
   cancelRequest(request: TransferRequest): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('TRANSFERS.CONFIRM_CANCEL_TITLE'),
-        message: this.translate.instant('TRANSFERS.CONFIRM_CANCEL_MESSAGE'),
-        confirmText: this.translate.instant('COMMON.CANCEL'),
-        cancelText: this.translate.instant('COMMON.BACK'),
-        type: 'warning'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('TRANSFERS.CONFIRM_CANCEL_TITLE'),
+      message: this.translate.instant('TRANSFERS.CONFIRM_CANCEL_MESSAGE'),
+      confirmText: this.translate.instant('COMMON.CANCEL'),
+      cancelText: this.translate.instant('COMMON.BACK'),
+      type: 'warning'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.cancelRequest(request.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -678,18 +660,12 @@ export class TransfersComponent implements OnInit {
   // ==================== Manual Confirmation (No QR) ====================
 
   manualConfirmReceipt(request: TransferRequest): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_TITLE'),
-        message: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_WARNING'),
-        confirmText: this.translate.instant('TRANSFERS.MANUAL_CONFIRM'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'warning'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_TITLE'),
+      message: this.translate.instant('TRANSFERS.MANUAL_CONFIRM_WARNING'),
+      confirmText: this.translate.instant('TRANSFERS.MANUAL_CONFIRM'),
+      type: 'warning'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.manualConfirmReceipt(request.id)),
       takeUntilDestroyed(this.destroyRef),

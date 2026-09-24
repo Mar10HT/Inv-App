@@ -7,7 +7,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { CategoryService } from '../../services/category.service';
 import { NotificationService } from '../../services/notification.service';
 import { Category } from '../../interfaces/category.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { CategoryFormDialog, buildCategoryDialogData } from './category-form-dialog';
 import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 
@@ -167,6 +167,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 export class Categories implements OnInit {
   private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -232,18 +233,12 @@ export class Categories implements OnInit {
   }
 
   deleteCategory(category: Category): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('CATEGORY.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('CATEGORY.DELETE_CONFIRM.MESSAGE', { name: category.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('CATEGORY.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('CATEGORY.DELETE_CONFIRM.MESSAGE', { name: category.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.categoryService.delete(category.id).subscribe({
           next: () => {

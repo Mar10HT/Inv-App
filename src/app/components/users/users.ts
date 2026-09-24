@@ -10,7 +10,7 @@ import { NotificationService } from '../../services/notification.service';
 import { LoggerService } from '../../services/logger.service';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { PendingReset } from '../../interfaces/auth.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { UserFormDialog } from './user-form-dialog';
 import { ResetLinkDialog } from './reset-link-dialog';
 import { SetPasswordDialog } from './set-password-dialog';
@@ -319,6 +319,7 @@ export class Users implements OnInit {
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private logger = inject(LoggerService);
@@ -444,18 +445,12 @@ export class Users implements OnInit {
   }
 
   deleteUser(user: User): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('USER.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('USER.DELETE_CONFIRM.MESSAGE', { name: user.name || user.email }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('USER.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('USER.DELETE_CONFIRM.MESSAGE', { name: user.name || user.email }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.userService.delete(user.id).subscribe({
           next: () => {

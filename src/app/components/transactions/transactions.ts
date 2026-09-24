@@ -8,7 +8,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { TransactionService } from '../../services/transaction.service';
 import { NotificationService } from '../../services/notification.service';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { TransactionFormDialog } from './transaction-form-dialog';
 
 @Component({
@@ -266,6 +266,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
 export class Transactions implements OnInit {
   private transactionService = inject(TransactionService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -313,18 +314,12 @@ export class Transactions implements OnInit {
   }
 
   deleteTransaction(transaction: Transaction): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('TRANSACTION.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('TRANSACTION.DELETE_CONFIRM.MESSAGE'),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('TRANSACTION.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('TRANSACTION.DELETE_CONFIRM.MESSAGE'),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.transactionService.delete(transaction.id).subscribe({
           next: () => {

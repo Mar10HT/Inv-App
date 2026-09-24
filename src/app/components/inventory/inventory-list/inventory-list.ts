@@ -17,7 +17,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { InventoryService } from '.././../../services/inventory/inventory.service';
 import { NotificationService } from '../../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
-import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../../services/confirm.service';
 import { InventoryStatsCards } from '../inventory-stats/inventory-stats';
 import { InventoryItem } from '../inventory-item/inventory-item';
 import { ImportDialog } from '../../import/import-dialog';
@@ -490,6 +490,7 @@ export class InventoryList implements OnInit {
 
   private inventoryService = inject(InventoryService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private router = inject(Router);
   private translate = inject(TranslateService);
@@ -578,18 +579,12 @@ export class InventoryList implements OnInit {
   }
 
   deleteItem(item: InventoryItemInterface): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(confirmed => {
       if (confirmed) {

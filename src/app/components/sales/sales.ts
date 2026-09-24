@@ -12,7 +12,6 @@ import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -25,7 +24,7 @@ import {
   CustomerType,
   SaleStatus,
 } from '../../interfaces/sale.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
 
 @Component({
@@ -338,7 +337,7 @@ export class SalesComponent implements OnInit {
   saleService = inject(SaleService);
   warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
@@ -416,21 +415,15 @@ export class SalesComponent implements OnInit {
   }
 
   cancel(sale: Sale): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
+    this.confirm
+      .ask({
         title: this.translate.instant('SALES.CONFIRM_CANCEL_TITLE'),
         message: this.translate.instant('SALES.CONFIRM_CANCEL_MESSAGE', {
           name: sale.name || sale.id.slice(0, 8),
         }),
         confirmText: this.translate.instant('SALES.CANCEL_SALE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'warning',
-      },
-      panelClass: 'confirm-dialog-container',
-    });
-
-    dialogRef
-      .afterClosed()
+      })
       .pipe(
         filter((confirmed) => !!confirmed),
         switchMap(() => this.saleService.cancel(sale.id)),

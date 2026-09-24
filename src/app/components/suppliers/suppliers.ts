@@ -7,7 +7,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { SupplierService } from '../../services/supplier.service';
 import { NotificationService } from '../../services/notification.service';
 import { Supplier } from '../../interfaces/supplier.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dialog';
 
 @Component({
@@ -235,6 +235,7 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
 export class Suppliers implements OnInit {
   private supplierService = inject(SupplierService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -299,18 +300,12 @@ export class Suppliers implements OnInit {
   }
 
   deleteSupplier(supplier: Supplier): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('SUPPLIER.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('SUPPLIER.DELETE_CONFIRM.MESSAGE', { name: supplier.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('SUPPLIER.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('SUPPLIER.DELETE_CONFIRM.MESSAGE', { name: supplier.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.supplierService.delete(supplier.id).subscribe({
           next: () => {

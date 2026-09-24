@@ -7,7 +7,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { RolesService } from '../../services/roles.service';
 import { NotificationService } from '../../services/notification.service';
 import { RoleSummary } from '../../interfaces/role.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 
 @Component({
@@ -187,6 +187,7 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 export class RolesComponent implements OnInit {
   private rolesService = inject(RolesService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -244,17 +245,12 @@ export class RolesComponent implements OnInit {
   }
 
   confirmDelete(role: RoleSummary): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('ROLES.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('ROLES.DELETE_CONFIRM.MESSAGE', { name: role.displayName }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('ROLES.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('ROLES.DELETE_CONFIRM.MESSAGE', { name: role.displayName }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.rolesService.remove(role.id).subscribe({
           next: () => {

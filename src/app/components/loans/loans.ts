@@ -4,7 +4,6 @@ import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -17,7 +16,7 @@ import { Loan, LoanStatus } from '../../interfaces/loan.interface';
 import { getLoanDueDateClass, getLoanStatusClass, summarizeLoanItems, totalLoanQuantity } from '../../utils/loan.utils';
 import { LoanStatsCards } from './loan-stats';
 import { LoanMobileCards } from './loan-mobile-cards';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { LoanFormDialog, LoanFormResult } from './loan-form-dialog';
 import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
 
@@ -360,7 +359,7 @@ export class LoansComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
 
   // Expose enum
@@ -485,22 +484,16 @@ export class LoansComponent implements OnInit {
   // ==================== QR Operations ====================
 
   sendLoan(loan: Loan): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('LOANS.CONFIRM_SEND_TITLE'),
-        message: this.translate.instant('LOANS.CONFIRM_SEND_MESSAGE', {
-          item: this.summarize(loan),
-          from: loan.sourceWarehouseName,
-          to: loan.destinationWarehouseName
-        }),
-        confirmText: this.translate.instant('LOANS.SEND'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'info'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('LOANS.CONFIRM_SEND_TITLE'),
+      message: this.translate.instant('LOANS.CONFIRM_SEND_MESSAGE', {
+        item: this.summarize(loan),
+        from: loan.sourceWarehouseName,
+        to: loan.destinationWarehouseName
+      }),
+      confirmText: this.translate.instant('LOANS.SEND'),
+      type: 'info'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.sendLoan(loan.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -525,20 +518,14 @@ export class LoansComponent implements OnInit {
   }
 
   initiateReturn(loan: Loan): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_TITLE'),
-        message: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_MESSAGE', {
-          item: this.summarize(loan)
-        }),
-        confirmText: this.translate.instant('LOANS.INITIATE_RETURN'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'info'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_TITLE'),
+      message: this.translate.instant('LOANS.CONFIRM_INITIATE_RETURN_MESSAGE', {
+        item: this.summarize(loan)
+      }),
+      confirmText: this.translate.instant('LOANS.INITIATE_RETURN'),
+      type: 'info'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.initiateReturn(loan.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -563,20 +550,14 @@ export class LoansComponent implements OnInit {
   }
 
   cancelLoan(loan: Loan): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('LOANS.CONFIRM_CANCEL_TITLE'),
-        message: this.translate.instant('LOANS.CONFIRM_CANCEL_MESSAGE', {
-          item: this.summarize(loan)
-        }),
-        confirmText: this.translate.instant('LOANS.CANCEL_LOAN'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'warning'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('LOANS.CONFIRM_CANCEL_TITLE'),
+      message: this.translate.instant('LOANS.CONFIRM_CANCEL_MESSAGE', {
+        item: this.summarize(loan)
+      }),
+      confirmText: this.translate.instant('LOANS.CANCEL_LOAN'),
+      type: 'warning'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.cancelLoan(loan.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -596,18 +577,12 @@ export class LoansComponent implements OnInit {
   // ==================== Manual Confirmation (No QR) ====================
 
   manualConfirmReceipt(loan: Loan): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_TITLE'),
-        message: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_WARNING'),
-        confirmText: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'warning'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_TITLE'),
+      message: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_WARNING'),
+      confirmText: this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT'),
+      type: 'warning'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.manualConfirmReceipt(loan.id)),
       takeUntilDestroyed(this.destroyRef),
@@ -624,18 +599,12 @@ export class LoansComponent implements OnInit {
   }
 
   manualConfirmReturn(loan: Loan): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_TITLE'),
-        message: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_WARNING'),
-        confirmText: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'warning'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().pipe(
+    this.confirm.ask({
+      title: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_TITLE'),
+      message: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_WARNING'),
+      confirmText: this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN'),
+      type: 'warning'
+    }).pipe(
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.manualConfirmReturn(loan.id)),
       takeUntilDestroyed(this.destroyRef),

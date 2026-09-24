@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { environment } from '../../../environments/environment';
 import { NotificationService } from '../../services/notification.service';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { ScheduledReportsService, ScheduledReport } from '../../services/scheduled-reports.service';
 import { ThemeService } from '../../services/theme.service';
 
@@ -371,7 +370,7 @@ import { ThemeService } from '../../services/theme.service';
 export class Settings implements OnInit {
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private themeService = inject(ThemeService);
   scheduledReportsService = inject(ScheduledReportsService);
@@ -539,17 +538,12 @@ export class Settings implements OnInit {
   }
 
   resetData(): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('SETTINGS.RESET_CONFIRM_TITLE'),
-        message: this.translate.instant('SETTINGS.RESET_CONFIRM_MESSAGE'),
-        confirmText: this.translate.instant('SETTINGS.RESET_DATA'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('SETTINGS.RESET_CONFIRM_TITLE'),
+      message: this.translate.instant('SETTINGS.RESET_CONFIRM_MESSAGE'),
+      confirmText: this.translate.instant('SETTINGS.RESET_DATA'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.resetting.set(true);
 

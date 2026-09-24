@@ -12,7 +12,6 @@ import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -25,7 +24,7 @@ import {
   OutflowReason,
   OutflowStatus,
 } from '../../interfaces/outflow.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
 
 @Component({
@@ -314,7 +313,7 @@ export class OutflowsComponent implements OnInit {
   outflowService = inject(OutflowService);
   warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
@@ -382,21 +381,15 @@ export class OutflowsComponent implements OnInit {
   }
 
   cancel(outflow: Outflow): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
+    this.confirm
+      .ask({
         title: this.translate.instant('OUTFLOWS.CONFIRM_CANCEL_TITLE'),
         message: this.translate.instant('OUTFLOWS.CONFIRM_CANCEL_MESSAGE', {
           name: outflow.name || outflow.id.slice(0, 8),
         }),
         confirmText: this.translate.instant('OUTFLOWS.CANCEL_OUTFLOW'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'warning',
-      },
-      panelClass: 'confirm-dialog-container',
-    });
-
-    dialogRef
-      .afterClosed()
+      })
       .pipe(
         filter((confirmed) => !!confirmed),
         switchMap(() => this.outflowService.cancel(outflow.id)),

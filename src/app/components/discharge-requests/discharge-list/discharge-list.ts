@@ -3,7 +3,6 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -11,7 +10,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { DischargeRequestService } from '../../../services/discharge-request.service';
 import { NotificationService } from '../../../services/notification.service';
 import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/discharge-request.interface';
-import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../../services/confirm.service';
 
 @Component({
   selector: 'app-discharge-list',
@@ -386,7 +385,7 @@ export class DischargeListComponent implements OnInit {
   private dischargeService = inject(DischargeRequestService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private router = inject(Router);
 
   Status = DischargeRequestStatus;
@@ -479,18 +478,12 @@ export class DischargeListComponent implements OnInit {
   }
 
   completeRequest(request: DischargeRequest): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_TITLE'),
-        message: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_MESSAGE'),
-        confirmText: this.translate.instant('DISCHARGES.COMPLETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'info',
-      },
-      panelClass: 'confirm-dialog-container',
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirm.ask({
+      title: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_TITLE'),
+      message: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_MESSAGE'),
+      confirmText: this.translate.instant('DISCHARGES.COMPLETE'),
+      type: 'info',
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.dischargeService.completeRequest(request.id).subscribe({
           next: (result) => {

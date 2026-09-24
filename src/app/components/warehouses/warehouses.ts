@@ -12,7 +12,7 @@ import {
   CreateWarehouseDto,
   UpdateWarehouseDto,
 } from '../../interfaces/warehouse.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
 
 function normalizeManagerId<T extends { managerId?: string | null }>(payload: T): T {
@@ -250,6 +250,7 @@ export class Warehouses implements OnInit {
   private warehouseService = inject(WarehouseService);
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -324,18 +325,12 @@ export class Warehouses implements OnInit {
   }
 
   deleteWarehouse(warehouse: Warehouse): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.MESSAGE', { name: warehouse.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.MESSAGE', { name: warehouse.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.warehouseService.delete(warehouse.id).subscribe({
           next: () => {

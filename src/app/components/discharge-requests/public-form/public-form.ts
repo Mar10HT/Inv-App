@@ -223,8 +223,8 @@ export class PublicFormComponent implements OnInit {
   neededByDate = '';
   justification = '';
 
-  // Item search
-  itemSearch = '';
+  // Item search (a signal: filteredAvailableItems only re-evaluates when a signal it reads changes)
+  itemSearch = signal('');
 
   // Items
   selectedItems = signal<{ inventoryItemId: string; quantity: number }[]>([]);
@@ -238,7 +238,7 @@ export class PublicFormComponent implements OnInit {
 
   filteredAvailableItems = computed(() => {
     const items = this.availableItems();
-    const search = this.itemSearch.toLowerCase();
+    const search = this.itemSearch().toLowerCase();
     if (!search) return items;
     return items.filter(
       (item) =>
@@ -337,7 +337,7 @@ export class PublicFormComponent implements OnInit {
     this.requesterPhone = '';
     this.neededByDate = '';
     this.justification = '';
-    this.itemSearch = '';
+    this.itemSearch.set('');
     this.selectedItems.set([]);
     this.submitted.set(false);
     this.requestsCreated.set(0);

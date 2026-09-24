@@ -211,12 +211,12 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
           </div>
 
           <!-- Pagination -->
-          @if (filteredLogs().length > pageSize) {
+          @if (filteredLogs().length > pageSize()) {
             <div class="border-t border-theme px-4 py-2">
               <mat-paginator
                 [length]="filteredLogs().length"
-                [pageIndex]="pageIndex"
-                [pageSize]="pageSize"
+                [pageIndex]="pageIndex()"
+                [pageSize]="pageSize()"
                 [pageSizeOptions]="[10, 25, 50, 100]"
                 (page)="onPageChange($event)"
                 showFirstLastButtons
@@ -257,9 +257,9 @@ export class AuditLogComponent implements OnInit {
   selectedAction = 'all';
   selectedEntity = 'all';
 
-  // Pagination
-  pageIndex = 0;
-  pageSize = 10;
+  // Pagination (signals: paginatedLogs only re-evaluates when a signal it reads changes)
+  pageIndex = signal(0);
+  pageSize = signal(10);
 
   // Filtered logs signal
   private filteredLogsSignal = signal<AuditLog[]>([]);
@@ -268,8 +268,8 @@ export class AuditLogComponent implements OnInit {
   // Paginated logs
   paginatedLogs = computed(() => {
     const logs = this.filteredLogsSignal();
-    const start = this.pageIndex * this.pageSize;
-    return logs.slice(start, start + this.pageSize);
+    const start = this.pageIndex() * this.pageSize();
+    return logs.slice(start, start + this.pageSize());
   });
 
   // Memoized action counts - single pass instead of 3 separate filters
@@ -332,11 +332,11 @@ export class AuditLogComponent implements OnInit {
       logs = logs.filter(log => log.entity === this.selectedEntity);
     }
 
-    // Sort by date descending
-    logs = logs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    // Sort by date descending, on a copy: with no filter active `logs` is the service's own array
+    logs = [...logs].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     this.filteredLogsSignal.set(logs);
-    this.pageIndex = 0;
+    this.pageIndex.set(0);
   }
 
   clearFilters(): void {
@@ -356,8 +356,8 @@ export class AuditLogComponent implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   getActionLabel(action: AuditAction): string {

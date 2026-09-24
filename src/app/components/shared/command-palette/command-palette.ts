@@ -46,7 +46,7 @@ interface CommandItem {
             [(ngModel)]="searchQuery"
             (ngModelChange)="onSearchChange($event)"
             [placeholder]="'COMMAND_PALETTE.PLACEHOLDER' | translate"
-            class="flex-1 bg-transparent text-white text-lg placeholder-[var(--color-on-surface-muted)] focus:outline-none"
+            class="flex-1 bg-transparent text-foreground text-lg placeholder-[var(--color-on-surface-muted)] focus:outline-none"
             autocomplete="off"
           />
           <kbd class="hidden sm:flex items-center gap-1 px-2 py-1 text-xs text-[var(--color-on-surface-variant)] bg-[var(--color-surface-elevated)] rounded border border-[var(--color-border)]">
@@ -79,7 +79,7 @@ interface CommandItem {
                     <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-teal-500"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
-                    <p class="text-sm text-white">{{ item.label }}</p>
+                    <p class="text-sm text-foreground">{{ item.label }}</p>
                     @if (item.description) {
                       <p class="text-xs text-[var(--color-on-surface-variant)]">{{ item.description }}</p>
                     }
@@ -108,7 +108,7 @@ interface CommandItem {
                     <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-blue-400"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
-                    <p class="text-sm text-white">{{ item.label }}</p>
+                    <p class="text-sm text-foreground">{{ item.label }}</p>
                   </div>
                 </button>
               }
@@ -131,7 +131,7 @@ interface CommandItem {
                     <lucide-icon name="Package" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-emerald-400"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left min-w-0">
-                    <p class="text-sm text-white truncate">{{ item.label }}</p>
+                    <p class="text-sm text-foreground truncate">{{ item.label }}</p>
                     @if (item.description) {
                       <p class="text-xs text-[var(--color-on-surface-variant)] truncate">{{ item.description }}</p>
                     }

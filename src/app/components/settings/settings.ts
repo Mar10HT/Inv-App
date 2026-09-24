@@ -11,6 +11,7 @@ import { environment } from '../../../environments/environment';
 import { NotificationService } from '../../services/notification.service';
 import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 import { ScheduledReportsService, ScheduledReport } from '../../services/scheduled-reports.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-settings',
@@ -375,10 +376,12 @@ export class Settings implements OnInit {
   private translate = inject(TranslateService);
   private dialog = inject(MatDialog);
   private notifications = inject(NotificationService);
+  private themeService = inject(ThemeService);
   scheduledReportsService = inject(ScheduledReportsService);
 
   currentLang = signal<string>('en');
-  darkMode = signal<boolean>(true);
+  // The app theme lives in ThemeService: writing localStorage and data-theme from here left it stale
+  darkMode = this.themeService.isDark;
   emailNotifications = signal<boolean>(true);
   lowStockAlerts = signal<boolean>(true);
   exporting = signal<boolean>(false);
@@ -400,9 +403,6 @@ export class Settings implements OnInit {
     // Load saved preferences (local)
     const savedLang = localStorage.getItem('language') || 'en';
     this.currentLang.set(savedLang);
-
-    const savedTheme = localStorage.getItem('theme');
-    this.darkMode.set(savedTheme !== 'light');
 
     // Load notification preferences from backend
     this.http.get<{ emailNotifications: boolean; lowStockAlerts: boolean }>(
@@ -427,11 +427,7 @@ export class Settings implements OnInit {
   }
 
   toggleDarkMode(): void {
-    const newValue = !this.darkMode();
-    this.darkMode.set(newValue);
-    const theme = newValue ? 'dark' : 'light';
-    localStorage.setItem('theme', theme);
-    document.documentElement.setAttribute('data-theme', theme);
+    this.themeService.toggle();
   }
 
   toggleEmailNotifications(): void {

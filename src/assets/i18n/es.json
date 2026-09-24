@@ -496,8 +496,10 @@
     "PASSWORD_MISMATCH": "Las contraseñas no coinciden",
     "PASSWORD_MIN_LENGTH": "Mínimo 8 caracteres",
     "PASSWORD_UPPERCASE": "Debe contener al menos una letra mayúscula",
+    "PASSWORD_LOWERCASE": "Debe contener al menos una letra minúscula",
     "PASSWORD_NUMBER": "Debe contener al menos un número",
-    "PASSWORD_SPECIAL": "Debe contener al menos un carácter especial (!@#$%...)"
+    "PASSWORD_SPECIAL": "Debe contener al menos un carácter especial (@$!%*?&)",
+    "PASSWORD_INVALID_CHARS": "Solo se permiten letras, números y estos símbolos: @$!%*?&"
   },
   "SETTINGS": {
     "SUBTITLE": "Personaliza las preferencias de tu aplicación",

@@ -1,21 +1,12 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
-
-function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
-  const value: string = control.value ?? '';
-  const errors: ValidationErrors = {};
-  if (value.length > 0 && value.length < 8)      errors['minLength']  = true;
-  if (!/[A-Z]/.test(value))                       errors['uppercase']  = true;
-  if (!/[0-9]/.test(value))                       errors['number']     = true;
-  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) errors['special'] = true;
-  return Object.keys(errors).length ? errors : null;
-}
+import { strongPasswordRules } from '../../../utils/password.validators';
 
 @Component({
   selector: 'app-change-password-dialog',
@@ -86,11 +77,17 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
               @if (passwordForm.get('newPassword')?.errors?.['uppercase']) {
                 <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'PROFILE.PASSWORD_UPPERCASE' | translate }}</p>
               }
+              @if (passwordForm.get('newPassword')?.errors?.['lowercase']) {
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'PROFILE.PASSWORD_LOWERCASE' | translate }}</p>
+              }
               @if (passwordForm.get('newPassword')?.errors?.['number']) {
                 <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'PROFILE.PASSWORD_NUMBER' | translate }}</p>
               }
               @if (passwordForm.get('newPassword')?.errors?.['special']) {
                 <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'PROFILE.PASSWORD_SPECIAL' | translate }}</p>
+              }
+              @if (passwordForm.get('newPassword')?.errors?.['invalidChars']) {
+                <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'PROFILE.PASSWORD_INVALID_CHARS' | translate }}</p>
               }
             }
           </div>
@@ -152,7 +149,7 @@ export class ChangePasswordDialog {
 
   passwordForm: FormGroup = this.fb.group({
     currentPassword: ['', [Validators.required, Validators.minLength(6)]],
-    newPassword: ['', [Validators.required, passwordStrengthValidator]],
+    newPassword: ['', [Validators.required, strongPasswordRules]],
     confirmPassword: ['', [Validators.required]]
   });
 

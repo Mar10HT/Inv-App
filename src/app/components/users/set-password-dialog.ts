@@ -8,15 +8,12 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
+import { STRONG_PASSWORD_PATTERN } from '../../utils/password.validators';
 
 export interface SetPasswordDialogData {
   userId: string;
   userName: string;
 }
-
-// Mirrors the backend @IsStrongPassword policy: 12+ chars, upper, lower, digit, special (@$!%*?&).
-const STRONG_PASSWORD_PATTERN =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
 @Component({
   selector: 'app-set-password-dialog',

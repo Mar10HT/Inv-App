@@ -496,8 +496,10 @@
     "PASSWORD_MISMATCH": "Passwords do not match",
     "PASSWORD_MIN_LENGTH": "Minimum 8 characters",
     "PASSWORD_UPPERCASE": "Must contain at least one uppercase letter",
+    "PASSWORD_LOWERCASE": "Must contain at least one lowercase letter",
     "PASSWORD_NUMBER": "Must contain at least one number",
-    "PASSWORD_SPECIAL": "Must contain at least one special character (!@#$%...)"
+    "PASSWORD_SPECIAL": "Must contain at least one special character (@$!%*?&)",
+    "PASSWORD_INVALID_CHARS": "Only letters, numbers and these symbols are allowed: @$!%*?&"
   },
   "SETTINGS": {
     "SUBTITLE": "Customize your application preferences",

@@ -6,11 +6,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
-
-// Mirrors the backend @IsStrongPassword policy so the UI enforces (and communicates)
-// the same rules instead of letting a weak password through to a confusing 400.
-const STRONG_PASSWORD_PATTERN =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+import { STRONG_PASSWORD_PATTERN } from '../../utils/password.validators';
 
 @Component({
   selector: 'app-reset-password',

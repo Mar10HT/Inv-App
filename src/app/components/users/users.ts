@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -22,7 +21,6 @@ import { SetPasswordDialog } from './set-password-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LucideAngularModule,
-    MatSnackBarModule,
     TranslateModule,
     NgxPermissionsModule
   ],

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { CdkDragDrop, CdkDrag, CdkDropList, CdkDragPlaceholder, moveItemInArray } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { forkJoin, catchError, of } from 'rxjs';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -42,7 +41,6 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
     CdkDropList,
     CdkDragPlaceholder,
     LucideAngularModule,
-    MatSnackBarModule,
     TranslateModule,
     NgApexchartsModule,
     DashboardStatsComponent,
@@ -261,7 +259,6 @@ export class Dashboard extends DashboardChartsBase implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
   protected readonly translate = inject(TranslateService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggerService);

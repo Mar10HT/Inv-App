@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { InventoryService } from '../../../services/inventory/inventory.service';
@@ -21,7 +21,6 @@ export interface InventoryItemDialogData {
   imports: [
     CommonModule,
     LucideAngularModule,
-    MatSnackBarModule,
     TranslateModule
   ],
   template: `

@@ -1,6 +1,6 @@
 import { Component, inject, computed, signal, effect, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular';
@@ -427,7 +427,6 @@ export class Navigation {
   private authService = inject(AuthService);
   private sidebarService = inject(SidebarService);
   private themeService = inject(ThemeService);
-  private router = inject(Router);
   permissions = inject(PermissionsService);
   private isBrowser: boolean;
 

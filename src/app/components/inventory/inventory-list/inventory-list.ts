@@ -12,7 +12,6 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -35,7 +34,6 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
     CommonModule,
     MatPaginatorModule,
     LucideAngularModule,
-    MatSnackBarModule,
     TranslateModule,
     ScrollingModule,
     NgxPermissionsModule,

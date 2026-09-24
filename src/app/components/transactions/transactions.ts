@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -19,7 +18,6 @@ import { TransactionFormDialog } from './transaction-form-dialog';
   imports: [
     CommonModule,
     LucideAngularModule,
-    MatSnackBarModule,
     TranslateModule,
     NgxPermissionsModule
   ],
@@ -268,7 +266,6 @@ import { TransactionFormDialog } from './transaction-form-dialog';
 export class Transactions implements OnInit {
   private transactionService = inject(TransactionService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 

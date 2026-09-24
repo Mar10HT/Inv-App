@@ -12,7 +12,8 @@ import { InventoryItemInterface, InventoryStatus } from '../../interfaces/invent
 /** Provides the state the component normally owns; the translate stub echoes keys. */
 class TestCharts extends DashboardChartsBase {
   protected readonly translate = { instant: (key: string) => key } as unknown as TranslateService;
-  protected readonly themeService = {} as ThemeService;
+  dark = false;
+  protected readonly themeService = { isDark: () => this.dark } as unknown as ThemeService;
   readonly stats = signal<DashboardStats | null>(null);
   readonly categoryStats = signal<CategoryStats[]>([]);
   readonly warehouseStats = signal<WarehouseStats[]>([]);
@@ -30,9 +31,6 @@ class TestCharts extends DashboardChartsBase {
   }
 
   // Expose the protected helpers under test.
-  isValue(source: string): boolean {
-    return this.isValueSource(source);
-  }
   byCurrency(currency?: 'USD' | 'HNL' | 'ALL'): InventoryItemInterface[] {
     return this.getFilteredItemsByCurrency(currency);
   }
@@ -41,9 +39,6 @@ class TestCharts extends DashboardChartsBase {
   }
   topItems(currency?: 'USD' | 'HNL' | 'ALL') {
     return this.calculateTopItemsForChart(currency);
-  }
-  format(value: number): string {
-    return this.formatNumber(value);
   }
 }
 
@@ -68,19 +63,6 @@ describe('DashboardChartsBase', () => {
 
   beforeEach(() => {
     charts = new TestCharts();
-  });
-
-  it('recognises the value based data sources', () => {
-    for (const source of ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue']) {
-      expect(charts.isValue(source)).toBeTrue();
-    }
-    expect(charts.isValue('categories')).toBeFalse();
-    expect(charts.isValue('lowStock')).toBeFalse();
-  });
-
-  it('formats numbers with two decimals and thousands separators', () => {
-    expect(charts.format(0)).toBe('0.00');
-    expect(charts.format(1234.5)).toBe('1,234.50');
   });
 
   describe('currency filtering', () => {
@@ -207,6 +189,64 @@ describe('DashboardChartsBase', () => {
       charts.allItems.set([item({ name: 'x', price: 3, quantity: 1 }), item({ name: 'y', price: 9, quantity: 1 })]);
 
       expect(charts.getCustomChartData(chart('topItemsByValue')).labels).toEqual(['y', 'x']);
+    });
+  });
+
+  describe('getCustomChartOptions', () => {
+    const options = (dataSource: string, chartType = 'bar', currency?: string, color = '#4d7c6f') =>
+      charts.getCustomChartOptions({ dataSource, chartType, currency, color } as unknown as CustomChart);
+
+    it('draws a chart with axes in the chosen color only', () => {
+      expect(options('categories', 'bar').colors).toEqual(['#4d7c6f']);
+    });
+
+    it('draws a circle chart with the palette of the chosen color', () => {
+      expect(options('categories', 'donut').colors).toEqual(['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308']);
+    });
+
+    it('uses the color alone for a circle chart that has no palette', () => {
+      expect(options('categories', 'pie', undefined, '#123456').colors).toEqual(['#123456']);
+    });
+
+    it('sizes the hole of a donut and closes the one of a pie', () => {
+      expect(options('categories', 'donut').plotOptions.pie?.donut?.size).toBe('60%');
+      expect(options('categories', 'pie').plotOptions.pie?.donut?.size).toBe('0%');
+    });
+
+    it('rounds the bars of a chart with axes', () => {
+      expect(options('categories', 'bar').plotOptions.bar?.borderRadius).toBe(4);
+    });
+
+    it('leaves the x axis alone for a circle chart and tilts the labels of the others', () => {
+      expect(options('categories', 'pie').xaxis).toEqual({});
+      expect(options('categories', 'bar').xaxis.labels?.rotate).toBe(-45);
+    });
+
+    it('shows money on the axis and the tooltip of a value chart, in USD by default', () => {
+      const chart = options('valueByCategory');
+      const yaxisFormatter = chart.yaxis as { labels: { formatter: (v: number) => string } };
+
+      expect(yaxisFormatter.labels.formatter(1234.5)).toBe('$1,234.50');
+      expect(chart.tooltip.y).toEqual({ formatter: jasmine.any(Function) });
+      expect((chart.tooltip.y as { formatter: (v: number) => string }).formatter(1234.5)).toBe('$1,234.50');
+    });
+
+    it('shows lempiras for a HNL value chart', () => {
+      const yaxisFormatter = options('topItemsByValue', 'bar', 'HNL').yaxis as { labels: { formatter: (v: number) => string } };
+
+      expect(yaxisFormatter.labels.formatter(1234.5)).toBe('L1,234.50');
+    });
+
+    it('shows a plain count for a chart of item counts', () => {
+      const yaxisFormatter = options('categories').yaxis as { labels: { formatter: (v: number) => string } };
+
+      expect(yaxisFormatter.labels.formatter(1234)).toBe('1,234');
+    });
+
+    it('follows the theme in the tooltip', () => {
+      expect(options('categories').tooltip.theme).toBe('light');
+      charts.dark = true;
+      expect(options('categories').tooltip.theme).toBe('dark');
     });
   });
 });

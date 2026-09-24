@@ -364,19 +364,6 @@ export class Transactions implements OnInit {
     }
   }
 
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  formatDate(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
-  }
-
   trackByFn(index: number, transaction: Transaction): string {
     return transaction.id;
   }

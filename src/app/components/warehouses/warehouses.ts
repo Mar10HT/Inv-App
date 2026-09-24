@@ -349,18 +349,6 @@ export class Warehouses implements OnInit {
     });
   }
 
-  // Memoized date formatter
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
-  formatDate(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
-  }
-
   trackByFn(index: number, warehouse: Warehouse): string {
     return warehouse.id;
   }

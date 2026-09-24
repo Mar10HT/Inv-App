@@ -430,14 +430,9 @@ export class InventoryFormComponent implements OnInit {
 
   // Loading states
   loading = signal<boolean>(false);
-  warehousesLoading = this.warehouseService.loading;
-  suppliersLoading = this.supplierService.loading;
-  usersLoading = this.userService.loading;
-  categoriesLoading = this.categoryService.loading;
 
   // Item type signal (writable so it updates when user toggles)
   isUniqueItem = signal<boolean>(false);
-  isBulkItem = computed(() => !this.isUniqueItem());
 
   assignableUsers = computed(() =>
     this.users().filter(user =>

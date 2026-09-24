@@ -38,7 +38,6 @@ export class InventoryService implements OnDestroy {
   private wsSub?: Subscription;
   
   private itemsSignal = signal<InventoryItemInterface[]>([]);
-  private totalSignal = signal<number>(0);
   private warehousesSignal = signal<Warehouse[]>([]);
   private suppliersSignal = signal<Supplier[]>([]);
 
@@ -126,17 +125,13 @@ export class InventoryService implements OnDestroy {
     }
 
     this.http.get<PaginatedResponse<RawInventoryItem>>(this.apiUrl + '/inventory', { params }).pipe(
-      map(response => ({
-        items: response.data.map(item => this.transformItem(item)),
-        total: response.meta.total
-      })),
+      map(response => response.data.map(item => this.transformItem(item))),
       catchError(err => {
         this.error.set(err.message || 'Error loading items');
-        return of({ items: [], total: 0 });
+        return of<InventoryItemInterface[]>([]);
       })
-    ).subscribe(({ items, total }) => {
+    ).subscribe(items => {
       this.itemsSignal.set(items);
-      this.totalSignal.set(total);
       this.updateCategoriesFromItems(items);
       this.loading.set(false);
     });
@@ -194,7 +189,6 @@ export class InventoryService implements OnDestroy {
       tap({
         next: (newItem) => {
           this.itemsSignal.update(items => [...items, newItem]);
-          this.totalSignal.update(t => t + 1);
           this.addCategoryIfNew(newItem.category);
           this.loading.set(false);
         },
@@ -232,7 +226,6 @@ export class InventoryService implements OnDestroy {
       tap({
         next: () => {
           this.itemsSignal.update(items => items.filter(item => item.id !== id));
-          this.totalSignal.update(t => t - 1);
           this.loading.set(false);
         },
         error: (error) => {

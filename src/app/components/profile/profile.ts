@@ -258,9 +258,4 @@ export class Profile implements OnInit {
       day: 'numeric'
     }).format(d);
   }
-
-  // Kept for backwards compatibility but prefer userInitials computed signal
-  getUserInitials(): string {
-    return this.userInitials();
-  }
 }

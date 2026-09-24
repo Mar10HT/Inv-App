@@ -51,7 +51,7 @@ filteredItems = computed(() => {
 
 **Before**: 4 separate iterations O(4n)
 ```typescript
-totalItems = computed(() => service.getTotalItems());
+totalItems = computed(() => service.items().length);
 lowStock = computed(() => service.getLowStock().length);
 outOfStock = computed(() => service.getOutOfStock().length);
 inStock = computed(() => service.getInStock().length);

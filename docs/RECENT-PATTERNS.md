@@ -128,7 +128,7 @@ In the main loans list, each loan row has a context menu with actions per status
 manualConfirmReceipt(loan: Loan): void {
   if (loan.status !== 'sent') return;
 
-  this.loanService.confirmReceipt(loan.id).subscribe({
+  this.loanService.manualConfirmReceipt(loan.id).subscribe({
     next: () => {
       this.notifications.success(
         this.translate.instant('LOANS.RECEIPT_CONFIRMED')
@@ -342,7 +342,7 @@ private checkAllCompleted(completed: number, total: number, success: number): vo
     // All requests finished (success or error)
     if (success > 0) {
       this.notifications.success(
-        this.translate.instant('LOANS.LOANS_CREATED', { count: success })
+        this.translate.instant('LOANS.LOAN_CREATED')
       );
       this.created.emit({ success: true, count: success });
     } else {
@@ -752,7 +752,7 @@ export class LoansComponent {
   }
 
   manualConfirmReceipt(loan: Loan): void {
-    this.loanService.confirmReceipt(loan.id).subscribe({
+    this.loanService.manualConfirmReceipt(loan.id).subscribe({
       next: () => {
         this.applyFilters();
       }

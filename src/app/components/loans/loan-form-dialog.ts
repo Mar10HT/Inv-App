@@ -334,8 +334,6 @@ export class LoanFormDialog {
           if (result) {
             this.notifications.success(this.translate.instant('LOANS.LOAN_CREATED'));
             this.created.emit({ success: true, count: items.length });
-          } else {
-            this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
           }
         },
         error: () => {

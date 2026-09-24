@@ -12,6 +12,7 @@ import {
 } from '../interfaces/outflow.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
+import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
 
 const MAX_OUTFLOWS_LIMIT = 200;
@@ -21,6 +22,7 @@ export class OutflowService {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
   private apiUrl = `${environment.apiUrl}/outflows`;
 
   private outflowsSignal = signal<Outflow[]>([]);
@@ -50,6 +52,11 @@ export class OutflowService {
     }
     return { total: list.length, active, cancelled, byReason };
   });
+
+  constructor() {
+    // A failed call resolves with null and only fills `error`, so tell the user here
+    this.notifications.reportErrors(this.error);
+  }
 
   loadOutflows(): void {
     this.loadingSignal.set(true);

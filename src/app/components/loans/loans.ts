@@ -620,8 +620,6 @@ export class LoansComponent implements OnInit {
       next: (result) => {
         if (result) {
           this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'));
-        } else {
-          this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
         }
       },
       error: () => {
@@ -650,8 +648,6 @@ export class LoansComponent implements OnInit {
       next: (result) => {
         if (result) {
           this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
-        } else {
-          this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
         }
       },
       error: () => {

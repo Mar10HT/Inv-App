@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 
 import { NotificationService } from './notification.service';
 import { LoggerService } from './logger.service';
@@ -43,5 +44,63 @@ describe('NotificationService.guardExport', () => {
     ).toBeResolved();
 
     expect(errorSpy).toHaveBeenCalledOnceWith('NOTIFICATIONS.ERRORS.EXPORT_FAILED');
+  });
+});
+
+describe('NotificationService.reportErrors', () => {
+  let service: NotificationService;
+  let errorSpy: jasmine.Spy;
+  let source: ReturnType<typeof signal<string | null>>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [...provideTestBedDefaults()] });
+    service = TestBed.inject(NotificationService);
+    errorSpy = spyOn(service, 'error');
+  });
+
+  const watch = (initial: string | null): void => {
+    source = signal<string | null>(initial);
+    TestBed.runInInjectionContext(() => service.reportErrors(source));
+    TestBed.tick();
+  };
+
+  it('shows an error when the source gets a message', () => {
+    watch(null);
+
+    source.set('Could not send the loan');
+    TestBed.tick();
+
+    expect(errorSpy).toHaveBeenCalledOnceWith('Could not send the loan');
+  });
+
+  it('ignores a message that was already there when it started watching', () => {
+    watch('Left over from an earlier visit');
+
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it('stays quiet when the message is cleared', () => {
+    watch(null);
+    source.set('Boom');
+    TestBed.tick();
+    errorSpy.calls.reset();
+
+    source.set(null);
+    TestBed.tick();
+
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it('reports the same message again when it fails again after being cleared', () => {
+    watch(null);
+
+    source.set('Boom');
+    TestBed.tick();
+    source.set(null);
+    TestBed.tick();
+    source.set('Boom');
+    TestBed.tick();
+
+    expect(errorSpy).toHaveBeenCalledTimes(2);
   });
 });

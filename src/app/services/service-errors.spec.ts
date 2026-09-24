@@ -1,0 +1,77 @@
+import { TestBed } from '@angular/core/testing';
+import { Signal } from '@angular/core';
+import { HttpTestingController } from '@angular/common/http/testing';
+import { NEVER } from 'rxjs';
+
+import { LoanService } from './loan.service';
+import { TransferRequestService } from './transfer-request.service';
+import { SaleService } from './sale.service';
+import { OutflowService } from './outflow.service';
+import { DischargeRequestService } from './discharge-request.service';
+import { NotificationService } from './notification.service';
+import { WebSocketService } from './websocket.service';
+import { provideTestBedDefaults } from '../../testing/test-providers';
+
+interface ServiceWithErrors {
+  error: Signal<string | null>;
+}
+
+// Each service swallows a failed call (it records the message in `error` and resolves with
+// null), so it is the service that has to tell the user. `start` is what makes the service
+// issue a request that will fail.
+const services: [string, () => ServiceWithErrors, (s: never) => void][] = [
+  ['LoanService', () => TestBed.inject(LoanService), () => undefined],
+  ['TransferRequestService', () => TestBed.inject(TransferRequestService), () => undefined],
+  ['SaleService', () => TestBed.inject(SaleService), (s: SaleService) => s.loadSales()],
+  ['OutflowService', () => TestBed.inject(OutflowService), (s: OutflowService) => s.loadOutflows()],
+  [
+    'DischargeRequestService',
+    () => TestBed.inject(DischargeRequestService),
+    (s: DischargeRequestService) => s.loadRequests()
+  ]
+];
+
+describe('business services report failed calls to the user', () => {
+  let backend: HttpTestingController;
+  let notifications: NotificationService;
+  let errorSpy: jasmine.Spy;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        ...provideTestBedDefaults(),
+        { provide: WebSocketService, useValue: { connect: () => undefined, onLoanChange: () => NEVER } }
+      ]
+    });
+    backend = TestBed.inject(HttpTestingController);
+    notifications = TestBed.inject(NotificationService);
+    errorSpy = spyOn(notifications, 'error');
+  });
+
+  services.forEach(([name, create, start]) => {
+    describe(name, () => {
+      it('shows an error when a request fails', () => {
+        const service = create();
+        TestBed.tick();
+        start(service as never);
+
+        backend.expectOne(() => true).flush(null, { status: 500, statusText: 'Server Error' });
+        TestBed.tick();
+
+        expect(service.error()).toBeTruthy();
+        expect(errorSpy).toHaveBeenCalledOnceWith(service.error() as string);
+      });
+
+      it('stays quiet when requests succeed', () => {
+        const service = create();
+        TestBed.tick();
+        start(service as never);
+
+        backend.expectOne(() => true).flush({ data: [] });
+        TestBed.tick();
+
+        expect(errorSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
+});

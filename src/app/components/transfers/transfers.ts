@@ -701,8 +701,6 @@ export class TransfersComponent implements OnInit {
         if (result) {
           this.notifications.success(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_SUCCESS'));
           this.applyFilters();
-        } else {
-          this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
         }
       },
       error: () => {

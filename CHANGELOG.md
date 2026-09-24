@@ -12,8 +12,6 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 - Unit test suite (0/12 passing) — `TestBed` setup across all specs never accounted for `provideZonelessChangeDetection()` or `TranslateService`, so every spec crashed on `NG0908`/`NG0201` instead of running.
 - Cleared the entire lint backlog (~270 findings → 0), almost all `@typescript-eslint/no-explicit-any` resolved with real types (reusing existing interfaces where they exist) rather than suppressions, plus real `@angular-eslint/template` accessibility fixes (label/control association, keyboard support on clickable cards, dialog `role`/`aria` attributes) across ~50 components. CI now fails on lint instead of just reporting it.
 - `dashboard.ts`: the custom-chart-builder's `ApexOptions` return type declared several sub-options optional even though the implementation always populates them, and a template data-presence check assumed one series shape (`{name, data}[]`) when pie/donut charts actually use a plain `number[]` — both were previously invisible type gaps that only surfaced once lint (and therefore full template type-checking) started running.
-- `filterLoans` sorted the caller's array in place whenever no filter criterion removed a loan; it now sorts a copy.
-- The `analyze` and `serve:ssr` npm scripts pointed at `dist/INV-ICN`, but the build outputs `dist/inv-app`. `serve:ssr:INV-ICN` is now `serve:ssr:inv-app`.
 - README and CODEMAPS linked to a backend repository that does not exist; they now point to `Mar10HT/Inv-App-API`. `context/ROADMAP.md` is refreshed for v0.5.0 and no longer lists shipped features as planned.
 - Eleven templates (loans, transfers, forgot-password, reset-password) render `<lucide-icon name="CheckCircle">`, but only `CheckCircle2` was registered, and lucide-angular throws when an icon is not provided. `CheckCircle` is now registered next to it.
 
@@ -31,6 +29,9 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 
 ### Removed
 - Unused code found in a code-graph review: eight unreferenced types and constants, the `ThemeToggle`, `EmptyState`, `ErrorAlert` and `LoadingSpinner` components, `SanitizerService`, `SharedData`, the unused `components/shared` barrel, `PdfExportService.exportTableToPDF`, and three empty component stylesheets.
+- The dead server-side rendering stack (`server.ts`, `main.server.ts`, the server config and routes, hydration, `@angular/ssr`, `@angular/platform-server`, `express`), `json-server`, the `analyze`, `build:stats` and `serve:ssr:inv-app` scripts (the build is browser only and `webpack-bundle-analyzer` was never installed) and the `extract-i18n` target.
+- More unused code, found with the TypeScript language service and confirmed by the production build: about 60 service methods and computed signals in the loan, transfer, dashboard, inventory, auth, user, warehouse, sidebar, theme, websocket, discharge, audit, sale, outflow and notification services (with the specs that only covered them), `filterLoans`, `getActiveLoanForItem` and `isItemOnLoan`, the Material to Lucide `ICON_MAP`, six unused types, and the NgModules that components imported but never used (`CommonModule`, `MatButtonModule`, `MatDialogModule`, `MatSnackBarModule` and others).
+- 106 translation keys that no code references, from `en.json` and `es.json` together.
 
 ## [0.5.0] - 2026-07-07
 

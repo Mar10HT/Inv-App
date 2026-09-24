@@ -6,6 +6,7 @@ describe('money.utils', () => {
       expect(formatNumber(1234.5)).toBe('1,234.50');
       expect(formatNumber(0)).toBe('0.00');
       expect(formatNumber(1234567.891)).toBe('1,234,567.89');
+      expect(formatNumber(1000000)).toBe('1,000,000.00');
     });
 
     it('keeps the sign of a negative amount', () => {

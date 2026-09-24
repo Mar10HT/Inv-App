@@ -9,9 +9,6 @@ class TestPdf extends PdfDrawingBase {
   protected t(key: string): string {
     return key;
   }
-  format(value: number): string {
-    return this.formatNumber(value);
-  }
   stats(transactions: Transaction[]) {
     return this.calculateStats(transactions);
   }
@@ -31,14 +28,6 @@ const tx = (type: TransactionType, itemCount = 0): Transaction =>
 
 describe('PdfDrawingBase', () => {
   const pdf = new TestPdf();
-
-  describe('formatNumber', () => {
-    it('always shows two decimals with thousands separators', () => {
-      expect(pdf.format(0)).toBe('0.00');
-      expect(pdf.format(1234.5)).toBe('1,234.50');
-      expect(pdf.format(1000000)).toBe('1,000,000.00');
-    });
-  });
 
   describe('calculateStats', () => {
     it('counts each transaction type and the total number of line items', () => {

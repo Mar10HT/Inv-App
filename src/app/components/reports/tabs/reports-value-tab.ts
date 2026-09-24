@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ReportCurrency, TopItem, ValueSummary } from '../reports.types';
+import { formatMoney } from '../../../utils/money.utils';
 
 @Component({
   selector: 'app-reports-value-tab',
@@ -205,13 +206,7 @@ export class ReportsValueTab {
     { value: 'ALL', label: 'REPORTS.ALL_CURRENCIES' }
   ];
 
-  private static readonly NUMBER_FORMAT = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-
   formatCurrency(value: number): string {
-    const symbol = this.currency() === 'HNL' ? 'L' : '$';
-    return `${symbol}${ReportsValueTab.NUMBER_FORMAT.format(value)}`;
+    return formatMoney(value, this.currency());
   }
 }

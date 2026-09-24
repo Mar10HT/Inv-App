@@ -170,7 +170,8 @@ export class Login {
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    // Same minimum as the API's LoginDto: admins can create users with 6 character passwords
+    password: ['', [Validators.required, Validators.minLength(6)]],
     rememberMe: [false]
   });
 

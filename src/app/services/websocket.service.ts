@@ -27,7 +27,7 @@ export class WebSocketService implements OnDestroy {
   private events$ = new Subject<{ event: string; payload: WsEvent }>();
   private connected$ = new Subject<boolean>();
 
-  connect(token?: string): void {
+  connect(): void {
     // Any socket, connected or not: while the handshake is pending `connected` is false, and
     // a second socket would be created and left behind with its listeners, doubling every event.
     if (this.socket) return;
@@ -36,7 +36,6 @@ export class WebSocketService implements OnDestroy {
 
     this.socket = this.socketIo(`${baseUrl}/ws`, {
       withCredentials: true,
-      auth: token ? { token } : undefined,
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,

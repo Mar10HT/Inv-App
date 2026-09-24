@@ -63,6 +63,13 @@ describe('AuthService', () => {
       expect(ws.connect).toHaveBeenCalledTimes(1);
     });
 
+    it('replaces a socket left over from an earlier session instead of reusing it', () => {
+      signIn();
+
+      // connect() does nothing when a socket exists, so a stale one has to be closed first
+      expect(ws.disconnect).toHaveBeenCalledBefore(ws.connect);
+    });
+
     it('does not open the socket when the credentials are refused', () => {
       service.login({ email: 'ana@x.com', password: 'wrong' }).subscribe({ error: () => undefined });
       backend.expectOne(api('/login')).flush(null, { status: 401, statusText: 'Unauthorized' });
@@ -96,11 +103,23 @@ describe('AuthService', () => {
 
     it('closes the socket so the next user does not inherit this one\'s rooms', () => {
       signIn();
+      ws.disconnect.calls.reset();
 
       service.logout().subscribe();
       backend.expectOne(api('/logout')).flush({});
 
       expect(ws.disconnect).toHaveBeenCalledTimes(1);
+    });
+
+    it('closes the socket as soon as signing out starts, without waiting for the server', () => {
+      signIn();
+      ws.disconnect.calls.reset();
+
+      service.logout().subscribe();
+
+      // the /logout request has not been answered yet
+      expect(ws.disconnect).toHaveBeenCalledTimes(1);
+      backend.expectOne(api('/logout'));
     });
 
     it('still signs out locally when the server call fails', () => {
@@ -110,7 +129,6 @@ describe('AuthService', () => {
       backend.expectOne(api('/logout')).flush(null, { status: 500, statusText: 'Server Error' });
 
       expect(service.isAuthenticated()).toBeFalse();
-      expect(ws.disconnect).toHaveBeenCalledTimes(1);
     });
   });
 });

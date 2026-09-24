@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of, Subscription, interval, switchMap, map, BehaviorSubject } from 'rxjs';
+import { Observable, tap, catchError, defer, of, Subscription, interval, switchMap, map, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   LoginRequest, RegisterRequest, AuthResponse, AuthUser,
@@ -61,12 +61,15 @@ export class AuthService implements OnDestroy {
   }
 
   logout(): Observable<void> {
-    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+    return defer(() => {
+      // Close the socket now, without waiting for the server: it keeps the rooms of the user who
+      // opened it, and a slow or hanging /logout must not leave it open
+      this.wsService.disconnect();
+      return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true });
+    }).pipe(
       catchError(() => of(null)),
       tap(() => {
         this.stopPermissionsPolling();
-        // The socket keeps the rooms of the user who opened it: drop it before the next user signs in
-        this.wsService.disconnect();
         localStorage.removeItem(this.USER_KEY);
         this.currentUser.set(null);
         this.isAuthenticated.set(false);
@@ -144,7 +147,9 @@ export class AuthService implements OnDestroy {
         this.permissionsLoaded.set(true);
         this.permissionsLoaded$.next(true);
 
-        // Open the real time socket for this session (a no-op if one is already open)
+        // A fresh socket for this session. connect() does nothing when one exists, and one that
+        // survived from an earlier session (another tab signed out) would belong to the wrong user
+        this.wsService.disconnect();
         this.wsService.connect();
         this.startPermissionsPolling();
       }),

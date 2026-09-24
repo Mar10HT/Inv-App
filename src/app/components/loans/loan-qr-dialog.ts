@@ -8,6 +8,7 @@ import { LoanService } from '../../services/loan.service';
 import { NotificationService } from '../../services/notification.service';
 import { Loan } from '../../interfaces/loan.interface';
 import { summarizeLoanItems } from '../../utils/loan.utils';
+import { buildQrPrintHtml } from '../../utils/qr-print.utils';
 
 // ==================== QR Code Display Dialog ====================
 
@@ -98,28 +99,16 @@ export class LoanQrDialog {
     const currentLoan = this.loan();
     if (!dataUrl || !currentLoan) return;
 
+    const summary = this.summaryFor(currentLoan);
     const printWindow = window.open('', '_blank');
     if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>QR Code - ${this.summaryFor(currentLoan)}</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-              img { max-width: 300px; }
-              h2 { margin-bottom: 5px; }
-              p { color: #666; margin: 5px 0; }
-            </style>
-          </head>
-          <body>
-            <img src="${dataUrl}" alt="QR Code" />
-            <h2>${this.summaryFor(currentLoan)}</h2>
-            <p>${currentLoan.sourceWarehouseName} → ${currentLoan.destinationWarehouseName}</p>
-            <p>${this.type() === 'send' ? 'Scan to confirm receipt' : 'Scan to confirm return'}</p>
-            <script>window.onload = function() { window.print(); }</script>
-          </body>
-        </html>
-      `);
+      printWindow.document.write(buildQrPrintHtml({
+        title: `QR Code - ${summary}`,
+        dataUrl,
+        heading: summary,
+        route: `${currentLoan.sourceWarehouseName} → ${currentLoan.destinationWarehouseName}`,
+        hint: this.type() === 'send' ? 'Scan to confirm receipt' : 'Scan to confirm return'
+      }));
       printWindow.document.close();
     }
   }

@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
+import { Injectable, InjectionToken, inject, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, defer, of, Subscription, interval, switchMap, map, BehaviorSubject } from 'rxjs';
@@ -13,6 +13,12 @@ import { WebSocketService } from './websocket.service';
 
 const POLL_INTERVAL_MS = 60_000; // 60 seconds
 
+/** Loads the login page from scratch, dropping everything the app holds in memory. Injected so specs do not reload the test page. */
+export const REDIRECT_TO_LOGIN = new InjectionToken<() => void>('REDIRECT_TO_LOGIN', {
+  providedIn: 'root',
+  factory: () => () => window.location.assign('/login'),
+});
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,6 +27,7 @@ export class AuthService implements OnDestroy {
   private router = inject(Router);
   private permissionsService = inject(PermissionsService);
   private wsService = inject(WebSocketService);
+  private redirectToLogin = inject(REDIRECT_TO_LOGIN);
 
   private readonly USER_KEY = 'auth_user';
 
@@ -77,7 +84,9 @@ export class AuthService implements OnDestroy {
         this.permissionsLoaded$.next(false);
         this.permissionsVersion.set(0);
         this.permissionsService.clearPermissions();
-        this.router.navigate(['/login']);
+        // A full reload rather than a route change: the singleton services (inventory, loans,
+        // warehouses) keep what they loaded, and it must not be shown to the next user of this tab
+        this.redirectToLogin();
       }),
       map(() => void 0)
     );

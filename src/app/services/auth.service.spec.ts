@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 
-import { AuthService } from './auth.service';
+import { AuthService, REDIRECT_TO_LOGIN } from './auth.service';
 import { PermissionsService } from './permissions.service';
 import { WebSocketService } from './websocket.service';
 import { AuthUser, MeResponse } from '../interfaces/auth.interface';
@@ -19,9 +19,12 @@ describe('AuthService', () => {
   let backend: HttpTestingController;
   let ws: jasmine.SpyObj<WebSocketService>;
   let permissions: jasmine.SpyObj<PermissionsService>;
+  let navigate: jasmine.Spy;
+  let redirectToLogin: jasmine.Spy;
 
   beforeEach(() => {
     localStorage.clear();
+    redirectToLogin = jasmine.createSpy('redirectToLogin');
     ws = jasmine.createSpyObj<WebSocketService>('WebSocketService', ['connect', 'disconnect']);
     permissions = jasmine.createSpyObj<PermissionsService>('PermissionsService', ['loadPermissions', 'clearPermissions']);
 
@@ -29,11 +32,12 @@ describe('AuthService', () => {
       providers: [
         ...provideTestBedDefaults(),
         { provide: WebSocketService, useValue: ws },
-        { provide: PermissionsService, useValue: permissions }
+        { provide: PermissionsService, useValue: permissions },
+        { provide: REDIRECT_TO_LOGIN, useValue: redirectToLogin }
       ]
     });
     backend = TestBed.inject(HttpTestingController);
-    spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
     service = TestBed.inject(AuthService);
   });
 
@@ -109,6 +113,18 @@ describe('AuthService', () => {
       backend.expectOne(api('/logout')).flush({});
 
       expect(ws.disconnect).toHaveBeenCalledTimes(1);
+    });
+
+    it('reloads the app on the login page, so nothing of this user stays in memory', () => {
+      signIn();
+
+      service.logout().subscribe();
+      backend.expectOne(api('/logout')).flush({});
+
+      // The singleton services keep the data they loaded (inventory, loans, warehouses): a
+      // navigation inside the app would show it to whoever signs in next in this tab.
+      expect(redirectToLogin).toHaveBeenCalledTimes(1);
+      expect(navigate).not.toHaveBeenCalled();
     });
 
     it('closes the socket as soon as signing out starts, without waiting for the server', () => {

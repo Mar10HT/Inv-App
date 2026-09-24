@@ -9,6 +9,7 @@ import { NotificationService } from '../../services/notification.service';
 import { RoleSummary } from '../../interfaces/role.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-roles',
@@ -18,6 +19,7 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
+    Spinner,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -96,7 +98,7 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 
           @if (loading()) {
             <div class="flex items-center justify-center py-16 gap-3 text-[var(--color-on-surface-variant)]">
-              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-primary)]"></div>
+              <app-spinner size="md"></app-spinner>
               {{ 'COMMON.LOADING' | translate }}...
             </div>
           } @else if (roles().length === 0) {

@@ -5,16 +5,17 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../services/theme.service';
 import { formatDate } from '../reports.format';
 import { TrendPoint } from '../reports.types';
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-reports-trends-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule, NgApexchartsModule, TranslateModule],
+  imports: [LucideAngularModule, NgApexchartsModule, TranslateModule, Spinner],
   template: `
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     } @else {

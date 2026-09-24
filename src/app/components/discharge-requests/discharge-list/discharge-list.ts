@@ -11,6 +11,7 @@ import { DischargeRequestService } from '../../../services/discharge-request.ser
 import { NotificationService } from '../../../services/notification.service';
 import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/discharge-request.interface';
 import { ConfirmService } from '../../../services/confirm.service';
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-discharge-list',
@@ -23,6 +24,7 @@ import { ConfirmService } from '../../../services/confirm.service';
     NgxPermissionsModule,
     TranslateModule,
     DatePipe,
+    Spinner,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -345,7 +347,7 @@ import { ConfirmService } from '../../../services/confirm.service';
 
             @if (shareLoading()) {
               <div class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+                <app-spinner></app-spinner>
               </div>
             } @else if (shareQrDataUrl()) {
               <!-- QR Code: bg-white is intentional — scanners require white background -->

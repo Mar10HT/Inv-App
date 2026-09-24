@@ -14,6 +14,7 @@ import {
 } from '../../interfaces/warehouse.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
 
 function normalizeManagerId<T extends { managerId?: string | null }>(payload: T): T {
   if (payload && 'managerId' in payload && (payload.managerId === undefined || payload.managerId === '')) {
@@ -29,7 +30,8 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
   imports: [
     LucideAngularModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    Spinner
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -70,7 +72,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }

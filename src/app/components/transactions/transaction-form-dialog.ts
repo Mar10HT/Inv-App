@@ -11,6 +11,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { LoggerService } from '../../services/logger.service';
 import { TransactionType } from '../../interfaces/transaction.interface';
+import { Spinner } from '../shared/spinner/spinner';
 
 export interface TransactionFormDialogData {
   mode: 'add';
@@ -23,7 +24,8 @@ export interface TransactionFormDialogData {
   imports: [
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    Spinner
   ],
   template: `
     <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
@@ -227,7 +229,7 @@ export interface TransactionFormDialogData {
             [disabled]="form.invalid || itemsArray.length === 0 || saving()"
             class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <app-spinner size="sm" tone="white"></app-spinner>
             }
             {{ 'COMMON.SAVE' | translate }}
           </button>

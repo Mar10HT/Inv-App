@@ -4,16 +4,17 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Transaction, TransactionType } from '../../../interfaces/transaction.interface';
 import { formatDateTime } from '../reports.format';
 import { TransactionStats } from '../reports.types';
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-reports-transactions-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule, TranslateModule],
+  imports: [LucideAngularModule, TranslateModule, Spinner],
   template: `
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     } @else {

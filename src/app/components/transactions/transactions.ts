@@ -10,6 +10,7 @@ import { NotificationService } from '../../services/notification.service';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { TransactionFormDialog } from './transaction-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-transactions',
@@ -19,7 +20,8 @@ import { TransactionFormDialog } from './transaction-form-dialog';
     CommonModule,
     LucideAngularModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    Spinner
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -93,7 +95,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }

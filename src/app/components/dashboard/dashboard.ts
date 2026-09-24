@@ -32,6 +32,7 @@ import {
 import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboard';
 import { DashboardRecentItems } from './components/dashboard-recent-items/dashboard-recent-items';
 import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,7 +49,8 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
     SkeletonDashboardComponent,
     DashboardTransactionsComponent,
     DashboardLowStockComponent,
-    DashboardRecentItems
+    DashboardRecentItems,
+    Spinner
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -108,7 +110,7 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
         @for (i of [1, 2, 3]; track i) {
           <div class="bg-surface-variant rounded-xl border border-theme p-6">
             <div class="flex items-center justify-center h-72">
-              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+              <app-spinner></app-spinner>
             </div>
           </div>
         }
@@ -161,8 +163,8 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
 
               @if (!dataReady()) {
                 <div class="flex flex-col items-center justify-center py-8">
-                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-primary)] mb-2"></div>
-                  <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.LOADING' | translate }}...</p>
+                  <app-spinner size="md"></app-spinner>
+                  <p class="text-[var(--color-on-surface-variant)] text-sm mt-2">{{ 'COMMON.LOADING' | translate }}...</p>
                 </div>
               } @else if (hasChartData(chart)) {
                 @defer (on viewport) {

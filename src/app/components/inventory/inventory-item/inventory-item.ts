@@ -9,6 +9,7 @@ import { InventoryService } from '../../../services/inventory/inventory.service'
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { NotificationService } from '../../../services/notification.service';
+import { Spinner } from '../../shared/spinner/spinner';
 
 export interface InventoryItemDialogData {
   itemId: string;
@@ -21,14 +22,15 @@ export interface InventoryItemDialogData {
   imports: [
     CommonModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    Spinner
   ],
   template: `
 <div class="bg-surface-variant rounded-xl max-h-[90vh] overflow-hidden flex flex-col">
   <!-- Loading State -->
   @if (loading()) {
     <div class="flex items-center justify-center py-24 px-12">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--color-primary)]"></div>
+      <app-spinner size="xl"></app-spinner>
       <span class="ml-4 text-[var(--color-on-surface-variant)] text-lg">{{ 'COMMON.LOADING' | translate }}...</span>
     </div>
   }

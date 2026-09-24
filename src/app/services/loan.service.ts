@@ -346,13 +346,10 @@ export class LoanService implements OnDestroy {
   /**
    * Get QR code image for a loan
    */
-  getQrCode(loanId: string, type: 'send' | 'return'): Observable<string | null> {
+  getQrCode(loanId: string, type: 'send' | 'return'): Observable<string> {
+    // A failure is left to the caller (the QR dialog closes): the interceptor already logs it
     return this.http.get<{ qrDataUrl: string }>(`${this.apiUrl}/${loanId}/qr/${type}`).pipe(
-      map(response => response.qrDataUrl),
-      catchError(err => {
-        this.logger.error('Error getting QR code', err);
-        return of(null);
-      })
+      map(response => response.qrDataUrl)
     );
   }
 

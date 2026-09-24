@@ -279,13 +279,9 @@ export class TransferRequestService implements OnDestroy {
   /**
    * Get QR code image for a transfer
    */
-  getQrCode(id: string): Observable<string | null> {
-    return this.http.get<string>(`${this.apiUrl}/${id}/qr`).pipe(
-      catchError(err => {
-        this.logger.error('Error getting QR code', err);
-        return of(null);
-      })
-    );
+  getQrCode(id: string): Observable<string> {
+    // A failure is left to the caller (the QR dialog closes): the interceptor already logs it
+    return this.http.get<string>(`${this.apiUrl}/${id}/qr`);
   }
 
   // ==================== Standard Operations ====================

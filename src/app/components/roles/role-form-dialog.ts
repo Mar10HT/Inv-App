@@ -161,20 +161,21 @@ export class RoleFormDialog implements OnInit {
   selectedPermissionIds = signal<Set<string>>(new Set());
   expandedGroups = signal<Set<string>>(new Set());
 
-  nameValue = '';
-  displayNameValue = '';
+  // Signals, not plain fields: isValid() below only re-evaluates when a signal it reads changes.
+  nameValue = signal('');
+  displayNameValue = signal('');
   descriptionValue = '';
 
   selectedCount = computed(() => this.selectedPermissionIds().size);
 
   isValid = computed(() => {
-    if (this.data.mode === 'add' && !this.nameValue.trim()) return false;
-    return !!this.displayNameValue.trim();
+    if (this.data.mode === 'add' && !this.nameValue().trim()) return false;
+    return !!this.displayNameValue().trim();
   });
 
   ngOnInit(): void {
     if (this.data.mode === 'edit' && this.data.role) {
-      this.displayNameValue = this.data.role.displayName;
+      this.displayNameValue.set(this.data.role.displayName);
       this.descriptionValue = this.data.role.description ?? '';
     }
     this.loadPermissions();
@@ -216,8 +217,8 @@ export class RoleFormDialog implements OnInit {
 
     if (this.data.mode === 'add') {
       this.rolesService.create({
-        name: this.nameValue.trim().toUpperCase().replace(/\s+/g, '_'),
-        displayName: this.displayNameValue.trim(),
+        name: this.nameValue().trim().toUpperCase().replace(/\s+/g, '_'),
+        displayName: this.displayNameValue().trim(),
         description: this.descriptionValue.trim() || undefined,
         permissionIds,
       }).subscribe({
@@ -226,7 +227,7 @@ export class RoleFormDialog implements OnInit {
       });
     } else {
       this.rolesService.update(this.data.role!.id, {
-        displayName: this.displayNameValue.trim(),
+        displayName: this.displayNameValue().trim(),
         description: this.descriptionValue.trim() || undefined,
         permissionIds,
       }).subscribe({

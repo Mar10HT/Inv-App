@@ -1,8 +1,19 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { Router, CanActivateFn, UrlTree } from '@angular/router';
 import { filter, take, map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { PermissionsService } from '../services/permissions.service';
+
+/**
+ * The first page the user may open. A denial must never land on another denial: sending
+ * everybody to /dashboard made a user without dashboard:view bounce between refusals.
+ */
+function fallbackUrl(permissions: PermissionsService, router: Router): UrlTree {
+  if (permissions.hasPermission('dashboard:view')) return router.createUrlTree(['/dashboard']);
+  if (permissions.hasPermission('inventory:view')) return router.createUrlTree(['/inventory']);
+  // Every signed in user may open their own profile
+  return router.createUrlTree(['/profile']);
+}
 
 /**
  * Route guard that checks if the user has the required permission.
@@ -17,9 +28,11 @@ export function permissionGuard(permission: string): CanActivateFn {
     const router = inject(Router);
 
     if (!authService.isAuthenticated()) {
-      router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-      return false;
+      return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
     }
+
+    const decide = (): boolean | UrlTree =>
+      permissionsService.hasPermission(permission) ? true : fallbackUrl(permissionsService, router);
 
     // Permissions load asynchronously on app init (page refresh). Wait for
     // them before evaluating access so the guard doesn't see empty permissions.
@@ -27,24 +40,12 @@ export function permissionGuard(permission: string): CanActivateFn {
       return authService.permissionsLoaded$.pipe(
         filter(loaded => loaded),
         take(1),
-        map(() => {
-          // Re-check auth: a 401 from /auth/me may have cleared the session
-          // while we were waiting. In that case, the auth service already
-          // navigated to /login — just return false so we don't also navigate.
-          if (!authService.isAuthenticated()) return false;
-          if (permissionsService.hasPermission(permission)) return true;
-          router.navigate(['/dashboard']);
-          return false;
-        })
+        // Re-check auth: a 401 from /auth/me may have cleared the session while we were
+        // waiting. The auth service already navigated to /login, so just cancel.
+        map(() => (authService.isAuthenticated() ? decide() : false))
       );
     }
 
-    if (permissionsService.hasPermission(permission)) {
-      return true;
-    }
-
-    // Redirect to dashboard if user lacks permission
-    router.navigate(['/dashboard']);
-    return false;
+    return decide();
   };
 }

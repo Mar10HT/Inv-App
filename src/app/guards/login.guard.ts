@@ -10,12 +10,7 @@ export const loginGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
-    // User is already authenticated, redirect to dashboard
-    router.navigate(['/dashboard']);
-    return false;
-  }
-
-  // User is not authenticated, allow access to login page
-  return true;
+  // Already signed in: send the user on. The dashboard guard picks a page they may open
+  // if the dashboard is not one of them.
+  return authService.isAuthenticated() ? router.createUrlTree(['/dashboard']) : true;
 };

@@ -56,7 +56,7 @@ interface CommandItem {
 
         <!-- Results -->
         <div class="max-h-[60vh] overflow-y-auto">
-          @if (filteredItems().length === 0 && searchQuery.length > 0) {
+          @if (filteredItems().length === 0 && searchQuery().length > 0) {
             <div class="px-4 py-8 text-center text-[var(--color-on-surface-variant)]">
               <lucide-icon name="SearchX" class="!w-10 !h-10 mb-2"></lucide-icon>
               <p>{{ 'COMMAND_PALETTE.NO_RESULTS' | translate }}</p>
@@ -177,7 +177,8 @@ export class CommandPalette implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private translate = inject(TranslateService);
 
-  searchQuery = '';
+  // A signal: filteredItems only re-evaluates when a signal it reads changes
+  searchQuery = signal('');
   selectedIndex = signal(0);
 
   private searchSubject = new Subject<string>();
@@ -197,7 +198,7 @@ export class CommandPalette implements OnInit, OnDestroy {
   );
 
   filteredItems = computed(() => {
-    const query = this.searchQuery.toLowerCase().trim();
+    const query = this.searchQuery().toLowerCase().trim();
     const commands = this.allCommands();
 
     if (!query) {
@@ -417,7 +418,7 @@ export class CommandPalette implements OnInit, OnDestroy {
 
   private loadInventoryItems(): void {
     const items = this.inventoryService.items();
-    const query = this.searchQuery.toLowerCase().trim();
+    const query = this.searchQuery().toLowerCase().trim();
 
     if (!query || query.length < 2) return;
 

@@ -6,7 +6,7 @@ const PIE_CHART_TYPES = ['pie', 'donut', 'radialBar'];
 const VALUE_SOURCES = ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue'];
 
 // Complementary palettes for the charts drawn as a circle, keyed by the chart's base color
-export const CHART_PALETTES: Record<string, string[]> = {
+export const CHART_PALETTES: Readonly<Record<string, readonly string[]>> = {
   '#4d7c6f': ['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308'],
   '#10b981': ['#10b981', '#ef4444', '#8b5cf6', '#f97316', '#3b82f6', '#ec4899'],
   '#06b6d4': ['#06b6d4', '#f97316', '#10b981', '#ec4899', '#eab308', '#8b5cf6'],
@@ -36,7 +36,7 @@ export function seriesName(source: string, currency: string | undefined): string
 
 /** The colors of a chart: a palette for a circle chart, the chosen color alone for the others. */
 export function chartColors(color: string, chartType: string): string[] {
-  return isPieChartType(chartType) ? CHART_PALETTES[color] || [color] : [color];
+  return isPieChartType(chartType) ? [...(CHART_PALETTES[color] ?? [color])] : [color];
 }
 
 /** ApexCharts needs resolved colors, so a CSS variable is read from the page. */

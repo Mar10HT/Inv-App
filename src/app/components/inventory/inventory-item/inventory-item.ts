@@ -9,6 +9,7 @@ import { InventoryService } from '../../../services/inventory/inventory.service'
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../../interfaces/inventory-item.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { NotificationService } from '../../../services/notification.service';
+import { currencySymbol } from '../../../utils/money.utils';
 import { Spinner } from '../../shared/spinner/spinner';
 
 export interface InventoryItemDialogData {
@@ -408,7 +409,6 @@ export class InventoryItem implements OnInit {
 
   formatCurrency(price: number | undefined, currency: string): string {
     if (price === undefined || price === null) return '-';
-    const symbol = currency === 'HNL' ? 'L' : '$';
-    return `${symbol}${price.toFixed(2)}`;
+    return `${currencySymbol(currency)}${price.toFixed(2)}`;
   }
 }

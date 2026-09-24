@@ -165,6 +165,41 @@ describe('TransferRequestService', () => {
       request.flush(raw({ id: 'a', status: 'REJECTED' }));
     });
 
+    it('scanning a QR sends what was scanned and replaces the request the API answers with', () => {
+      const service = create(raw({ id: 'a', status: 'SENT' }), raw({ id: 'b', status: 'SENT' }));
+
+      service.scanQr('scanned-text').subscribe();
+      const request = backend.expectOne(url('/scan-qr'));
+      request.flush(raw({ id: 'b', status: 'COMPLETED' }));
+
+      expect(request.request.body).toEqual({ scannedData: 'scanned-text' });
+      expect(service.requests().map((r) => [r.id, r.status])).toEqual([
+        ['a', TransferRequestStatus.SENT],
+        ['b', TransferRequestStatus.COMPLETED]
+      ]);
+    });
+
+    it('scanning a QR resolves with null when it is not valid', () => {
+      const service = create(raw({ id: 'a' }));
+      let result: unknown = 'unset';
+
+      service.scanQr('junk').subscribe((answer) => (result = answer));
+      backend.expectOne(url('/scan-qr')).flush(null, { status: 400, statusText: 'Bad Request' });
+
+      expect(result).toBeNull();
+      expect(service.error()).toBeTruthy();
+    });
+
+    it('sending hands over the QR code of the answer', () => {
+      const service = create(raw({ id: 'a' }));
+      const answers: unknown[] = [];
+
+      service.sendTransfer('a').subscribe((request) => answers.push(request));
+      backend.expectOne(url('/a/send')).flush(raw({ id: 'a', status: 'SENT', qrCodeDataUrl: 'data:image/png;base64,AAA' }));
+
+      expect(answers).toEqual([jasmine.objectContaining({ id: 'a', qrCodeDataUrl: 'data:image/png;base64,AAA' })]);
+    });
+
     it('clears the previous error when a new step starts', () => {
       const service = create(raw({ id: 'a' }));
       service.cancelRequest('a').subscribe();

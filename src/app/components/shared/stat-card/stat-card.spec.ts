@@ -10,6 +10,7 @@ describe('StatCard', () => {
   const value = (): HTMLElement => el.querySelector('p.text-2xl') as HTMLElement;
   const badge = (): HTMLElement => el.querySelector('div.p-3') as HTMLElement;
   const icon = (): SVGElement => el.querySelector('lucide-icon svg') as SVGElement;
+  const iconHost = (): HTMLElement => el.querySelector('lucide-icon') as HTMLElement;
 
   const render = (inputs: { tone?: StatTone; value?: string | number } = {}): void => {
     fixture.componentRef.setInput('label', 'Pending');
@@ -79,6 +80,9 @@ describe('StatCard', () => {
 
     expect(icon().classList).toContain('!w-5');
     expect(icon().classList).toContain('!h-5');
+    // the host keeps the size too, like the markup this component replaced
+    expect(iconHost().classList).toContain('!w-5');
+    expect(iconHost().classList).toContain('!h-5');
     expect(badge().classList).toContain('rounded-lg');
   });
 });

@@ -57,7 +57,7 @@ const TONES: Record<StatTone, ToneClasses> = {
           <p class="text-2xl font-bold" [class]="classes().value">{{ value() }}</p>
         </div>
         <div class="p-3 rounded-lg" [class]="classes().badge">
-          <lucide-icon [name]="icon()" [class]="iconClass()"></lucide-icon>
+          <lucide-icon [name]="icon()" class="!w-5 !h-5" [class]="classes().icon"></lucide-icon>
         </div>
       </div>
     </div>
@@ -72,5 +72,4 @@ export class StatCard {
   tone = input<StatTone>('neutral');
 
   protected classes = computed(() => TONES[this.tone()]);
-  protected iconClass = computed(() => `!w-5 !h-5 ${this.classes().icon}`);
 }

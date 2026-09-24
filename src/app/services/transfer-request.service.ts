@@ -16,6 +16,7 @@ import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
+import { RequestTracker, trackRequest } from '../utils/track-request';
 
 const MAX_REQUESTS_LIMIT = 200;
 
@@ -33,6 +34,12 @@ export class TransferRequestService implements OnDestroy {
   private requestsSignal = signal<TransferRequest[]>([]);
   private loadingSignal = signal(false);
   private errorSignal = signal<string | null>(null);
+  private tracker: RequestTracker = {
+    loading: this.loadingSignal,
+    error: this.errorSignal,
+    logger: this.logger,
+    translate: this.translate
+  };
 
   requests = computed(() => this.requestsSignal());
   loading = computed(() => this.loadingSignal());
@@ -62,6 +69,21 @@ export class TransferRequestService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.loadRequestsSubscription?.unsubscribe();
+  }
+
+  /** Runs a request that answers with the changed transfer and puts it in the list. */
+  private change(request$: Observable<RawTransferRequest>, logMessage: string, fallbackKey: string): Observable<TransferRequest | null> {
+    return trackRequest(
+      request$.pipe(
+        map(req => this.transformRequest(req)),
+        tap(updated => this.replace(updated))
+      ),
+      this.tracker, logMessage, fallbackKey
+    );
+  }
+
+  private replace(updated: TransferRequest): void {
+    this.requestsSignal.update(requests => requests.map(r => (r.id === updated.id ? updated : r)));
   }
 
   /**
@@ -126,20 +148,12 @@ export class TransferRequestService implements OnDestroy {
    * Create a new transfer request
    */
   createRequest(dto: CreateTransferRequestDto): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawTransferRequest>(this.apiUrl, dto).pipe(
-      map(req => this.transformRequest(req)),
-      tap(newReq => {
-        this.requestsSignal.update(requests => [newReq, ...requests]);
-      }),
-      catchError(err => {
-        this.logger.error('Error creating transfer request', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.REQUEST_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return trackRequest(
+      this.http.post<RawTransferRequest>(this.apiUrl, dto).pipe(
+        map(req => this.transformRequest(req)),
+        tap(created => this.requestsSignal.update(requests => [created, ...requests]))
+      ),
+      this.tracker, 'Error creating transfer request', 'TRANSFERS.REQUEST_ERROR'
     );
   }
 
@@ -147,22 +161,9 @@ export class TransferRequestService implements OnDestroy {
    * Approve a transfer request
    */
   approveRequest(id: string): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/approve`, {}).pipe(
-      map(req => this.transformRequest(req)),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error approving transfer request', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.APPROVE_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/approve`, {}),
+      'Error approving transfer request', 'TRANSFERS.APPROVE_ERROR'
     );
   }
 
@@ -170,22 +171,9 @@ export class TransferRequestService implements OnDestroy {
    * Reject a transfer request
    */
   rejectRequest(id: string, reason?: string): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/reject`, { reason }).pipe(
-      map(req => this.transformRequest(req)),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error rejecting transfer request', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.REJECT_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/reject`, { reason }),
+      'Error rejecting transfer request', 'TRANSFERS.REJECT_ERROR'
     );
   }
 
@@ -195,25 +183,12 @@ export class TransferRequestService implements OnDestroy {
    * Send transfer - generates QR code for receipt confirmation
    */
   sendTransfer(id: string): Observable<TransferRequestWithQr | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/send`, {}).pipe(
-      map(response => ({
-        ...this.transformRequest(response),
-        qrCodeDataUrl: response.qrCodeDataUrl
-      })),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error sending transfer', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.SEND_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return trackRequest(
+      this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/send`, {}).pipe(
+        map(response => ({ ...this.transformRequest(response), qrCodeDataUrl: response.qrCodeDataUrl })),
+        tap(updated => this.replace(updated))
+      ),
+      this.tracker, 'Error sending transfer', 'TRANSFERS.SEND_ERROR'
     );
   }
 
@@ -221,22 +196,9 @@ export class TransferRequestService implements OnDestroy {
    * Process scanned QR code (auto-detect type)
    */
   scanQr(scannedData: string): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawTransferRequest>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
-      map(req => this.transformRequest(req)),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === updatedReq.id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error processing QR code', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.QR.SCAN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.post<RawTransferRequest>(`${this.apiUrl}/scan-qr`, { scannedData }),
+      'Error processing QR code', 'TRANSFERS.QR.SCAN_ERROR'
     );
   }
 
@@ -263,22 +225,9 @@ export class TransferRequestService implements OnDestroy {
    * Complete transfer without QR (legacy method)
    */
   private completeTransfer(id: string): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/complete`, {}).pipe(
-      map(req => this.transformRequest(req)),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error completing transfer', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/complete`, {}),
+      'Error completing transfer', 'TRANSFERS.MANUAL_CONFIRM_ERROR'
     );
   }
 
@@ -286,22 +235,9 @@ export class TransferRequestService implements OnDestroy {
    * Cancel a transfer request
    */
   cancelRequest(id: string): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/cancel`, {}).pipe(
-      map(req => this.transformRequest(req)),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error cancelling transfer request', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.CANCEL_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawTransferRequest>(`${this.apiUrl}/${id}/cancel`, {}),
+      'Error cancelling transfer request', 'TRANSFERS.CANCEL_ERROR'
     );
   }
 

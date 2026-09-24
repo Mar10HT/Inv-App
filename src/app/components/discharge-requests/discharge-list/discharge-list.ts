@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -284,12 +284,12 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
           </div>
 
           <!-- Pagination -->
-          @if (filteredRequests().length > pageSize) {
+          @if (filteredRequests().length > pageSize()) {
             <div class="border-t border-theme px-4 py-2">
               <mat-paginator
                 [length]="filteredRequests().length"
-                [pageIndex]="pageIndex"
-                [pageSize]="pageSize"
+                [pageIndex]="pageIndex()"
+                [pageSize]="pageSize()"
                 [pageSizeOptions]="[10, 25, 50]"
                 (page)="onPageChange($event)"
                 showFirstLastButtons
@@ -398,9 +398,9 @@ export class DischargeListComponent implements OnInit {
   searchQuery = '';
   selectedStatus = 'all';
 
-  // Pagination
-  pageIndex = 0;
-  pageSize = 10;
+  // Pagination (signals: paginatedRequests only re-evaluates when a signal it reads changes)
+  pageIndex = signal(0);
+  pageSize = signal(10);
 
   // Reject dialog
   showRejectDialog = false;
@@ -422,13 +422,20 @@ export class DischargeListComponent implements OnInit {
 
   paginatedRequests = computed(() => {
     const requests = this.filteredRequestsSignal();
-    const start = this.pageIndex * this.pageSize;
-    return requests.slice(start, start + this.pageSize);
+    const start = this.pageIndex() * this.pageSize();
+    return requests.slice(start, start + this.pageSize());
   });
+
+  constructor() {
+    // Re-apply filters whenever the requests change (e.g. when the API responds)
+    effect(() => {
+      this.dischargeService.requests(); // Track the signal
+      this.applyFilters();
+    });
+  }
 
   ngOnInit(): void {
     this.dischargeService.loadRequests();
-    setTimeout(() => this.applyFilters(), 100);
   }
 
   applyFilters(): void {
@@ -448,10 +455,11 @@ export class DischargeListComponent implements OnInit {
       requests = requests.filter((req) => req.status === this.selectedStatus);
     }
 
-    requests = requests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    // Sort a copy: with no filter active `requests` is the service's own array
+    requests = [...requests].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     this.filteredRequestsSignal.set(requests);
-    this.pageIndex = 0;
+    this.pageIndex.set(0);
   }
 
   clearFilters(): void {
@@ -465,8 +473,8 @@ export class DischargeListComponent implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   viewDetail(request: DischargeRequest): void {

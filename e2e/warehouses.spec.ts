@@ -39,12 +39,7 @@ test.describe('Warehouses', () => {
     expect(dialogVisible || inputVisible).toBe(true);
   });
 
-  test('warehouse list items are visible when data exists', async ({ page }) => {
-    // If there are warehouses, table rows or cards should be present
-    const rows = page.locator('table tbody tr, [class*="warehouse-card"], [class*="list-item"]');
-    const count = await rows.count();
-    // At least 0 rows — the page should still render without error
-    expect(count).toBeGreaterThanOrEqual(0);
+  test('opens without redirecting', async ({ page }) => {
     await expect(page).toHaveURL(/warehouses/);
   });
 });

@@ -1,9 +1,7 @@
-import { test, expect, Browser } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 // Guards tests need a fresh context WITHOUT the saved auth session
 test.describe('Navigation guards', () => {
-  let browser: Browser;
-
   test('unauthenticated GET /dashboard redirects to /login', async ({ browser: b }) => {
     const ctx = await b.newContext({ storageState: undefined });
     const page = await ctx.newPage();
@@ -89,9 +87,9 @@ test.describe('Authenticated navigation', () => {
     await expect(page.locator('h1')).toBeVisible();
   });
 
-  test('unknown route shows 404 or redirects', async ({ page }) => {
+  test('an unknown route shows the not found page', async ({ page }) => {
     await page.goto('/this-does-not-exist');
-    const url = page.url();
-    expect(url).toMatch(/this-does-not-exist|dashboard/);
+
+    await expect(page.locator('h1')).toHaveText('404');
   });
 });

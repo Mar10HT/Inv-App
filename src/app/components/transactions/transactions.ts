@@ -11,6 +11,7 @@ import { Transaction, TransactionType } from '../../interfaces/transaction.inter
 import { ConfirmService } from '../../services/confirm.service';
 import { TransactionFormDialog } from './transaction-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-transactions',
@@ -21,7 +22,8 @@ import { Spinner } from '../shared/spinner/spinner';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    Spinner
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -118,10 +120,7 @@ import { Spinner } from '../shared/spinner/spinner';
 
       @if (transactions().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Receipt" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'TRANSACTION.NO_TRANSACTIONS_DESC' | translate }}</p>
+        <app-empty-state icon="Receipt" [heading]="'TRANSACTION.NO_TRANSACTIONS' | translate" [description]="'TRANSACTION.NO_TRANSACTIONS_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['transactions:create']">
             <button
               (click)="addTransaction()"
@@ -129,7 +128,7 @@ import { Spinner } from '../shared/spinner/spinner';
               {{ 'TRANSACTION.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">

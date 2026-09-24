@@ -10,6 +10,7 @@ import { Supplier } from '../../interfaces/supplier.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-suppliers',
@@ -19,7 +20,8 @@ import { Spinner } from '../shared/spinner/spinner';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    Spinner
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -83,10 +85,7 @@ import { Spinner } from '../shared/spinner/spinner';
 
       @if (suppliers().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Truck" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'SUPPLIER.NO_SUPPLIERS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'SUPPLIER.NO_SUPPLIERS_DESC' | translate }}</p>
+        <app-empty-state icon="Truck" [heading]="'SUPPLIER.NO_SUPPLIERS' | translate" [description]="'SUPPLIER.NO_SUPPLIERS_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['suppliers:create']">
             <button
               (click)="addSupplier()"
@@ -94,7 +93,7 @@ import { Spinner } from '../shared/spinner/spinner';
               {{ 'SUPPLIER.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">

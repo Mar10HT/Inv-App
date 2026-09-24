@@ -10,6 +10,7 @@ import { RoleSummary } from '../../interfaces/role.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-roles',
@@ -20,6 +21,7 @@ import { Spinner } from '../shared/spinner/spinner';
     TranslateModule,
     NgxPermissionsModule,
     Spinner,
+    EmptyState,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -102,10 +104,7 @@ import { Spinner } from '../shared/spinner/spinner';
               {{ 'COMMON.LOADING' | translate }}...
             </div>
           } @else if (roles().length === 0) {
-            <div class="flex flex-col items-center justify-center py-16">
-              <lucide-icon name="ShieldOff" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-              <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'ROLES.NO_ROLES' | translate }}</p>
-            </div>
+            <app-empty-state icon="ShieldOff" [heading]="'ROLES.NO_ROLES' | translate"></app-empty-state>
           } @else {
             <div class="overflow-x-auto">
               <table class="w-full">

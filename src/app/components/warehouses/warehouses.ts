@@ -15,6 +15,7 @@ import {
 import { ConfirmService } from '../../services/confirm.service';
 import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 function normalizeManagerId<T extends { managerId?: string | null }>(payload: T): T {
   if (payload && 'managerId' in payload && (payload.managerId === undefined || payload.managerId === '')) {
@@ -31,7 +32,8 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    Spinner
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -95,10 +97,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
 
       @if (warehouses().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Warehouse" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'WAREHOUSE.NO_WAREHOUSES' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'WAREHOUSE.NO_WAREHOUSES_DESC' | translate }}</p>
+        <app-empty-state icon="Warehouse" [heading]="'WAREHOUSE.NO_WAREHOUSES' | translate" [description]="'WAREHOUSE.NO_WAREHOUSES_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['warehouse:create']">
             <button
               (click)="addWarehouse()"
@@ -106,7 +105,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
               {{ 'WAREHOUSE.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">

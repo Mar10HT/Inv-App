@@ -15,6 +15,7 @@ import { UserFormDialog } from './user-form-dialog';
 import { ResetLinkDialog } from './reset-link-dialog';
 import { SetPasswordDialog } from './set-password-dialog';
 import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-users',
@@ -24,7 +25,8 @@ import { Spinner } from '../shared/spinner/spinner';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    Spinner
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -143,10 +145,7 @@ import { Spinner } from '../shared/spinner/spinner';
 
       @if (users().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Users" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
+        <app-empty-state icon="Users" [heading]="'USER.NO_USERS' | translate" [description]="'USER.NO_USERS_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['users:create']">
             <button
               (click)="addUser()"
@@ -154,7 +153,7 @@ import { Spinner } from '../shared/spinner/spinner';
               {{ 'USER.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">

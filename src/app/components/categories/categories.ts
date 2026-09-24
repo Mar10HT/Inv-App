@@ -10,6 +10,7 @@ import { Category } from '../../interfaces/category.interface';
 import { ConfirmService } from '../../services/confirm.service';
 import { CategoryFormDialog, buildCategoryDialogData } from './category-form-dialog';
 import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-categories',
@@ -19,7 +20,8 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    SkeletonCardComponent
+    SkeletonCardComponent,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -93,10 +95,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 
       @if (categories().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Tag" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'CATEGORY.NO_CATEGORIES' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'CATEGORY.NO_CATEGORIES_DESC' | translate }}</p>
+        <app-empty-state icon="Tag" [heading]="'CATEGORY.NO_CATEGORIES' | translate" [description]="'CATEGORY.NO_CATEGORIES_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['categories:create']">
             <button
               (click)="addCategory()"
@@ -104,7 +103,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
               {{ 'CATEGORY.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Categories Grid View -->
         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

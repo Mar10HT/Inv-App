@@ -281,6 +281,25 @@ export class TransactionFormDialog implements OnInit {
 
     // Add initial item
     this.addItem();
+
+    this.applyTypeRules(this.form.value.type);
+    this.form.get('type')?.valueChanges.subscribe((type) => this.applyTypeRules(type));
+  }
+
+  /**
+   * OUT and TRANSFER need a source warehouse, IN and TRANSFER a destination.
+   * The one a type does not use is cleared so a stale choice is never submitted.
+   */
+  private applyTypeRules(type: TransactionType): void {
+    this.setWarehouseRequired('sourceWarehouseId', type !== TransactionType.IN);
+    this.setWarehouseRequired('destinationWarehouseId', type !== TransactionType.OUT);
+  }
+
+  private setWarehouseRequired(controlName: string, required: boolean): void {
+    const control = this.form.get(controlName);
+    control?.setValidators(required ? Validators.required : null);
+    if (!required) control?.setValue('');
+    control?.updateValueAndValidity();
   }
 
   private getCurrentDateTime(): string {

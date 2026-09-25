@@ -47,11 +47,13 @@ export const routes: Routes = [
       },
       {
         path: 'add',
-        loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent)
+        loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent),
+        canActivate: [permissionGuard('inventory:create')]
       },
       {
         path: 'edit/:id',
-        loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent)
+        loadComponent: () => import('./components/inventory/inventory-form/inventory-form.component').then(m => m.InventoryFormComponent),
+        canActivate: [permissionGuard('inventory:edit')]
       }
     ]
   },

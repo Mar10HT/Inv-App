@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TransferRequestService } from '../../services/transfer-request.service';
 import { NotificationService } from '../../services/notification.service';
 import { TransferRequest } from '../../interfaces/transfer-request.interface';
+import { buildQrPrintHtml, isImageDataUrl } from '../../utils/qr-print.utils';
 
 // ==================== QR Code Display Dialog ====================
 
@@ -78,30 +79,17 @@ export class TransferQrDialog {
   printQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentRequest = this.request();
-    if (!dataUrl || !currentRequest) return;
+    if (!isImageDataUrl(dataUrl) || !currentRequest) return;
 
     const printWindow = window.open('', '_blank');
     if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>QR Code - Transfer</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-              img { max-width: 300px; }
-              h2 { margin-bottom: 5px; }
-              p { color: #666; margin: 5px 0; }
-            </style>
-          </head>
-          <body>
-            <img src="${dataUrl}" alt="QR Code" />
-            <h2>Transfer: ${currentRequest.items.length} Items</h2>
-            <p>${currentRequest.sourceWarehouseName} -> ${currentRequest.destinationWarehouseName}</p>
-            <p>Scan to confirm receipt</p>
-            <script>window.onload = function() { window.print(); }</script>
-          </body>
-        </html>
-      `);
+      printWindow.document.write(buildQrPrintHtml({
+        title: 'QR Code - Transfer',
+        dataUrl,
+        heading: `Transfer: ${currentRequest.items.length} Items`,
+        route: `${currentRequest.sourceWarehouseName} -> ${currentRequest.destinationWarehouseName}`,
+        hint: 'Scan to confirm receipt'
+      }));
       printWindow.document.close();
     }
   }
@@ -109,7 +97,7 @@ export class TransferQrDialog {
   downloadQrCode(): void {
     const dataUrl = this.qrDataUrl();
     const currentRequest = this.request();
-    if (!dataUrl || !currentRequest) return;
+    if (!isImageDataUrl(dataUrl) || !currentRequest) return;
 
     const link = document.createElement('a');
     link.href = dataUrl;

@@ -7,6 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { ApiError } from '../../interfaces/api-error.interface';
+import { safeReturnUrl } from '../../utils/return-url.utils';
 
 @Component({
   selector: 'app-login',
@@ -193,7 +194,7 @@ export class Login {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.loading.set(false);
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        const returnUrl = safeReturnUrl(this.route.snapshot.queryParams['returnUrl']);
         this.notifications.success('LOGIN.SUCCESS.WELCOME_BACK', {
           interpolateParams: { name: response.user.name || response.user.email }
         });

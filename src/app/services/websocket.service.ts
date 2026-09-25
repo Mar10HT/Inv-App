@@ -1,4 +1,4 @@
-import { Injectable, inject, OnDestroy } from '@angular/core';
+import { Injectable, InjectionToken, inject, OnDestroy } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
@@ -14,23 +14,28 @@ export interface WsEvent {
   data?: unknown;
 }
 
+/** socket.io's io(), injected so specs can replace it. */
+export const SOCKET_IO = new InjectionToken<typeof io>('SOCKET_IO', { providedIn: 'root', factory: () => io });
+
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService implements OnDestroy {
   private logger = inject(LoggerService);
+  private socketIo = inject(SOCKET_IO);
   private socket: Socket | null = null;
   private events$ = new Subject<{ event: string; payload: WsEvent }>();
   private connected$ = new Subject<boolean>();
 
-  connect(token?: string): void {
-    if (this.socket?.connected) return;
+  connect(): void {
+    // Any socket, connected or not: while the handshake is pending `connected` is false, and
+    // a second socket would be created and left behind with its listeners, doubling every event.
+    if (this.socket) return;
 
     const baseUrl = environment.apiUrl.replace('/api', '');
 
-    this.socket = io(`${baseUrl}/ws`, {
+    this.socket = this.socketIo(`${baseUrl}/ws`, {
       withCredentials: true,
-      auth: token ? { token } : undefined,
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
@@ -102,6 +103,33 @@ describe('Login', () => {
 
       expect(text).toContain('We could not sign you in.');
       expect(text).not.toContain('LOGIN.ERROR.GENERIC');
+    });
+  });
+
+  describe('after signing in', () => {
+    // returnUrl comes from the query string, so anybody can craft one
+    const signInWithReturnUrl = (value: unknown): jasmine.Spy => {
+      const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+      (TestBed.inject(ActivatedRoute).snapshot as unknown as { queryParams: unknown }).queryParams = { returnUrl: value };
+      component.loginForm.patchValue({ email: 'ana@x.com', password: 'abcdef' });
+      component.onSubmit();
+      return navigate;
+    };
+
+    it('goes back to the page the user was heading to', () => {
+      expect(signInWithReturnUrl('/loans')).toHaveBeenCalledOnceWith('/loans');
+    });
+
+    it('goes to the dashboard when there is no return url', () => {
+      expect(signInWithReturnUrl(undefined)).toHaveBeenCalledOnceWith('/dashboard');
+    });
+
+    it('ignores a return url that points outside the app', () => {
+      expect(signInWithReturnUrl('https://evil.example')).toHaveBeenCalledOnceWith('/dashboard');
+    });
+
+    it('does not break when the parameter is repeated', () => {
+      expect(signInWithReturnUrl(['/a', '/b'])).toHaveBeenCalledOnceWith('/dashboard');
     });
   });
 });

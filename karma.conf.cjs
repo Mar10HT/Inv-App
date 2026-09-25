@@ -19,7 +19,7 @@ module.exports = function (config) {
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
       check: {
-        global: { statements: 82, branches: 68, functions: 77, lines: 83 }
+        global: { statements: 83, branches: 70, functions: 80, lines: 84 }
       }
     },
     reporters: ['progress', 'kjhtml'],

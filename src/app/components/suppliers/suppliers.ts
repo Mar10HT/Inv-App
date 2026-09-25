@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -11,6 +11,7 @@ import { ConfirmService } from '../../services/confirm.service';
 import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
 import { EmptyState } from '../shared/empty-state/empty-state';
+import { CrudDialogResult } from '../shared/crud-dialog';
 
 @Component({
   selector: 'app-suppliers',
@@ -262,7 +263,7 @@ export class Suppliers implements OnInit {
   }
 
   addSupplier(): void {
-    const dialogRef = this.dialog.open(SupplierFormDialog, {
+    const dialogRef: MatDialogRef<SupplierFormDialog, CrudDialogResult> = this.dialog.open(SupplierFormDialog, {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
@@ -281,7 +282,7 @@ export class Suppliers implements OnInit {
   }
 
   editSupplier(supplier: Supplier): void {
-    const dialogRef = this.dialog.open(SupplierFormDialog, {
+    const dialogRef: MatDialogRef<SupplierFormDialog, CrudDialogResult> = this.dialog.open(SupplierFormDialog, {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',

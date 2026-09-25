@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CrudDialogData, CrudFieldConfig, CrudTranslateParams } from './crud-dialog-config.interface';
+import { CrudDialogData, CrudDialogResult, CrudFieldConfig, CrudTranslateParams } from './crud-dialog-config.interface';
 import { Spinner } from '../spinner/spinner';
 
 @Component({
@@ -119,7 +119,7 @@ import { Spinner } from '../spinner/spinner';
   `
 })
 export class CrudDialog implements OnInit {
-  dialogRef = inject(MatDialogRef<CrudDialog>);
+  dialogRef = inject(MatDialogRef<CrudDialog, CrudDialogResult>);
   data = inject<CrudDialogData>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
 
@@ -172,7 +172,7 @@ export class CrudDialog implements OnInit {
       this.data.createFn(cleanedValue).subscribe({
         // The pages say "created <name>", so the name of what the API saved goes back with the result
         next: (saved) => {
-          this.dialogRef.close({ saved: true, name: saved?.['name'] });
+          this.dialogRef.close(this.resultOf(saved));
         },
         error: () => {
           this.saving.set(false);
@@ -181,12 +181,17 @@ export class CrudDialog implements OnInit {
     } else if (this.data.entity) {
       this.data.updateFn(String(this.data.entity[idField]), cleanedValue).subscribe({
         next: (saved) => {
-          this.dialogRef.close({ saved: true, name: saved?.['name'] });
+          this.dialogRef.close(this.resultOf(saved));
         },
         error: () => {
           this.saving.set(false);
         }
       });
     }
+  }
+
+  private resultOf(saved: Record<string, unknown> | null | undefined): CrudDialogResult {
+    const name = saved?.['name'];
+    return { saved: true, name: typeof name === 'string' ? name : undefined };
   }
 }

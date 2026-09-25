@@ -37,8 +37,9 @@ describe('CrudDialog', () => {
 
   const setup = async (data: Partial<CrudDialogData> = {}): Promise<void> => {
     close = jasmine.createSpy('close');
-    createFn = jasmine.createSpy('createFn').and.callFake((value: unknown) => of({ ...(value as object), id: 'new' }));
-    updateFn = jasmine.createSpy('updateFn').and.callFake((id: string, value: unknown) => of({ ...(value as object), id }));
+    // The API answers with its own name, different from what was typed, so a test can tell where the result's name comes from
+    createFn = jasmine.createSpy('createFn').and.callFake(() => of({ id: 'new', name: 'Saved by API' }));
+    updateFn = jasmine.createSpy('updateFn').and.callFake((id: string) => of({ id, name: 'Saved by API' }));
 
     await TestBed.configureTestingModule({
       imports: [CrudDialog],
@@ -122,13 +123,22 @@ describe('CrudDialog', () => {
       expect(createFn).toHaveBeenCalledOnceWith({ name: 'Tools', description: undefined, code: '7' });
     });
 
-    it('closes with the name of what it saved so the page can say what was created', async () => {
+    it('closes with the name the API answered, so the page can say what was created', async () => {
       await setup();
       component.form.patchValue({ name: 'Tools' });
 
       component.onSubmit();
 
-      expect(close).toHaveBeenCalledOnceWith({ saved: true, name: 'Tools' });
+      expect(close).toHaveBeenCalledOnceWith({ saved: true, name: 'Saved by API' });
+    });
+
+    it('closes without a name when the API answered with one that is not text', async () => {
+      await setup({ createFn: () => of({ id: 'new', name: 42 }) });
+      component.form.patchValue({ name: 'Tools' });
+
+      component.onSubmit();
+
+      expect(close).toHaveBeenCalledOnceWith({ saved: true, name: undefined });
     });
 
     it('closes without a name when the API answers with nothing', async () => {
@@ -170,7 +180,7 @@ describe('CrudDialog', () => {
 
       expect(updateFn).toHaveBeenCalledOnceWith('e1', { name: 'Renamed', description: undefined, code: undefined });
       expect(createFn).not.toHaveBeenCalled();
-      expect(close).toHaveBeenCalledOnceWith({ saved: true, name: 'Renamed' });
+      expect(close).toHaveBeenCalledOnceWith({ saved: true, name: 'Saved by API' });
     });
 
     it('reads the id from the field the caller names', async () => {

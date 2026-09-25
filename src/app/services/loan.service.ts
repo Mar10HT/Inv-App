@@ -19,6 +19,7 @@ import { NotificationService } from './notification.service';
 import { WebSocketService } from './websocket.service';
 import { transformLoan } from '../utils/loan.utils';
 import { triggerBlobDownload } from '../utils/download.utils';
+import { RequestTracker, trackRequest } from '../utils/track-request';
 
 const MAX_LOANS_LIMIT = 200;
 
@@ -38,6 +39,12 @@ export class LoanService implements OnDestroy {
   private loansSignal = signal<Loan[]>([]);
   private loadingSignal = signal(false);
   private errorSignal = signal<string | null>(null);
+  private tracker: RequestTracker = {
+    loading: this.loadingSignal,
+    error: this.errorSignal,
+    logger: this.logger,
+    translate: this.translate
+  };
 
   loans = computed(() => this.loansSignal());
   loading = computed(() => this.loadingSignal());
@@ -95,6 +102,32 @@ export class LoanService implements OnDestroy {
     this.destroy$.complete();
   }
 
+  /** Runs a request that answers with the changed loan and puts it in the list. */
+  private change(request$: Observable<RawLoan>, logMessage: string, fallbackKey: string): Observable<Loan | null> {
+    return trackRequest(
+      request$.pipe(
+        map(loan => transformLoan(loan)),
+        tap(updated => this.replace(updated))
+      ),
+      this.tracker, logMessage, fallbackKey
+    );
+  }
+
+  /** Same as `change`, for the requests that also answer with a QR code. */
+  private changeWithQr(request$: Observable<RawLoan>, logMessage: string, fallbackKey: string): Observable<LoanWithQr | null> {
+    return trackRequest(
+      request$.pipe(
+        map(response => ({ ...transformLoan(response), qrCodeDataUrl: response.qrCodeDataUrl })),
+        tap(updated => this.replace(updated))
+      ),
+      this.tracker, logMessage, fallbackKey
+    );
+  }
+
+  private replace(updated: Loan): void {
+    this.loansSignal.update(loans => loans.map(l => (l.id === updated.id ? updated : l)));
+  }
+
   /**
    * Load loans from backend - optimized with smaller limit
    */
@@ -123,20 +156,12 @@ export class LoanService implements OnDestroy {
    * Create a new loan
    */
   createLoan(dto: CreateLoanDto): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawLoan>(this.apiUrl, dto).pipe(
-      map(loan => transformLoan(loan)),
-      tap(newLoan => {
-        this.loansSignal.update(loans => [newLoan, ...loans]);
-      }),
-      catchError(err => {
-        this.logger.error('Error creating loan', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.LOAN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return trackRequest(
+      this.http.post<RawLoan>(this.apiUrl, dto).pipe(
+        map(loan => transformLoan(loan)),
+        tap(created => this.loansSignal.update(loans => [created, ...loans]))
+      ),
+      this.tracker, 'Error creating loan', 'LOANS.LOAN_ERROR'
     );
   }
 
@@ -147,22 +172,9 @@ export class LoanService implements OnDestroy {
    * Accepts SENT or OVERDUE loans.
    */
   manualConfirmReceipt(loanId: string): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === loanId ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error manually confirming receipt', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-receipt`, {}),
+      'Error manually confirming receipt', 'LOANS.MANUAL_CONFIRM_ERROR'
     );
   }
 
@@ -171,22 +183,9 @@ export class LoanService implements OnDestroy {
    * Accepts RETURN_PENDING or OVERDUE loans.
    */
   manualConfirmReturn(loanId: string): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === loanId ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error manually confirming return', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/manual-confirm-return`, {}),
+      'Error manually confirming return', 'LOANS.MANUAL_CONFIRM_RETURN_ERROR'
     );
   }
 
@@ -196,25 +195,9 @@ export class LoanService implements OnDestroy {
    * Send loan - generates QR code for receipt confirmation
    */
   sendLoan(loanId: string): Observable<LoanWithQr | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/send`, {}).pipe(
-      map(response => ({
-        ...transformLoan(response),
-        qrCodeDataUrl: response.qrCodeDataUrl
-      })),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === loanId ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error sending loan', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.SEND_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.changeWithQr(
+      this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/send`, {}),
+      'Error sending loan', 'LOANS.SEND_ERROR'
     );
   }
 
@@ -222,25 +205,9 @@ export class LoanService implements OnDestroy {
    * Initiate return - generates QR code for return confirmation
    */
   initiateReturn(loanId: string): Observable<LoanWithQr | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/initiate-return`, {}).pipe(
-      map(response => ({
-        ...transformLoan(response),
-        qrCodeDataUrl: response.qrCodeDataUrl
-      })),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === loanId ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error initiating return', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.changeWithQr(
+      this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/initiate-return`, {}),
+      'Error initiating return', 'LOANS.INITIATE_RETURN_ERROR'
     );
   }
 
@@ -248,22 +215,9 @@ export class LoanService implements OnDestroy {
    * Process scanned QR code (auto-detect type)
    */
   scanQr(scannedData: string): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawLoan>(`${this.apiUrl}/scan-qr`, { scannedData }).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error processing QR code', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.QR.SCAN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.post<RawLoan>(`${this.apiUrl}/scan-qr`, { scannedData }),
+      'Error processing QR code', 'LOANS.QR.SCAN_ERROR'
     );
   }
 
@@ -281,22 +235,9 @@ export class LoanService implements OnDestroy {
    * Cancel a loan
    */
   cancelLoan(loanId: string): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/cancel`, {}).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === loanId ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error canceling loan', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.CANCEL_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
+    return this.change(
+      this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/cancel`, {}),
+      'Error canceling loan', 'LOANS.CANCEL_ERROR'
     );
   }
 

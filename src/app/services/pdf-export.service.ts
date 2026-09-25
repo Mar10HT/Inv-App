@@ -4,6 +4,7 @@ import type jsPDF from 'jspdf';
 import { Transaction, TransactionType } from '../interfaces/transaction.interface';
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
 import { PdfDrawingBase } from './pdf/pdf-drawing.base';
+import { formatMoney } from '../utils/money.utils';
 
 /** jsPDF instance augmented with the `lastAutoTable` property that jspdf-autotable
  * attaches at runtime after each `autoTable()` call. The jspdf-autotable type
@@ -216,9 +217,8 @@ export class PdfExportService extends PdfDrawingBase {
     yPos = 50;
 
     // Summary cards
-    const symbol = options.currency === 'HNL' ? 'L' : '$';
     this.drawValueSummaryCards(doc, {
-      totalValue: `${symbol}${this.formatNumber(options.totalValue)}`,
+      totalValue: formatMoney(options.totalValue, options.currency),
       totalItems: options.totalItems.toString(),
       categories: options.valueByCategory.length.toString(),
       warehouses: options.valueByWarehouse.length.toString()
@@ -238,7 +238,7 @@ export class PdfExportService extends PdfDrawingBase {
       body: options.valueByCategory.map(item => [
         item.label,
         item.count.toString(),
-        `${symbol}${this.formatNumber(item.value)}`
+        formatMoney(item.value, options.currency)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
@@ -255,7 +255,7 @@ export class PdfExportService extends PdfDrawingBase {
       body: options.valueByWarehouse.map(item => [
         item.label,
         item.count.toString(),
-        `${symbol}${this.formatNumber(item.value)}`
+        formatMoney(item.value, options.currency)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
@@ -284,7 +284,7 @@ export class PdfExportService extends PdfDrawingBase {
       body: options.valueBySupplier.map(item => [
         item.label,
         item.count.toString(),
-        `${symbol}${this.formatNumber(item.value)}`
+        formatMoney(item.value, options.currency)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
@@ -321,8 +321,8 @@ export class PdfExportService extends PdfDrawingBase {
         item.name,
         item.category,
         item.quantity.toString(),
-        `${symbol}${this.formatNumber(item.price || 0)}`,
-        `${symbol}${this.formatNumber(item.totalValue)}`
+        formatMoney(item.price || 0, options.currency),
+        formatMoney(item.totalValue, options.currency)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },

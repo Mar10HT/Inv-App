@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../services/theme.service';
+import { chartColors, chartValueFormatter, cssVar, isPieChartType, isValueSource, seriesName } from '../chart.utils';
 import {
   NgApexchartsModule,
   ApexAxisChartSeries,
@@ -323,38 +324,13 @@ export class CustomChartDialog implements OnInit {
   previewColors = signal<string[]>(['#4d7c6f']);
 
   // Resolve CSS variables for ApexCharts
-  private getCssVar(name: string, fallback: string): string {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-  }
-  private get chartForeColor(): string { return this.getCssVar('--color-on-surface-variant', '#94a3b8'); }
-  private get chartGridColor(): string { return this.getCssVar('--color-border-subtle', '#2a2a2a'); }
-  private get chartTextColor(): string { return this.getCssVar('--color-on-surface', '#e2e8f0'); }
+  private get chartForeColor(): string { return cssVar('--color-on-surface-variant', '#94a3b8'); }
+  private get chartGridColor(): string { return cssVar('--color-border-subtle', '#2a2a2a'); }
+  private get chartTextColor(): string { return cssVar('--color-on-surface', '#e2e8f0'); }
 
   // Template-accessible chart legend and grid
   previewLegend = computed(() => ({ show: true, position: 'bottom' as const, labels: { colors: this.chartForeColor } }));
   previewGrid = computed(() => ({ borderColor: this.chartGridColor, strokeDashArray: 4 }));
-
-  // Format number with thousands separator and 2 decimals
-  private formatNumber(value: number): string {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  }
-
-  // Complementary color palettes for pie/donut/radial charts
-  private readonly colorPalettes: Record<string, string[]> = {
-    '#4d7c6f': ['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308'],
-    '#10b981': ['#10b981', '#ef4444', '#8b5cf6', '#f97316', '#3b82f6', '#ec4899'],
-    '#06b6d4': ['#06b6d4', '#f97316', '#10b981', '#ec4899', '#eab308', '#8b5cf6'],
-    '#3b82f6': ['#3b82f6', '#f97316', '#10b981', '#ec4899', '#eab308', '#06b6d4'],
-    '#8b5cf6': ['#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ef4444', '#eab308'],
-    '#ec4899': ['#ec4899', '#10b981', '#3b82f6', '#f97316', '#06b6d4', '#8b5cf6'],
-    '#f97316': ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#ec4899'],
-    '#eab308': ['#eab308', '#8b5cf6', '#3b82f6', '#ec4899', '#06b6d4', '#10b981'],
-    '#ef4444': ['#ef4444', '#10b981', '#3b82f6', '#eab308', '#8b5cf6', '#06b6d4'],
-    '#64748b': ['#64748b', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#3b82f6']
-  };
 
   ngOnInit(): void {
     if (this.data?.chart) {
@@ -396,18 +372,10 @@ export class CustomChartDialog implements OnInit {
 
   private updateColors(color: string): void {
     const chartType = this.chartForm.get('chartType')?.value as ChartType;
-    const isPieType = ['pie', 'donut', 'radialBar'].includes(chartType);
-
-    if (isPieType) {
-      this.previewColors.set(this.colorPalettes[color] || [color]);
-    } else {
-      this.previewColors.set([color]);
-    }
+    this.previewColors.set(chartColors(color, chartType));
   }
 
-  isValueSource(source: DataSource | string): boolean {
-    return ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue'].includes(source);
-  }
+  readonly isValueSource = isValueSource;
 
   private getFilteredItems(): InventoryItemData[] {
     const currency = this.chartForm.get('currency')?.value as ChartCurrency;
@@ -504,16 +472,11 @@ export class CustomChartDialog implements OnInit {
     this.previewLabels.set(data.map(d => d.name));
 
     // Update series based on chart type
-    const isPieType = ['pie', 'donut', 'radialBar'].includes(chartType);
-    let seriesName = 'Items';
-    if (this.isValueSource(source)) {
-      const currencySymbol = currency === 'HNL' ? 'L' : '$';
-      seriesName = `Value (${currencySymbol})`;
-    }
+    const isPieType = isPieChartType(chartType);
     if (isPieType) {
       this.previewSeries.set(data.map(d => d.count));
     } else {
-      this.previewSeries.set([{ name: seriesName, data: data.map(d => d.count) }]);
+      this.previewSeries.set([{ name: seriesName(source, currency), data: data.map(d => d.count) }]);
     }
 
     // Update chart options
@@ -541,14 +504,7 @@ export class CustomChartDialog implements OnInit {
     }
 
     // Update yaxis and tooltip with formatting
-    const isValueChart = this.isValueSource(source);
-    const currencySymbol = currency === 'HNL' ? 'L' : '$';
-    const formatValue = (val: number) => {
-      if (isValueChart) {
-        return `${currencySymbol}${this.formatNumber(val)}`;
-      }
-      return val.toLocaleString('en-US');
-    };
+    const formatValue = chartValueFormatter(isValueSource(source), currency);
 
     this.previewYAxis.set({
       labels: {

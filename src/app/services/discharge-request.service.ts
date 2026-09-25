@@ -15,6 +15,7 @@ import {
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
+import { RequestTracker, trackRequest } from '../utils/track-request';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,12 @@ export class DischargeRequestService {
   private loadingSignal = signal(false);
   private errorSignal = signal<string | null>(null);
   private loadRequestsSubscription?: Subscription;
+  private tracker: RequestTracker = {
+    loading: this.loadingSignal,
+    error: this.errorSignal,
+    logger: this.logger,
+    translate: this.translate
+  };
 
   requests = computed(() => this.requestsSignal());
   loading = computed(() => this.loadingSignal());
@@ -123,48 +130,16 @@ export class DischargeRequestService {
   }
 
   completeRequest(id: string): Observable<DischargeRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawDischargeRequest>(`${this.apiUrl}/${id}/complete`, {}).pipe(
-      map((req) => this.transformRequest(req)),
-      tap((updatedReq) => {
-        this.requestsSignal.update((requests) =>
-          requests.map((r) => (r.id === id ? updatedReq : r)),
-        );
-      }),
-      catchError((err) => {
-        this.logger.error('Error completing discharge request', err);
-        this.errorSignal.set(
-          err.error?.message || err.message ||
-          this.translate.instant('NOTIFICATIONS.ERRORS.COMPLETE_DISCHARGE_FAILED'),
-        );
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false)),
+    return this.change(
+      this.http.patch<RawDischargeRequest>(`${this.apiUrl}/${id}/complete`, {}),
+      'Error completing discharge request', 'NOTIFICATIONS.ERRORS.COMPLETE_DISCHARGE_FAILED'
     );
   }
 
   rejectRequest(id: string, reason?: string): Observable<DischargeRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawDischargeRequest>(`${this.apiUrl}/${id}/reject`, { reason }).pipe(
-      map((req) => this.transformRequest(req)),
-      tap((updatedReq) => {
-        this.requestsSignal.update((requests) =>
-          requests.map((r) => (r.id === id ? updatedReq : r)),
-        );
-      }),
-      catchError((err) => {
-        this.logger.error('Error rejecting discharge request', err);
-        this.errorSignal.set(
-          err.error?.message || err.message ||
-          this.translate.instant('NOTIFICATIONS.ERRORS.REJECT_DISCHARGE_FAILED'),
-        );
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false)),
+    return this.change(
+      this.http.patch<RawDischargeRequest>(`${this.apiUrl}/${id}/reject`, { reason }),
+      'Error rejecting discharge request', 'NOTIFICATIONS.ERRORS.REJECT_DISCHARGE_FAILED'
     );
   }
 
@@ -172,6 +147,17 @@ export class DischargeRequestService {
     return this.http.get<{ url: string; qrDataUrl: string }>(`${this.apiUrl}/request-form-qr`, {
       withCredentials: true,
     });
+  }
+
+  /** Runs a request that answers with the resolved request and puts it in the list. */
+  private change(request$: Observable<RawDischargeRequest>, logMessage: string, fallbackKey: string): Observable<DischargeRequest | null> {
+    return trackRequest(
+      request$.pipe(
+        map((req) => this.transformRequest(req)),
+        tap((updated) => this.requestsSignal.update((requests) => requests.map((r) => (r.id === updated.id ? updated : r))))
+      ),
+      this.tracker, logMessage, fallbackKey
+    );
   }
 
   private transformRequest(req: RawDischargeRequest): DischargeRequest {

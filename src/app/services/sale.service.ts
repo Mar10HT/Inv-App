@@ -14,6 +14,7 @@ import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
+import { RequestTracker, trackRequest } from '../utils/track-request';
 
 const MAX_SALES_LIMIT = 200;
 
@@ -31,6 +32,12 @@ export class SaleService {
   private salesSignal = signal<Sale[]>([]);
   private loadingSignal = signal(false);
   private errorSignal = signal<string | null>(null);
+  private tracker: RequestTracker = {
+    loading: this.loadingSignal,
+    error: this.errorSignal,
+    logger: this.logger,
+    translate: this.translate
+  };
 
   sales = computed(() => this.salesSignal());
   loading = computed(() => this.loadingSignal());
@@ -85,47 +92,21 @@ export class SaleService {
   }
 
   create(dto: CreateSaleDto): Observable<Sale | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-    return this.http.post<Sale>(this.apiUrl, dto).pipe(
-      tap((created) => {
-        this.salesSignal.update((list) => [created, ...list]);
-      }),
-      catchError((err) => {
-        this.logger.error('Error creating sale', err);
-        this.errorSignal.set(
-          err.error?.message ||
-            err.message ||
-            this.translate.instant('SALES.CREATE_ERROR'),
-        );
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false)),
+    return trackRequest(
+      this.http.post<Sale>(this.apiUrl, dto).pipe(
+        tap((created) => this.salesSignal.update((list) => [created, ...list]))
+      ),
+      this.tracker, 'Error creating sale', 'SALES.CREATE_ERROR'
     );
   }
 
   cancel(id: string, dto: CancelSaleDto = {}): Observable<Sale | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-    return this.http
-      .patch<Sale>(`${this.apiUrl}/${id}/cancel`, dto)
-      .pipe(
-        tap((updated) => {
-          this.salesSignal.update((list) =>
-            list.map((s) => (s.id === id ? updated : s)),
-          );
-        }),
-        catchError((err) => {
-          this.logger.error('Error cancelling sale', err);
-          this.errorSignal.set(
-            err.error?.message ||
-              err.message ||
-              this.translate.instant('SALES.CANCEL_ERROR'),
-          );
-          return of(null);
-        }),
-        finalize(() => this.loadingSignal.set(false)),
-      );
+    return trackRequest(
+      this.http.patch<Sale>(`${this.apiUrl}/${id}/cancel`, dto).pipe(
+        tap((updated) => this.salesSignal.update((list) => list.map((s) => (s.id === id ? updated : s))))
+      ),
+      this.tracker, 'Error cancelling sale', 'SALES.CANCEL_ERROR'
+    );
   }
 
   downloadPdf(id: string): void {

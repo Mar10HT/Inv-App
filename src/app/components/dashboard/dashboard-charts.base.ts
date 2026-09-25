@@ -6,6 +6,7 @@ import { InventoryItemInterface, InventoryStatus } from '../../interfaces/invent
 import { CustomChart, ChartCurrency } from './custom-chart-dialog/custom-chart-dialog';
 import { StatusChartOptions, BarChartOptions, LowStockItem } from './components';
 import { Signal, WritableSignal } from '@angular/core';
+import { chartColors, chartValueFormatter, cssVar, isPieChartType, isValueSource, seriesName } from './chart.utils';
 
 // getCustomChartOptions() always populates these sub-options (unlike ApexOptions'
 // own all-optional fields) — narrowing them to required matches what's actually
@@ -39,21 +40,16 @@ export abstract class DashboardChartsBase {
   protected abstract readonly warehouseChartOptions: WritableSignal<BarChartOptions | null>;
   protected abstract getStatusLabel(status: InventoryStatus): string;
 
-  // Resolve CSS variable to hex for ApexCharts (which needs resolved values)
-  protected getCssVar(name: string, fallback: string): string {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-  }
-
   protected get chartForeColor(): string {
-    return this.getCssVar('--color-on-surface-variant', '#94a3b8');
+    return cssVar('--color-on-surface-variant', '#94a3b8');
   }
 
   protected get chartGridColor(): string {
-    return this.getCssVar('--color-border-subtle', '#2a2a2a');
+    return cssVar('--color-border-subtle', '#2a2a2a');
   }
 
   protected get chartTextColor(): string {
-    return this.getCssVar('--color-on-surface', '#e2e8f0');
+    return cssVar('--color-on-surface', '#e2e8f0');
   }
 
   protected get chartTooltipTheme(): string {
@@ -61,10 +57,6 @@ export abstract class DashboardChartsBase {
   }
 
   // Custom chart data methods
-  protected isValueSource(source: string): boolean {
-    return ['valueByCategory', 'valueByWarehouse', 'valueBySupplier', 'valueByStatus', 'topItemsByValue'].includes(source);
-  }
-
   protected getFilteredItemsByCurrency(currency: ChartCurrency = 'USD'): InventoryItemInterface[] {
     const items = this.allItems();
     if (currency === 'ALL') {
@@ -156,52 +148,16 @@ export abstract class DashboardChartsBase {
     }
 
     const labels = data.map(d => d.name);
-    const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
-    let seriesName = 'Items';
-    if (this.isValueSource(chart.dataSource)) {
-      const currencySymbol = currency === 'HNL' ? 'L' : '$';
-      seriesName = `Value (${currencySymbol})`;
-    }
-    const series = isPieType ? data.map(d => d.count) : [{ name: seriesName, data: data.map(d => d.count) }];
+    const series = isPieChartType(chart.chartType)
+      ? data.map(d => d.count)
+      : [{ name: seriesName(chart.dataSource, currency), data: data.map(d => d.count) }];
 
     return { labels, series };
   }
 
-  protected readonly customChartPalettes: Record<string, string[]> = {
-    '#4d7c6f': ['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308'],
-    '#10b981': ['#10b981', '#ef4444', '#8b5cf6', '#f97316', '#3b82f6', '#ec4899'],
-    '#06b6d4': ['#06b6d4', '#f97316', '#10b981', '#ec4899', '#eab308', '#8b5cf6'],
-    '#3b82f6': ['#3b82f6', '#f97316', '#10b981', '#ec4899', '#eab308', '#06b6d4'],
-    '#8b5cf6': ['#8b5cf6', '#10b981', '#f97316', '#06b6d4', '#ef4444', '#eab308'],
-    '#ec4899': ['#ec4899', '#10b981', '#3b82f6', '#f97316', '#06b6d4', '#8b5cf6'],
-    '#f97316': ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#ec4899'],
-    '#eab308': ['#eab308', '#8b5cf6', '#3b82f6', '#ec4899', '#06b6d4', '#10b981'],
-    '#ef4444': ['#ef4444', '#10b981', '#3b82f6', '#eab308', '#8b5cf6', '#06b6d4'],
-    '#64748b': ['#64748b', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#3b82f6']
-  };
-
-  protected formatNumber(value: number): string {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  }
-
   getCustomChartOptions(chart: CustomChart): CustomChartOptions {
-    const isPieType = ['pie', 'donut', 'radialBar'].includes(chart.chartType);
-    const isValueChart = this.isValueSource(chart.dataSource);
-    const currency = chart.currency || 'USD';
-    const currencySymbol = currency === 'HNL' ? 'L' : '$';
-    const colors = isPieType
-      ? (this.customChartPalettes[chart.color] || [chart.color])
-      : [chart.color];
-
-    const formatValue = (val: number) => {
-      if (isValueChart) {
-        return `${currencySymbol}${this.formatNumber(val)}`;
-      }
-      return val.toLocaleString('en-US');
-    };
+    const isPieType = isPieChartType(chart.chartType);
+    const formatValue = chartValueFormatter(isValueSource(chart.dataSource), chart.currency || 'USD');
 
     const foreColor = this.chartForeColor;
     const gridColor = this.chartGridColor;
@@ -214,7 +170,7 @@ export abstract class DashboardChartsBase {
         foreColor,
         toolbar: { show: false }
       },
-      colors: colors,
+      colors: chartColors(chart.color, chart.chartType),
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       dataLabels: { enabled: false },
       legend: { show: true, position: 'bottom', labels: { colors: foreColor } },
@@ -230,13 +186,13 @@ export abstract class DashboardChartsBase {
       yaxis: {
         labels: {
           style: { colors: foreColor },
-          formatter: (val: number) => formatValue(val)
+          formatter: formatValue
         }
       },
       tooltip: {
         theme: this.chartTooltipTheme,
         y: {
-          formatter: (val: number) => formatValue(val)
+          formatter: formatValue
         }
       }
     };
@@ -261,10 +217,10 @@ export abstract class DashboardChartsBase {
         this.translate.instant('DASHBOARD.IN_USE')
       ],
       colors: [
-        this.getCssVar('--color-status-success', '#10b981'),
-        this.getCssVar('--color-status-warning', '#f59e0b'),
-        this.getCssVar('--color-status-error', '#ef4444'),
-        this.getCssVar('--color-status-info', '#3b82f6'),
+        cssVar('--color-status-success', '#10b981'),
+        cssVar('--color-status-warning', '#f59e0b'),
+        cssVar('--color-status-error', '#ef4444'),
+        cssVar('--color-status-info', '#3b82f6'),
       ],
       legend: {
         position: 'bottom',
@@ -315,7 +271,7 @@ export abstract class DashboardChartsBase {
         axisTicks: { show: false }
       },
       yaxis: { labels: { style: { colors: foreColor } } },
-      colors: [this.getCssVar('--color-primary', '#4d7c6f')],
+      colors: [cssVar('--color-primary', '#4d7c6f')],
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%', distributed: true } },
       dataLabels: { enabled: false },
@@ -337,7 +293,7 @@ export abstract class DashboardChartsBase {
         axisTicks: { show: false }
       },
       yaxis: { labels: { style: { colors: foreColor } } },
-      colors: [this.getCssVar('--color-accent-cyan', '#06b6d4')],
+      colors: [cssVar('--color-accent-cyan', '#06b6d4')],
       grid: { borderColor: gridColor, strokeDashArray: 4 },
       plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '60%' } },
       dataLabels: { enabled: false },

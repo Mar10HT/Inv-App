@@ -134,6 +134,7 @@ describe('SaleService', () => {
       let result: Sale | null = null;
 
       service.create(dto).subscribe((created) => (result = created));
+      expect(service.loading()).toBeTrue();
       backend.expectOne((r) => r.method === 'POST').flush(sale({ id: 'new' }));
 
       expect((result as Sale | null)?.id).toBe('new');

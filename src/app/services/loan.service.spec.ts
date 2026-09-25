@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
+import { Observable } from 'rxjs';
 
 import { LoanService } from './loan.service';
 import { NotificationService } from './notification.service';
@@ -188,6 +189,7 @@ describe('LoanService', () => {
       let result: unknown;
 
       service.createLoan(dto as never).subscribe((loan) => (result = loan));
+      expect(service.loading()).toBeTrue();
       backend.expectOne((r) => r.url === loansUrl() && r.method === 'POST').flush(raw({ id: 'new' }));
 
       expect((result as { id: string }).id).toBe('new');
@@ -220,6 +222,97 @@ describe('LoanService', () => {
 
       expect(service.error()).toBeNull();
       backend.expectOne((r) => r.method === 'POST');
+    });
+  });
+
+  describe('the steps of a loan', () => {
+    const steps: [string, (s: LoanService) => Observable<unknown>, string, string, LoanStatus][] = [
+      ['manual receipt', (s) => s.manualConfirmReceipt('a'), '/a/manual-confirm-receipt', 'RECEIVED', LoanStatus.RECEIVED],
+      ['manual return', (s) => s.manualConfirmReturn('a'), '/a/manual-confirm-return', 'RETURNED', LoanStatus.RETURNED],
+      ['send', (s) => s.sendLoan('a'), '/a/send', 'SENT', LoanStatus.SENT],
+      ['initiate return', (s) => s.initiateReturn('a'), '/a/initiate-return', 'RETURN_PENDING', LoanStatus.RETURN_PENDING],
+      ['cancel', (s) => s.cancelLoan('a'), '/a/cancel', 'CANCELLED', LoanStatus.CANCELLED]
+    ];
+
+    steps.forEach(([name, call, path, apiStatus, status]) => {
+      it(`${name} replaces only that loan with the answer of the API`, () => {
+        const service = create(raw({ id: 'a', status: 'SENT' }), raw({ id: 'b', status: 'SENT' }));
+
+        call(service).subscribe();
+        expect(service.loading()).toBeTrue();
+        backend.expectOne(loansUrl(path)).flush(raw({ id: 'a', status: apiStatus }));
+
+        expect(service.loans().map((l) => [l.id, l.status])).toEqual([
+          ['a', status],
+          ['b', LoanStatus.SENT]
+        ]);
+        expect(service.loading()).toBeFalse();
+      });
+
+      it(`${name} resolves with null and leaves the list alone when the API refuses`, () => {
+        const service = create(raw({ id: 'a', status: 'SENT' }));
+        let result: unknown = 'unset';
+
+        call(service).subscribe((answer) => (result = answer));
+        backend.expectOne(loansUrl(path)).flush({ message: 'Not allowed' }, { status: 409, statusText: 'Conflict' });
+
+        expect(result).toBeNull();
+        expect(service.error()).toBe('Not allowed');
+        expect(service.loans()[0].status).toBe(LoanStatus.SENT);
+      });
+    });
+
+    it('send and initiate return hand over the QR code of the answer', () => {
+      const service = create(raw({ id: 'a' }));
+      const answers: unknown[] = [];
+
+      service.sendLoan('a').subscribe((loan) => answers.push(loan));
+      backend.expectOne(loansUrl('/a/send')).flush(raw({ id: 'a', status: 'SENT', qrCodeDataUrl: 'data:image/png;base64,AAA' }));
+      expect(service.loans()[0]).toEqual(jasmine.objectContaining({ qrCodeDataUrl: 'data:image/png;base64,AAA' }));
+      service.initiateReturn('a').subscribe((loan) => answers.push(loan));
+      backend.expectOne(loansUrl('/a/initiate-return')).flush(raw({ id: 'a', status: 'RETURN_PENDING', qrCodeDataUrl: 'data:image/png;base64,BBB' }));
+
+      expect(answers).toEqual([
+        jasmine.objectContaining({ id: 'a', qrCodeDataUrl: 'data:image/png;base64,AAA' }),
+        jasmine.objectContaining({ id: 'a', qrCodeDataUrl: 'data:image/png;base64,BBB' })
+      ]);
+    });
+
+    it('scanning a QR sends what was scanned and replaces the loan the API answers with', () => {
+      const service = create(raw({ id: 'a', status: 'SENT' }), raw({ id: 'b', status: 'SENT' }));
+
+      service.scanQr('scanned-text').subscribe();
+      const request = backend.expectOne(loansUrl('/scan-qr'));
+      request.flush(raw({ id: 'b', status: 'RECEIVED' }));
+
+      expect(request.request.body).toEqual({ scannedData: 'scanned-text' });
+      expect(service.loans().map((l) => [l.id, l.status])).toEqual([
+        ['a', LoanStatus.SENT],
+        ['b', LoanStatus.RECEIVED]
+      ]);
+    });
+
+    it('scanning a QR resolves with null when it is not valid', () => {
+      const service = create(raw({ id: 'a' }));
+      let result: unknown = 'unset';
+
+      service.scanQr('junk').subscribe((answer) => (result = answer));
+      backend.expectOne(loansUrl('/scan-qr')).flush(null, { status: 400, statusText: 'Bad Request' });
+
+      expect(result).toBeNull();
+      expect(service.error()).toBeTruthy();
+    });
+
+    it('clears the previous error when a new step starts', () => {
+      const service = create(raw({ id: 'a' }));
+      service.cancelLoan('a').subscribe();
+      backend.expectOne(loansUrl('/a/cancel')).flush(null, { status: 500, statusText: 'Error' });
+      expect(service.error()).toBeTruthy();
+
+      service.sendLoan('a').subscribe();
+
+      expect(service.error()).toBeNull();
+      backend.expectOne(loansUrl('/a/send'));
     });
   });
 });

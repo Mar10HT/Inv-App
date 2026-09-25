@@ -47,7 +47,7 @@ Track stock, manage warehouses, handle loans and transfers, generate reports —
 
 ## Getting Started
 
-**Prerequisites:** Node.js 20+
+**Prerequisites:** Node.js 22+
 
 ```bash
 npm install

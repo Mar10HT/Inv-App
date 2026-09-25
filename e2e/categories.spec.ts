@@ -28,10 +28,7 @@ test.describe('Categories', () => {
     expect(dialogVisible || inputVisible).toBe(true);
   });
 
-  test('category list renders without error', async ({ page }) => {
-    const rows = page.locator('table tbody tr, [class*="category"], li');
-    const count = await rows.count();
-    expect(count).toBeGreaterThanOrEqual(0);
+  test('opens without redirecting', async ({ page }) => {
     await expect(page).toHaveURL(/categories/);
   });
 

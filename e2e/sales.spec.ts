@@ -29,10 +29,7 @@ test.describe('Sales', () => {
     await expect(dialog.first()).toBeVisible({ timeout: 3000 });
   });
 
-  test('sales list renders without error', async ({ page }) => {
-    const rows = page.locator('table tbody tr, [class*="sale"], [class*="card"]');
-    const count = await rows.count();
-    expect(count).toBeGreaterThanOrEqual(0);
+  test('opens without redirecting', async ({ page }) => {
     await expect(page).toHaveURL(/sales/);
   });
 

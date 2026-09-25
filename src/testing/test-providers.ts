@@ -5,7 +5,9 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateModule, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { Observable, of } from 'rxjs';
+import { Socket } from 'socket.io-client';
 import { LucideIconsModule } from '../app/shared/icons';
+import { SOCKET_IO } from '../app/services/websocket.service';
 
 /**
  * Minimal TranslateLoader for specs.
@@ -21,6 +23,12 @@ class TestTranslateLoader implements TranslateLoader {
     return of({} as TranslationObject);
   }
 }
+
+/**
+ * A socket that never connects. InventoryService and LoanService open the real time socket from
+ * their constructors, so without this every spec that creates one tries to reach the API.
+ */
+const inertSocket = { connected: false, on: () => inertSocket, disconnect: () => inertSocket } as unknown as Socket;
 
 /**
  * Shared TestBed provider set used across specs.
@@ -44,6 +52,7 @@ class TestTranslateLoader implements TranslateLoader {
  */
 export function provideTestBedDefaults(): (Provider | EnvironmentProviders)[] {
   return [
+    { provide: SOCKET_IO, useValue: () => inertSocket },
     provideZonelessChangeDetection(),
     provideRouter([]),
     provideHttpClient(),

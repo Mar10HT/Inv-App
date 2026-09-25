@@ -29,10 +29,7 @@ test.describe('Outflows', () => {
     await expect(dialog.first()).toBeVisible({ timeout: 3000 });
   });
 
-  test('outflows list renders without error', async ({ page }) => {
-    const rows = page.locator('table tbody tr, [class*="outflow"], [class*="card"]');
-    const count = await rows.count();
-    expect(count).toBeGreaterThanOrEqual(0);
+  test('opens without redirecting', async ({ page }) => {
     await expect(page).toHaveURL(/outflows/);
   });
 

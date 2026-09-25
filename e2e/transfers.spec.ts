@@ -23,10 +23,7 @@ test.describe('Transfer Requests', () => {
     await expect(dialog.first()).toBeVisible({ timeout: 3000 });
   });
 
-  test('transfer list renders without error', async ({ page }) => {
-    const rows = page.locator('table tbody tr, [class*="transfer"], [class*="card"]');
-    const count = await rows.count();
-    expect(count).toBeGreaterThanOrEqual(0);
+  test('opens without redirecting', async ({ page }) => {
     await expect(page).toHaveURL(/transfers/);
   });
 

@@ -147,4 +147,170 @@ describe('AuthService', () => {
       expect(service.isAuthenticated()).toBeFalse();
     });
   });
+
+  describe('account calls', () => {
+    it('updateProfile posts the change and keeps the merged user in memory and in storage', () => {
+      signIn();
+      const change = { name: 'Ana María', email: 'ana@x.com' };
+
+      service.updateProfile(change).subscribe();
+      const request = backend.expectOne(api('/profile'));
+      expect(request.request.body).toEqual(change);
+      expect(request.request.withCredentials).toBeTrue();
+      request.flush({ user: { ...user, name: 'Ana María' } });
+
+      expect(service.currentUser()).toEqual({ ...user, name: 'Ana María' });
+      expect(JSON.parse(localStorage.getItem('auth_user') as string)).toEqual({ ...user, name: 'Ana María' });
+    });
+
+    const calls: [string, () => void, string, string, unknown, boolean][] = [
+      ['changePassword', () => service.changePassword({ currentPassword: 'old', newPassword: 'new' }).subscribe(), 'POST', '/change-password', { currentPassword: 'old', newPassword: 'new' }, true],
+      ['forgotPassword', () => service.forgotPassword('ana@x.com').subscribe(), 'POST', '/forgot-password', { email: 'ana@x.com' }, false],
+      ['resetPassword', () => service.resetPassword('tok', 'new').subscribe(), 'POST', '/reset-password/tok', { newPassword: 'new' }, false],
+      ['getPendingResets', () => service.getPendingResets().subscribe(), 'GET', '/pending-resets', null, true],
+      ['generateResetLink', () => service.generateResetLink('u9').subscribe(), 'POST', '/admin/generate-reset-link/u9', {}, true]
+    ];
+
+    for (const [name, call, method, path, body, withCredentials] of calls) {
+      it(`${name} sends ${method} ${path}${withCredentials ? ' with the session cookie' : ''}`, () => {
+        call();
+
+        const request = backend.expectOne(api(path));
+        expect(request.request.method).toBe(method);
+        expect(request.request.body).toEqual(body);
+        expect(request.request.withCredentials).toBe(withCredentials);
+        request.flush({});
+      });
+    }
+  });
+
+  describe('permissions polling', () => {
+    const minute = (): void => jasmine.clock().tick(60_000);
+
+    beforeEach(() => jasmine.clock().install());
+    afterEach(() => jasmine.clock().uninstall());
+
+    it('asks /auth/me every minute and reloads the permissions only when their version changed', () => {
+      signIn();
+      permissions.loadPermissions.calls.reset();
+
+      minute();
+      backend.expectOne(api('/me')).flush(me);
+      expect(permissions.loadPermissions).not.toHaveBeenCalled();
+
+      minute();
+      backend.expectOne(api('/me')).flush({ ...me, permissions: ['inventory:view', 'inventory:edit'], permissionsVersion: 2 });
+      expect(permissions.loadPermissions).toHaveBeenCalledOnceWith(['inventory:view', 'inventory:edit']);
+
+      minute();
+      backend.expectOne(api('/me')).flush({ ...me, permissionsVersion: 2 });
+      expect(permissions.loadPermissions).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps polling after a check fails', () => {
+      signIn();
+
+      minute();
+      backend.expectOne(api('/me')).flush(null, { status: 500, statusText: 'Server Error' });
+      minute();
+
+      backend.expectOne(api('/me')).flush(me);
+    });
+
+    it('runs a single poll even when the user signs in twice', () => {
+      signIn();
+      signIn();
+
+      minute();
+
+      backend.expectOne(api('/me')).flush(me);
+    });
+
+    it('stops polling when the user signs out', () => {
+      signIn();
+      service.logout().subscribe();
+      backend.expectOne(api('/logout')).flush({});
+
+      minute();
+
+      backend.expectNone(api('/me'));
+    });
+  });
+});
+
+describe('AuthService startup', () => {
+  let service: AuthService;
+  let backend: HttpTestingController;
+  let ws: jasmine.SpyObj<WebSocketService>;
+  let permissions: jasmine.SpyObj<PermissionsService>;
+  let navigate: jasmine.Spy;
+
+  // The stored user is read while the service is constructed, so it has to be there first
+  const create = (stored?: string): void => {
+    localStorage.clear();
+    if (stored !== undefined) localStorage.setItem('auth_user', stored);
+    ws = jasmine.createSpyObj<WebSocketService>('WebSocketService', ['connect', 'disconnect']);
+    permissions = jasmine.createSpyObj<PermissionsService>('PermissionsService', ['loadPermissions', 'clearPermissions']);
+    TestBed.configureTestingModule({
+      providers: [
+        ...provideTestBedDefaults(),
+        { provide: WebSocketService, useValue: ws },
+        { provide: PermissionsService, useValue: permissions },
+        { provide: REDIRECT_TO_LOGIN, useValue: jasmine.createSpy('redirectToLogin') }
+      ]
+    });
+    backend = TestBed.inject(HttpTestingController);
+    navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    service = TestBed.inject(AuthService);
+  };
+
+  afterEach(() => {
+    service.ngOnDestroy();
+    localStorage.clear();
+  });
+
+  it('starts signed out, with the permissions loaded, when nothing is stored', () => {
+    create();
+
+    backend.expectNone(api('/me'));
+    expect(service.isAuthenticated()).toBeFalse();
+    expect(service.permissionsLoaded()).toBeTrue();
+    expect(service.permissionsLoaded$.value).toBeTrue();
+  });
+
+  it('ignores a stored user it cannot read', () => {
+    create('{not json');
+
+    backend.expectNone(api('/me'));
+    expect(service.currentUser()).toBeNull();
+    expect(service.permissionsLoaded()).toBeTrue();
+  });
+
+  it('trusts the stored user right away and refreshes the session in the background', () => {
+    create(JSON.stringify(user));
+
+    expect(service.isAuthenticated()).toBeTrue();
+    expect(service.currentUser()).toEqual(user);
+    expect(service.permissionsLoaded()).toBeFalse();
+
+    backend.expectOne(api('/me')).flush(me);
+
+    expect(permissions.loadPermissions).toHaveBeenCalledOnceWith(['inventory:view']);
+    expect(service.permissionsLoaded()).toBeTrue();
+    expect(service.permissionsLoaded$.value).toBeTrue();
+    expect(ws.connect).toHaveBeenCalledTimes(1);
+  });
+
+  it('signs out locally and goes to the login page when the stored session cannot be verified', () => {
+    create(JSON.stringify(user));
+
+    backend.expectOne(api('/me')).flush(null, { status: 401, statusText: 'Unauthorized' });
+
+    expect(service.isAuthenticated()).toBeFalse();
+    expect(service.currentUser()).toBeNull();
+    expect(localStorage.getItem('auth_user')).toBeNull();
+    expect(permissions.clearPermissions).toHaveBeenCalled();
+    expect(service.permissionsLoaded()).toBeTrue();
+    expect(navigate).toHaveBeenCalledOnceWith(['/login']);
+  });
 });

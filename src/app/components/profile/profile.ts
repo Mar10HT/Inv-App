@@ -234,7 +234,7 @@ export class Profile implements OnInit {
       },
       error: (error) => {
         this.saving.set(false);
-        this.notifications.error(error.error?.message || 'ERRORS.GENERIC');
+        this.notifications.error(error.error?.message || 'NOTIFICATIONS.ERRORS.UNKNOWN');
       }
     });
   }

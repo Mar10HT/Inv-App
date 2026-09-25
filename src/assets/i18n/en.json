@@ -496,8 +496,10 @@
     "PASSWORD_MISMATCH": "Passwords do not match",
     "PASSWORD_MIN_LENGTH": "Minimum 8 characters",
     "PASSWORD_UPPERCASE": "Must contain at least one uppercase letter",
+    "PASSWORD_LOWERCASE": "Must contain at least one lowercase letter",
     "PASSWORD_NUMBER": "Must contain at least one number",
-    "PASSWORD_SPECIAL": "Must contain at least one special character (!@#$%...)"
+    "PASSWORD_SPECIAL": "Must contain at least one special character (@$!%*?&)",
+    "PASSWORD_INVALID_CHARS": "Only letters, numbers and these symbols are allowed: @$!%*?&"
   },
   "SETTINGS": {
     "SUBTITLE": "Customize your application preferences",
@@ -597,7 +599,7 @@
     },
     "VALIDATION": {
       "INVALID_EMAIL": "Please enter a valid email address",
-      "PASSWORD_MIN": "Password must be at least 8 characters"
+      "PASSWORD_MIN": "Password must be at least 6 characters"
     },
     "ERROR": {
       "GENERIC": "We couldn't sign you in. Check your credentials and try again.",

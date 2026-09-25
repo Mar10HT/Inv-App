@@ -6,11 +6,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
-
-// Mirrors the backend @IsStrongPassword policy so the UI enforces (and communicates)
-// the same rules instead of letting a weak password through to a confusing 400.
-const STRONG_PASSWORD_PATTERN =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+import { STRONG_PASSWORD_PATTERN } from '../../utils/password.validators';
 
 @Component({
   selector: 'app-reset-password',
@@ -37,7 +33,7 @@ const STRONG_PASSWORD_PATTERN =
           </div>
           <h1 class="text-[42px] font-bold text-white font-[Outfit]">Obsid</h1>
           <p class="text-lg text-[var(--color-on-surface-variant)] text-center leading-relaxed">
-            {{ 'LOGIN.TAGLINE' | translate }}
+            {{ 'LOGIN.SUBTITLE' | translate }}
           </p>
         </div>
         <div class="w-24 h-0.5 bg-[var(--color-primary)]/40"></div>

@@ -170,8 +170,9 @@ export class CrudDialog implements OnInit {
 
     if (this.data.mode === 'add') {
       this.data.createFn(cleanedValue).subscribe({
-        next: () => {
-          this.dialogRef.close({ saved: true });
+        // The pages say "created <name>", so the name of what the API saved goes back with the result
+        next: (saved) => {
+          this.dialogRef.close({ saved: true, name: saved?.['name'] });
         },
         error: () => {
           this.saving.set(false);
@@ -179,8 +180,8 @@ export class CrudDialog implements OnInit {
       });
     } else if (this.data.entity) {
       this.data.updateFn(String(this.data.entity[idField]), cleanedValue).subscribe({
-        next: () => {
-          this.dialogRef.close({ saved: true });
+        next: (saved) => {
+          this.dialogRef.close({ saved: true, name: saved?.['name'] });
         },
         error: () => {
           this.saving.set(false);

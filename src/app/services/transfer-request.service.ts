@@ -14,6 +14,7 @@ import {
 } from '../interfaces/transfer-request.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
+import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
 
 const MAX_REQUESTS_LIMIT = 200;
@@ -25,6 +26,7 @@ export class TransferRequestService implements OnDestroy {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
   private apiUrl = `${environment.apiUrl}/transfer-requests`;
   private loadRequestsSubscription?: Subscription;
 
@@ -66,6 +68,8 @@ export class TransferRequestService implements OnDestroy {
   );
 
   constructor() {
+    // A failed call resolves with null and only fills `error`, so tell the user here
+    this.notifications.reportErrors(this.error);
     this.loadRequests();
   }
 
@@ -275,13 +279,9 @@ export class TransferRequestService implements OnDestroy {
   /**
    * Get QR code image for a transfer
    */
-  getQrCode(id: string): Observable<string | null> {
-    return this.http.get<string>(`${this.apiUrl}/${id}/qr`).pipe(
-      catchError(err => {
-        this.logger.error('Error getting QR code', err);
-        return of(null);
-      })
-    );
+  getQrCode(id: string): Observable<string> {
+    // A failure is left to the caller (the QR dialog closes): the interceptor already logs it
+    return this.http.get<string>(`${this.apiUrl}/${id}/qr`);
   }
 
   // ==================== Standard Operations ====================

@@ -17,6 +17,7 @@ import {
 } from '../interfaces/loan.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
+import { NotificationService } from './notification.service';
 import { WebSocketService } from './websocket.service';
 import { transformLoan, getActiveLoanForItem, isItemOnLoan, filterLoans } from '../utils/loan.utils';
 import { triggerBlobDownload } from '../utils/download.utils';
@@ -31,6 +32,7 @@ export class LoanService implements OnDestroy {
   private logger = inject(LoggerService);
   private wsService = inject(WebSocketService);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
   private destroy$ = new Subject<void>();
   private loadLoansSubscription?: Subscription;
   private apiUrl = `${environment.apiUrl}/loans`;
@@ -87,6 +89,8 @@ export class LoanService implements OnDestroy {
   );
 
   constructor() {
+    // A failed call resolves with null and only fills `error`, so tell the user here
+    this.notifications.reportErrors(this.error);
     this.wsService.connect();
     this.wsService.onLoanChange().pipe(takeUntil(this.destroy$))
       .subscribe(() => this.loadLoans());
@@ -342,13 +346,10 @@ export class LoanService implements OnDestroy {
   /**
    * Get QR code image for a loan
    */
-  getQrCode(loanId: string, type: 'send' | 'return'): Observable<string | null> {
+  getQrCode(loanId: string, type: 'send' | 'return'): Observable<string> {
+    // A failure is left to the caller (the QR dialog closes): the interceptor already logs it
     return this.http.get<{ qrDataUrl: string }>(`${this.apiUrl}/${loanId}/qr/${type}`).pipe(
-      map(response => response.qrDataUrl),
-      catchError(err => {
-        this.logger.error('Error getting QR code', err);
-        return of(null);
-      })
+      map(response => response.qrDataUrl)
     );
   }
 

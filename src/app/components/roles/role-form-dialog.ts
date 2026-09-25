@@ -5,6 +5,8 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { RolesService } from '../../services/roles.service';
+import { NotificationService } from '../../services/notification.service';
+import { ApiError } from '../../interfaces/api-error.interface';
 import { RoleSummary, PermissionGroup } from '../../interfaces/role.interface';
 
 export interface RoleFormDialogData {
@@ -139,7 +141,7 @@ export interface RoleFormDialogData {
           {{ 'COMMON.CANCEL' | translate }}
         </button>
         <button type="button" (click)="save()"
-          [disabled]="!isValid() || saving()"
+          [disabled]="!isValid() || saving() || !permissionsReady()"
           class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
           @if (saving()) {
             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -154,12 +156,15 @@ export class RoleFormDialog implements OnInit {
   dialogRef = inject(MatDialogRef<RoleFormDialog>);
   data = inject<RoleFormDialogData>(MAT_DIALOG_DATA);
   private rolesService = inject(RolesService);
+  private notifications = inject(NotificationService);
 
   saving = signal(false);
   loadingPermissions = signal(false);
   permissionGroups = signal<PermissionGroup[]>([]);
   selectedPermissionIds = signal<Set<string>>(new Set());
   expandedGroups = signal<Set<string>>(new Set());
+  // When editing, saving before the current permissions have loaded would replace them with an empty list
+  permissionsReady = signal(this.data.mode !== 'edit');
 
   // Signals, not plain fields: isValid() below only re-evaluates when a signal it reads changes.
   nameValue = signal('');
@@ -210,7 +215,7 @@ export class RoleFormDialog implements OnInit {
   }
 
   save(): void {
-    if (!this.isValid() || this.saving()) return;
+    if (!this.isValid() || this.saving() || !this.permissionsReady()) return;
     this.saving.set(true);
 
     const permissionIds = [...this.selectedPermissionIds()];
@@ -223,7 +228,7 @@ export class RoleFormDialog implements OnInit {
         permissionIds,
       }).subscribe({
         next: () => this.dialogRef.close({ saved: true }),
-        error: () => this.saving.set(false),
+        error: (err: ApiError) => this.failSave(err),
       });
     } else {
       this.rolesService.update(this.data.role!.id, {
@@ -232,9 +237,14 @@ export class RoleFormDialog implements OnInit {
         permissionIds,
       }).subscribe({
         next: () => this.dialogRef.close({ saved: true }),
-        error: () => this.saving.set(false),
+        error: (err: ApiError) => this.failSave(err),
       });
     }
+  }
+
+  private failSave(err: ApiError): void {
+    this.saving.set(false);
+    this.notifications.error(err.error?.message || err.message);
   }
 
   private loadPermissions(): void {
@@ -251,11 +261,17 @@ export class RoleFormDialog implements OnInit {
           this.rolesService.getOne(this.data.role.id).subscribe({
             next: (detail) => {
               this.selectedPermissionIds.set(new Set(detail.permissions.map(p => p.id)));
+              this.permissionsReady.set(true);
             },
+            // Save stays disabled: without the current permissions they cannot be edited safely
+            error: (err: ApiError) => this.notifications.error(err.message),
           });
         }
       },
-      error: () => this.loadingPermissions.set(false),
+      error: (err: ApiError) => {
+        this.loadingPermissions.set(false);
+        this.notifications.error(err.message);
+      },
     });
   }
 }

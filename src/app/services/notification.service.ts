@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, effect, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -33,6 +33,24 @@ export class NotificationService {
       this.logger.error('Export failed', err);
       this.error('NOTIFICATIONS.ERRORS.EXPORT_FAILED');
     }
+  }
+
+  /**
+   * Show an error whenever the source signal gets a message. The services record a failed call in an
+   * error signal and resolve with null, so without this the user never hears about it.
+   * Call it from an injection context (a constructor). A message the signal already holds
+   * at that point is old news and is skipped.
+   */
+  reportErrors(source: Signal<string | null>): void {
+    let started = false;
+    effect(() => {
+      const message = source();
+      if (!started) {
+        started = true;
+        return;
+      }
+      if (message) this.error(message);
+    });
   }
 
   private readonly defaultDuration = {

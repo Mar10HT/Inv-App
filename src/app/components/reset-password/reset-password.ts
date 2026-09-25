@@ -228,7 +228,7 @@ export class ResetPasswordComponent implements OnInit {
         // Surface the backend's real message (e.g. "Reset token has expired",
         // "This reset token has already been used", throttle/server errors)
         // instead of a blanket "invalid token".
-        this.errorMessage.set(err?.error?.message || '');
+        this.errorMessage.set(err?.error?.message || err?.message || '');
         this.state.set('error');
       }
     });

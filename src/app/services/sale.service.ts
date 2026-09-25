@@ -12,6 +12,7 @@ import {
 } from '../interfaces/sale.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
+import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
 
 const MAX_SALES_LIMIT = 200;
@@ -24,6 +25,7 @@ export class SaleService {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
   private apiUrl = `${environment.apiUrl}/sales`;
 
   private salesSignal = signal<Sale[]>([]);
@@ -58,6 +60,11 @@ export class SaleService {
     }
     return { total: list.length, active, cancelled, byCustomerType, revenueByCurrency };
   });
+
+  constructor() {
+    // A failed call resolves with null and only fills `error`, so tell the user here
+    this.notifications.reportErrors(this.error);
+  }
 
   loadSales(): void {
     this.loadingSignal.set(true);

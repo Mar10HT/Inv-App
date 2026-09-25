@@ -6,6 +6,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { ApiError } from '../../interfaces/api-error.interface';
 
 @Component({
   selector: 'app-login',
@@ -44,7 +45,7 @@ import { NotificationService } from '../../services/notification.service';
     @if (loginError()) {
       <p class="flex items-start gap-2 text-[13px] text-[var(--color-error)] m-0 mb-4 leading-snug" role="alert">
         <lucide-icon name="AlertCircle" class="!w-4 !h-4 shrink-0 mt-px"></lucide-icon>
-        <span>{{ loginError() }}</span>
+        <span>{{ loginError() | translate }}</span>
       </p>
     }
 
@@ -198,12 +199,17 @@ export class Login {
         });
         this.router.navigateByUrl(returnUrl);
       },
-      error: (error) => {
+      error: (error: ApiError) => {
         this.loading.set(false);
-        const message = error?.error?.message || error?.message || 'LOGIN.ERROR.GENERIC';
-        this.loginError.set(message);
+        this.loginError.set(this.errorMessage(error));
       }
     });
+  }
+
+  /** Message key or text to show. Here a 401 means wrong credentials, not an expired session. */
+  private errorMessage(error: ApiError): string {
+    if (error?.status === 401) return 'LOGIN.ERROR.INVALID_CREDENTIALS';
+    return error?.error?.message || error?.message || 'LOGIN.ERROR.GENERIC';
   }
 
   togglePasswordVisibility(): void {

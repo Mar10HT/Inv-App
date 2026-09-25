@@ -14,6 +14,7 @@ import {
 } from '../interfaces/discharge-request.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,7 @@ export class DischargeRequestService {
   private http = inject(HttpClient);
   private logger = inject(LoggerService);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
   private apiUrl = `${environment.apiUrl}/discharge-requests`;
 
   private requestsSignal = signal<DischargeRequest[]>([]);
@@ -48,6 +50,11 @@ export class DischargeRequestService {
   pendingRequests = computed(() =>
     this.requestsSignal().filter((r) => r.status === DischargeRequestStatus.PENDING),
   );
+
+  constructor() {
+    // A failed call resolves with null and only fills `error`, so tell the user here
+    this.notifications.reportErrors(this.error);
+  }
 
   // ==================== Public Endpoints (no auth) ====================
 

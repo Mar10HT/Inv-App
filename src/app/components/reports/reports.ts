@@ -10,7 +10,7 @@ import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
-import { formatDate, formatDateTime } from './reports.format';
+import { formatDate, formatDateTime, localDateKey, parseDate } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
 import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
 import { ReportsStatusTab } from './tabs/reports-status-tab';
@@ -145,6 +145,17 @@ import { Spinner } from '../shared/spinner/spinner';
         <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
+    } @else if (tabError()) {
+      <div role="alert" class="flex flex-col items-center gap-4 py-12 text-center">
+        <lucide-icon name="AlertTriangle" class="!text-[var(--color-status-warning)] !w-8 !h-8"></lucide-icon>
+        <p class="text-[var(--color-on-surface-variant)]">{{ 'REPORTS.LOAD_ERROR' | translate }}</p>
+        <button
+          type="button"
+          (click)="loadData()"
+          class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all font-medium">
+          {{ 'REPORTS.RETRY' | translate }}
+        </button>
+      </div>
     } @else {
       <!-- ========== TAB 0: VALUE REPORT ========== -->
       @if (activeTab() === 0) {
@@ -224,6 +235,15 @@ export class Reports implements OnInit {
   // Loading states
   loading = signal<boolean>(true);
   transactionsLoading = signal<boolean>(true);
+  itemsError = signal<boolean>(false);
+  transactionsError = signal<boolean>(false);
+
+  /** Tabs 1 and 4 read the transactions, 5 (downloads) reads neither, the rest read the items. */
+  tabError = computed(() => {
+    const tab = this.activeTab();
+    if (tab === 1 || tab === 4) return this.transactionsError();
+    return tab !== 5 && this.itemsError();
+  });
 
   // Data signals
   allItems = signal<InventoryItemInterface[]>([]);
@@ -353,13 +373,13 @@ export class Reports implements OnInit {
     }
 
     if (from) {
-      const fromDate = new Date(from);
+      const fromDate = parseDate(from);
       transactions = transactions.filter(t => new Date(t.date) >= fromDate);
     }
 
     if (to) {
-      const toDate = new Date(to);
-      toDate.setHours(23, 59, 59);
+      const toDate = parseDate(to);
+      toDate.setHours(23, 59, 59, 999);
       transactions = transactions.filter(t => new Date(t.date) <= toDate);
     }
 
@@ -444,12 +464,12 @@ export class Reports implements OnInit {
     for (let i = 29; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = localDateKey(date);
       map.set(dateStr, { date: dateStr, in: 0, out: 0, transfer: 0 });
     }
 
     for (const tx of transactions) {
-      const dateStr = new Date(tx.date).toISOString().split('T')[0];
+      const dateStr = localDateKey(new Date(tx.date));
       const existing = map.get(dateStr);
       if (existing) {
         if (tx.type === TransactionType.IN) existing.in++;
@@ -465,9 +485,11 @@ export class Reports implements OnInit {
     this.loadData();
   }
 
-  private loadData(): void {
+  loadData(): void {
     this.loading.set(true);
     this.transactionsLoading.set(true);
+    this.itemsError.set(false);
+    this.transactionsError.set(false);
 
     // Load items
     this.inventoryService.getItemsObservable().subscribe({
@@ -475,7 +497,10 @@ export class Reports implements OnInit {
         this.allItems.set(items);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.itemsError.set(true);
+        this.loading.set(false);
+      }
     });
 
     // Load transactions
@@ -484,7 +509,10 @@ export class Reports implements OnInit {
         this.allTransactions.set(transactions);
         this.transactionsLoading.set(false);
       },
-      error: () => this.transactionsLoading.set(false)
+      error: () => {
+        this.transactionsError.set(true);
+        this.transactionsLoading.set(false);
+      }
     });
   }
 
@@ -575,7 +603,7 @@ export class Reports implements OnInit {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
 
-    const rows = this.allItems().map(item => ({
+    const rows = this.scopedItems().map(item => ({
       [t('REPORTS.TABLE.ITEM')]:         item.name,
       SKU:                               item.sku || '',
       [t('REPORTS.TABLE.CATEGORY')]:     item.category,
@@ -598,7 +626,7 @@ export class Reports implements OnInit {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
 
-    const rows = this.allItems()
+    const rows = this.scopedItems()
       .filter(item => item.itemType === ItemType.UNIQUE)
       .map(item => ({
         [t('REPORTS.TABLE.ITEM')]:              item.name,

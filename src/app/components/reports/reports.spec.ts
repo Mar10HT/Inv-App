@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { signal, Type } from '@angular/core';
-import { NEVER, of, throwError } from 'rxjs';
+import { defer, NEVER, of, throwError } from 'rxjs';
+import type { WorkBook } from 'xlsx-js-style';
 
 import { Reports } from './reports';
+import { localDateKey } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
 import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
 import { ReportsStatusTab } from './tabs/reports-status-tab';
@@ -77,6 +79,35 @@ describe('Reports', () => {
 
       expect(component.allItems()).toEqual([]);
       expect(component.loading()).toBe(false);
+    });
+
+    it('shows an error with a retry instead of a zeroed report when the items fail', async () => {
+      let calls = 0;
+      await setup([], [], defer(() => (++calls === 1 ? throwError(() => new Error('boom')) : of([item({ id: 'a' })]))));
+
+      expect(component.itemsError()).toBe(true);
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).not.toBeNull();
+      expect(fixture.debugElement.query(By.directive(ReportsValueTab))).toBeNull();
+
+      (fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      expect(component.itemsError()).toBe(false);
+      expect(component.allItems().map((i) => i.id)).toEqual(['a']);
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+      expect(fixture.debugElement.query(By.directive(ReportsValueTab))).not.toBeNull();
+    });
+
+    it('shows the transactions error only on the tabs that need the transactions', async () => {
+      await setup([item({ id: 'a' })], [], undefined, throwError(() => new Error('boom')));
+
+      expect(component.transactionsError()).toBe(true);
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+
+      component.onTabChange(4);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).not.toBeNull();
     });
   });
 
@@ -205,6 +236,21 @@ describe('Reports', () => {
       expect(component.filteredTransactions().map((t) => t.id)).toEqual(['in', 'out']);
     });
 
+    it('keeps the first day and the whole last day of the range, in local time', async () => {
+      await setup([], [
+        tx({ id: 'before', date: new Date(2026, 0, 9, 23, 0) }),
+        tx({ id: 'first', date: new Date(2026, 0, 10, 0, 30) }),
+        tx({ id: 'last', date: new Date(2026, 0, 20, 22, 0) }),
+        tx({ id: 'edge', date: new Date(2026, 0, 20, 23, 59, 59, 500) }),
+        tx({ id: 'after', date: new Date(2026, 0, 21, 0, 30) })
+      ]);
+
+      component.onDateFromChange('2026-01-10');
+      component.onDateToChange('2026-01-20');
+
+      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['first', 'last', 'edge']);
+    });
+
     it('resets every filter with clearTransactionFilters', async () => {
       await setup([], txs);
       component.onTransactionTypeChange('OUT');
@@ -319,7 +365,7 @@ describe('Reports', () => {
 
       const trends = component.transactionTrends();
       expect(trends).toHaveSize(30);
-      expect(trends[29].date).toBe(new Date().toISOString().split('T')[0]);
+      expect(trends[29].date).toBe(localDateKey(new Date()));
       expect(trends.map((t) => t.date)).toEqual([...trends.map((t) => t.date)].sort());
       expect(trends.every((t) => t.in + t.out + t.transfer === 0)).toBe(true);
     });
@@ -337,6 +383,74 @@ describe('Reports', () => {
       expect(trends[29]).toEqual(jasmine.objectContaining({ in: 2, out: 0, transfer: 0 }));
       expect(trends[24]).toEqual(jasmine.objectContaining({ in: 0, out: 1, transfer: 1 }));
       expect(trends.reduce((sum, t) => sum + t.in + t.out + t.transfer, 0)).toBe(4);
+    });
+  });
+
+  describe('trends day buckets', () => {
+    it('put a transaction on the local day it happened, right after and right before midnight', async () => {
+      const now = new Date();
+      const today = (hours: number, minutes: number): Date =>
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+      await setup([], [
+        tx({ id: 'early', type: TransactionType.IN, date: today(0, 30) }),
+        tx({ id: 'late', type: TransactionType.IN, date: today(23, 30) })
+      ]);
+
+      expect(component.transactionTrends()[29]).toEqual(jasmine.objectContaining({ in: 2 }));
+    });
+  });
+
+  describe('exports', () => {
+    type XlsxModule = typeof import('xlsx-js-style');
+    let XLSX: XlsxModule;
+    let written: { workbook: WorkBook; filename: string }[];
+
+    // What the user downloads is whatever XLSX.writeFile receives (same seam as xlsx.utils.spec).
+    beforeEach(async () => {
+      written = [];
+      const loaded = (await import('xlsx-js-style')) as XlsxModule & { default?: XlsxModule };
+      XLSX = loaded.default ?? loaded;
+      spyOn(XLSX, 'writeFile').and.callFake(((workbook: WorkBook, filename: string) => {
+        written.push({ workbook, filename });
+      }) as never);
+    });
+
+    /** First column of every row of the last export: the item name. */
+    const exportedNames = (): unknown[] => {
+      const { workbook } = written[written.length - 1];
+      return XLSX.utils
+        .sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]])
+        .map((row) => Object.values(row)[0]);
+    };
+
+    it('exports every item in the status file when no warehouse is selected', async () => {
+      await setup([item({ id: 'a', name: 'Main item', warehouseId: 'w1' }), item({ id: 'b', name: 'Backup item', warehouseId: 'w2' })]);
+
+      await component.exportStatusReport();
+
+      expect(exportedNames()).toEqual(['Main item', 'Backup item']);
+    });
+
+    it('limits the status file to the selected warehouse', async () => {
+      await setup([item({ id: 'a', name: 'Main item', warehouseId: 'w1' }), item({ id: 'b', name: 'Backup item', warehouseId: 'w2' })]);
+      component.selectedWarehouseId.set('w1');
+
+      await component.exportStatusReport();
+
+      expect(exportedNames()).toEqual(['Main item']);
+    });
+
+    it('limits the assignments file to the unique items of the selected warehouse', async () => {
+      await setup([
+        item({ id: 'a', name: 'Main laptop', itemType: ItemType.UNIQUE, warehouseId: 'w1' }),
+        item({ id: 'b', name: 'Backup laptop', itemType: ItemType.UNIQUE, warehouseId: 'w2' }),
+        item({ id: 'c', name: 'Main cable', itemType: ItemType.BULK, warehouseId: 'w1' })
+      ]);
+      component.selectedWarehouseId.set('w1');
+
+      await component.exportAssignments();
+
+      expect(exportedNames()).toEqual(['Main laptop']);
     });
   });
 

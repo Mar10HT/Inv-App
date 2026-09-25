@@ -9,8 +9,6 @@ import {
   Loan,
   LoanStatus,
   CreateLoanDto,
-  ReturnLoanDto,
-  LoanFilter,
   LoanStats,
   LoanWithQr,
   RawLoan,
@@ -19,7 +17,7 @@ import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { WebSocketService } from './websocket.service';
-import { transformLoan, getActiveLoanForItem, isItemOnLoan, filterLoans } from '../utils/loan.utils';
+import { transformLoan } from '../utils/loan.utils';
 import { triggerBlobDownload } from '../utils/download.utils';
 
 const MAX_LOANS_LIMIT = 200;
@@ -83,11 +81,6 @@ export class LoanService implements OnDestroy {
     )
   );
 
-  // Overdue loans
-  overdueLoans = computed(() =>
-    this.loansSignal().filter(l => l.status === LoanStatus.OVERDUE)
-  );
-
   constructor() {
     // A failed call resolves with null and only fills `error`, so tell the user here
     this.notifications.reportErrors(this.error);
@@ -141,29 +134,6 @@ export class LoanService implements OnDestroy {
       catchError(err => {
         this.logger.error('Error creating loan', err);
         this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.LOAN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
-    );
-  }
-
-  /**
-   * Return a loan (legacy - without QR confirmation)
-   */
-  returnLoan(loanId: string, dto?: ReturnLoanDto): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.patch<RawLoan>(`${this.apiUrl}/${loanId}/return`, dto || {}).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === loanId ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error returning loan', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.RETURN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -249,29 +219,6 @@ export class LoanService implements OnDestroy {
   }
 
   /**
-   * Confirm receipt by scanning QR code
-   */
-  confirmReceipt(qrCode: string): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawLoan>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error confirming receipt', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.QR.SCAN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
-    );
-  }
-
-  /**
    * Initiate return - generates QR code for return confirmation
    */
   initiateReturn(loanId: string): Observable<LoanWithQr | null> {
@@ -291,29 +238,6 @@ export class LoanService implements OnDestroy {
       catchError(err => {
         this.logger.error('Error initiating return', err);
         this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
-    );
-  }
-
-  /**
-   * Confirm return by scanning QR code
-   */
-  confirmReturn(qrCode: string): Observable<Loan | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawLoan>(`${this.apiUrl}/confirm-return`, { qrCode }).pipe(
-      map(loan => transformLoan(loan)),
-      tap(updatedLoan => {
-        this.loansSignal.update(loans =>
-          loans.map(l => l.id === updatedLoan.id ? updatedLoan : l)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error confirming return', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('LOANS.QR.SCAN_ERROR'));
         return of(null);
       }),
       finalize(() => this.loadingSignal.set(false))
@@ -377,97 +301,6 @@ export class LoanService implements OnDestroy {
   }
 
   /**
-   * Get loan by ID
-   */
-  getLoanById(id: string): Loan | undefined {
-    return this.loansSignal().find(l => l.id === id);
-  }
-
-  /**
-   * Get loans that include a specific item
-   */
-  getLoansForItem(inventoryItemId: string): Loan[] {
-    return this.loansSignal()
-      .filter(l => l.items.some(i => i.inventoryItemId === inventoryItemId))
-      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
-  }
-
-  /**
-   * Get loans from a specific warehouse
-   */
-  getLoansFromWarehouse(warehouseId: string): Loan[] {
-    return this.loansSignal()
-      .filter(l => l.sourceWarehouseId === warehouseId)
-      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
-  }
-
-  /**
-   * Get loans to a specific warehouse
-   */
-  getLoansToWarehouse(warehouseId: string): Loan[] {
-    return this.loansSignal()
-      .filter(l => l.destinationWarehouseId === warehouseId)
-      .sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
-  }
-
-  /**
-   * Get active loan for an item (if any)
-   */
-  getActiveLoanForItem(inventoryItemId: string): Loan | undefined {
-    return getActiveLoanForItem(this.loansSignal(), inventoryItemId);
-  }
-
-  /**
-   * Check if an item is currently on loan
-   */
-  isItemOnLoan(inventoryItemId: string): boolean {
-    return isItemOnLoan(this.loansSignal(), inventoryItemId);
-  }
-
-  /**
-   * Get filtered loans
-   */
-  getFilteredLoans(filter?: LoanFilter): Loan[] {
-    return filterLoans(this.loansSignal(), filter);
-  }
-
-  /**
-   * Delete a loan (admin only)
-   */
-  deleteLoan(loanId: string): Observable<boolean> {
-    this.loadingSignal.set(true);
-
-    return this.http.delete<void>(`${this.apiUrl}/${loanId}`).pipe(
-      map(() => {
-        this.loansSignal.update(loans => loans.filter(l => l.id !== loanId));
-        return true;
-      }),
-      catchError(err => {
-        this.logger.error('Error deleting loan', err);
-        this.errorSignal.set(err.message || this.translate.instant('LOANS.DELETE_ERROR'));
-        return of(false);
-      }),
-      finalize(() => this.loadingSignal.set(false))
-    );
-  }
-
-  /**
-   * Check overdue loans on backend
-   */
-  checkOverdueLoans(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/check-overdue`, {}).pipe(
-      tap(() => this.loadLoans())
-    );
-  }
-
-  /**
-   * Get stats from backend
-   */
-  getStatsFromBackend(): Observable<LoanStats> {
-    return this.http.get<LoanStats>(`${this.apiUrl}/stats`);
-  }
-
-  /**
    * Export loans to XLSX
    */
   async exportToXLSX(loans?: Loan[]): Promise<void> {
@@ -492,13 +325,6 @@ export class LoanService implements OnDestroy {
       colWidths:      [40, 10, 22, 22, 14, 14, 14, 16, 30],
       statusColIndex: 7,
     });
-  }
-
-  /**
-   * Refresh loans from backend
-   */
-  refresh(): void {
-    this.loadLoans();
   }
 
   /**

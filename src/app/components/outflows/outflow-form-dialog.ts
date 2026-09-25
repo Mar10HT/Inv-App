@@ -10,7 +10,6 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { LucideAngularModule } from 'lucide-angular';
@@ -47,7 +46,7 @@ const REASONS: OutflowReason[] = [
 @Component({
   selector: 'app-outflow-form-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, A11yModule, LucideAngularModule, TranslateModule],
+  imports: [FormsModule, A11yModule, LucideAngularModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">

@@ -27,13 +27,13 @@ component-name/
 
 ```typescript
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-component-name',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [TranslateModule],
   templateUrl: './component-name.html',
   styleUrl: './component-name.css'
 })
@@ -47,6 +47,7 @@ export class ComponentName implements OnInit {
 - Always use `ChangeDetectionStrategy.OnPush`
 - Use `inject()` instead of constructor injection
 - Use Angular Signals for reactive state
+- Import only what the template uses. Control flow (`@if`, `@for`) needs no `CommonModule`, and `MatDialog` and `MatSnackBar` are provided in root, so opening a dialog or a notification needs no module either
 
 ---
 
@@ -56,11 +57,7 @@ export class ComponentName implements OnInit {
 
 ```typescript
 imports: [
-  CommonModule,
   MatIconModule,
-  MatButtonModule,
-  MatDialogModule,
-  MatSnackBarModule,
   TranslateModule
 ]
 ```
@@ -69,10 +66,7 @@ imports: [
 
 ```typescript
 imports: [
-  CommonModule,
   ReactiveFormsModule,
-  MatDialogModule,
-  MatButtonModule,
   MatIconModule,
   TranslateModule
 ]
@@ -87,8 +81,8 @@ imports: [
 | Component | Import | Usage |
 |-----------|--------|-------|
 | Icons | `MatIconModule` | `<mat-icon>name</mat-icon>` |
-| Dialogs | `MatDialogModule` | Modals and confirmations |
-| Snackbar | `MatSnackBarModule` | Toast notifications |
+| Dialogs | `MatDialog` service (no module import) | Modals and confirmations |
+| Snackbar | `NotificationService` (no module import) | Toast notifications |
 | Spinner | `MatProgressSpinnerModule` | `<mat-spinner diameter="20">` |
 | Tables | `MatTableModule` | Tables with sort/paginator |
 | Paginator | `MatPaginatorModule` | Table pagination |

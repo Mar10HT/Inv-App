@@ -8,11 +8,10 @@ import * as Sentry from '@sentry/angular';
 import { Observable, of } from 'rxjs';
 
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor, errorInterceptor } from './interceptors';
 import { APP_ICONS } from './shared/icons';
 
-// Import translations directly (SSR-safe)
+// Import translations directly so no HTTP request is needed to start
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
 import EN_TRANSLATIONS from '../assets/i18n/en.json';
 
@@ -21,7 +20,7 @@ const TRANSLATIONS: Record<string, Record<string, unknown>> = {
   en: EN_TRANSLATIONS
 };
 
-// Static loader - SSR compatible
+// Static loader over the bundled translations
 class StaticTranslateLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<TranslationObject> {
     return of((TRANSLATIONS[lang] || TRANSLATIONS['en']) as unknown as TranslationObject);
@@ -34,7 +33,6 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     { provide: ErrorHandler, useValue: Sentry.createErrorHandler() },
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
-    provideClientHydration(withEventReplay()),
     provideHttpClient(
       withFetch(),
       withInterceptors([authInterceptor, errorInterceptor])

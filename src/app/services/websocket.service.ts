@@ -25,7 +25,6 @@ export class WebSocketService implements OnDestroy {
   private socketIo = inject(SOCKET_IO);
   private socket: Socket | null = null;
   private events$ = new Subject<{ event: string; payload: WsEvent }>();
-  private connected$ = new Subject<boolean>();
 
   connect(): void {
     // Any socket, connected or not: while the handshake is pending `connected` is false, and
@@ -45,12 +44,10 @@ export class WebSocketService implements OnDestroy {
 
     this.socket.on('connect', () => {
       this.logger.log('[WS] Connected');
-      this.connected$.next(true);
     });
 
     this.socket.on('disconnect', (reason: string) => {
       this.logger.log('[WS] Disconnected:', reason);
-      this.connected$.next(false);
     });
 
     this.socket.on('connect_error', (error: Error) => {
@@ -94,21 +91,12 @@ export class WebSocketService implements OnDestroy {
     return this.on('loan:change');
   }
 
-  onTransactionChange(): Observable<WsEvent> {
-    return this.on('transaction:change');
-  }
-
   onAlertChange(): Observable<WsEvent> {
     return this.on('alert:change');
-  }
-
-  isConnected(): Observable<boolean> {
-    return this.connected$.asObservable();
   }
 
   ngOnDestroy(): void {
     this.disconnect();
     this.events$.complete();
-    this.connected$.complete();
   }
 }

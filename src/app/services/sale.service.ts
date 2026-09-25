@@ -36,10 +36,6 @@ export class SaleService {
   loading = computed(() => this.loadingSignal());
   error = computed(() => this.errorSignal());
 
-  active = computed(() =>
-    this.salesSignal().filter((s) => s.status === SaleStatus.ACTIVE),
-  );
-
   stats = computed<SaleStats>(() => {
     const list = this.salesSignal();
     const byCustomerType: Record<string, number> = {};

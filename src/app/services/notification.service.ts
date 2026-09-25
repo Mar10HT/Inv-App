@@ -151,19 +151,6 @@ export class NotificationService {
   }
 
   /**
-   * Show error message for failed operation
-   */
-  operationFailed(operation: 'create' | 'update' | 'delete' | 'load', entityKey: string): void {
-    const operationKey = `NOTIFICATIONS.OPERATIONS.${operation.toUpperCase()}`;
-    this.error('NOTIFICATIONS.OPERATION_FAILED', {
-      interpolateParams: {
-        operation: this.translate.instant(operationKey),
-        entity: this.translate.instant(entityKey)
-      }
-    });
-  }
-
-  /**
    * Handle HTTP error and show appropriate message
    */
   handleError(error: HttpErrorResponse, entityKey?: string): void {

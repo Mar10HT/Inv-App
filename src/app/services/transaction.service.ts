@@ -13,12 +13,8 @@ export class TransactionService {
   private apiUrl = `${environment.apiUrl}/transactions`;
 
   private transactionsSignal = signal<Transaction[]>([]);
-  private totalSignal = signal<number>(0);
-  private pageSignal = signal<number>(1);
 
   transactions = computed(() => this.transactionsSignal());
-  total = computed(() => this.totalSignal());
-  currentPage = computed(() => this.pageSignal());
 
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
@@ -48,21 +44,6 @@ export class TransactionService {
 
   getRecent(limit = 10): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.apiUrl}/recent?limit=${limit}`);
-  }
-
-  getById(id: string): Observable<Transaction> {
-    this.loading.set(true);
-    this.error.set(null);
-
-    return this.http.get<Transaction>(`${this.apiUrl}/${id}`).pipe(
-      tap({
-        next: () => this.loading.set(false),
-        error: (error) => {
-          this.error.set(error.message);
-          this.loading.set(false);
-        }
-      })
-    );
   }
 
   create(transaction: CreateTransactionDto): Observable<Transaction> {

@@ -54,19 +54,6 @@ export class TransferRequestService implements OnDestroy {
     };
   });
 
-  // Pending requests
-  pendingRequests = computed(() =>
-    this.requestsSignal().filter(r => r.status === TransferRequestStatus.PENDING)
-  );
-
-  // Active requests (not completed, rejected, or cancelled)
-  activeRequests = computed(() =>
-    this.requestsSignal().filter(r =>
-      [TransferRequestStatus.PENDING, TransferRequestStatus.APPROVED, TransferRequestStatus.SENT]
-        .includes(r.status)
-    )
-  );
-
   constructor() {
     // A failed call resolves with null and only fills `error`, so tell the user here
     this.notifications.reportErrors(this.error);
@@ -231,29 +218,6 @@ export class TransferRequestService implements OnDestroy {
   }
 
   /**
-   * Confirm receipt by scanning QR code
-   */
-  confirmReceipt(qrCode: string): Observable<TransferRequest | null> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.http.post<RawTransferRequest>(`${this.apiUrl}/confirm-receipt`, { qrCode }).pipe(
-      map(req => this.transformRequest(req)),
-      tap(updatedReq => {
-        this.requestsSignal.update(requests =>
-          requests.map(r => r.id === updatedReq.id ? updatedReq : r)
-        );
-      }),
-      catchError(err => {
-        this.logger.error('Error confirming receipt', err);
-        this.errorSignal.set(err.error?.message || err.message || this.translate.instant('TRANSFERS.QR.SCAN_ERROR'));
-        return of(null);
-      }),
-      finalize(() => this.loadingSignal.set(false))
-    );
-  }
-
-  /**
    * Process scanned QR code (auto-detect type)
    */
   scanQr(scannedData: string): Observable<TransferRequest | null> {
@@ -342,38 +306,6 @@ export class TransferRequestService implements OnDestroy {
   }
 
   /**
-   * Get request by ID
-   */
-  getRequestById(id: string): TransferRequest | undefined {
-    return this.requestsSignal().find(r => r.id === id);
-  }
-
-  /**
-   * Get requests from a specific warehouse
-   */
-  getRequestsFromWarehouse(warehouseId: string): TransferRequest[] {
-    return this.requestsSignal()
-      .filter(r => r.sourceWarehouseId === warehouseId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }
-
-  /**
-   * Get requests to a specific warehouse
-   */
-  getRequestsToWarehouse(warehouseId: string): TransferRequest[] {
-    return this.requestsSignal()
-      .filter(r => r.destinationWarehouseId === warehouseId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }
-
-  /**
-   * Get stats from backend
-   */
-  getStatsFromBackend(): Observable<TransferRequestStats> {
-    return this.http.get<TransferRequestStats>(`${this.apiUrl}/stats`);
-  }
-
-  /**
    * Download a PDF receipt for a transfer request
    */
   downloadPdf(transferId: string): void {
@@ -414,12 +346,5 @@ export class TransferRequestService implements OnDestroy {
       colWidths:      [28, 14, 22, 22, 20, 20, 40, 14, 30],
       statusColIndex: 1, // Status column
     });
-  }
-
-  /**
-   * Refresh from backend
-   */
-  refresh(): void {
-    this.loadRequests();
   }
 }

@@ -1,5 +1,4 @@
 import { Component, computed, signal, inject, output, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -26,7 +25,6 @@ export interface LoanFormResult {
   selector: 'app-loan-form-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     TranslateModule

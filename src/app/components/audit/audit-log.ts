@@ -2,7 +2,6 @@ import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStr
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -17,7 +16,6 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
   imports: [
     FormsModule,
     LucideAngularModule,
-    MatButtonModule,
     MatPaginatorModule,
     TranslateModule,
     DatePipe

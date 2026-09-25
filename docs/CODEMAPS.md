@@ -314,10 +314,10 @@ export class LoanService {
   createLoan(data: CreateLoanDto): Observable<Loan> { /* ... */ }
 
   // Manual receipt confirmation
-  confirmReceipt(loanId: string): Observable<Loan> { /* ... */ }
+  manualConfirmReceipt(loanId: string): Observable<Loan | null> { /* ... */ }
 
   // Manual return confirmation
-  confirmReturn(loanId: string): Observable<Loan> { /* ... */ }
+  manualConfirmReturn(loanId: string): Observable<Loan | null> { /* ... */ }
 
   // QR-based confirmation
   scanQr(qrData: string): Observable<boolean> { /* ... */ }
@@ -328,7 +328,7 @@ export class LoanService {
 Similar pattern with status-specific operations:
 - `createRequest()` - Create new transfer
 - `approve()` - Manager approval
-- `confirmReceipt()` - Manual receipt (manual)
+- `manualConfirmReceipt()` - Manual receipt (no QR)
 - `reject()` - Reject transfer with reason
 - `scanQr()` - QR-based confirmation
 
@@ -350,7 +350,7 @@ All user-facing text uses `TranslateModule`:
 <button>{{ 'COMMON.CONFIRM' | translate }}</button>
 
 <!-- With interpolation -->
-<p>{{ 'LOANS.LOANS_CREATED' | translate: { count: 5 } }}</p>
+<p>{{ 'INVENTORY.LIST.ITEMS_COUNT' | translate: { count: 5 } }}</p>
 ```
 
 **Translation Files:**
@@ -404,7 +404,7 @@ Uses Tailwind utility classes for:
 Added action buttons for manual confirmation without QR scan:
 - **Loans:** "Confirm Receipt" / "Confirm Return" in row menu
 - **Transfers:** "Confirm Receipt" / "Reject" in row menu
-- Sends to `confirmReceipt()` / `confirmReturn()` / `reject()` API endpoints
+- Sends to `manualConfirmReceipt()` / `manualConfirmReturn()` / `rejectRequest()`
 - Updates row status immediately upon success
 
 ### 2. Pagination Fix (onFilterChange)

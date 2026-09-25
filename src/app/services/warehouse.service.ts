@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
 import { Warehouse, CreateWarehouseDto, UpdateWarehouseDto } from '../interfaces/warehouse.interface';
 import { environment } from '../../environments/environment';
 import { BaseCrudService } from './base-crud.service';
@@ -12,8 +11,4 @@ export class WarehouseService extends BaseCrudService<Warehouse, CreateWarehouse
   protected readonly items = signal<Warehouse[]>([]);
 
   readonly warehouses = this.items;
-
-  setManager(warehouseId: string, managerId: string | null): Observable<Warehouse> {
-    return this.http.patch<Warehouse>(`${this.apiUrl}/${warehouseId}/manager`, { managerId });
-  }
 }

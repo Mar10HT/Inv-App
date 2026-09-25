@@ -1,9 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -20,9 +18,6 @@ import { TransactionFormDialog } from './transaction-form-dialog';
   imports: [
     CommonModule,
     LucideAngularModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatSnackBarModule,
     TranslateModule,
     NgxPermissionsModule
   ],
@@ -271,7 +266,6 @@ import { TransactionFormDialog } from './transaction-form-dialog';
 export class Transactions implements OnInit {
   private transactionService = inject(TransactionService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -368,19 +362,6 @@ export class Transactions implements OnInit {
       default:
         return 'Receipt';
     }
-  }
-
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  formatDate(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
   }
 
   trackByFn(index: number, transaction: Transaction): string {

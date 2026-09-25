@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { SkeletonComponent } from './skeleton';
 
 @Component({
   selector: 'app-skeleton-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, SkeletonComponent],
+  imports: [SkeletonComponent],
   template: `
     <div class="rounded-lg p-6 border" style="background-color: var(--color-card); border-color: var(--color-border-subtle)">
       <div class="flex items-start justify-between mb-4">

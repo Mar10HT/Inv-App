@@ -6,7 +6,6 @@ import {
   HostListener,
   ElementRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,7 +15,7 @@ import { AlertsService } from '../../../services/alerts.service';
   selector: 'app-notification-bell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, LucideAngularModule, TranslateModule],
+  imports: [RouterLink, LucideAngularModule, TranslateModule],
   template: `
     <div class="relative">
       <!-- Bell button -->

@@ -17,7 +17,6 @@
     "ROLES": "Roles",
     "AUDIT": "Historial",
     "TRANSACTIONS": "Transacciones",
-    "TRANSACTIONS_LIST": "Lista de Transacciones",
     "REPORTS": "Reportes",
     "SETTINGS": "Configuración",
     "PROFILE": "Perfil",
@@ -29,9 +28,6 @@
     "CANCEL": "Cancelar",
     "DELETE": "Eliminar",
     "EDIT": "Editar",
-    "ADD": "Agregar",
-    "SEARCH": "Buscar",
-    "FILTER": "Filtrar",
     "EXPORT": "Exportar",
     "IMPORT": "Importar",
     "LOADING": "Cargando",
@@ -40,9 +36,7 @@
     "YES": "Sí",
     "NO": "No",
     "CREATE": "Crear",
-    "UPDATE": "Actualizar",
     "NONE": "Ninguno",
-    "UNASSIGNED": "Sin asignar",
     "NO_CATEGORY": "Sin Categoría",
     "NO_WAREHOUSE": "Sin Bodega",
     "NO_SUPPLIER": "Sin Proveedor",
@@ -52,10 +46,7 @@
     "TOTAL": "Total",
     "VIEW": "Ver",
     "VIEW_ALL": "Ver Todos",
-    "VIEW_REPORTS": "Ver Reportes",
-    "ADD_NEW": "Agregar Nuevo",
     "BACK": "Volver",
-    "BACK_TO_INVENTORY": "Volver al Inventario",
     "CLOSE": "Cerrar",
     "SKU": "SKU",
     "USER": "Usuario",
@@ -68,17 +59,12 @@
     "QTY_SHORT": "Cant",
     "EXPAND": "Expandir",
     "ITEMS_COUNT": "{{count}} ítems",
-    "NO_DATA_FOUND": "No se encontraron datos",
-    "NO_DATA_DESC": "No hay elementos para mostrar",
     "SKIP_NAV": "Saltar al contenido principal",
     "NO_NAME": "Sin nombre",
     "SHOW_PASSWORD": "Mostrar contraseña",
     "HIDE_PASSWORD": "Ocultar contraseña",
     "TOGGLE_SIDEBAR": "Alternar barra lateral",
-    "TOGGLE_THEME": "Cambiar tema",
-    "CHANGE_LANGUAGE": "Cambiar idioma",
-    "DELETE_ITEM": "Eliminar {{item}}",
-    "EDIT_ITEM": "Editar {{item}}"
+    "TOGGLE_THEME": "Cambiar tema"
   },
   "IMPORT": {
     "TITLE": "Importar Items",
@@ -90,16 +76,6 @@
     "OR": "o",
     "SELECT_FILE": "Seleccionar Archivo",
     "SUPPORTED_FORMATS": "Formato soportado: Excel (.xlsx)",
-    "TOTAL_ROWS": "Total Filas",
-    "VALID_ROWS": "Filas Válidas",
-    "INVALID_ROWS": "Filas Inválidas",
-    "COL_STATUS": "Estado",
-    "COL_NAME": "Nombre",
-    "COL_CATEGORY": "Categoría",
-    "COL_QTY": "Cant.",
-    "COL_WAREHOUSE": "Bodega",
-    "COL_ERRORS": "Errores",
-    "INVALID_WARNING": "Las filas inválidas serán ignoradas durante la importación.",
     "IMPORTING": "Importando items...",
     "SUCCESS": "Importación Exitosa",
     "PARTIAL_SUCCESS": "Importación Parcial",
@@ -107,7 +83,6 @@
     "ERRORS": "Errores",
     "ERROR_DETAILS": "Detalle de errores",
     "ROW": "Fila",
-    "IMPORT_VALID": "Importar Válidos",
     "INVALID_FORMAT": "Formato inválido. Por favor sube un archivo Excel (.xlsx).",
     "FILE_TOO_LARGE": "El archivo es demasiado grande. El tamaño máximo es 10MB.",
     "GENERIC_ERROR": "Error al importar el archivo. Por favor intenta de nuevo.",
@@ -128,8 +103,6 @@
     "MANAGE_ITEMS": "Administra tus ítems de inventario",
     "SHOWING_LOW_STOCK": "Mostrando {{count}} de {{total}} artículos con stock bajo",
     "ADD_NEW_ITEM": "Agregar Nuevo Ítem",
-    "EXPORT_DATA": "Exportar Datos",
-    "VIEW_REPORTS": "Ver Reportes",
     "TABLE": {
       "ITEM": "Ítem",
       "CATEGORY": "Categoría",
@@ -169,10 +142,6 @@
     }
   },
   "INVENTORY": {
-    "TITLE": "Inventario",
-    "ADD_ITEM": "Agregar Ítem",
-    "EDIT_ITEM": "Editar Ítem",
-    "DELETE_ITEM": "Eliminar Ítem",
     "SEARCH_PLACEHOLDER": "Buscar por nombre, categoría o descripción...",
     "ALL_CATEGORIES": "Todas las Categorías",
     "ALL_LOCATIONS": "Todas las Ubicaciones",
@@ -183,7 +152,6 @@
       "NO_ITEMS_FOUND": "No se encontraron ítems",
       "ADJUST_FILTERS": "Intenta ajustar tu búsqueda o criterios de filtro",
       "CLEAR_FILTERS": "Limpiar",
-      "UNITS": "unidades",
       "ITEMS_COUNT": "Mostrando {{count}} ítems"
     },
     "STATUS": {
@@ -204,7 +172,6 @@
       "ADD_SUBTITLE": "Complete los detalles para agregar un nuevo ítem",
       "EDIT_SUBTITLE": "Actualice los detalles del ítem",
       "ITEM_TYPE": {
-        "TITLE": "Tipo de Ítem",
         "BULK": "Ítem por Cantidad (BULK)",
         "BULK_HINT": "Ítems contados por unidades (ej: tornillos, papel)",
         "UNIQUE": "Ítem Único (UNIQUE)",
@@ -219,11 +186,7 @@
         "DESCRIPTION": "Descripción",
         "DESCRIPTION_PLACEHOLDER": "Describa el ítem...",
         "MODEL": "Modelo / SKU",
-        "MODEL_OPTIONAL": "opcional",
-        "MODEL_PLACEHOLDER": "Ej: Dell Latitude 5430, iPhone 13 Pro Max",
-        "MODEL_HINT": "Útil para agrupar productos similares (ej: todas las laptops Dell Latitude 5430)",
-        "LOCATION": "Ubicación Física",
-        "LOCATION_PLACEHOLDER": "Ej: Estante A-5, Pasillo 3"
+        "MODEL_PLACEHOLDER": "Ej: Dell Latitude 5430, iPhone 13 Pro Max"
       },
       "WAREHOUSE": {
         "LABEL": "Bodega",
@@ -233,10 +196,8 @@
         "TITLE": "Identificadores",
         "SERVICE_TAG": "Service Tag",
         "SERVICE_TAG_PLACEHOLDER": "Ej: DEL123456AB",
-        "SERVICE_TAG_HINT": "Requerido para ítems UNIQUE",
         "SERIAL_NUMBER": "Número de Serie",
         "SERIAL_NUMBER_PLACEHOLDER": "Ej: SN123456789",
-        "SERIAL_NUMBER_HINT": "Opcional",
         "SKU": "SKU",
         "SKU_PLACEHOLDER": "Ej: LAP-DELL-5420",
         "BARCODE": "Código de Barras",
@@ -256,8 +217,7 @@
       },
       "SUPPLIER": {
         "LABEL": "Proveedor",
-        "NONE": "Sin proveedor",
-        "HINT": "Opcional"
+        "NONE": "Sin proveedor"
       },
       "ASSIGNMENT": {
         "TITLE": "Asignación de Ítem",
@@ -285,11 +245,7 @@
     "TOTAL_VALUE": "Valor Total",
     "WAREHOUSE": "Bodega",
     "SUPPLIER": "Proveedor",
-    "NAME": "Nombre",
-    "LOCATION": "Ubicación",
     "DESCRIPTION": "Descripción",
-    "EMAIL": "Email",
-    "PHONE": "Teléfono",
     "ASSIGNMENT": "Asignación",
     "ASSIGNED_ON": "Asignado el",
     "CREATED": "Creado",
@@ -317,8 +273,7 @@
     },
     "MANAGER": "Encargado",
     "MANAGER_PLACEHOLDER": "Sin encargado asignado",
-    "NO_MANAGER": "Sin encargado",
-    "SET_MANAGER": "Asignar Encargado"
+    "NO_MANAGER": "Sin encargado"
   },
   "SUPPLIER": {
     "TITLE": "Proveedores",
@@ -345,9 +300,6 @@
     "EDIT": "Editar Categoría",
     "NAME": "Nombre",
     "DESCRIPTION": "Descripción",
-    "COLOR": "Color",
-    "COLOR_INVALID": "Formato de color hex inválido (ej: #FF5733)",
-    "PREVIEW": "Vista previa",
     "TOTAL": "Total de Categorías",
     "LIST": "Lista de Categorías",
     "NO_CATEGORIES": "No se encontraron categorías",
@@ -415,11 +367,6 @@
     "CUSTOM_ROLE": "Rol Personalizado",
     "CUSTOM_ROLE_DESC": "Sobreescribir permisos con un rol específico",
     "NO_CUSTOM_ROLE": "Ninguno (usar rol heredado)"
-  },
-  "USERS": {
-    "TITLE": "Usuarios",
-    "ADD": "Agregar Usuario",
-    "EDIT": "Editar Usuario"
   },
   "ROLES": {
     "TITLE": "Roles",
@@ -506,7 +453,6 @@
     "LANGUAGE": "Idioma",
     "LANGUAGE_DESC": "Selecciona tu idioma preferido",
     "APPEARANCE": "Apariencia",
-    "THEME": "Tema",
     "THEME_DESC": "Elige entre modo claro y oscuro",
     "DARK_MODE": "Modo Oscuro",
     "LIGHT_MODE": "Modo Claro",
@@ -534,9 +480,7 @@
       "MIN_LENGTH": "Mínimo {{length}} caracteres",
       "MAX_LENGTH": "Máximo {{length}} caracteres",
       "EMAIL": "Email inválido",
-      "MIN_VALUE": "Valor mínimo: {{value}}",
-      "MAX_VALUE": "Valor máximo: {{value}}",
-      "REQUIRE_EITHER": "Se requiere al menos uno de estos campos"
+      "MIN_VALUE": "Valor mínimo: {{value}}"
     }
   },
   "NOTIFICATIONS": {
@@ -546,13 +490,6 @@
     "UPDATED_WITH_NAME": "\"{{name}}\" se actualizó con éxito",
     "DELETED": "Se eliminó con éxito",
     "DELETED_WITH_NAME": "\"{{name}}\" se eliminó con éxito",
-    "OPERATION_FAILED": "Error al {{operation}}",
-    "OPERATIONS": {
-      "CREATE": "crear",
-      "UPDATE": "actualizar",
-      "DELETE": "eliminar",
-      "LOAD": "cargar"
-    },
     "ERRORS": {
       "CONNECTION": "Error de conexión. Por favor verifica tu conexión a internet.",
       "UNAUTHORIZED": "Sesión expirada. Por favor inicia sesión nuevamente.",
@@ -579,7 +516,6 @@
     }
   },
   "LOGIN": {
-    "TITLE": "Obsid",
     "SIGN_IN": "Iniciar sesión",
     "SUBTITLE": "Accede a tu workspace de inventario.",
     "EMAIL": "Correo",
@@ -590,13 +526,7 @@
     "FORGOT_PASSWORD": "¿Olvidaste tu contraseña?",
     "CAPS_LOCK_ON": "Bloqueo de mayúsculas activado",
     "SUPPORT": "Soporte",
-    "PRIVACY": "Privacidad",
     "VERSION": "v0.4.5",
-    "STATUS": {
-      "OPERATIONAL": "Sistema operativo",
-      "DEGRADED": "Servicio no disponible",
-      "CHECKING": "Verificando estado..."
-    },
     "VALIDATION": {
       "INVALID_EMAIL": "Por favor ingresa un correo electrónico válido",
       "PASSWORD_MIN": "La contraseña debe tener al menos 6 caracteres"
@@ -639,10 +569,8 @@
   "REPORTS": {
     "TITLE": "Reportes",
     "SUBTITLE": "Reportes de valor de inventario y análisis",
-    "CURRENCY": "Moneda",
     "ALL_CURRENCIES": "Todas las Monedas",
     "ALL_TYPES": "Todos los Tipos",
-    "EXPORT": "Exportar CSV",
     "TOTAL_VALUE": "Valor Total",
     "TOTAL_ITEMS": "Total de Ítems",
     "TOTAL_TRANSACTIONS": "Total Transacciones",
@@ -671,8 +599,6 @@
     "MORE": "más",
     "TRANSACTIONS_LAST_30_DAYS": "Transacciones - Últimos 30 Días",
     "DAILY_SUMMARY": "Resumen Diario",
-    "EXPORT_CSV": "Exportar CSV",
-    "EXPORT_PDF": "Exportar PDF",
     "CSV": {
       "NEEDS_RESTOCK": "Necesita Reposición",
       "ASSIGNED_TO": "Asignado A",
@@ -810,34 +736,19 @@
     "DEST_WAREHOUSE": "Bodega Destino",
     "SELECT_SOURCE_WAREHOUSE": "Seleccionar bodega origen...",
     "SELECT_DEST_WAREHOUSE": "Seleccionar bodega destino...",
-    "LOAN_DATE": "Fecha Préstamo",
     "DUE_DATE": "Fecha Devolución",
-    "RETURN": "Devolver",
-    "ACTIVE": "Activos",
     "OVERDUE": "Vencidos",
-    "DUE_SOON": "Por Vencer",
     "RETURNED": "Devueltos",
     "PENDING": "Pendientes",
     "SENT": "Enviados",
     "RECEIVED": "Recibidos",
-    "RETURN_PENDING": "Devolución Pendiente",
     "NO_LOANS": "No hay préstamos",
     "NO_LOANS_DESC": "Los préstamos registrados aparecerán aquí",
-    "SELECT_ITEM": "Seleccionar Item",
-    "SELECT_ITEM_PLACEHOLDER": "Seleccione un item...",
-    "NO_ITEMS_IN_WAREHOUSE": "No hay items disponibles en esta bodega",
-    "NO_ITEMS_ADDED": "Haz clic en 'Agregar Ítem' para añadir items al préstamo",
-    "SELECT_SOURCE_FIRST": "Selecciona primero la bodega origen",
-    "LOANS_CREATED": "Se crearon {{count}} préstamos exitosamente",
     "NOTES": "Notas",
     "NOTES_PLACEHOLDER": "Notas adicionales (opcional)",
     "CREATE_LOAN": "Crear Préstamo",
     "LOAN_CREATED": "Préstamo creado exitosamente",
     "LOAN_ERROR": "Error al crear el préstamo",
-    "CONFIRM_RETURN_TITLE": "Confirmar Devolución",
-    "CONFIRM_RETURN_MESSAGE": "¿Confirmar la devolución de \"{{item}}\" de {{from}} a {{to}}?",
-    "RETURN_SUCCESS": "Item devuelto exitosamente",
-    "RETURN_ERROR": "Error al devolver el préstamo",
     "SEND": "Enviar",
     "SEND_SUCCESS": "Préstamo enviado exitosamente",
     "SEND_ERROR": "Error al enviar el préstamo",
@@ -852,11 +763,9 @@
     "CANCEL_SUCCESS": "Préstamo cancelado exitosamente",
     "CANCEL_ERROR": "Error al cancelar el préstamo",
     "LOADING_ERROR": "Error al cargar los préstamos",
-    "DELETE_ERROR": "Error al eliminar el préstamo",
     "CONFIRM_CANCEL_TITLE": "Cancelar Préstamo",
     "CONFIRM_CANCEL_MESSAGE": "¿Cancelar el préstamo de \"{{item}}\"? Esta acción no se puede deshacer.",
     "QR": {
-      "TITLE": "Código QR",
       "SEND_TITLE": "QR de Envío",
       "RETURN_TITLE": "QR de Devolución",
       "SEND_INSTRUCTIONS": "Adjunte este código QR al paquete. El destinatario debe escanearlo para confirmar la recepción.",
@@ -868,9 +777,7 @@
       "SCAN_INSTRUCTIONS": "Escanee el código QR del paquete para confirmar la recepción o devolución.",
       "SCAN_SUCCESS": "Código QR procesado exitosamente",
       "SCAN_ERROR": "Error al procesar el código QR",
-      "INVALID_CODE": "Código QR inválido",
-      "SHOW_QR": "Ver QR",
-      "NO_QR": "Sin QR generado"
+      "SHOW_QR": "Ver QR"
     },
     "STATUS": {
       "PENDING": "Pendiente",
@@ -881,13 +788,6 @@
       "OVERDUE": "Vencido",
       "CANCELLED": "Cancelado",
       "ACTIVE": "Activo"
-    },
-    "WORKFLOW": {
-      "STEP1": "Crear préstamo",
-      "STEP2": "Enviar (genera QR)",
-      "STEP3": "Destinatario escanea QR",
-      "STEP4": "Iniciar devolución (genera QR)",
-      "STEP5": "Remitente escanea QR"
     },
     "MANUAL_CONFIRM_RECEIPT": "Confirmar Recepción (Sin QR)",
     "MANUAL_CONFIRM_RETURN": "Confirmar Devolución (Sin QR)",
@@ -929,7 +829,6 @@
     "SENT": "Enviadas",
     "COMPLETED": "Completadas",
     "REJECTED": "Rechazadas",
-    "CANCELLED": "Canceladas",
     "NO_REQUESTS": "No hay solicitudes",
     "NO_REQUESTS_DESC": "Las solicitudes de transferencia aparecerán aquí",
     "APPROVE": "Aprobar",
@@ -1173,15 +1072,11 @@
     "SEARCH_PLACEHOLDER": "Buscar por nombre o bodega...",
     "ALL_STATUS": "Todos los Estados",
     "LIST": "Lista de Conteos",
-    "NAME": "Nombre",
-    "NAME_PLACEHOLDER": "Ej: Conteo Mensual - Enero",
     "DESCRIPTION": "Descripción",
     "DESCRIPTION_PLACEHOLDER": "Descripción opcional...",
     "WAREHOUSE": "Bodega",
     "SELECT_WAREHOUSE": "Todas las bodegas",
     "CREATED_BY": "Creado por",
-    "PROGRESS": "Progreso",
-    "ITEMS_COUNTED": "items contados",
     "NO_STOCK_TAKES": "No hay conteos",
     "NO_STOCK_TAKES_DESC": "Los conteos físicos de inventario aparecerán aquí",
     "STATUS": {
@@ -1277,13 +1172,6 @@
   "ERRORS": {
     "LOADING_DATA": "Error al cargar datos"
   },
-  "THEME": {
-    "SWITCH_TO_LIGHT": "Cambiar a modo claro",
-    "SWITCH_TO_DARK": "Cambiar a modo oscuro",
-    "LIGHT": "Claro",
-    "DARK": "Oscuro",
-    "SYSTEM": "Sistema"
-  },
   "ALERTS": {
     "TITLE": "Alertas",
     "NO_ALERTS": "Sin alertas activas",
@@ -1292,8 +1180,7 @@
     "OUT_OF_STOCK": "Sin stock",
     "EXPIRING_SOON": "Por vencer",
     "ITEM_IN": "en",
-    "RESOLVE": "Resolver",
-    "RESOLVED": "Resuelto"
+    "RESOLVE": "Resolver"
   },
   "SCHEDULED_REPORTS": {
     "TITLE": "Reportes Programados",
@@ -1303,11 +1190,8 @@
     "REPORT_TYPE": "Tipo de Reporte",
     "FREQUENCY_LABEL": "Frecuencia",
     "RECIPIENTS": "Emails Destinatarios",
-    "WAREHOUSE": "Bodega",
     "LOCALE": "Idioma",
     "NEXT_SEND": "Próximo envío",
-    "LAST_SENT": "Último envío",
-    "NEVER_SENT": "Nunca enviado",
     "SEND_NOW": "Enviar Ahora",
     "ACTIVE": "Activo",
     "INACTIVE": "Inactivo",

@@ -1,21 +1,15 @@
-import { Component, computed, signal, effect, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { Component, computed, signal, effect, OnInit, ViewChild, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { downloadStyledXLSX } from '../../../utils/xlsx.utils';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-// Angular Material imports - only what's actually used
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+// Angular Material imports
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -36,16 +30,8 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterModule,
-    FormsModule,
-    MatTableModule,
     MatPaginatorModule,
-    MatSortModule,
-    MatButtonModule,
     LucideAngularModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatTooltipModule,
     TranslateModule,
     ScrollingModule,
     NgxPermissionsModule,
@@ -429,20 +415,13 @@ import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
   `,
   styleUrl: './inventory-list.css'
 })
-export class InventoryList implements OnInit, AfterViewInit {
+export class InventoryList implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   // Expose enums and utilities to template
   InventoryStatus = InventoryStatus;
   ItemType = ItemType;
   Math = Math;
-
-  // Data source for the table
-  dataSource = new MatTableDataSource<InventoryItemInterface>([]);
-
-  // Table columns
-  displayedColumns: string[] = ['name', 'category', 'quantity', 'status', 'warehouse', 'updatedAt', 'actions'];
 
   // Filter signals
   searchQuery = signal('');
@@ -517,10 +496,9 @@ export class InventoryList implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
   constructor() {
-    // Auto-sync filtered items with table data source and handle pagination
+    // Keep the paginator on a valid page when the filters shrink the list
     effect(() => {
       const filteredData = this.filteredItems();
-      this.dataSource.data = filteredData;
 
       // Adjust pagination if current page is out of bounds
       if (this.paginator) {
@@ -549,36 +527,6 @@ export class InventoryList implements OnInit, AfterViewInit {
       this.searchQuery.set(value);
       this.pageIndex.set(0);
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-
-    // Custom sort for status
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'status': {
-          const statusOrder: Record<string, number> = {
-            [InventoryStatus.OUT_OF_STOCK]: 0,
-            [InventoryStatus.LOW_STOCK]: 1,
-            [InventoryStatus.IN_USE]: 2,
-            [InventoryStatus.IN_STOCK]: 3
-          };
-          return statusOrder[item.status] ?? 0;
-        }
-        case 'updatedAt':
-          return new Date(item.updatedAt).getTime();
-        case 'warehouse':
-          return item.warehouse?.name ?? '';
-        default: {
-          const val = (item as unknown as Record<string, unknown>)[property];
-          if (val instanceof Date) return val.getTime();
-          if (typeof val === 'string' || typeof val === 'number') return val;
-          return '';
-        }
-      }
-    };
   }
 
   // Debounced search input
@@ -676,26 +624,6 @@ export class InventoryList implements OnInit, AfterViewInit {
     return this.translate.instant(statusKey);
   }
 
-  getStatusColor(status: InventoryStatus): string {
-    switch (status) {
-      case InventoryStatus.IN_STOCK: return 'primary';
-      case InventoryStatus.LOW_STOCK: return 'accent';
-      case InventoryStatus.OUT_OF_STOCK: return 'warn';
-      case InventoryStatus.IN_USE: return 'info';
-      default: return 'primary';
-    }
-  }
-
-  getStatusIcon(status: InventoryStatus): string {
-    switch (status) {
-      case InventoryStatus.IN_STOCK: return 'check_circle';
-      case InventoryStatus.LOW_STOCK: return 'warning';
-      case InventoryStatus.OUT_OF_STOCK: return 'error';
-      case InventoryStatus.IN_USE: return 'person';
-      default: return 'help';
-    }
-  }
-
   // Memoized date formatter - created once, reused for all items
   private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -733,7 +661,7 @@ export class InventoryList implements OnInit, AfterViewInit {
 
   // Export functionality
   async exportData(): Promise<void> {
-    const rows = this.dataSource.data.map(item => ({
+    const rows = this.filteredItems().map(item => ({
       [this.translate.instant('DASHBOARD.TABLE.ITEM')]:         item.name,
       [this.translate.instant('ITEM_DETAIL.DESCRIPTION')]:      item.description ?? '',
       [this.translate.instant('DASHBOARD.TABLE.QUANTITY')]:     item.quantity,

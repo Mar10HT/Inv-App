@@ -33,10 +33,6 @@ export class OutflowService {
   loading = computed(() => this.loadingSignal());
   error = computed(() => this.errorSignal());
 
-  active = computed(() =>
-    this.outflowsSignal().filter((o) => o.status === OutflowStatus.ACTIVE),
-  );
-
   stats = computed<OutflowStats>(() => {
     const list = this.outflowsSignal();
     const byReason: Record<string, number> = {};

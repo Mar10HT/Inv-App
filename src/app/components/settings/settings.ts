@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { environment } from '../../../environments/environment';
@@ -21,8 +20,6 @@ import { ThemeService } from '../../services/theme.service';
     CommonModule,
     FormsModule,
     LucideAngularModule,
-    MatSnackBarModule,
-    MatDialogModule,
     TranslateModule,
     NgxPermissionsModule,
   ],

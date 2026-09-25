@@ -1,4 +1,4 @@
-import { Loan, LoanItem, LoanStatus, LoanFilter, RawLoan } from '../interfaces/loan.interface';
+import { Loan, LoanItem, LoanStatus, RawLoan } from '../interfaces/loan.interface';
 
 const VALID_LOAN_STATUSES: readonly LoanStatus[] = [
   LoanStatus.PENDING,
@@ -55,50 +55,6 @@ export function transformLoan(loan: RawLoan): Loan {
     createdAt: new Date(loan.createdAt),
     updatedAt: new Date(loan.updatedAt),
   };
-}
-
-const ACTIVE_STATUSES = [LoanStatus.PENDING, LoanStatus.SENT, LoanStatus.RECEIVED, LoanStatus.RETURN_PENDING, LoanStatus.OVERDUE];
-
-/** Return the active loan that contains the given item, if any. */
-export function getActiveLoanForItem(loans: Loan[], inventoryItemId: string): Loan | undefined {
-  return loans.find(
-    (l) => ACTIVE_STATUSES.includes(l.status) && l.items.some((i) => i.inventoryItemId === inventoryItemId),
-  );
-}
-
-/** Check if an item is currently on loan. */
-export function isItemOnLoan(loans: Loan[], inventoryItemId: string): boolean {
-  return getActiveLoanForItem(loans, inventoryItemId) !== undefined;
-}
-
-/** Filter and sort a list of loans by the given criteria. */
-export function filterLoans(loans: Loan[], filter?: LoanFilter): Loan[] {
-  let result = loans;
-
-  if (!filter) return result;
-
-  const effectiveStatus = filter.overdue ? LoanStatus.OVERDUE : filter.status;
-  if (effectiveStatus) {
-    result = result.filter((l) => l.status === effectiveStatus);
-  }
-  if (filter.sourceWarehouseId) {
-    result = result.filter((l) => l.sourceWarehouseId === filter.sourceWarehouseId);
-  }
-  if (filter.destinationWarehouseId) {
-    result = result.filter((l) => l.destinationWarehouseId === filter.destinationWarehouseId);
-  }
-  if (filter.inventoryItemId) {
-    result = result.filter((l) => l.items.some((i) => i.inventoryItemId === filter.inventoryItemId));
-  }
-  if (filter.dateFrom) {
-    result = result.filter((l) => l.loanDate >= filter.dateFrom!);
-  }
-  if (filter.dateTo) {
-    result = result.filter((l) => l.loanDate <= filter.dateTo!);
-  }
-
-  // Copy before sorting: when no criteria removed anything, `result` is still the caller's array.
-  return [...result].sort((a, b) => b.loanDate.getTime() - a.loanDate.getTime());
 }
 
 /** Summary text for a loan's items: "Laptop x2; Mouse x1" or single item name. */

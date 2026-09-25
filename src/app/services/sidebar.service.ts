@@ -11,12 +11,4 @@ export class SidebarService {
     // Trigger resize after CSS transition (300ms) so charts reflow
     setTimeout(() => window.dispatchEvent(new Event('resize')), 320);
   }
-
-  collapse(): void {
-    this.isCollapsed.set(true);
-  }
-
-  expand(): void {
-    this.isCollapsed.set(false);
-  }
 }

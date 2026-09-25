@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 
 import { AuditService } from './audit.service';
-import { AuditAction, AuditEntity, BackendAuditLog } from '../interfaces/audit.interface';
+import { AuditAction, BackendAuditLog } from '../interfaces/audit.interface';
 import { environment } from '../../environments/environment';
 import { provideTestBedDefaults } from '../../testing/test-providers';
 
@@ -166,44 +166,6 @@ describe('AuditService', () => {
 
         expect(service.logs()[0].changes).toEqual([]);
       });
-    });
-  });
-
-  describe('getFilteredLogs', () => {
-    beforeEach(() =>
-      load([
-        backendLog({ id: '1', action: 'CREATE', entity: 'Loan', entityId: 'e1', createdAt: '2026-03-01T00:00:00Z' }),
-        backendLog({ id: '2', action: 'UPDATE', entity: 'Loan', entityId: 'e2', createdAt: '2026-03-10T00:00:00Z' }),
-        backendLog({ id: '3', action: 'UPDATE', entity: 'User', entityId: 'e3', createdAt: '2026-03-20T00:00:00Z', userId: 'u9', user: { id: 'u9', name: 'Zed', email: 'z@x.com' } })
-      ])
-    );
-
-    const ids = (filter?: Parameters<AuditService['getFilteredLogs']>[0]): string[] =>
-      service.getFilteredLogs(filter).map((l) => l.id);
-
-    it('returns everything without a filter', () => {
-      expect(ids()).toEqual(['1', '2', '3']);
-    });
-
-    it('filters by action', () => {
-      expect(ids({ action: AuditAction.UPDATE })).toEqual(['2', '3']);
-    });
-
-    it('filters by the entity string the API uses', () => {
-      expect(ids({ entity: 'Loan' as AuditEntity })).toEqual(['1', '2']);
-    });
-
-    it('filters by user and by entity id', () => {
-      expect(ids({ userId: 'u9' })).toEqual(['3']);
-      expect(ids({ entityId: 'e2' })).toEqual(['2']);
-    });
-
-    it('filters by a date range, both ends included', () => {
-      expect(ids({ dateFrom: new Date('2026-03-10T00:00:00Z'), dateTo: new Date('2026-03-20T00:00:00Z') })).toEqual(['2', '3']);
-    });
-
-    it('combines the filters', () => {
-      expect(ids({ action: AuditAction.UPDATE, entity: 'Loan' as AuditEntity })).toEqual(['2']);
     });
   });
 });

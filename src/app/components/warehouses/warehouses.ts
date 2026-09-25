@@ -1,9 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -30,11 +27,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     LucideAngularModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatSnackBarModule,
     TranslateModule,
     NgxPermissionsModule
   ],
@@ -354,18 +347,6 @@ export class Warehouses implements OnInit {
         });
       }
     });
-  }
-
-  // Memoized date formatter
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
-  formatDate(date: Date | string): string {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
   }
 
   trackByFn(index: number, warehouse: Warehouse): string {

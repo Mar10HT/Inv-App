@@ -44,15 +44,6 @@ export interface AuditLog {
   createdAt: Date;
 }
 
-export interface AuditLogFilter {
-  action?: AuditAction;
-  entity?: AuditEntity;
-  userId?: string;
-  entityId?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-}
-
 
 // Backend API types
 export interface BackendAuditLog {

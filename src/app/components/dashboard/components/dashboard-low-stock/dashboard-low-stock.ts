@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { CdkDragPlaceholder, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,7 +16,6 @@ export interface LowStockItem {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     CdkDragPlaceholder,
     CdkDragHandle,
     LucideAngularModule,

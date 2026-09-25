@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { SkeletonComponent } from './skeleton';
 import { SkeletonCardComponent } from './skeleton-card';
 import { SkeletonTableComponent } from './skeleton-table';
@@ -9,7 +8,7 @@ import { SkeletonChartComponent } from './skeleton-chart';
   selector: 'app-skeleton-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, SkeletonComponent, SkeletonCardComponent, SkeletonTableComponent, SkeletonChartComponent],
+  imports: [SkeletonComponent, SkeletonCardComponent, SkeletonTableComponent, SkeletonChartComponent],
   template: `
     <!-- Primary Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

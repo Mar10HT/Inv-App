@@ -47,10 +47,6 @@ export class DischargeRequestService {
     };
   });
 
-  pendingRequests = computed(() =>
-    this.requestsSignal().filter((r) => r.status === DischargeRequestStatus.PENDING),
-  );
-
   constructor() {
     // A failed call resolves with null and only fills `error`, so tell the user here
     this.notifications.reportErrors(this.error);
@@ -172,18 +168,10 @@ export class DischargeRequestService {
     );
   }
 
-  getStats(): Observable<DischargeRequestStats> {
-    return this.http.get<DischargeRequestStats>(`${this.apiUrl}/stats`);
-  }
-
   getRequestFormQr(): Observable<{ url: string; qrDataUrl: string }> {
     return this.http.get<{ url: string; qrDataUrl: string }>(`${this.apiUrl}/request-form-qr`, {
       withCredentials: true,
     });
-  }
-
-  refresh(): void {
-    this.loadRequests();
   }
 
   private transformRequest(req: RawDischargeRequest): DischargeRequest {

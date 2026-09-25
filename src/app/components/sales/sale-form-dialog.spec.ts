@@ -319,13 +319,15 @@ describe('SaleFormDialog', () => {
       expect(component.submitting()).toBeFalse();
     });
 
-    it('says it failed, and reports nothing, when the service answers with nothing', () => {
+    it('reports nothing, and adds no second message, when the service answers with nothing', () => {
+      // The service turns a failed request into null and shows the reason itself (reportErrors)
       sales.create.and.returnValue(of(null));
       readyToSubmit();
 
       component.submit();
 
-      expect(notifications.error).toHaveBeenCalledOnceWith('SALES.CREATE_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
+      expect(notifications.success).not.toHaveBeenCalled();
       expect(created).not.toHaveBeenCalled();
       expect(component.submitting()).toBeFalse();
     });

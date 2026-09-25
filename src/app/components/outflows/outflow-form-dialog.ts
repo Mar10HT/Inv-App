@@ -370,12 +370,8 @@ export class OutflowFormDialog implements AfterViewInit {
             this.translate.instant('OUTFLOWS.CREATE_SUCCESS'),
           );
           this.created.emit({ success: true });
-        } else {
-          // Service already set its own error signal; surface it
-          this.notifications.error(
-            this.translate.instant('OUTFLOWS.CREATE_ERROR'),
-          );
         }
+        // A null answer is a failed request: OutflowService already showed the reason (reportErrors)
       },
       error: () => {
         this.submitting.set(false);

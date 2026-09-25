@@ -464,11 +464,8 @@ export class SaleFormDialog implements AfterViewInit {
             this.translate.instant('SALES.CREATE_SUCCESS'),
           );
           this.created.emit({ success: true });
-        } else {
-          this.notifications.error(
-            this.translate.instant('SALES.CREATE_ERROR'),
-          );
         }
+        // A null answer is a failed request: SaleService already showed the reason (reportErrors)
       },
       error: () => {
         this.submitting.set(false);

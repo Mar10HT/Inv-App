@@ -5,7 +5,6 @@ import { defer, NEVER, of, throwError } from 'rxjs';
 import type { WorkBook } from 'xlsx-js-style';
 
 import { Reports } from './reports';
-import { localDateKey } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
 import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
 import { ReportsStatusTab } from './tabs/reports-status-tab';
@@ -24,10 +23,19 @@ import { Transaction, TransactionType } from '../../interfaces/transaction.inter
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, supplier, tx, warehouse } from '../../../testing/report-fixtures';
 
-const daysAgo = (days: number): Date => {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
-  return d;
+// The trend window is "the last 30 days from now", so the tests pin "now" instead of racing midnight.
+const NOW = new Date(2026, 8, 24, 12, 0);
+const daysBefore = (days: number): Date => new Date(2026, 8, 24 - days, 12, 0);
+
+/** Runs `read` with the clock frozen at NOW; the computed signals it reads call `new Date()`. */
+const atNow = <T>(read: () => T): T => {
+  jasmine.clock().install();
+  jasmine.clock().mockDate(NOW);
+  try {
+    return read();
+  } finally {
+    jasmine.clock().uninstall();
+  }
 };
 
 describe('Reports', () => {
@@ -98,16 +106,71 @@ describe('Reports', () => {
       expect(fixture.debugElement.query(By.directive(ReportsValueTab))).not.toBeNull();
     });
 
-    it('shows the transactions error only on the tabs that need the transactions', async () => {
+    // What each tab shows once it is selected: its own component, or the load error in its place.
+    const alert = (): HTMLElement | null => fixture.nativeElement.querySelector('[role="alert"]');
+    const has = (type: Type<unknown>): boolean => fixture.debugElement.query(By.directive(type)) !== null;
+    const select = (tab: number): void => {
+      component.onTabChange(tab);
+      fixture.detectChanges();
+    };
+
+    it('shows the transactions error only on the tabs that read the transactions', async () => {
       await setup([item({ id: 'a' })], [], undefined, throwError(() => new Error('boom')));
 
       expect(component.transactionsError()).toBe(true);
-      expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+      expect(alert()).toBeNull();
+      expect(has(ReportsValueTab)).toBe(true);
 
-      component.onTabChange(4);
-      fixture.detectChanges();
+      for (const tab of [1, 4]) {
+        select(tab);
+        expect(alert()).not.toBeNull();
+      }
+      for (const tab of [2, 3]) {
+        select(tab);
+        expect(alert()).toBeNull();
+      }
+      select(5);
+      expect(alert()).toBeNull();
+      expect(has(ReportsDownloadsTab)).toBe(true);
+    });
 
-      expect(fixture.nativeElement.querySelector('[role="alert"]')).not.toBeNull();
+    it('shows the items error only on the tabs that read the items', async () => {
+      await setup([], [tx({ id: 't' })], throwError(() => new Error('boom')) as never);
+
+      for (const tab of [0, 2, 3]) {
+        select(tab);
+        expect(alert()).not.toBeNull();
+      }
+      select(1);
+      expect(alert()).toBeNull();
+      expect(has(ReportsTransactionsTab)).toBe(true);
+      select(4);
+      expect(alert()).toBeNull();
+      expect(has(ReportsTrendsTab)).toBe(true);
+      select(5);
+      expect(alert()).toBeNull();
+      expect(has(ReportsDownloadsTab)).toBe(true);
+    });
+
+    it('does not cover the tabs that read only the transactions, or the downloads, with the items spinner', async () => {
+      await setup([], [tx({ id: 't' })], NEVER);
+
+      select(4);
+      expect(has(ReportsTrendsTab)).toBe(true);
+      select(5);
+      expect(has(ReportsDownloadsTab)).toBe(true);
+      expect(fixture.nativeElement.querySelector('app-spinner')).toBeNull();
+      select(0);
+      expect(fixture.nativeElement.querySelector('app-spinner')).not.toBeNull();
+    });
+
+    it('shows the transactions error while the items still load, with the retry blocked until both finish', async () => {
+      await setup([], [], NEVER, throwError(() => new Error('boom')));
+
+      select(4);
+
+      expect(alert()).not.toBeNull();
+      expect((alert()?.querySelector('button') as HTMLButtonElement).disabled).toBe(true);
     });
   });
 
@@ -360,43 +423,41 @@ describe('Reports', () => {
   });
 
   describe('trends', () => {
-    it('returns 30 ascending days ending today, all zeroed when there are no transactions', async () => {
+    it('returns 30 ascending local days ending today, all zeroed when there are no transactions', async () => {
       await setup([]);
 
-      const trends = component.transactionTrends();
+      const trends = atNow(() => component.transactionTrends());
       expect(trends).toHaveSize(30);
-      expect(trends[29].date).toBe(localDateKey(new Date()));
+      expect(trends[0].date).toBe('2026-08-26');
+      expect(trends[29].date).toBe('2026-09-24');
       expect(trends.map((t) => t.date)).toEqual([...trends.map((t) => t.date)].sort());
       expect(trends.every((t) => t.in + t.out + t.transfer === 0)).toBe(true);
     });
 
     it('counts transactions per day and type and ignores days outside the window', async () => {
       await setup([], [
-        tx({ id: '1', type: TransactionType.IN, date: daysAgo(0) }),
-        tx({ id: '2', type: TransactionType.IN, date: daysAgo(0) }),
-        tx({ id: '3', type: TransactionType.OUT, date: daysAgo(5) }),
-        tx({ id: '4', type: TransactionType.TRANSFER, date: daysAgo(5) }),
-        tx({ id: '5', type: TransactionType.IN, date: daysAgo(60) })
+        tx({ id: '1', type: TransactionType.IN, date: daysBefore(0) }),
+        tx({ id: '2', type: TransactionType.IN, date: daysBefore(0) }),
+        tx({ id: '3', type: TransactionType.OUT, date: daysBefore(5) }),
+        tx({ id: '4', type: TransactionType.TRANSFER, date: daysBefore(5) }),
+        tx({ id: '5', type: TransactionType.IN, date: daysBefore(60) })
       ]);
 
-      const trends = component.transactionTrends();
+      const trends = atNow(() => component.transactionTrends());
       expect(trends[29]).toEqual(jasmine.objectContaining({ in: 2, out: 0, transfer: 0 }));
       expect(trends[24]).toEqual(jasmine.objectContaining({ in: 0, out: 1, transfer: 1 }));
       expect(trends.reduce((sum, t) => sum + t.in + t.out + t.transfer, 0)).toBe(4);
     });
-  });
 
-  describe('trends day buckets', () => {
-    it('put a transaction on the local day it happened, right after and right before midnight', async () => {
-      const now = new Date();
-      const today = (hours: number, minutes: number): Date =>
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+    it('puts a transaction on the local day it happened, right after and right before midnight', async () => {
       await setup([], [
-        tx({ id: 'early', type: TransactionType.IN, date: today(0, 30) }),
-        tx({ id: 'late', type: TransactionType.IN, date: today(23, 30) })
+        tx({ id: 'early', type: TransactionType.IN, date: new Date(2026, 8, 24, 0, 30) }),
+        tx({ id: 'late', type: TransactionType.IN, date: new Date(2026, 8, 24, 23, 30) })
       ]);
 
-      expect(component.transactionTrends()[29]).toEqual(jasmine.objectContaining({ in: 2 }));
+      const today = atNow(() => component.transactionTrends()[29]);
+
+      expect(today).toEqual(jasmine.objectContaining({ date: '2026-09-24', in: 2 }));
     });
   });
 

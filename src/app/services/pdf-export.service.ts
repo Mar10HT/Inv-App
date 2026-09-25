@@ -5,6 +5,7 @@ import { Transaction, TransactionType } from '../interfaces/transaction.interfac
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
 import { PdfDrawingBase } from './pdf/pdf-drawing.base';
 import { formatMoney } from '../utils/money.utils';
+import { localDateKey } from '../utils/date.utils';
 
 /** jsPDF instance augmented with the `lastAutoTable` property that jspdf-autotable
  * attaches at runtime after each `autoTable()` call. The jspdf-autotable type
@@ -184,7 +185,7 @@ export class PdfExportService extends PdfDrawingBase {
     }
 
     // Generate filename
-    const filename = `transactions-${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `transactions-${localDateKey(new Date())}.pdf`;
     doc.save(filename);
   }
 
@@ -332,7 +333,7 @@ export class PdfExportService extends PdfDrawingBase {
     // Footer
     this.addFooter(doc);
 
-    doc.save(`value-report-${options.currency}-${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`value-report-${options.currency}-${localDateKey(new Date())}.pdf`);
   }
 
   // ============ STATUS REPORT PDF ============
@@ -440,7 +441,7 @@ export class PdfExportService extends PdfDrawingBase {
     // Footer
     this.addFooter(doc);
 
-    doc.save(`status-report-${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`status-report-${localDateKey(new Date())}.pdf`);
   }
 
   // ============ ASSIGNMENTS REPORT PDF ============
@@ -554,6 +555,6 @@ export class PdfExportService extends PdfDrawingBase {
     // Footer
     this.addFooter(doc);
 
-    doc.save(`assignments-report-${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`assignments-report-${localDateKey(new Date())}.pdf`);
   }
 }

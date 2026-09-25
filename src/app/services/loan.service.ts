@@ -20,6 +20,7 @@ import { WebSocketService } from './websocket.service';
 import { transformLoan } from '../utils/loan.utils';
 import { triggerBlobDownload } from '../utils/download.utils';
 import { RequestTracker, trackRequest } from '../utils/track-request';
+import { localDateKey } from '../utils/date.utils';
 
 const MAX_LOANS_LIMIT = 200;
 
@@ -260,7 +261,7 @@ export class LoanService implements OnDestroy {
 
     await downloadStyledXLSX(rows, {
       sheetName:      'Loans',
-      filename:       `loans-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:       `loans-${localDateKey(new Date())}.xlsx`,
       headerColor:    '6B7BB5',
       colWidths:      [40, 10, 22, 22, 14, 14, 14, 16, 30],
       statusColIndex: 7,

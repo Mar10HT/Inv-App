@@ -23,6 +23,7 @@ import { InventoryItem } from '../inventory-item/inventory-item';
 import { ImportDialog } from '../../import/import-dialog';
 import { SkeletonCardComponent } from '../../shared/skeleton/skeleton-card';
 import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
+import { localDateKey } from '../../../utils/date.utils';
 
 @Component({
   selector: 'app-inventory-list',
@@ -668,7 +669,7 @@ export class InventoryList implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:      'Inventory',
-      filename:       `inventory-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:       `inventory-${localDateKey(new Date())}.xlsx`,
       headerColor:    '4D7C6F',
       colWidths:      [30, 40, 10, 20, 22, 14, 18],
       statusColIndex: 5, // Status column

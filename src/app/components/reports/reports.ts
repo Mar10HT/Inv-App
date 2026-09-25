@@ -10,7 +10,8 @@ import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
-import { formatDate, formatDateTime, localDateKey, parseDate } from './reports.format';
+import { localDateKey, parseDate } from '../../utils/date.utils';
+import { formatDate, formatDateTime } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
 import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
 import { ReportsStatusTab } from './tabs/reports-status-tab';
@@ -140,7 +141,7 @@ import { Spinner } from '../shared/spinner/spinner';
     </div>
 
     <!-- Loading State -->
-    @if (loading() && activeTab() !== 1) {
+    @if (showSpinner()) {
       <div class="flex items-center justify-center py-12">
         <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
@@ -152,7 +153,8 @@ import { Spinner } from '../shared/spinner/spinner';
         <button
           type="button"
           (click)="loadData()"
-          class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all font-medium">
+          [disabled]="loading() || transactionsLoading()"
+          class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed">
           {{ 'REPORTS.RETRY' | translate }}
         </button>
       </div>
@@ -238,11 +240,20 @@ export class Reports implements OnInit {
   itemsError = signal<boolean>(false);
   transactionsError = signal<boolean>(false);
 
-  /** Tabs 1 and 4 read the transactions, 5 (downloads) reads neither, the rest read the items. */
-  tabError = computed(() => {
+  /** Which data a tab reads: tabs 1 and 4 the transactions, 5 (downloads) none, the rest the items. */
+  private tabSource = computed(() => {
     const tab = this.activeTab();
-    if (tab === 1 || tab === 4) return this.transactionsError();
-    return tab !== 5 && this.itemsError();
+    if (tab === 1 || tab === 4) return 'transactions';
+    return tab === 5 ? null : 'items';
+  });
+
+  /** Tabs 1 and 4 show their own spinner while the transactions load, and 5 has nothing to wait for. */
+  showSpinner = computed(() => this.tabSource() === 'items' && this.loading());
+
+  tabError = computed(() => {
+    const source = this.tabSource();
+    if (source === 'transactions') return this.transactionsError();
+    return source === 'items' && this.itemsError();
   });
 
   // Data signals
@@ -485,7 +496,7 @@ export class Reports implements OnInit {
     this.loadData();
   }
 
-  loadData(): void {
+  protected loadData(): void {
     this.loading.set(true);
     this.transactionsLoading.set(true);
     this.itemsError.set(false);
@@ -564,7 +575,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Inventory',
-      filename:    `inventario-valor-${currency}-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:    `inventario-valor-${currency}-${localDateKey(new Date())}.xlsx`,
       headerColor: '4D7C6F',
       colWidths:   [30, 12, 18, 22, 22, 8, 10, 12, 12, 8, 14],
     }));
@@ -593,7 +604,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Transactions',
-      filename:    `transacciones-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
       headerColor: '60A5FA',
       colWidths:   [18, 12, 22, 22, 20, 30, 12, 8, 30, 30],
     }));
@@ -616,7 +627,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:        'Stock Status',
-      filename:         `estado-stock-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:         `estado-stock-${localDateKey(new Date())}.xlsx`,
       headerColor:      'B45309',
       colWidths:        [30, 12, 18, 22, 12, 10, 14, 14],
     }));
@@ -642,7 +653,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Assignments',
-      filename:    `asignaciones-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:    `asignaciones-${localDateKey(new Date())}.xlsx`,
       headerColor: 'A78BFA',
       colWidths:   [30, 14, 14, 18, 22, 22, 28, 16, 14],
     }));

@@ -3,6 +3,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../services/theme.service';
+import { parseDate } from '../../../utils/date.utils';
 import { formatDate } from '../reports.format';
 import { TrendPoint } from '../reports.types';
 import { Spinner } from '../../shared/spinner/spinner';
@@ -121,7 +122,7 @@ export class ReportsTrendsTab {
       },
       xaxis: {
         categories: trends.map(t => {
-          const d = new Date(t.date);
+          const d = parseDate(t.date);
           return `${d.getDate()}/${d.getMonth() + 1}`;
         }),
         labels: {

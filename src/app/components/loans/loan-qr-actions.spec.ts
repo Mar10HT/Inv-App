@@ -77,11 +77,12 @@ describe('LoanQrDialog actions', () => {
   });
 
   it('prints nothing when the browser blocks the print window', () => {
-    spyOn(window, 'open').and.returnValue(null);
+    const open = spyOn(window, 'open').and.returnValue(null);
     fixture.componentRef.setInput('qrDataUrl', 'data:image/png;base64,AAAA');
     fixture.componentRef.setInput('loan', loan());
 
     expect(() => component.printQrCode()).not.toThrow();
+    expect(open).toHaveBeenCalledTimes(1);
   });
 });
 

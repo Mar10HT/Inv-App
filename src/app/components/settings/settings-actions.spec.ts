@@ -250,7 +250,7 @@ describe('Settings actions', () => {
 
       component.saveScheduledReport();
 
-      expect(reports.create).toHaveBeenCalledOnceWith(component.scheduledForm);
+      expect(reports.create).toHaveBeenCalledOnceWith({ reportType: 'INVENTORY', frequency: 'WEEKLY', recipientEmails: 'boss@x.com', locale: 'es' });
       expect(reports.update).not.toHaveBeenCalled();
       expect(component.showScheduledForm()).toBeFalse();
       expect(notifications.success).toHaveBeenCalledOnceWith('SCHEDULED_REPORTS.CREATED');
@@ -261,7 +261,7 @@ describe('Settings actions', () => {
 
       component.saveScheduledReport();
 
-      expect(reports.update).toHaveBeenCalledOnceWith('r9', component.scheduledForm);
+      expect(reports.update).toHaveBeenCalledOnceWith('r9', { reportType: 'INVENTORY', frequency: 'WEEKLY', recipientEmails: '', locale: 'es' });
       expect(reports.create).not.toHaveBeenCalled();
       expect(notifications.success).toHaveBeenCalledOnceWith('SCHEDULED_REPORTS.UPDATED');
     });

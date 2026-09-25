@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 
@@ -92,8 +92,15 @@ describe('Categories', () => {
     });
 
     it('follows the loading and error state of the service', () => {
+      const state = service as unknown as { loading: WritableSignal<boolean>; error: WritableSignal<string | null> };
       expect(component.loading()).toBeFalse();
       expect(component.error()).toBeNull();
+
+      state.loading.set(true);
+      state.error.set('boom');
+
+      expect(component.loading()).toBeTrue();
+      expect(component.error()).toBe('boom');
     });
   });
 

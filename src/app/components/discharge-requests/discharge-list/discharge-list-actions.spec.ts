@@ -290,7 +290,7 @@ describe('DischargeListComponent actions', () => {
         component.shareUrl.set('https://app/request');
 
         component.copyShareUrl();
-        await Promise.resolve();
+        await writeText.calls.mostRecent().returnValue;
 
         expect(writeText).toHaveBeenCalledOnceWith('https://app/request');
         expect(component.shareCopied()).toBeTrue();

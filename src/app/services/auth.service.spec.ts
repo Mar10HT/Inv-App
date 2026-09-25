@@ -157,7 +157,8 @@ describe('AuthService', () => {
       const request = backend.expectOne(api('/profile'));
       expect(request.request.body).toEqual(change);
       expect(request.request.withCredentials).toBeTrue();
-      request.flush({ user: { ...user, name: 'Ana María' } });
+      // The API may answer with only what changed: the rest of the user must be kept
+      request.flush({ user: { name: 'Ana María' } });
 
       expect(service.currentUser()).toEqual({ ...user, name: 'Ana María' });
       expect(JSON.parse(localStorage.getItem('auth_user') as string)).toEqual({ ...user, name: 'Ana María' });
@@ -188,7 +189,11 @@ describe('AuthService', () => {
     const minute = (): void => jasmine.clock().tick(60_000);
 
     beforeEach(() => jasmine.clock().install());
-    afterEach(() => jasmine.clock().uninstall());
+    // Stop the poll while the fake clock is still installed, so the real clearInterval gets the fake id it made
+    afterEach(() => {
+      service.ngOnDestroy();
+      jasmine.clock().uninstall();
+    });
 
     it('asks /auth/me every minute and reloads the permissions only when their version changed', () => {
       signIn();
@@ -214,7 +219,9 @@ describe('AuthService', () => {
       backend.expectOne(api('/me')).flush(null, { status: 500, statusText: 'Server Error' });
       minute();
 
-      backend.expectOne(api('/me')).flush(me);
+      const next = backend.expectOne(api('/me'));
+      expect(next.request.method).toBe('GET');
+      next.flush(me);
     });
 
     it('runs a single poll even when the user signs in twice', () => {
@@ -223,7 +230,9 @@ describe('AuthService', () => {
 
       minute();
 
-      backend.expectOne(api('/me')).flush(me);
+      const polls = backend.match(api('/me'));
+      expect(polls).toHaveSize(1);
+      polls[0].flush(me);
     });
 
     it('stops polling when the user signs out', () => {

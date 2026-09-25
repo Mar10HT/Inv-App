@@ -67,10 +67,11 @@ describe('TransferQrDialog actions', () => {
   });
 
   it('prints nothing when the browser blocks the print window', () => {
-    spyOn(window, 'open').and.returnValue(null);
+    const open = spyOn(window, 'open').and.returnValue(null);
     fixture.componentRef.setInput('request', request());
 
     expect(() => component.printQrCode()).not.toThrow();
+    expect(open).toHaveBeenCalledTimes(1);
   });
 });
 

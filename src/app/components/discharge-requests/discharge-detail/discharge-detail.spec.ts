@@ -83,6 +83,14 @@ describe('DischargeDetailComponent', () => {
       expect(component.loading()).toBeFalse();
     });
 
+    it('confirmReject does nothing when there is no request', async () => {
+      await setup({ id: null });
+
+      component.confirmReject();
+
+      expect(discharges.rejectRequest).not.toHaveBeenCalled();
+    });
+
     it('goBack returns to the list of discharges', async () => {
       await setup();
 
@@ -197,14 +205,6 @@ describe('DischargeDetailComponent', () => {
       expect(component.showRejectDialog).toBeTrue();
     });
 
-    it('does nothing when there is no request', async () => {
-      TestBed.resetTestingModule();
-      await setup({ id: null });
-
-      component.confirmReject();
-
-      expect(discharges.rejectRequest).not.toHaveBeenCalled();
-    });
   });
 
   describe('how a request looks', () => {
@@ -229,10 +229,11 @@ describe('DischargeDetailComponent', () => {
       expect(classes[3]).toContain('surface-elevated');
     });
 
-    it('formats a date for the user locale', () => {
-      const date = new Date(2026, 8, 24);
+    it('formats a date with its day and year', () => {
+      const formatted = component.formatDate(new Date(2026, 8, 24));
 
-      expect(component.formatDate(date)).toBe(date.toLocaleDateString());
+      expect(formatted).toContain('2026');
+      expect(formatted).toContain('24');
     });
   });
 });

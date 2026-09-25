@@ -704,7 +704,7 @@ export class InventoryFormComponent implements OnInit {
   private calculateStatus(formValue: Pick<CreateInventoryItemDto, 'itemType' | 'assignedToUserId' | 'quantity' | 'minQuantity'>): InventoryStatus {
     if (formValue.itemType === ItemType.UNIQUE) {
       // The minimum of a UNIQUE item is fixed at 1, so the BULK rule below would call the single
-      // unit it has "low stock". The API decides it the same way when it is not sent a status.
+      // unit it has "low stock". This is the rule the API applies when it creates an item and is not sent a status.
       if (formValue.assignedToUserId) return InventoryStatus.IN_USE;
       return formValue.quantity === 1 ? InventoryStatus.IN_STOCK : InventoryStatus.OUT_OF_STOCK;
     }

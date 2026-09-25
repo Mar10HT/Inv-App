@@ -312,7 +312,7 @@ describe('InventoryFormComponent', () => {
       expect(sent()).toEqual(jasmine.objectContaining({ assignedToUserId: 'ana', status: InventoryStatus.IN_USE }));
     });
 
-    it('is IN_STOCK when it is not assigned and there is one, the same as the API decides', () => {
+    it('is IN_STOCK when it is not assigned and there is one', () => {
       fillUnique();
 
       component.onSubmit();
@@ -375,6 +375,17 @@ describe('InventoryFormComponent', () => {
       expect(inventory.updateItem).toHaveBeenCalledOnceWith('i1', jasmine.objectContaining({ name: 'Laptop Pro', status: InventoryStatus.IN_USE }));
       expect(inventory.createItem).not.toHaveBeenCalled();
       expect(navigate).toHaveBeenCalledOnceWith(['/inventory']);
+    });
+
+    it('saves an unassigned UNIQUE item as in stock with one unit and as out of stock with none', async () => {
+      await setup({ id: 'i1', loaded: of({ ...stored, assignedToUserId: undefined }) });
+
+      component.onSubmit();
+      expect(inventory.updateItem.calls.mostRecent().args[1].status).toBe(InventoryStatus.IN_STOCK);
+
+      form().patchValue({ quantity: 0 });
+      component.onSubmit();
+      expect(inventory.updateItem.calls.mostRecent().args[1].status).toBe(InventoryStatus.OUT_OF_STOCK);
     });
 
     it('logs a failed update and stays on the page', async () => {

@@ -17,6 +17,7 @@ import { ReportsStatusTab } from './tabs/reports-status-tab';
 import { ReportsTransactionsTab } from './tabs/reports-transactions-tab';
 import { ReportsTrendsTab } from './tabs/reports-trends-tab';
 import { ReportsValueTab } from './tabs/reports-value-tab';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-reports',
@@ -31,6 +32,7 @@ import { ReportsValueTab } from './tabs/reports-value-tab';
     ReportsTransactionsTab,
     ReportsTrendsTab,
     ReportsValueTab,
+    Spinner,
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -140,7 +142,7 @@ import { ReportsValueTab } from './tabs/reports-value-tab';
     <!-- Loading State -->
     @if (loading() && activeTab() !== 1) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     } @else {

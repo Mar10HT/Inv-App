@@ -2,7 +2,6 @@ import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStr
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -10,7 +9,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { StockTakeService } from '../../services/stock-take.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { NotificationService } from '../../services/notification.service';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import {
   StockTake,
   StockTakeStatus,
@@ -474,7 +473,7 @@ export class StockTakeComponent implements OnInit {
   private warehouseService = inject(WarehouseService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
 
   Status = StockTakeStatus;
 
@@ -717,18 +716,13 @@ export class StockTakeComponent implements OnInit {
     const st = this.selectedStockTake();
     if (!st) return;
 
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('STOCK_TAKE.CANCEL.TITLE'),
-        message: this.translate.instant('STOCK_TAKE.CANCEL.MESSAGE'),
-        confirmText: this.translate.instant('STOCK_TAKE.CANCEL.BUTTON'),
-        cancelText: this.translate.instant('COMMON.BACK'),
-        type: 'warning',
-      },
-      panelClass: 'confirm-dialog-container',
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirm.ask({
+      title: this.translate.instant('STOCK_TAKE.CANCEL.TITLE'),
+      message: this.translate.instant('STOCK_TAKE.CANCEL.MESSAGE'),
+      confirmText: this.translate.instant('STOCK_TAKE.CANCEL.BUTTON'),
+      cancelText: this.translate.instant('COMMON.BACK'),
+      type: 'warning',
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.stockTakeService.cancel(st.id).subscribe({
           next: (updated) => {

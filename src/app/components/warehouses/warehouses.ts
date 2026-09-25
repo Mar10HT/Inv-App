@@ -12,8 +12,10 @@ import {
   CreateWarehouseDto,
   UpdateWarehouseDto,
 } from '../../interfaces/warehouse.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 function normalizeManagerId<T extends { managerId?: string | null }>(payload: T): T {
   if (payload && 'managerId' in payload && (payload.managerId === undefined || payload.managerId === '')) {
@@ -29,7 +31,9 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
   imports: [
     LucideAngularModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -70,7 +74,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
@@ -93,10 +97,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
 
       @if (warehouses().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Warehouse" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'WAREHOUSE.NO_WAREHOUSES' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'WAREHOUSE.NO_WAREHOUSES_DESC' | translate }}</p>
+        <app-empty-state icon="Warehouse" [heading]="'WAREHOUSE.NO_WAREHOUSES' | translate" [description]="'WAREHOUSE.NO_WAREHOUSES_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['warehouse:create']">
             <button
               (click)="addWarehouse()"
@@ -104,7 +105,7 @@ function normalizeManagerId<T extends { managerId?: string | null }>(payload: T)
               {{ 'WAREHOUSE.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
@@ -250,6 +251,7 @@ export class Warehouses implements OnInit {
   private warehouseService = inject(WarehouseService);
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -324,18 +326,12 @@ export class Warehouses implements OnInit {
   }
 
   deleteWarehouse(warehouse: Warehouse): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.MESSAGE', { name: warehouse.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('WAREHOUSE.DELETE_CONFIRM.MESSAGE', { name: warehouse.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.warehouseService.delete(warehouse.id).subscribe({
           next: () => {

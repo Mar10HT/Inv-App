@@ -16,7 +16,7 @@ import { LoggerService } from '../../services/logger.service';
 import { ThemeService } from '../../services/theme.service';
 import { InventoryItemInterface, InventoryStatus, StatsResponse } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { InventoryItem } from '../inventory/inventory-item/inventory-item';
 import { CustomChartDialog, CustomChart, CustomChartDialogData, InventoryItemData } from './custom-chart-dialog/custom-chart-dialog';
 import { NotificationService } from '../../services/notification.service';
@@ -32,6 +32,7 @@ import {
 import { SkeletonDashboardComponent } from '../shared/skeleton/skeleton-dashboard';
 import { DashboardRecentItems } from './components/dashboard-recent-items/dashboard-recent-items';
 import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,7 +49,8 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
     SkeletonDashboardComponent,
     DashboardTransactionsComponent,
     DashboardLowStockComponent,
-    DashboardRecentItems
+    DashboardRecentItems,
+    Spinner
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -108,7 +110,7 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
         @for (i of [1, 2, 3]; track i) {
           <div class="bg-surface-variant rounded-xl border border-theme p-6">
             <div class="flex items-center justify-center h-72">
-              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+              <app-spinner></app-spinner>
             </div>
           </div>
         }
@@ -161,8 +163,8 @@ import { DashboardChartsBase, CustomChartOptions } from './dashboard-charts.base
 
               @if (!dataReady()) {
                 <div class="flex flex-col items-center justify-center py-8">
-                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-primary)] mb-2"></div>
-                  <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.LOADING' | translate }}...</p>
+                  <app-spinner size="md"></app-spinner>
+                  <p class="text-[var(--color-on-surface-variant)] text-sm mt-2">{{ 'COMMON.LOADING' | translate }}...</p>
                 </div>
               } @else if (hasChartData(chart)) {
                 @defer (on viewport) {
@@ -259,6 +261,7 @@ export class Dashboard extends DashboardChartsBase implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   protected readonly translate = inject(TranslateService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggerService);
@@ -494,18 +497,12 @@ export class Dashboard extends DashboardChartsBase implements OnInit {
   }
 
   deleteCustomChart(chart: CustomChart): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('COMMON.DELETE'),
-        message: this.translate.instant('DASHBOARD.CUSTOM_CHART.DELETE_CONFIRM', { name: chart.title }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('COMMON.DELETE'),
+      message: this.translate.instant('DASHBOARD.CUSTOM_CHART.DELETE_CONFIRM', { name: chart.title }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         const chartTitle = chart.title;
         const charts = this.customCharts().filter(c => c.id !== chart.id);
@@ -595,18 +592,12 @@ export class Dashboard extends DashboardChartsBase implements OnInit {
   }
 
   deleteItem(item: InventoryItemInterface): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('INVENTORY.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('INVENTORY.DELETE_CONFIRM.MESSAGE', { name: item.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.inventoryService.deleteItem(item.id).subscribe({
           next: () => {

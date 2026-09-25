@@ -7,8 +7,10 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { SupplierService } from '../../services/supplier.service';
 import { NotificationService } from '../../services/notification.service';
 import { Supplier } from '../../interfaces/supplier.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-suppliers',
@@ -17,7 +19,9 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
   imports: [
     LucideAngularModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -58,7 +62,7 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
@@ -81,10 +85,7 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
 
       @if (suppliers().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Truck" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'SUPPLIER.NO_SUPPLIERS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'SUPPLIER.NO_SUPPLIERS_DESC' | translate }}</p>
+        <app-empty-state icon="Truck" [heading]="'SUPPLIER.NO_SUPPLIERS' | translate" [description]="'SUPPLIER.NO_SUPPLIERS_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['suppliers:create']">
             <button
               (click)="addSupplier()"
@@ -92,7 +93,7 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
               {{ 'SUPPLIER.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
@@ -235,6 +236,7 @@ import { SupplierFormDialog, buildSupplierDialogData } from './supplier-form-dia
 export class Suppliers implements OnInit {
   private supplierService = inject(SupplierService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -299,18 +301,12 @@ export class Suppliers implements OnInit {
   }
 
   deleteSupplier(supplier: Supplier): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('SUPPLIER.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('SUPPLIER.DELETE_CONFIRM.MESSAGE', { name: supplier.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('SUPPLIER.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('SUPPLIER.DELETE_CONFIRM.MESSAGE', { name: supplier.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.supplierService.delete(supplier.id).subscribe({
           next: () => {

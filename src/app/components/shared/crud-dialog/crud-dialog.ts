@@ -5,6 +5,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CrudDialogData, CrudFieldConfig, CrudTranslateParams } from './crud-dialog-config.interface';
+import { Spinner } from '../spinner/spinner';
 
 @Component({
   selector: 'app-crud-dialog',
@@ -13,7 +14,8 @@ import { CrudDialogData, CrudFieldConfig, CrudTranslateParams } from './crud-dia
   imports: [
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    Spinner
   ],
   template: `
     <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden">
@@ -107,7 +109,7 @@ import { CrudDialogData, CrudFieldConfig, CrudTranslateParams } from './crud-dia
             [disabled]="form.invalid || saving()"
             class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <app-spinner size="sm" tone="white"></app-spinner>
             }
             {{ 'COMMON.SAVE' | translate }}
           </button>

@@ -10,10 +10,12 @@ import { NotificationService } from '../../services/notification.service';
 import { LoggerService } from '../../services/logger.service';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { PendingReset } from '../../interfaces/auth.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { UserFormDialog } from './user-form-dialog';
 import { ResetLinkDialog } from './reset-link-dialog';
 import { SetPasswordDialog } from './set-password-dialog';
+import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-users',
@@ -22,7 +24,9 @@ import { SetPasswordDialog } from './set-password-dialog';
   imports: [
     LucideAngularModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -118,7 +122,7 @@ import { SetPasswordDialog } from './set-password-dialog';
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
@@ -141,10 +145,7 @@ import { SetPasswordDialog } from './set-password-dialog';
 
       @if (users().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Users" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'USER.NO_USERS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'USER.NO_USERS_DESC' | translate }}</p>
+        <app-empty-state icon="Users" [heading]="'USER.NO_USERS' | translate" [description]="'USER.NO_USERS_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['users:create']">
             <button
               (click)="addUser()"
@@ -152,7 +153,7 @@ import { SetPasswordDialog } from './set-password-dialog';
               {{ 'USER.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
@@ -319,6 +320,7 @@ export class Users implements OnInit {
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private logger = inject(LoggerService);
@@ -444,18 +446,12 @@ export class Users implements OnInit {
   }
 
   deleteUser(user: User): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('USER.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('USER.DELETE_CONFIRM.MESSAGE', { name: user.name || user.email }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('USER.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('USER.DELETE_CONFIRM.MESSAGE', { name: user.name || user.email }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.userService.delete(user.id).subscribe({
           next: () => {

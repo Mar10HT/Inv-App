@@ -3,7 +3,6 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -11,7 +10,9 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { DischargeRequestService } from '../../../services/discharge-request.service';
 import { NotificationService } from '../../../services/notification.service';
 import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/discharge-request.interface';
-import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../../services/confirm.service';
+import { Spinner } from '../../shared/spinner/spinner';
+import { StatCard } from '../../shared/stat-card/stat-card';
 
 @Component({
   selector: 'app-discharge-list',
@@ -24,6 +25,8 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
     NgxPermissionsModule,
     TranslateModule,
     DatePipe,
+    Spinner,
+    StatCard,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -48,50 +51,10 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'COMMON.TOTAL' | translate }}</p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="ClipboardList" class="!text-[var(--color-on-surface-variant)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.PENDING' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-accent-amber)]">{{ stats().byStatus.pending }}</p>
-              </div>
-              <div class="bg-[var(--color-accent-amber-bg)] p-3 rounded-lg">
-                <lucide-icon name="Clock" class="!text-[var(--color-accent-amber)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.COMPLETED' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ stats().byStatus.completed }}</p>
-              </div>
-              <div class="bg-[var(--color-success-bg)] p-3 rounded-lg">
-                <lucide-icon name="CheckCircle2" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'DISCHARGES.STATUS.REJECTED' | translate }}</p>
-                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().byStatus.rejected }}</p>
-              </div>
-              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
-                <lucide-icon name="XCircle" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
-              </div>
-            </div>
-          </div>
+          <app-stat-card [label]="'COMMON.TOTAL' | translate" [value]="stats().total" icon="ClipboardList"></app-stat-card>
+          <app-stat-card [label]="'DISCHARGES.STATUS.PENDING' | translate" [value]="stats().byStatus.pending" icon="Clock" tone="amber"></app-stat-card>
+          <app-stat-card [label]="'DISCHARGES.STATUS.COMPLETED' | translate" [value]="stats().byStatus.completed" icon="CheckCircle2" tone="success"></app-stat-card>
+          <app-stat-card [label]="'DISCHARGES.STATUS.REJECTED' | translate" [value]="stats().byStatus.rejected" icon="XCircle" tone="error"></app-stat-card>
         </div>
 
         <!-- Filters -->
@@ -346,7 +309,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 
             @if (shareLoading()) {
               <div class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+                <app-spinner></app-spinner>
               </div>
             } @else if (shareQrDataUrl()) {
               <!-- QR Code: bg-white is intentional — scanners require white background -->
@@ -386,7 +349,7 @@ export class DischargeListComponent implements OnInit {
   private dischargeService = inject(DischargeRequestService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private router = inject(Router);
 
   Status = DischargeRequestStatus;
@@ -479,18 +442,12 @@ export class DischargeListComponent implements OnInit {
   }
 
   completeRequest(request: DischargeRequest): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_TITLE'),
-        message: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_MESSAGE'),
-        confirmText: this.translate.instant('DISCHARGES.COMPLETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'info',
-      },
-      panelClass: 'confirm-dialog-container',
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirm.ask({
+      title: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_TITLE'),
+      message: this.translate.instant('DISCHARGES.CONFIRM_COMPLETE_MESSAGE'),
+      confirmText: this.translate.instant('DISCHARGES.COMPLETE'),
+      type: 'info',
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.dischargeService.completeRequest(request.id).subscribe({
           next: (result) => {

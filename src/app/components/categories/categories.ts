@@ -7,9 +7,10 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { CategoryService } from '../../services/category.service';
 import { NotificationService } from '../../services/notification.service';
 import { Category } from '../../interfaces/category.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { CategoryFormDialog, buildCategoryDialogData } from './category-form-dialog';
 import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-categories',
@@ -19,7 +20,8 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    SkeletonCardComponent
+    SkeletonCardComponent,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -93,10 +95,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 
       @if (categories().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Tag" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'CATEGORY.NO_CATEGORIES' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'CATEGORY.NO_CATEGORIES_DESC' | translate }}</p>
+        <app-empty-state icon="Tag" [heading]="'CATEGORY.NO_CATEGORIES' | translate" [description]="'CATEGORY.NO_CATEGORIES_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['categories:create']">
             <button
               (click)="addCategory()"
@@ -104,7 +103,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
               {{ 'CATEGORY.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Categories Grid View -->
         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -167,6 +166,7 @@ import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 export class Categories implements OnInit {
   private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -232,18 +232,12 @@ export class Categories implements OnInit {
   }
 
   deleteCategory(category: Category): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('CATEGORY.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('CATEGORY.DELETE_CONFIRM.MESSAGE', { name: category.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('CATEGORY.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('CATEGORY.DELETE_CONFIRM.MESSAGE', { name: category.name }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.categoryService.delete(category.id).subscribe({
           next: () => {

@@ -7,6 +7,7 @@ import { RolesService } from '../../services/roles.service';
 import { NotificationService } from '../../services/notification.service';
 import { ApiError } from '../../interfaces/api-error.interface';
 import { RoleSummary, PermissionGroup } from '../../interfaces/role.interface';
+import { Spinner } from '../shared/spinner/spinner';
 
 export interface RoleFormDialogData {
   mode: 'add' | 'edit';
@@ -17,7 +18,7 @@ export interface RoleFormDialogData {
   selector: 'app-role-form-dialog',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, TranslateModule],
+  imports: [FormsModule, LucideAngularModule, TranslateModule, Spinner],
   template: `
     <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden w-full">
       <!-- Header -->
@@ -89,7 +90,7 @@ export interface RoleFormDialogData {
 
           @if (loadingPermissions()) {
             <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm py-4">
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--color-primary)]"></div>
+              <app-spinner size="sm"></app-spinner>
               {{ 'COMMON.LOADING' | translate }}...
             </div>
           } @else {
@@ -143,7 +144,7 @@ export interface RoleFormDialogData {
           [disabled]="!isValid() || saving() || !permissionsReady()"
           class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
           @if (saving()) {
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <app-spinner size="sm" tone="white"></app-spinner>
           }
           {{ 'COMMON.SAVE' | translate }}
         </button>

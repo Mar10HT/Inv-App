@@ -12,7 +12,6 @@ import { filter, switchMap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -25,8 +24,9 @@ import {
   CustomerType,
   SaleStatus,
 } from '../../interfaces/sale.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
+import { StatCard } from '../shared/stat-card/stat-card';
 
 @Component({
   selector: 'app-sales',
@@ -39,6 +39,7 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
     TranslateModule,
     NgxPermissionsModule,
     SaleFormDialog,
+    StatCard,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -63,19 +64,7 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">
-                  {{ 'SALES.STATS.ACTIVE' | translate }}
-                </p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().active }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="ShoppingCart" class="!w-5 !h-5 !text-[var(--color-on-surface-variant)]"></lucide-icon>
-              </div>
-            </div>
-          </div>
+          <app-stat-card [label]="'SALES.STATS.ACTIVE' | translate" [value]="stats().active" icon="ShoppingCart"></app-stat-card>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -89,32 +78,8 @@ import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
               </div>
             </div>
           </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">
-                  {{ 'SALES.STATS.CANCELLED' | translate }}
-                </p>
-                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ stats().cancelled }}</p>
-              </div>
-              <div class="bg-[var(--color-error-bg)] p-3 rounded-lg">
-                <lucide-icon name="Ban" class="!w-5 !h-5 !text-[var(--color-status-error)]"></lucide-icon>
-              </div>
-            </div>
-          </div>
-          <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-[var(--color-on-surface-variant)]">
-                  {{ 'SALES.STATS.TOTAL' | translate }}
-                </p>
-                <p class="text-2xl font-bold text-foreground">{{ stats().total }}</p>
-              </div>
-              <div class="bg-[var(--color-surface-elevated)] p-3 rounded-lg">
-                <lucide-icon name="List" class="!w-5 !h-5 !text-[var(--color-on-surface-variant)]"></lucide-icon>
-              </div>
-            </div>
-          </div>
+          <app-stat-card [label]="'SALES.STATS.CANCELLED' | translate" [value]="stats().cancelled" icon="Ban" tone="error"></app-stat-card>
+          <app-stat-card [label]="'SALES.STATS.TOTAL' | translate" [value]="stats().total" icon="List"></app-stat-card>
         </div>
 
         <!-- Filters -->
@@ -338,7 +303,7 @@ export class SalesComponent implements OnInit {
   saleService = inject(SaleService);
   warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
@@ -416,21 +381,15 @@ export class SalesComponent implements OnInit {
   }
 
   cancel(sale: Sale): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
+    this.confirm
+      .ask({
         title: this.translate.instant('SALES.CONFIRM_CANCEL_TITLE'),
         message: this.translate.instant('SALES.CONFIRM_CANCEL_MESSAGE', {
           name: sale.name || sale.id.slice(0, 8),
         }),
         confirmText: this.translate.instant('SALES.CANCEL_SALE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
         type: 'warning',
-      },
-      panelClass: 'confirm-dialog-container',
-    });
-
-    dialogRef
-      .afterClosed()
+      })
       .pipe(
         filter((confirmed) => !!confirmed),
         switchMap(() => this.saleService.cancel(sale.id)),

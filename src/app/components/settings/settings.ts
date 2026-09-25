@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { environment } from '../../../environments/environment';
 import { NotificationService } from '../../services/notification.service';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { ScheduledReportsService, ScheduledReport } from '../../services/scheduled-reports.service';
 import { ThemeService } from '../../services/theme.service';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-settings',
@@ -22,6 +22,7 @@ import { ThemeService } from '../../services/theme.service';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
+    Spinner,
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -173,7 +174,7 @@ import { ThemeService } from '../../services/theme.service';
             [disabled]="exporting()"
             class="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-colors">
             @if (exporting()) {
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <app-spinner size="sm" tone="white"></app-spinner>
             } @else {
               <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
             }
@@ -205,7 +206,7 @@ import { ThemeService } from '../../services/theme.service';
             [disabled]="resetting()"
             class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors">
             @if (resetting()) {
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <app-spinner size="sm" tone="white"></app-spinner>
             } @else {
               <lucide-icon name="Trash2" class="!w-4 !h-4"></lucide-icon>
             }
@@ -302,7 +303,7 @@ import { ThemeService } from '../../services/theme.service';
           <!-- Reports list -->
           @if (scheduledReportsService.isLoading()) {
             <div class="flex items-center justify-center py-8">
-              <div class="animate-spin rounded-full h-6 w-6 border-b-2" style="border-color: var(--color-primary);"></div>
+              <app-spinner size="md"></app-spinner>
             </div>
           } @else if (scheduledReportsService.reports().length === 0) {
             <div class="flex flex-col items-center justify-center py-8 gap-2">
@@ -371,7 +372,7 @@ import { ThemeService } from '../../services/theme.service';
 export class Settings implements OnInit {
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
-  private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private themeService = inject(ThemeService);
   scheduledReportsService = inject(ScheduledReportsService);
@@ -539,17 +540,12 @@ export class Settings implements OnInit {
   }
 
   resetData(): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('SETTINGS.RESET_CONFIRM_TITLE'),
-        message: this.translate.instant('SETTINGS.RESET_CONFIRM_MESSAGE'),
-        confirmText: this.translate.instant('SETTINGS.RESET_DATA'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('SETTINGS.RESET_CONFIRM_TITLE'),
+      message: this.translate.instant('SETTINGS.RESET_CONFIRM_MESSAGE'),
+      confirmText: this.translate.instant('SETTINGS.RESET_DATA'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.resetting.set(true);
 

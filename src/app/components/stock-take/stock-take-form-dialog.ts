@@ -1,6 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 export interface Warehouse {
@@ -15,7 +14,6 @@ export interface Warehouse {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    LucideAngularModule,
     TranslateModule,
   ],
   template: `

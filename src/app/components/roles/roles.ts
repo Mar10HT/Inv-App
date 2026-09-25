@@ -7,8 +7,10 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { RolesService } from '../../services/roles.service';
 import { NotificationService } from '../../services/notification.service';
 import { RoleSummary } from '../../interfaces/role.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-roles',
@@ -18,6 +20,8 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
+    Spinner,
+    EmptyState,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -96,14 +100,11 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 
           @if (loading()) {
             <div class="flex items-center justify-center py-16 gap-3 text-[var(--color-on-surface-variant)]">
-              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-primary)]"></div>
+              <app-spinner size="md"></app-spinner>
               {{ 'COMMON.LOADING' | translate }}...
             </div>
           } @else if (roles().length === 0) {
-            <div class="flex flex-col items-center justify-center py-16">
-              <lucide-icon name="ShieldOff" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-              <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'ROLES.NO_ROLES' | translate }}</p>
-            </div>
+            <app-empty-state icon="ShieldOff" [heading]="'ROLES.NO_ROLES' | translate"></app-empty-state>
           } @else {
             <div class="overflow-x-auto">
               <table class="w-full">
@@ -187,6 +188,7 @@ import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 export class RolesComponent implements OnInit {
   private rolesService = inject(RolesService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -244,17 +246,12 @@ export class RolesComponent implements OnInit {
   }
 
   confirmDelete(role: RoleSummary): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('ROLES.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('ROLES.DELETE_CONFIRM.MESSAGE', { name: role.displayName }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('ROLES.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('ROLES.DELETE_CONFIRM.MESSAGE', { name: role.displayName }),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.rolesService.remove(role.id).subscribe({
           next: () => {

@@ -8,8 +8,10 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { TransactionService } from '../../services/transaction.service';
 import { NotificationService } from '../../services/notification.service';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
-import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../services/confirm.service';
 import { TransactionFormDialog } from './transaction-form-dialog';
+import { Spinner } from '../shared/spinner/spinner';
+import { EmptyState } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-transactions',
@@ -19,7 +21,9 @@ import { TransactionFormDialog } from './transaction-form-dialog';
     CommonModule,
     LucideAngularModule,
     TranslateModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    Spinner,
+    EmptyState
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -93,7 +97,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+        <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
       </div>
     }
@@ -116,10 +120,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
 
       @if (transactions().length === 0 && !loading()) {
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-16">
-          <lucide-icon name="Receipt" class="!w-14 !h-14 !text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
-          <p class="text-[var(--color-on-surface-variant)] text-lg mb-2">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</p>
-          <p class="text-[var(--color-on-surface-muted)] text-sm mb-6">{{ 'TRANSACTION.NO_TRANSACTIONS_DESC' | translate }}</p>
+        <app-empty-state icon="Receipt" [heading]="'TRANSACTION.NO_TRANSACTIONS' | translate" [description]="'TRANSACTION.NO_TRANSACTIONS_DESC' | translate">
           <ng-container *ngxPermissionsOnly="['transactions:create']">
             <button
               (click)="addTransaction()"
@@ -127,7 +128,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
               {{ 'TRANSACTION.ADD' | translate }}
             </button>
           </ng-container>
-        </div>
+        </app-empty-state>
       } @else {
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
@@ -266,6 +267,7 @@ import { TransactionFormDialog } from './transaction-form-dialog';
 export class Transactions implements OnInit {
   private transactionService = inject(TransactionService);
   private dialog = inject(MatDialog);
+  private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
 
@@ -313,18 +315,12 @@ export class Transactions implements OnInit {
   }
 
   deleteTransaction(transaction: Transaction): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      data: {
-        title: this.translate.instant('TRANSACTION.DELETE_CONFIRM.TITLE'),
-        message: this.translate.instant('TRANSACTION.DELETE_CONFIRM.MESSAGE'),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        type: 'danger'
-      },
-      panelClass: 'confirm-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirm.ask({
+      title: this.translate.instant('TRANSACTION.DELETE_CONFIRM.TITLE'),
+      message: this.translate.instant('TRANSACTION.DELETE_CONFIRM.MESSAGE'),
+      confirmText: this.translate.instant('COMMON.DELETE'),
+      type: 'danger'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.transactionService.delete(transaction.id).subscribe({
           next: () => {

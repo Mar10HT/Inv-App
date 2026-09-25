@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { UserRole } from '../../interfaces/user.interface';
 import { ChangePasswordDialog } from './change-password-dialog/change-password-dialog';
+import { Spinner } from '../shared/spinner/spinner';
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +16,8 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
   imports: [
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    Spinner
   ],
   template: `
 <div class="min-h-screen bg-surface p-6">
@@ -134,7 +136,7 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
                 [disabled]="profileForm.invalid || saving()"
                 class="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
                 @if (saving()) {
-                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <app-spinner size="sm" tone="white"></app-spinner>
                 }
                 {{ 'COMMON.SAVE' | translate }}
               </button>

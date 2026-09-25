@@ -13,6 +13,7 @@ import { ApiError } from '../../interfaces/api-error.interface';
 import { User, UserRole } from '../../interfaces/user.interface';
 import { Warehouse } from '../../interfaces/warehouse.interface';
 import { RoleSummary } from '../../interfaces/role.interface';
+import { Spinner } from '../shared/spinner/spinner';
 
 export interface UserFormDialogData {
   mode: 'add' | 'edit';
@@ -26,7 +27,8 @@ export interface UserFormDialogData {
   imports: [
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    Spinner
   ],
   template: `
     <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border-subtle)] rounded-xl overflow-hidden">
@@ -136,7 +138,7 @@ export interface UserFormDialogData {
             <p class="text-xs text-[var(--color-on-surface-muted)] mb-2">{{ 'USER.CUSTOM_ROLE_DESC' | translate }}</p>
             @if (loadingRoles()) {
               <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm py-2">
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--color-primary)]"></div>
+                <app-spinner size="sm"></app-spinner>
                 {{ 'COMMON.LOADING' | translate }}...
               </div>
             } @else {
@@ -163,7 +165,7 @@ export interface UserFormDialogData {
 
             @if (loadingWarehouses()) {
               <div class="flex items-center gap-2 text-[var(--color-on-surface-variant)] text-sm py-2">
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--color-primary)]"></div>
+                <app-spinner size="sm"></app-spinner>
                 {{ 'COMMON.LOADING' | translate }}...
               </div>
             } @else if (allWarehouses().length === 0) {
@@ -209,7 +211,7 @@ export interface UserFormDialogData {
             [disabled]="form.invalid || saving() || !assignmentsReady()"
             class="px-6 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2">
             @if (saving()) {
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <app-spinner size="sm" tone="white"></app-spinner>
             }
             {{ 'COMMON.SAVE' | translate }}
           </button>

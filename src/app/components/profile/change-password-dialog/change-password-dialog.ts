@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
 import { strongPasswordRules } from '../../../utils/password.validators';
+import { Spinner } from '../../shared/spinner/spinner';
 
 @Component({
   selector: 'app-change-password-dialog',
@@ -14,7 +15,8 @@ import { strongPasswordRules } from '../../../utils/password.validators';
   imports: [
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    Spinner
   ],
   template: `
     <div class="bg-[var(--color-surface-variant)] rounded-xl w-full max-w-md">
@@ -122,7 +124,7 @@ import { strongPasswordRules } from '../../../utils/password.validators';
             [disabled]="passwordForm.invalid || saving()"
             class="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
             @if (saving()) {
-              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <app-spinner size="sm" tone="white"></app-spinner>
             }
             {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
           </button>

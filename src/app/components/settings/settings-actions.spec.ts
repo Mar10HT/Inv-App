@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TranslateService } from '@ngx-translate/core';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { of, throwError } from 'rxjs';
 
 import { Settings } from './settings';
@@ -216,6 +217,37 @@ describe('Settings actions', () => {
       expect(downloads).toEqual([]);
       expect(notifications.handleError).toHaveBeenCalledTimes(1);
       expect(component.exporting()).toBeFalse();
+    });
+  });
+
+  describe('the scheduled reports section', () => {
+    // Behind a permission, so nothing else renders it: every icon it draws has to be registered
+    const renderFor = async (permissions: string[]): Promise<void> => {
+      loadPreferences();
+      await TestBed.inject(NgxPermissionsService).loadPermissions(permissions);
+      fixture.detectChanges();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+    };
+
+    it('is drawn, with an icon for the empty list, for a user who can see reports', async () => {
+      await renderFor(['reports:view']);
+
+      expect(fixture.nativeElement.textContent).toContain('SCHEDULED_REPORTS.TITLE');
+    });
+
+    it('is drawn with a switch for each report it lists', async () => {
+      (reports as unknown as { reports: WritableSignal<ScheduledReport[]> }).reports.set([report({ id: 'on', isActive: true }), report({ id: 'off', isActive: false })]);
+
+      await renderFor(['reports:view']);
+
+      expect(fixture.nativeElement.querySelectorAll('lucide-icon').length).toBeGreaterThan(0);
+    });
+
+    it('is left out for a user who cannot see reports', async () => {
+      await renderFor([]);
+
+      expect(fixture.nativeElement.textContent).not.toContain('SCHEDULED_REPORTS.TITLE');
     });
   });
 

@@ -5,7 +5,8 @@ import { environment } from '../../environments/environment';
 /** The part of Sentry that reports errors, injected so specs can replace it. */
 export const SENTRY = new InjectionToken<Pick<typeof Sentry, 'captureException' | 'captureMessage'>>('SENTRY', {
   providedIn: 'root',
-  factory: () => Sentry
+  // Only the two functions: returning the whole namespace keeps all of @sentry/angular out of tree-shaking (+370 kB)
+  factory: () => ({ captureException: Sentry.captureException, captureMessage: Sentry.captureMessage })
 });
 
 @Injectable({

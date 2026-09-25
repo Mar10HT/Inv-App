@@ -52,12 +52,15 @@ describe('LoggerService', () => {
   });
 
   describe('in production', () => {
+    let wasProduction: boolean;
+
     beforeEach(() => {
+      wasProduction = environment.production;
       environment.production = true;
     });
 
     afterEach(() => {
-      environment.production = false;
+      environment.production = wasProduction;
     });
 
     it('stays quiet for log, warn, debug and info', () => {
@@ -91,5 +94,16 @@ describe('LoggerService', () => {
       });
       expect(sentry.captureException).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('SENTRY token', () => {
+  it('gives the real Sentry reporting functions when nothing replaces it', () => {
+    TestBed.configureTestingModule({ providers: [...provideTestBedDefaults()] });
+
+    const sentry = TestBed.inject(SENTRY);
+
+    expect(typeof sentry.captureException).toBe('function');
+    expect(typeof sentry.captureMessage).toBe('function');
   });
 });

@@ -106,6 +106,17 @@ describe('Settings actions', () => {
     });
   });
 
+  it('starts in the language the app picked when the user never saved one', () => {
+    loadPreferences();
+    TestBed.inject(TranslateService).use('es');
+
+    const reopened = TestBed.createComponent(Settings);
+    reopened.detectChanges();
+    backend.expectOne(api('/users/preferences')).flush({ emailNotifications: true, lowStockAlerts: true });
+
+    expect(reopened.componentInstance.currentLang()).toBe('es');
+  });
+
   it('changeLang switches the app language and remembers it', () => {
     loadPreferences();
     const use = spyOn(TestBed.inject(TranslateService), 'use');

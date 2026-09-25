@@ -115,7 +115,7 @@ const pagesOf = (list: Route[], parentPath = '', parentGuards: CanActivateFn[] =
   list.flatMap((route) => {
     const path = [parentPath, route.path].filter(Boolean).join('/');
     const guards = [...parentGuards, ...((route.canActivate ?? []) as CanActivateFn[])];
-    const own = route.loadComponent ? [{ path, guards }] : [];
+    const own = route.loadComponent || route.component || route.loadChildren ? [{ path, guards }] : [];
     return [...own, ...pagesOf(route.children ?? [], path, guards)];
   });
 
@@ -150,7 +150,7 @@ const PUBLIC_PAGES = ['forgot-password', 'reset-password/:token', 'request', '**
 
 describe('routes', () => {
   it('sends the empty address to the dashboard', () => {
-    expect(routes[0]).toEqual(jasmine.objectContaining({ path: '', redirectTo: 'dashboard', pathMatch: 'full' }));
+    expect(routes.find((route) => route.path === '')).toEqual(jasmine.objectContaining({ redirectTo: 'dashboard', pathMatch: 'full' }));
   });
 
   it('ends with the not found page, so it only catches what nothing else matched', () => {

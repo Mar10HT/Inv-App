@@ -12,7 +12,6 @@ const stats = (overrides: Partial<LoanStats> = {}): LoanStats => ({
   totalReturned: 5,
   totalOverdue: 4,
   dueSoon: 0,
-  totalActive: 6,
   ...overrides
 });
 

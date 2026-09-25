@@ -78,7 +78,6 @@ export interface LoanStats {
   totalReturned: number;
   totalOverdue: number;
   dueSoon: number; // Due within 7 days
-  totalActive: number; // Legacy: totalPending + totalSent + totalReceived + totalReturnPending
 }
 
 // QR confirmation response

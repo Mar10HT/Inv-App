@@ -76,8 +76,7 @@ export class LoanService implements OnDestroy {
         activeStatuses.includes(l.status) &&
         new Date(l.dueDate) <= sevenDaysFromNow &&
         new Date(l.dueDate) > now
-      ).length,
-      totalActive: totalPending + totalSent + totalReceived + totalReturnPending + totalOverdue
+      ).length
     };
   });
 

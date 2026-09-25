@@ -1,11 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken, inject } from '@angular/core';
 import * as Sentry from '@sentry/angular';
 import { environment } from '../../environments/environment';
+
+/** The part of Sentry that reports errors, injected so specs can replace it. */
+export const SENTRY = new InjectionToken<Pick<typeof Sentry, 'captureException' | 'captureMessage'>>('SENTRY', {
+  providedIn: 'root',
+  factory: () => Sentry
+});
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoggerService {
+  private sentry = inject(SENTRY);
+
   /**
    * Log informational messages
    * Only logs in development mode
@@ -38,9 +46,9 @@ export class LoggerService {
 
     if (environment.production) {
       if (error instanceof Error) {
-        Sentry.captureException(error, { extra: { message, args } });
+        this.sentry.captureException(error, { extra: { message, args } });
       } else {
-        Sentry.captureMessage(errorMessage, { level: 'error', extra: { error, args } });
+        this.sentry.captureMessage(errorMessage, { level: 'error', extra: { error, args } });
       }
     }
   }

@@ -52,6 +52,12 @@ describe('LoanService', () => {
 
   afterEach(() => backend.verify());
 
+  it('has the notification service show the errors of its requests', () => {
+    const service = create();
+
+    expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
+  });
+
   describe('loading', () => {
     it('loads the loans when created, asking for at most 200', () => {
       const service = TestBed.inject(LoanService);

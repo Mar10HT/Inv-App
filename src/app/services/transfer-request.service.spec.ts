@@ -45,6 +45,12 @@ describe('TransferRequestService', () => {
 
   afterEach(() => backend.verify());
 
+  it('has the notification service show the errors of its requests', () => {
+    const service = create();
+
+    expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
+  });
+
   describe('loading', () => {
     it('loads at most 200 requests when created and transforms them', () => {
       const service = TestBed.inject(TransferRequestService);

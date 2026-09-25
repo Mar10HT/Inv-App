@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { ReportsDownloadsTab } from './reports-downloads-tab';
 import { environment } from '../../../../environments/environment';
+import { NotificationService } from '../../../services/notification.service';
 import { provideTestBedDefaults } from '../../../../testing/test-providers';
 
 const reports: [string, string, RegExp][] = [
@@ -70,6 +71,16 @@ describe('ReportsDownloadsTab', () => {
     fixture.componentRef.setInput('warehouseId', '');
     buttons()[0].click();
     http.expectOne(url('reports/inventory/excel')).flush(new Blob());
+  });
+
+  it('tells the user when a download fails and saves nothing', () => {
+    const error = spyOn(TestBed.inject(NotificationService), 'error');
+
+    buttons()[0].click();
+    http.expectOne(url('reports/inventory/excel')).flush(new Blob(['boom']), { status: 500, statusText: 'Server Error' });
+
+    expect(error).toHaveBeenCalledOnceWith('NOTIFICATIONS.ERRORS.EXPORT_FAILED');
+    expect(downloaded).toEqual([]);
   });
 
   it('sends the Spanish locale when the app language is es', () => {

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
+import { NotificationService } from '../../../services/notification.service';
 import { triggerBlobDownload } from '../../../utils/download.utils';
 
 @Component({
@@ -136,6 +137,7 @@ import { triggerBlobDownload } from '../../../utils/download.utils';
 export class ReportsDownloadsTab {
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
+  private notifications = inject(NotificationService);
 
   /** Empty string means every warehouse the user can access. */
   warehouseId = input('');
@@ -146,7 +148,11 @@ export class ReportsDownloadsTab {
     const warehouseId = this.warehouseId();
     if (warehouseId) params.set('warehouseId', warehouseId);
     this.http.get<Blob>(`${environment.apiUrl}/${endpoint}?${params.toString()}`, { responseType: 'blob' as 'json' })
-      .subscribe(blob => triggerBlobDownload(blob, filename));
+      .subscribe({
+        next: blob => triggerBlobDownload(blob, filename),
+        // The error interceptor already logs the failed request
+        error: () => this.notifications.error('NOTIFICATIONS.ERRORS.EXPORT_FAILED'),
+      });
   }
 
   exportInventoryExcel(): void {

@@ -276,10 +276,10 @@ export class CustomChartDialog implements OnInit {
     currency: ['USD' as ChartCurrency]
   });
 
+  // No "all currencies" choice: a value chart sums price times quantity, which cannot mix currencies.
   currencyOptions = [
     { value: 'USD' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.USD_ONLY', icon: 'DollarSign' },
-    { value: 'HNL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.HNL_ONLY', icon: 'Banknote' },
-    { value: 'ALL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.ALL_CURRENCIES', icon: 'ArrowLeftRight' }
+    { value: 'HNL' as ChartCurrency, label: 'DASHBOARD.CUSTOM_CHART.HNL_ONLY', icon: 'Banknote' }
   ];
 
   quantitySources = [
@@ -377,13 +377,11 @@ export class CustomChartDialog implements OnInit {
 
   readonly isValueSource = isValueSource;
 
+  /** ALL is not a real currency to sum in: a chart saved with it (or defaulting) falls back to USD. */
   private getFilteredItems(): InventoryItemData[] {
     const currency = this.chartForm.get('currency')?.value as ChartCurrency;
-    const items = this.data?.items || [];
-    if (currency === 'ALL') {
-      return items;
-    }
-    return items.filter(item => item.currency === currency);
+    const target = currency === 'ALL' ? 'USD' : currency;
+    return (this.data?.items || []).filter(item => item.currency === target);
   }
 
   private calculateValueData(groupBy: 'category' | 'warehouse' | 'supplier' | 'status'): { name: string; count: number }[] {

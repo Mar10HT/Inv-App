@@ -1,10 +1,11 @@
 import { InventoryItemInterface, InventoryStatus } from '../../interfaces/inventory-item.interface';
+import { MoneyByCurrency } from '../../utils/money.utils';
 
 export type ReportCurrency = 'USD' | 'HNL' | 'ALL';
 
 export interface ValueSummary {
   label: string;
-  value: number;
+  value: MoneyByCurrency;
   count: number;
 }
 

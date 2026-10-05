@@ -178,14 +178,24 @@ describe('Reports', () => {
     it('sums price times quantity and counts the filtered items', async () => {
       await setup([item({ id: 'a', price: 10, quantity: 3 }), item({ id: 'b', price: 5, quantity: 2 })]);
 
-      expect(component.totalValue()).toBe(40);
+      expect(component.totalValue()).toEqual({ USD: 40 });
       expect(component.totalItemsCount()).toBe(2);
     });
 
     it('treats a missing price as zero', async () => {
       await setup([item({ price: undefined, quantity: 4 })]);
 
-      expect(component.totalValue()).toBe(0);
+      expect(component.totalValue()).toEqual({ USD: 0 });
+    });
+
+    it('keeps each currency apart instead of summing them, when ALL is selected', async () => {
+      await setup([
+        item({ id: 'usd', currency: Currency.USD, price: 10, quantity: 1 }),
+        item({ id: 'hnl', currency: Currency.HNL, price: 20, quantity: 1 })
+      ]);
+      component.selectedCurrency.set('ALL');
+
+      expect(component.totalValue()).toEqual({ USD: 10, HNL: 20 });
     });
 
     it('filters by currency unless ALL is selected', async () => {
@@ -212,9 +222,9 @@ describe('Reports', () => {
       ]);
 
       expect(component.valueByCategory()).toEqual([
-        { label: 'Big', value: 60, count: 2 },
-        { label: 'Uncategorized', value: 2, count: 1 },
-        { label: 'Small', value: 1, count: 1 }
+        { label: 'Big', value: { USD: 60 }, count: 2 },
+        { label: 'Uncategorized', value: { USD: 2 }, count: 1 },
+        { label: 'Small', value: { USD: 1 }, count: 1 }
       ]);
     });
 
@@ -226,9 +236,9 @@ describe('Reports', () => {
       ]);
 
       expect(component.valueByWarehouse()).toEqual([
-        { label: 'Backup', value: 30, count: 1 },
-        { label: 'Main', value: 10, count: 1 },
-        { label: 'No Warehouse', value: 5, count: 1 }
+        { label: 'Backup', value: { USD: 30 }, count: 1 },
+        { label: 'Main', value: { USD: 10 }, count: 1 },
+        { label: 'No Warehouse', value: { USD: 5 }, count: 1 }
       ]);
     });
 
@@ -239,8 +249,8 @@ describe('Reports', () => {
       ]);
 
       expect(component.valueBySupplier()).toEqual([
-        { label: 'Acme', value: 10, count: 1 },
-        { label: 'No Supplier', value: 3, count: 1 }
+        { label: 'Acme', value: { USD: 10 }, count: 1 },
+        { label: 'No Supplier', value: { USD: 3 }, count: 1 }
       ]);
     });
 
@@ -263,7 +273,7 @@ describe('Reports', () => {
 
       component.selectedWarehouseId.set('w2');
 
-      expect(component.totalValue()).toBe(100);
+      expect(component.totalValue()).toEqual({ USD: 100 });
       expect(component.topItems().map((i) => i.id)).toEqual(['b']);
     });
   });

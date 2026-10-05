@@ -94,11 +94,14 @@ describe('CustomChartDialog', () => {
       expect(component.previewData()).toEqual([{ name: 'Furniture', count: 1000 }]);
     });
 
-    it('counts every currency together for ALL', () => {
+    it('treats ALL as USD instead of summing every currency together', () => {
       pick('valueByCategory');
       component.selectCurrency('ALL');
 
-      expect(component.previewData().map((d) => d.name)).toEqual(['Furniture', 'Computers', 'Accessories']);
+      expect(component.previewData()).toEqual([
+        { name: 'Computers', count: 200 },
+        { name: 'Accessories', count: 30.37 }
+      ]);
     });
 
     it('groups the value by warehouse, supplier and status', () => {

@@ -6,10 +6,10 @@ import { provideTestBedDefaults } from '../../../../testing/test-providers';
 import { item } from '../../../../testing/report-fixtures';
 
 const byCategory: ValueSummary[] = [
-  { label: 'Parts', value: 1200, count: 3 },
-  { label: 'Tools', value: 34.5, count: 1 }
+  { label: 'Parts', value: { USD: 1200 }, count: 3 },
+  { label: 'Tools', value: { USD: 34.5 }, count: 1 }
 ];
-const byWarehouse: ValueSummary[] = [{ label: 'Main', value: 1234.5, count: 4 }];
+const byWarehouse: ValueSummary[] = [{ label: 'Main', value: { USD: 1234.5 }, count: 4 }];
 const bySupplier: ValueSummary[] = [];
 const top: TopItem[] = [
   { ...item({ id: 'a', name: 'Cable', category: 'Parts', quantity: 3, price: 10 }), totalValue: 30 },
@@ -24,7 +24,7 @@ describe('ReportsValueTab', () => {
   const render = (inputs: Record<string, unknown> = {}): void => {
     const all = {
       currency: 'USD' as ReportCurrency,
-      totalValue: 1234.5,
+      totalValue: { USD: 1234.5 },
       totalItemsCount: 8,
       valueByCategory: byCategory,
       valueByWarehouse: byWarehouse,
@@ -66,29 +66,28 @@ describe('ReportsValueTab', () => {
     });
 
     it('uses the L symbol for HNL', () => {
-      render({ currency: 'HNL' });
+      render({ totalValue: { HNL: 1234.5 } });
 
       expect(el.querySelector('p.text-3xl')?.textContent?.trim()).toBe('L1,234.50');
+    });
+
+    it('shows one amount per currency when ALL mixes them, instead of a wrong blended sum', () => {
+      render({ currency: 'ALL', totalValue: { USD: 100, HNL: 50 } });
+
+      expect(el.querySelector('p.text-3xl')?.textContent?.trim()).toBe('$100.00 · L50.00');
     });
   });
 
   describe('currency formatting', () => {
-    it('uses $ for USD and ALL and L for HNL', () => {
-      render({ currency: 'USD' });
-      expect(component.formatCurrency(5)).toBe('$5.00');
-
-      fixture.componentRef.setInput('currency', 'ALL');
-      expect(component.formatCurrency(5)).toBe('$5.00');
-
-      fixture.componentRef.setInput('currency', 'HNL');
-      expect(component.formatCurrency(5)).toBe('L5.00');
+    it('formats a total by the currency (or currencies) it carries, not by the selected one', () => {
+      expect(component.formatTotal({ USD: 5 })).toBe('$5.00');
+      expect(component.formatTotal({ HNL: 5 })).toBe('L5.00');
+      expect(component.formatTotal({ USD: 5, HNL: 10 })).toBe('$5.00 · L10.00');
     });
 
     it('always shows two decimals with thousands separators', () => {
-      render();
-
-      expect(component.formatCurrency(0)).toBe('$0.00');
-      expect(component.formatCurrency(1234567.891)).toBe('$1,234,567.89');
+      expect(component.formatTotal({ USD: 0 })).toBe('$0.00');
+      expect(component.formatTotal({ USD: 1234567.891 })).toBe('$1,234,567.89');
     });
   });
 

@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ReportCurrency, TopItem, ValueSummary } from '../reports.types';
-import { formatMoney } from '../../../utils/money.utils';
+import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../../../utils/money.utils';
 
 @Component({
   selector: 'app-reports-value-tab',
@@ -46,7 +46,7 @@ import { formatMoney } from '../../../utils/money.utils';
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">{{ 'REPORTS.TOTAL_VALUE' | translate }}</p>
-            <p class="text-3xl font-bold text-[var(--color-primary)]">{{ formatCurrency(totalValue()) }}</p>
+            <p class="text-3xl font-bold text-[var(--color-primary)]">{{ formatTotal(totalValue()) }}</p>
           </div>
           <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
             <lucide-icon name="DollarSign" class="!text-[var(--color-primary)] !w-6 !h-6"></lucide-icon>
@@ -106,7 +106,7 @@ import { formatMoney } from '../../../utils/money.utils';
               <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-3 text-sm hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
                 <span class="text-foreground truncate">{{ item.label }}</span>
                 <span class="text-center text-[var(--color-on-surface-variant)]">{{ item.count }}</span>
-                <span class="text-right text-[var(--color-primary)] font-semibold">{{ formatCurrency(item.value) }}</span>
+                <span class="text-right text-[var(--color-primary)] font-semibold">{{ formatTotal(item.value) }}</span>
               </div>
             } @empty {
               <div class="py-8 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</div>
@@ -146,8 +146,8 @@ import { formatMoney } from '../../../utils/money.utils';
                 </td>
                 <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ item.category }}</td>
                 <td class="px-6 py-4 text-center text-foreground">{{ item.quantity }}</td>
-                <td class="px-6 py-4 text-right text-[var(--color-on-surface-variant)]">{{ formatCurrency(item.price || 0) }}</td>
-                <td class="px-6 py-4 text-right text-[var(--color-primary)] font-bold">{{ formatCurrency(item.totalValue) }}</td>
+                <td class="px-6 py-4 text-right text-[var(--color-on-surface-variant)]">{{ formatMoney(item.price || 0, item.currency) }}</td>
+                <td class="px-6 py-4 text-right text-[var(--color-primary)] font-bold">{{ formatMoney(item.totalValue, item.currency) }}</td>
               </tr>
             } @empty {
               <tr>
@@ -166,7 +166,7 @@ import { formatMoney } from '../../../utils/money.utils';
               <!-- Rank Badge -->
               <div class="flex justify-between items-start mb-2">
                 <span class="w-6 h-6 bg-[var(--color-primary-container)] rounded-md flex items-center justify-center text-xs font-bold text-[var(--color-primary)]">{{ i + 1 }}</span>
-                <span class="text-[var(--color-primary)] font-bold text-sm">{{ formatCurrency(item.totalValue) }}</span>
+                <span class="text-[var(--color-primary)] font-bold text-sm">{{ formatMoney(item.totalValue, item.currency) }}</span>
               </div>
 
               <!-- Item Name -->
@@ -176,7 +176,7 @@ import { formatMoney } from '../../../utils/money.utils';
               <!-- Quick Info -->
               <div class="flex items-center justify-between text-xs">
                 <span class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.QTY_SHORT' | translate }}: <span class="text-foreground font-medium">{{ item.quantity }}</span></span>
-                <span class="text-[var(--color-on-surface-variant)]">{{ formatCurrency(item.price || 0) }}/u</span>
+                <span class="text-[var(--color-on-surface-variant)]">{{ formatMoney(item.price || 0, item.currency) }}/u</span>
               </div>
             </div>
           } @empty {
@@ -189,7 +189,7 @@ import { formatMoney } from '../../../utils/money.utils';
 })
 export class ReportsValueTab {
   currency = input.required<ReportCurrency>();
-  totalValue = input.required<number>();
+  totalValue = input.required<MoneyByCurrency>();
   totalItemsCount = input.required<number>();
   valueByCategory = input.required<ValueSummary[]>();
   valueByWarehouse = input.required<ValueSummary[]>();
@@ -206,7 +206,10 @@ export class ReportsValueTab {
     { value: 'ALL', label: 'REPORTS.ALL_CURRENCIES' }
   ];
 
-  formatCurrency(value: number): string {
-    return formatMoney(value, this.currency());
+  /** Exposed for the template: each row already carries its own currency, there is nothing to blend. */
+  formatMoney = formatMoney;
+
+  formatTotal(value: MoneyByCurrency): string {
+    return formatMoneyByCurrency(value);
   }
 }

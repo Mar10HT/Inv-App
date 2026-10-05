@@ -57,12 +57,10 @@ export abstract class DashboardChartsBase {
   }
 
   // Custom chart data methods
+  /** ALL is not a real currency to sum in: a chart saved with it (or defaulting) falls back to USD. */
   protected getFilteredItemsByCurrency(currency: ChartCurrency = 'USD'): InventoryItemInterface[] {
-    const items = this.allItems();
-    if (currency === 'ALL') {
-      return items;
-    }
-    return items.filter(item => item.currency === currency);
+    const target = currency === 'ALL' ? 'USD' : currency;
+    return this.allItems().filter(item => item.currency === target);
   }
 
   protected calculateValueDataForChart(

@@ -78,8 +78,8 @@ describe('DashboardChartsBase', () => {
       expect(charts.byCurrency('HNL').map((i) => i.name)).toEqual(['b']);
     });
 
-    it('returns every item for ALL', () => {
-      expect(charts.byCurrency('ALL').length).toBe(2);
+    it('treats ALL as USD instead of summing every currency together', () => {
+      expect(charts.byCurrency('ALL').map((i) => i.name)).toEqual(['a']);
     });
   });
 

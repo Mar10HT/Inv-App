@@ -4,7 +4,7 @@ import type jsPDF from 'jspdf';
 import { Transaction, TransactionType } from '../interfaces/transaction.interface';
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
 import { PdfDrawingBase } from './pdf/pdf-drawing.base';
-import { formatMoney } from '../utils/money.utils';
+import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../utils/money.utils';
 import { localDateKey } from '../utils/date.utils';
 
 /** jsPDF instance augmented with the `lastAutoTable` property that jspdf-autotable
@@ -23,11 +23,11 @@ interface TransactionPDFOptions {
 
 interface ValueReportPDFOptions {
   currency: string;
-  totalValue: number;
+  totalValue: MoneyByCurrency;
   totalItems: number;
-  valueByCategory: { label: string; value: number; count: number }[];
-  valueByWarehouse: { label: string; value: number; count: number }[];
-  valueBySupplier: { label: string; value: number; count: number }[];
+  valueByCategory: { label: string; value: MoneyByCurrency; count: number }[];
+  valueByWarehouse: { label: string; value: MoneyByCurrency; count: number }[];
+  valueBySupplier: { label: string; value: MoneyByCurrency; count: number }[];
   topItems: (InventoryItemInterface & { totalValue: number })[];
 }
 
@@ -213,13 +213,14 @@ export class PdfExportService extends PdfDrawingBase {
       month: 'long',
       day: 'numeric'
     });
-    doc.text(`${this.t('REPORTS.PDF.GENERATED')}: ${currentDate} | ${this.t('REPORTS.PDF.CURRENCY')}: ${options.currency}`, 15, 33);
+    const currencyLabel = options.currency === 'ALL' ? this.t('REPORTS.ALL_CURRENCIES') : options.currency;
+    doc.text(`${this.t('REPORTS.PDF.GENERATED')}: ${currentDate} | ${this.t('REPORTS.PDF.CURRENCY')}: ${currencyLabel}`, 15, 33);
 
     yPos = 50;
 
     // Summary cards
     this.drawValueSummaryCards(doc, {
-      totalValue: formatMoney(options.totalValue, options.currency),
+      totalValue: formatMoneyByCurrency(options.totalValue),
       totalItems: options.totalItems.toString(),
       categories: options.valueByCategory.length.toString(),
       warehouses: options.valueByWarehouse.length.toString()
@@ -239,7 +240,7 @@ export class PdfExportService extends PdfDrawingBase {
       body: options.valueByCategory.map(item => [
         item.label,
         item.count.toString(),
-        formatMoney(item.value, options.currency)
+        formatMoneyByCurrency(item.value)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
@@ -256,7 +257,7 @@ export class PdfExportService extends PdfDrawingBase {
       body: options.valueByWarehouse.map(item => [
         item.label,
         item.count.toString(),
-        formatMoney(item.value, options.currency)
+        formatMoneyByCurrency(item.value)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
@@ -285,7 +286,7 @@ export class PdfExportService extends PdfDrawingBase {
       body: options.valueBySupplier.map(item => [
         item.label,
         item.count.toString(),
-        formatMoney(item.value, options.currency)
+        formatMoneyByCurrency(item.value)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
@@ -322,8 +323,8 @@ export class PdfExportService extends PdfDrawingBase {
         item.name,
         item.category,
         item.quantity.toString(),
-        formatMoney(item.price || 0, options.currency),
-        formatMoney(item.totalValue, options.currency)
+        formatMoney(item.price || 0, item.currency),
+        formatMoney(item.totalValue, item.currency)
       ]),
       theme: 'striped',
       headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },

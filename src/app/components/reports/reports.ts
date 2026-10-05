@@ -10,6 +10,7 @@ import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
+import { addMoney, MoneyByCurrency, totalOf } from '../../utils/money.utils';
 import { localDateKey, parseDate } from '../../utils/date.utils';
 import { formatDate, formatDateTime } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
@@ -296,70 +297,71 @@ export class Reports implements OnInit {
     return items.filter(item => item.currency === currency);
   });
 
-  totalValue = computed(() => {
-    return this.filteredItems().reduce((sum, item) => {
-      return sum + ((item.price || 0) * item.quantity);
-    }, 0);
+  /** Per currency, never summed into one blended number: filteredItems mixes currencies when ALL is selected. */
+  totalValue = computed((): MoneyByCurrency => {
+    return this.filteredItems().reduce<MoneyByCurrency>((total, item) => {
+      return addMoney(total, item.currency, (item.price || 0) * item.quantity);
+    }, {});
   });
 
   totalItemsCount = computed(() => this.filteredItems().length);
 
   valueByCategory = computed((): ValueSummary[] => {
     const items = this.filteredItems();
-    const map = new Map<string, { value: number; count: number }>();
+    const map = new Map<string, { value: MoneyByCurrency; count: number }>();
 
     for (const item of items) {
       const category = item.category || 'Uncategorized';
-      const existing = map.get(category) || { value: 0, count: 0 };
+      const existing = map.get(category) || { value: {}, count: 0 };
       map.set(category, {
-        value: existing.value + ((item.price || 0) * item.quantity),
+        value: addMoney(existing.value, item.currency, (item.price || 0) * item.quantity),
         count: existing.count + 1
       });
     }
 
     return Array.from(map.entries())
       .map(([label, data]) => ({ label, ...data }))
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => totalOf(b.value) - totalOf(a.value));
   });
 
   valueByWarehouse = computed((): ValueSummary[] => {
     const items = this.filteredItems();
     const warehouses = this.inventoryService.warehouses();
-    const map = new Map<string, { value: number; count: number }>();
+    const map = new Map<string, { value: MoneyByCurrency; count: number }>();
 
     for (const item of items) {
       const warehouse = warehouses.find(w => w.id === item.warehouseId);
       const label = warehouse?.name || 'No Warehouse';
-      const existing = map.get(label) || { value: 0, count: 0 };
+      const existing = map.get(label) || { value: {}, count: 0 };
       map.set(label, {
-        value: existing.value + ((item.price || 0) * item.quantity),
+        value: addMoney(existing.value, item.currency, (item.price || 0) * item.quantity),
         count: existing.count + 1
       });
     }
 
     return Array.from(map.entries())
       .map(([label, data]) => ({ label, ...data }))
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => totalOf(b.value) - totalOf(a.value));
   });
 
   valueBySupplier = computed((): ValueSummary[] => {
     const items = this.filteredItems();
     const suppliers = this.inventoryService.suppliers();
-    const map = new Map<string, { value: number; count: number }>();
+    const map = new Map<string, { value: MoneyByCurrency; count: number }>();
 
     for (const item of items) {
       const supplier = suppliers.find(s => s.id === item.supplierId);
       const label = supplier?.name || 'No Supplier';
-      const existing = map.get(label) || { value: 0, count: 0 };
+      const existing = map.get(label) || { value: {}, count: 0 };
       map.set(label, {
-        value: existing.value + ((item.price || 0) * item.quantity),
+        value: addMoney(existing.value, item.currency, (item.price || 0) * item.quantity),
         count: existing.count + 1
       });
     }
 
     return Array.from(map.entries())
       .map(([label, data]) => ({ label, ...data }))
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => totalOf(b.value) - totalOf(a.value));
   });
 
   topItems = computed((): TopItem[] => {

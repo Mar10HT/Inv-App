@@ -46,11 +46,11 @@ describe('PdfExportService', () => {
   it('exports the value report and saves exactly one document', async () => {
     await service.exportValueReportToPDF({
       currency: 'USD',
-      totalValue: 1500,
+      totalValue: { USD: 1500 },
       totalItems: 2,
-      valueByCategory: [{ label: 'Laptops', value: 1500, count: 2 }],
-      valueByWarehouse: [{ label: 'Main', value: 1500, count: 2 }],
-      valueBySupplier: [{ label: 'Acme', value: 1500, count: 2 }],
+      valueByCategory: [{ label: 'Laptops', value: { USD: 1500 }, count: 2 }],
+      valueByWarehouse: [{ label: 'Main', value: { USD: 1500 }, count: 2 }],
+      valueBySupplier: [{ label: 'Acme', value: { USD: 1500 }, count: 2 }],
       topItems: []
     });
 

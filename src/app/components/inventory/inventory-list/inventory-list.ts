@@ -207,7 +207,7 @@ import { localDateKey } from '../../../utils/date.utils';
                 class="grid grid-cols-[2fr_1fr_1fr_0.7fr_1fr_1fr_1fr_120px] items-start border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer group"
                 style="height: 65px;">
                 <!-- Item Column -->
-                <div class="px-6 py-3">
+                <div class="px-6 py-3 min-w-0">
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-[var(--color-primary-container)] rounded-lg flex items-center justify-center flex-shrink-0">
                       <lucide-icon name="Package" class="!text-[var(--color-primary)] !w-4 !h-4"></lucide-icon>

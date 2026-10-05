@@ -104,7 +104,7 @@ import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../../../ut
             </div>
             @for (item of section.data; track item.label) {
               <div class="grid grid-cols-[1fr_70px_100px] gap-3 px-3 py-3 text-sm hover:bg-[var(--color-surface-variant)] rounded-lg transition-colors">
-                <span class="text-foreground truncate">{{ item.label }}</span>
+                <span class="text-foreground truncate min-w-0">{{ item.label }}</span>
                 <span class="text-center text-[var(--color-on-surface-variant)]">{{ item.count }}</span>
                 <span class="text-right text-[var(--color-primary)] font-semibold">{{ formatTotal(item.value) }}</span>
               </div>

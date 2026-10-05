@@ -107,7 +107,7 @@ export interface CreateInventoryItemDto {
   currency?: Currency;
   warehouseId: string;
   supplierId?: string;
-  assignedToUserId?: string;
+  assignedToUserId?: string | null;
   status?: InventoryStatus;
 }
 
@@ -127,7 +127,7 @@ export interface UpdateInventoryItemDto {
   currency?: Currency;
   warehouseId?: string;
   supplierId?: string;
-  assignedToUserId?: string;
+  assignedToUserId?: string | null;
   status?: InventoryStatus;
 }
 

@@ -663,7 +663,12 @@ export class InventoryFormComponent implements OnInit {
     if (formValue.itemType === ItemType.UNIQUE) {
       if (formValue.serviceTag) dto.serviceTag = formValue.serviceTag;
       if (formValue.serialNumber) dto.serialNumber = formValue.serialNumber;
-      if (formValue.assignedToUserId) dto.assignedToUserId = formValue.assignedToUserId;
+      if (formValue.assignedToUserId) {
+        dto.assignedToUserId = formValue.assignedToUserId;
+      } else if (this.isEditMode()) {
+        // Editing: an empty selection clears a previous assignment. Creating has nothing to clear.
+        dto.assignedToUserId = null;
+      }
     } else {
       // BULK items: SKU and barcode are optional
       if (formValue.sku) dto.sku = formValue.sku;

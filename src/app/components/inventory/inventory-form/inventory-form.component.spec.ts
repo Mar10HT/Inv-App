@@ -388,6 +388,18 @@ describe('InventoryFormComponent', () => {
       expect(inventory.updateItem.calls.mostRecent().args[1].status).toBe(InventoryStatus.OUT_OF_STOCK);
     });
 
+    it('clears a previous assignment by sending null, not by leaving the field out', async () => {
+      await setup({ id: 'i1', loaded: of(stored) });
+      form().patchValue({ assignedToUserId: '' });
+
+      component.onSubmit();
+
+      expect(inventory.updateItem).toHaveBeenCalledOnceWith(
+        'i1',
+        jasmine.objectContaining({ assignedToUserId: null, status: InventoryStatus.IN_STOCK })
+      );
+    });
+
     it('logs a failed update and stays on the page', async () => {
       await setup({ id: 'i1', loaded: of(stored) });
       const failure = new Error('boom');

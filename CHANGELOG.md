@@ -44,6 +44,9 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
   - Creating a sale or an outflow that failed showed two error messages: the real reason from the service and a generic one from the form dialog. The dialogs no longer add the second one. Settings marked English as selected when the user had never saved a language and the app had started in the browser language.
   - The categories, suppliers and warehouses pages say "created <name>" and "updated <name>" from the name the form dialog returns, but the dialog closed with just `{ saved: true }`, so the name was always missing. The dialog now closes with the name of what the API saved.
   - Editing a UNIQUE item and clearing its assignment left the previous one in place: the form only sent `assignedToUserId` when it had a value, and the API only clears a field it is explicitly sent as `null` (confirmed in Inv-App-API, no backend change needed). Creating still sends nothing for an empty selection, since there is nothing to clear.
+- Code audit, layout:
+  - The sale, outflow, loan and transaction forms forced their dialog into horizontal scroll once the item notes field ran out of room, clipping the subtotal line (`min-w-0` was missing on a `flex-1` input, so it refused to shrink below its placeholder's width).
+  - A long item name or description in the inventory table, or a long category/warehouse/supplier name in the value report, pushed every column after it out of place (`min-w-0` was missing on that one grid cell, the only one whose content length is unbounded).
 
 ### Added
 - CI (`.github/workflows/ci.yml`): install, lint, unit tests, production build on every push/PR to `main`.

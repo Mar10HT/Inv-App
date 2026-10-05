@@ -404,7 +404,7 @@ export class SalesComponent implements OnInit {
           }
         },
         error: () => {
-          this.notifications.error(this.translate.instant('SALES.CANCEL_ERROR'));
+          this.notifications.error('SALES.CANCEL_ERROR');
         },
       });
   }

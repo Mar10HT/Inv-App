@@ -1,7 +1,7 @@
 import { Component, inject, output, input, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { TransferRequestService } from '../../services/transfer-request.service';
 import { NotificationService } from '../../services/notification.service';
@@ -160,7 +160,6 @@ export interface TransferScanQrResult {
 export class TransferScanDialog {
   private transferService = inject(TransferRequestService);
   private notifications = inject(NotificationService);
-  private translate = inject(TranslateService);
 
   /** Emits when the dialog should close */
   closed = output<void>();
@@ -181,13 +180,13 @@ export class TransferScanDialog {
     this.transferService.scanQr(this.scannedQrData).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.QR.SCAN_SUCCESS'));
+          this.notifications.success('TRANSFERS.QR.SCAN_SUCCESS');
           this.scannedQrData = '';
           this.scanned.emit({ success: true });
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.QR.SCAN_ERROR'));
+        this.notifications.error('TRANSFERS.QR.SCAN_ERROR');
       }
     });
   }

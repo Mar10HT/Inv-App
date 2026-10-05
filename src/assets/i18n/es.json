@@ -1055,7 +1055,8 @@
       "DESCRIPTION": "Comparte este enlace o código QR para que cualquiera pueda enviar una solicitud de material.",
       "COPY_URL": "Copiar Enlace",
       "COPIED": "¡Copiado!",
-      "DOWNLOAD_QR": "Descargar QR"
+      "DOWNLOAD_QR": "Descargar QR",
+      "ERROR": "No se pudo cargar el enlace para compartir"
     },
     "DETAIL": {
       "TITLE": "Detalle de Solicitud",

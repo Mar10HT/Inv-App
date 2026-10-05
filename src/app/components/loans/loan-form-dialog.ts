@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, output, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { LoanService } from '../../services/loan.service';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -201,7 +201,6 @@ export class LoanFormDialog {
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
-  private translate = inject(TranslateService);
 
   /** Emits when the dialog should close */
   closed = output<void>();
@@ -331,12 +330,12 @@ export class LoanFormDialog {
       .subscribe({
         next: (result) => {
           if (result) {
-            this.notifications.success(this.translate.instant('LOANS.LOAN_CREATED'));
+            this.notifications.success('LOANS.LOAN_CREATED');
             this.created.emit({ success: true, count: items.length });
           }
         },
         error: () => {
-          this.notifications.error(this.translate.instant('LOANS.LOAN_ERROR'));
+          this.notifications.error('LOANS.LOAN_ERROR');
         },
       });
   }

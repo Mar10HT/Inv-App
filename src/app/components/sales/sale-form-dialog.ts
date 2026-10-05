@@ -469,7 +469,7 @@ export class SaleFormDialog implements AfterViewInit {
       },
       error: () => {
         this.submitting.set(false);
-        this.notifications.error(this.translate.instant('SALES.CREATE_ERROR'));
+        this.notifications.error('SALES.CREATE_ERROR');
       },
     });
   }

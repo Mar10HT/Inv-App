@@ -1,7 +1,7 @@
 import { Component, inject, output, input, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { LoanService } from '../../services/loan.service';
 import { NotificationService } from '../../services/notification.service';
@@ -182,7 +182,6 @@ export interface ScanQrResult {
 export class LoanScanDialog {
   private loanService = inject(LoanService);
   private notifications = inject(NotificationService);
-  private translate = inject(TranslateService);
 
   /** Emits when the dialog should close */
   closed = output<void>();
@@ -203,13 +202,13 @@ export class LoanScanDialog {
     this.loanService.scanQr(this.scannedQrData).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('LOANS.QR.SCAN_SUCCESS'));
+          this.notifications.success('LOANS.QR.SCAN_SUCCESS');
           this.scannedQrData = '';
           this.scanned.emit({ success: true });
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.QR.SCAN_ERROR'));
+        this.notifications.error('LOANS.QR.SCAN_ERROR');
       }
     });
   }

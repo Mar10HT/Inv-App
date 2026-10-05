@@ -618,13 +618,13 @@ export class StockTakeComponent implements OnInit {
       .create(data)
       .subscribe({
         next: (created) => {
-          this.notifications.success(this.translate.instant('STOCK_TAKE.CREATE_SUCCESS'));
+          this.notifications.success('STOCK_TAKE.CREATE_SUCCESS');
           this.closeNewDialog();
           this.applyFilters();
           this.openDetail(created);
         },
         error: () => {
-          this.notifications.error(this.translate.instant('STOCK_TAKE.CREATE_ERROR'));
+          this.notifications.error('STOCK_TAKE.CREATE_ERROR');
         },
       });
   }
@@ -677,11 +677,11 @@ export class StockTakeComponent implements OnInit {
           }
           delete this.editingItems[item.id];
           this.savingItem.set(null);
-          this.notifications.success(this.translate.instant('STOCK_TAKE.DETAIL.COUNT_SAVED'));
+          this.notifications.success('STOCK_TAKE.DETAIL.COUNT_SAVED');
         },
         error: () => {
           this.savingItem.set(null);
-          this.notifications.error(this.translate.instant('STOCK_TAKE.DETAIL.COUNT_ERROR'));
+          this.notifications.error('STOCK_TAKE.DETAIL.COUNT_ERROR');
         },
       });
   }
@@ -704,10 +704,10 @@ export class StockTakeComponent implements OnInit {
       next: (updated) => {
         this.selectedStockTake.set(updated);
         this.closeCompleteDialog();
-        this.notifications.success(this.translate.instant('STOCK_TAKE.COMPLETE.SUCCESS'));
+        this.notifications.success('STOCK_TAKE.COMPLETE.SUCCESS');
       },
       error: () => {
-        this.notifications.error(this.translate.instant('STOCK_TAKE.COMPLETE.ERROR'));
+        this.notifications.error('STOCK_TAKE.COMPLETE.ERROR');
       },
     });
   }
@@ -727,10 +727,10 @@ export class StockTakeComponent implements OnInit {
         this.stockTakeService.cancel(st.id).subscribe({
           next: (updated) => {
             this.selectedStockTake.set(updated);
-            this.notifications.success(this.translate.instant('STOCK_TAKE.CANCEL.SUCCESS'));
+            this.notifications.success('STOCK_TAKE.CANCEL.SUCCESS');
           },
           error: () => {
-            this.notifications.error(this.translate.instant('STOCK_TAKE.CANCEL.ERROR'));
+            this.notifications.error('STOCK_TAKE.CANCEL.ERROR');
           },
         });
       }

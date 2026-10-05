@@ -566,12 +566,12 @@ export class TransfersComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.APPROVE_SUCCESS'));
+          this.notifications.success('TRANSFERS.APPROVE_SUCCESS');
           this.applyFilters();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.APPROVE_ERROR'));
+        this.notifications.error('TRANSFERS.APPROVE_ERROR');
       }
     });
   }
@@ -594,13 +594,13 @@ export class TransfersComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         if (response) {
-          this.notifications.success(this.translate.instant('TRANSFERS.REJECT_SUCCESS'));
+          this.notifications.success('TRANSFERS.REJECT_SUCCESS');
           this.closeRejectDialog();
           this.applyFilters();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.REJECT_ERROR'));
+        this.notifications.error('TRANSFERS.REJECT_ERROR');
       }
     });
   }
@@ -618,7 +618,7 @@ export class TransfersComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.SEND_SUCCESS'));
+          this.notifications.success('TRANSFERS.SEND_SUCCESS');
           this.applyFilters();
           if (result.qrCodeDataUrl) {
             this.currentQrDataUrl = result.qrCodeDataUrl;
@@ -628,7 +628,7 @@ export class TransfersComponent implements OnInit {
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.SEND_ERROR'));
+        this.notifications.error('TRANSFERS.SEND_ERROR');
       }
     });
   }
@@ -647,12 +647,12 @@ export class TransfersComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.CANCEL_SUCCESS'));
+          this.notifications.success('TRANSFERS.CANCEL_SUCCESS');
           this.applyFilters();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.CANCEL_ERROR'));
+        this.notifications.error('TRANSFERS.CANCEL_ERROR');
       }
     });
   }
@@ -672,12 +672,12 @@ export class TransfersComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_SUCCESS'));
+          this.notifications.success('TRANSFERS.MANUAL_CONFIRM_SUCCESS');
           this.applyFilters();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.MANUAL_CONFIRM_ERROR'));
+        this.notifications.error('TRANSFERS.MANUAL_CONFIRM_ERROR');
       }
     });
   }
@@ -702,7 +702,7 @@ export class TransfersComponent implements OnInit {
         this.currentQrDataUrl = qrDataUrl;
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.QR.ERROR'));
+        this.notifications.error('TRANSFERS.QR.ERROR');
         this.closeQrDialog();
       }
     });

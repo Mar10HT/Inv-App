@@ -452,12 +452,12 @@ export class DischargeListComponent implements OnInit {
         this.dischargeService.completeRequest(request.id).subscribe({
           next: (result) => {
             if (result) {
-              this.notifications.success(this.translate.instant('DISCHARGES.COMPLETE_SUCCESS'));
+              this.notifications.success('DISCHARGES.COMPLETE_SUCCESS');
               this.applyFilters();
             }
           },
           error: () => {
-            this.notifications.error(this.translate.instant('DISCHARGES.COMPLETE_ERROR'));
+            this.notifications.error('DISCHARGES.COMPLETE_ERROR');
           },
         });
       }
@@ -482,13 +482,13 @@ export class DischargeListComponent implements OnInit {
     this.dischargeService.rejectRequest(this.requestToReject.id, this.rejectReason || undefined).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('DISCHARGES.REJECT_SUCCESS'));
+          this.notifications.success('DISCHARGES.REJECT_SUCCESS');
           this.closeRejectDialog();
           this.applyFilters();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('DISCHARGES.REJECT_ERROR'));
+        this.notifications.error('DISCHARGES.REJECT_ERROR');
       },
     });
   }
@@ -527,7 +527,7 @@ export class DischargeListComponent implements OnInit {
         this.shareLoading.set(false);
       },
       error: () => {
-        this.notifications.error(this.translate.instant('COMMON.LOADING') + ' error');
+        this.notifications.error('DISCHARGES.SHARE_FORM.ERROR');
         this.showShareDialog = false;
         this.shareLoading.set(false);
       },

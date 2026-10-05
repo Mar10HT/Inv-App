@@ -268,11 +268,11 @@ export class DischargeDetailComponent implements OnInit {
           next: (result) => {
             if (result) {
               this.request.set(result);
-              this.notifications.success(this.translate.instant('DISCHARGES.COMPLETE_SUCCESS'));
+              this.notifications.success('DISCHARGES.COMPLETE_SUCCESS');
             }
           },
           error: () => {
-            this.notifications.error(this.translate.instant('DISCHARGES.COMPLETE_ERROR'));
+            this.notifications.error('DISCHARGES.COMPLETE_ERROR');
           },
         });
       }
@@ -297,12 +297,12 @@ export class DischargeDetailComponent implements OnInit {
       next: (result) => {
         if (result) {
           this.request.set(result);
-          this.notifications.success(this.translate.instant('DISCHARGES.REJECT_SUCCESS'));
+          this.notifications.success('DISCHARGES.REJECT_SUCCESS');
           this.closeRejectDialog();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('DISCHARGES.REJECT_ERROR'));
+        this.notifications.error('DISCHARGES.REJECT_ERROR');
       },
     });
   }

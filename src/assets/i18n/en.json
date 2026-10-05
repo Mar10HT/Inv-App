@@ -1055,7 +1055,8 @@
       "DESCRIPTION": "Share this link or QR code so anyone can submit a material request.",
       "COPY_URL": "Copy Link",
       "COPIED": "Copied!",
-      "DOWNLOAD_QR": "Download QR"
+      "DOWNLOAD_QR": "Download QR",
+      "ERROR": "Could not load the share link"
     },
     "DETAIL": {
       "TITLE": "Request Detail",

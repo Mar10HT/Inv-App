@@ -500,7 +500,7 @@ export class LoansComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('LOANS.SEND_SUCCESS'));
+          this.notifications.success('LOANS.SEND_SUCCESS');
           this.applyFilters();
           // Show QR code
           if (result.qrCodeDataUrl) {
@@ -512,7 +512,7 @@ export class LoansComponent implements OnInit {
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.SEND_ERROR'));
+        this.notifications.error('LOANS.SEND_ERROR');
       }
     });
   }
@@ -532,7 +532,7 @@ export class LoansComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('LOANS.INITIATE_RETURN_SUCCESS'));
+          this.notifications.success('LOANS.INITIATE_RETURN_SUCCESS');
           this.applyFilters();
           // Show QR code
           if (result.qrCodeDataUrl) {
@@ -544,7 +544,7 @@ export class LoansComponent implements OnInit {
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.INITIATE_RETURN_ERROR'));
+        this.notifications.error('LOANS.INITIATE_RETURN_ERROR');
       }
     });
   }
@@ -564,12 +564,12 @@ export class LoansComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('LOANS.CANCEL_SUCCESS'));
+          this.notifications.success('LOANS.CANCEL_SUCCESS');
           this.applyFilters();
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.CANCEL_ERROR'));
+        this.notifications.error('LOANS.CANCEL_ERROR');
       }
     });
   }
@@ -589,11 +589,11 @@ export class LoansComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'));
+          this.notifications.success('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS');
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_ERROR'));
+        this.notifications.error('LOANS.MANUAL_CONFIRM_ERROR');
       }
     });
   }
@@ -611,11 +611,11 @@ export class LoansComponent implements OnInit {
     ).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS'));
+          this.notifications.success('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS');
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.MANUAL_CONFIRM_RETURN_ERROR'));
+        this.notifications.error('LOANS.MANUAL_CONFIRM_RETURN_ERROR');
       }
     });
   }
@@ -633,7 +633,7 @@ export class LoansComponent implements OnInit {
         this.currentQrDataUrl = qrDataUrl;
       },
       error: () => {
-        this.notifications.error(this.translate.instant('LOANS.QR.SCAN_ERROR'));
+        this.notifications.error('LOANS.QR.SCAN_ERROR');
         this.closeQrDialog();
       }
     });

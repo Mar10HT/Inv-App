@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, output, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { TransferRequestService } from '../../services/transfer-request.service';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -173,7 +173,6 @@ export class TransferFormDialog {
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
-  private translate = inject(TranslateService);
 
   /** Emits when the dialog should close */
   closed = output<void>();
@@ -264,12 +263,12 @@ export class TransferFormDialog {
     }).subscribe({
       next: (result) => {
         if (result) {
-          this.notifications.success(this.translate.instant('TRANSFERS.REQUEST_CREATED'));
+          this.notifications.success('TRANSFERS.REQUEST_CREATED');
           this.created.emit({ success: true });
         }
       },
       error: () => {
-        this.notifications.error(this.translate.instant('TRANSFERS.REQUEST_ERROR'));
+        this.notifications.error('TRANSFERS.REQUEST_ERROR');
       }
     });
   }

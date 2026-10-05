@@ -29,6 +29,12 @@ export interface CrudDialogConfig {
   fields: CrudFieldConfig[];
 }
 
+/** What the dialog closes with once the API saved the entity: the page says "created <name>" from it. */
+export interface CrudDialogResult {
+  saved: true;
+  name?: string;
+}
+
 /**
  * `T` is the entity type being edited (e.g. `Category`). Callers with a concrete entity type
  * should parameterize explicitly (`CrudDialogData<Category>`) so `entity` is typed correctly;

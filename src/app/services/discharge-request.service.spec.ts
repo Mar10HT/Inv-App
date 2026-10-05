@@ -44,6 +44,10 @@ describe('DischargeRequestService', () => {
 
   afterEach(() => backend.verify());
 
+  it('has the notification service show the errors of its requests', () => {
+    expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
+  });
+
   describe('loadRequests', () => {
     it('asks for at most 200 requests and turns them into the front end model', () => {
       service.loadRequests();

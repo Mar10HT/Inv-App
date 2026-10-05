@@ -48,6 +48,10 @@ describe('OutflowService', () => {
 
   afterEach(() => backend.verify());
 
+  it('has the notification service show the errors of its requests', () => {
+    expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
+  });
+
   describe('loadOutflows', () => {
     it('asks for at most 200 outflows and keeps what comes back', () => {
       service.loadOutflows();

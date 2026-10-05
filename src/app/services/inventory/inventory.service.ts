@@ -5,7 +5,6 @@ import {
   InventoryItemInterface,
   CreateInventoryItemDto,
   UpdateInventoryItemDto,
-  InventoryStatus,
   Warehouse,
   Supplier,
   RawInventoryItem,
@@ -14,18 +13,6 @@ import { PaginatedResponse } from '../../interfaces/common.interface';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../logger.service';
 import { WebSocketService } from '../websocket.service';
-
-export interface FilterParams {
-  search?: string;
-  category?: string;
-  status?: InventoryStatus;
-  warehouseId?: string;
-  supplierId?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-}
 
 @Injectable({
   providedIn: 'root'
@@ -108,21 +95,11 @@ export class InventoryService implements OnDestroy {
     });
   }
 
-  loadItems(filters?: FilterParams): void {
+  loadItems(): void {
     this.loading.set(true);
     this.error.set(null);
 
-    let params = new HttpParams();
-    if (filters) {
-      if (filters.search) params = params.set('search', filters.search);
-      if (filters.category) params = params.set('category', filters.category);
-      if (filters.status) params = params.set('status', filters.status);
-      if (filters.warehouseId) params = params.set('warehouseId', filters.warehouseId);
-      if (filters.page) params = params.set('page', filters.page.toString());
-      if (filters.limit) params = params.set('limit', filters.limit.toString());
-    } else {
-      params = params.set('limit', '1000');
-    }
+    const params = new HttpParams().set('limit', '1000');
 
     this.http.get<PaginatedResponse<RawInventoryItem>>(this.apiUrl + '/inventory', { params }).pipe(
       map(response => response.data.map(item => this.transformItem(item))),

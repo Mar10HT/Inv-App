@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -11,6 +11,7 @@ import { ConfirmService } from '../../services/confirm.service';
 import { CategoryFormDialog, buildCategoryDialogData } from './category-form-dialog';
 import { SkeletonCardComponent } from '../shared/skeleton/skeleton-card';
 import { EmptyState } from '../shared/empty-state/empty-state';
+import { CrudDialogResult } from '../shared/crud-dialog';
 
 @Component({
   selector: 'app-categories',
@@ -193,7 +194,7 @@ export class Categories implements OnInit {
   }
 
   addCategory(): void {
-    const dialogRef = this.dialog.open(CategoryFormDialog, {
+    const dialogRef: MatDialogRef<CategoryFormDialog, CrudDialogResult> = this.dialog.open(CategoryFormDialog, {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
@@ -212,7 +213,7 @@ export class Categories implements OnInit {
   }
 
   editCategory(category: Category): void {
-    const dialogRef = this.dialog.open(CategoryFormDialog, {
+    const dialogRef: MatDialogRef<CategoryFormDialog, CrudDialogResult> = this.dialog.open(CategoryFormDialog, {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',

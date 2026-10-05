@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -16,6 +16,7 @@ import { ConfirmService } from '../../services/confirm.service';
 import { WarehouseFormDialog, buildWarehouseDialogData } from './warehouse-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
 import { EmptyState } from '../shared/empty-state/empty-state';
+import { CrudDialogResult } from '../shared/crud-dialog';
 
 function normalizeManagerId<T extends { managerId?: string | null }>(payload: T): T {
   if (payload && 'managerId' in payload && (payload.managerId === undefined || payload.managerId === '')) {
@@ -285,7 +286,7 @@ export class Warehouses implements OnInit {
   }
 
   addWarehouse(): void {
-    const dialogRef = this.dialog.open(WarehouseFormDialog, {
+    const dialogRef: MatDialogRef<WarehouseFormDialog, CrudDialogResult> = this.dialog.open(WarehouseFormDialog, {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
@@ -305,7 +306,7 @@ export class Warehouses implements OnInit {
   }
 
   editWarehouse(warehouse: Warehouse): void {
-    const dialogRef = this.dialog.open(WarehouseFormDialog, {
+    const dialogRef: MatDialogRef<WarehouseFormDialog, CrudDialogResult> = this.dialog.open(WarehouseFormDialog, {
       width: '500px',
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',

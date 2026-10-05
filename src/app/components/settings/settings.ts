@@ -398,8 +398,8 @@ export class Settings implements OnInit {
   ngOnInit(): void {
     this.scheduledReportsService.loadAll();
 
-    // Load saved preferences (local)
-    const savedLang = localStorage.getItem('language') || 'en';
+    // Saved language, else the one the app started in (it falls back to the browser language)
+    const savedLang = localStorage.getItem('language') || this.translate.currentLang || 'en';
     this.currentLang.set(savedLang);
 
     // Load notification preferences from backend

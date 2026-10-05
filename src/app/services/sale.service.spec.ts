@@ -51,6 +51,10 @@ describe('SaleService', () => {
 
   afterEach(() => backend.verify());
 
+  it('has the notification service show the errors of its requests', () => {
+    expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
+  });
+
   describe('loadSales', () => {
     it('asks for at most 200 sales and keeps what comes back', () => {
       service.loadSales();

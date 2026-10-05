@@ -30,6 +30,9 @@ jobs:
       - name: Translations
         run: npm run i18n:check
 
+      - name: Icons
+        run: npm run icons:check
+
       - name: Unit tests with coverage
         run: npm run test:ci
 

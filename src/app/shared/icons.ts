@@ -163,6 +163,18 @@ import {
   Shield,
   KeyRound,
   ClipboardCheck,
+
+  // Drawn only behind a permission or in an empty state
+  Box,
+  BellOff,
+  CalendarClock,
+  CalendarOff,
+  CloudCog,
+  Loader,
+  RotateCcw,
+  ShieldOff,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-angular';
 
 // All icons used in the app
@@ -171,6 +183,18 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   HandCoins,
   Shield,
   KeyRound,
+
+  // Drawn only behind a permission or in an empty state
+  Box,
+  BellOff,
+  CalendarClock,
+  CalendarOff,
+  CloudCog,
+  Loader,
+  RotateCcw,
+  ShieldOff,
+  ToggleLeft,
+  ToggleRight,
 
   // Navigation & UI
   ArrowLeft,

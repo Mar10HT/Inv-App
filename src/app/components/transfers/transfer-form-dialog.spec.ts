@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import { TransferFormDialog } from './transfer-form-dialog';
 import { TransferRequestService } from '../../services/transfer-request.service';
@@ -218,15 +218,6 @@ describe('TransferFormDialog', () => {
       expect(notifications.error).not.toHaveBeenCalled();
     });
 
-    it('tells the user when the request fails', () => {
-      transfers.createRequest.and.returnValue(throwError(() => new Error('boom')));
-      readyToSubmit();
-
-      component.createRequest();
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.REQUEST_ERROR');
-      expect(created).not.toHaveBeenCalled();
-    });
   });
 
   it('close asks its parent to close', () => {

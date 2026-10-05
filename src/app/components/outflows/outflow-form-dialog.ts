@@ -13,7 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { OutflowService } from '../../services/outflow.service';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -238,7 +238,6 @@ export class OutflowFormDialog implements AfterViewInit {
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
-  private translate = inject(TranslateService);
 
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
@@ -362,23 +361,13 @@ export class OutflowFormDialog implements AfterViewInit {
       })),
     };
 
-    this.outflowService.create(dto).subscribe({
-      next: (result) => {
-        this.submitting.set(false);
-        if (result) {
-          this.notifications.success(
-            this.translate.instant('OUTFLOWS.CREATE_SUCCESS'),
-          );
-          this.created.emit({ success: true });
-        }
-        // A null answer is a failed request: OutflowService already showed the reason (reportErrors)
-      },
-      error: () => {
-        this.submitting.set(false);
-        this.notifications.error(
-          this.translate.instant('OUTFLOWS.CREATE_ERROR'),
-        );
-      },
+    this.outflowService.create(dto).subscribe((result) => {
+      this.submitting.set(false);
+      if (result) {
+        this.notifications.success('OUTFLOWS.CREATE_SUCCESS');
+        this.created.emit({ success: true });
+      }
+      // A null answer is a failed request: OutflowService already showed the reason (reportErrors)
     });
   }
 }

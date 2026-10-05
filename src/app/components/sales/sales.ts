@@ -395,17 +395,10 @@ export class SalesComponent implements OnInit {
         switchMap(() => this.saleService.cancel(sale.id)),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe({
-        next: (result) => {
-          if (result) {
-            this.notifications.success(
-              this.translate.instant('SALES.CANCEL_SUCCESS'),
-            );
-          }
-        },
-        error: () => {
-          this.notifications.error('SALES.CANCEL_ERROR');
-        },
+      .subscribe((result) => {
+        if (result) {
+          this.notifications.success('SALES.CANCEL_SUCCESS');
+        }
       });
   }
 }

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { Subject, of, throwError } from 'rxjs';
+import { Subject, of } from 'rxjs';
 
 import { SaleFormDialog } from './sale-form-dialog';
 import { SaleService } from '../../services/sale.service';
@@ -332,13 +332,13 @@ describe('SaleFormDialog', () => {
       expect(component.submitting()).toBeFalse();
     });
 
-    it('says it failed when the request fails, and lets the user try again', () => {
-      sales.create.and.returnValue(throwError(() => new Error('boom')));
+    it('does not emit created or show its own error on a failed request: SaleService already reported it', () => {
+      sales.create.and.returnValue(of(null));
       readyToSubmit();
 
       component.submit();
 
-      expect(notifications.error).toHaveBeenCalledOnceWith('SALES.CREATE_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
       expect(created).not.toHaveBeenCalled();
       expect(component.submitting()).toBeFalse();
     });

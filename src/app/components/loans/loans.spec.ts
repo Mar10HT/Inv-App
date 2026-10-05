@@ -249,15 +249,8 @@ describe('LoansComponent', () => {
       component.sendLoan(loan('a'));
 
       expect(notifications.success).not.toHaveBeenCalled();
+      expect(notifications.error).not.toHaveBeenCalled();
       expect(component.showQrDialog).toBeFalse();
-    });
-
-    it('tells the user when sending fails', () => {
-      loanService.sendLoan.and.returnValue(throwError(() => failure));
-
-      component.sendLoan(loan('a'));
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('LOANS.SEND_ERROR');
     });
   });
 
@@ -281,14 +274,11 @@ describe('LoansComponent', () => {
       expect(component.showQrDialog).toBeTrue();
     });
 
-    it('tells the user when starting the return fails, and says nothing for an empty answer', () => {
+    it('says nothing for an empty answer', () => {
       loanService.initiateReturn.and.returnValue(of(null));
       component.initiateReturn(loan('a'));
       expect(notifications.success).not.toHaveBeenCalled();
-
-      loanService.initiateReturn.and.returnValue(throwError(() => failure));
-      component.initiateReturn(loan('a'));
-      expect(notifications.error).toHaveBeenCalledOnceWith('LOANS.INITIATE_RETURN_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -309,24 +299,21 @@ describe('LoansComponent', () => {
       expect(notifications.success).toHaveBeenCalledOnceWith('LOANS.CANCEL_SUCCESS');
     });
 
-    it('says nothing for an empty answer, and tells the user when cancelling fails', () => {
+    it('says nothing for an empty answer', () => {
       loanService.cancelLoan.and.returnValue(of(null));
       component.cancelLoan(loan('a'));
       expect(notifications.success).not.toHaveBeenCalled();
-
-      loanService.cancelLoan.and.returnValue(throwError(() => failure));
-      component.cancelLoan(loan('a'));
-      expect(notifications.error).toHaveBeenCalledOnceWith('LOANS.CANCEL_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
   describe('confirming by hand, without the QR', () => {
-    const cases: [string, (l: Loan) => void, () => jasmine.Spy, string, string][] = [
-      ['receipt', (l) => component.manualConfirmReceipt(l), () => loanService.manualConfirmReceipt, 'LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS', 'LOANS.MANUAL_CONFIRM_ERROR'],
-      ['return', (l) => component.manualConfirmReturn(l), () => loanService.manualConfirmReturn, 'LOANS.MANUAL_CONFIRM_RETURN_SUCCESS', 'LOANS.MANUAL_CONFIRM_RETURN_ERROR']
+    const cases: [string, (l: Loan) => void, () => jasmine.Spy, string][] = [
+      ['receipt', (l) => component.manualConfirmReceipt(l), () => loanService.manualConfirmReceipt, 'LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS'],
+      ['return', (l) => component.manualConfirmReturn(l), () => loanService.manualConfirmReturn, 'LOANS.MANUAL_CONFIRM_RETURN_SUCCESS']
     ];
 
-    for (const [name, run, service, success, error] of cases) {
+    for (const [name, run, service, success] of cases) {
       it(`asks for a warning confirmation before confirming the ${name}, and does nothing when declined`, () => {
         confirm.ask.and.returnValue(of(false));
 
@@ -343,14 +330,11 @@ describe('LoansComponent', () => {
         expect(notifications.success).toHaveBeenCalledOnceWith(success);
       });
 
-      it(`says nothing for an empty answer and tells the user when confirming the ${name} fails`, () => {
+      it(`says nothing for an empty answer when confirming the ${name}`, () => {
         (service() as unknown as jasmine.Spy).and.returnValue(of(null));
         run(loan('a'));
         expect(notifications.success).not.toHaveBeenCalled();
-
-        (service() as unknown as jasmine.Spy).and.returnValue(throwError(() => failure));
-        run(loan('a'));
-        expect(notifications.error).toHaveBeenCalledOnceWith(error);
+        expect(notifications.error).not.toHaveBeenCalled();
       });
     }
   });

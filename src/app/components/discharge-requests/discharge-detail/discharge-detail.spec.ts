@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { DischargeDetailComponent } from './discharge-detail';
 import { DischargeRequestService } from '../../../services/discharge-request.service';
@@ -33,7 +33,7 @@ describe('DischargeDetailComponent', () => {
   let notifications: jasmine.SpyObj<NotificationService>;
   let navigate: jasmine.Spy;
 
-  const setup = async (options: { id?: string | null; found?: Observable<DischargeRequest> } = {}): Promise<void> => {
+  const setup = async (options: { id?: string | null; found?: Observable<DischargeRequest | null> } = {}): Promise<void> => {
     const id = options.id === undefined ? 'd1' : options.id;
     discharges = jasmine.createSpyObj<DischargeRequestService>('DischargeRequestService', ['findOne', 'completeRequest', 'rejectRequest']);
     discharges.findOne.and.returnValue(options.found ?? of(request()));
@@ -69,8 +69,8 @@ describe('DischargeDetailComponent', () => {
       expect(component.loading()).toBeFalse();
     });
 
-    it('stops loading and shows nothing when the request cannot be loaded', async () => {
-      await setup({ found: throwError(() => new Error('gone')) });
+    it('stops loading and shows nothing when the request cannot be loaded: DischargeRequestService already caught the error', async () => {
+      await setup({ found: of(null) });
 
       expect(component.request()).toBeNull();
       expect(component.loading()).toBeFalse();
@@ -137,16 +137,7 @@ describe('DischargeDetailComponent', () => {
 
       expect(component.request()?.status).toBe(DischargeRequestStatus.PENDING);
       expect(notifications.success).not.toHaveBeenCalled();
-    });
-
-    it('tells the user when completing fails', async () => {
-      await setup();
-      discharges.completeRequest.and.returnValue(throwError(() => new Error('boom')));
-
-      component.completeRequest();
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('DISCHARGES.COMPLETE_ERROR');
-      expect(component.request()?.status).toBe(DischargeRequestStatus.PENDING);
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -193,16 +184,7 @@ describe('DischargeDetailComponent', () => {
       expect(component.showRejectDialog).toBeTrue();
       expect(component.request()?.status).toBe(DischargeRequestStatus.PENDING);
       expect(notifications.success).not.toHaveBeenCalled();
-    });
-
-    it('tells the user when rejecting fails, and keeps the dialog open', () => {
-      discharges.rejectRequest.and.returnValue(throwError(() => new Error('boom')));
-      component.openRejectDialog();
-
-      component.confirmReject();
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('DISCHARGES.REJECT_ERROR');
-      expect(component.showRejectDialog).toBeTrue();
+      expect(notifications.error).not.toHaveBeenCalled();
     });
 
   });

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import { LoanFormDialog } from './loan-form-dialog';
 import { LoanService } from '../../services/loan.service';
@@ -255,15 +255,6 @@ describe('LoanFormDialog', () => {
       expect(notifications.error).not.toHaveBeenCalled();
     });
 
-    it('tells the user when the request fails', () => {
-      loans.createLoan.and.returnValue(throwError(() => new Error('boom')));
-      readyToSubmit();
-
-      component.createLoan();
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('LOANS.LOAN_ERROR');
-      expect(created).not.toHaveBeenCalled();
-    });
   });
 
   it('close asks its parent to close', () => {

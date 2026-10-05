@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { Subject, of, throwError } from 'rxjs';
+import { Subject, of } from 'rxjs';
 
 import { OutflowFormDialog } from './outflow-form-dialog';
 import { OutflowService } from '../../services/outflow.service';
@@ -255,13 +255,13 @@ describe('OutflowFormDialog', () => {
       expect(component.submitting()).toBeFalse();
     });
 
-    it('says it failed when the request fails, and lets the user try again', () => {
-      outflows.create.and.returnValue(throwError(() => new Error('boom')));
+    it('does not emit created or show its own error on a failed request: OutflowService already reported it', () => {
+      outflows.create.and.returnValue(of(null));
       readyToSubmit();
 
       component.submit();
 
-      expect(notifications.error).toHaveBeenCalledOnceWith('OUTFLOWS.CREATE_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
       expect(created).not.toHaveBeenCalled();
       expect(component.submitting()).toBeFalse();
     });

@@ -205,14 +205,11 @@ describe('TransfersComponent', () => {
       expect(notifications.success).toHaveBeenCalledOnceWith('TRANSFERS.APPROVE_SUCCESS');
     });
 
-    it('says nothing for an empty answer, and tells the user when approving fails', () => {
+    it('says nothing for an empty answer', () => {
       service.approveRequest.and.returnValue(of(null));
       component.approveRequest(request('a'));
       expect(notifications.success).not.toHaveBeenCalled();
-
-      service.approveRequest.and.returnValue(throwError(() => failure));
-      component.approveRequest(request('a'));
-      expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.APPROVE_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -242,17 +239,13 @@ describe('TransfersComponent', () => {
       expect(service.rejectRequest).not.toHaveBeenCalled();
     });
 
-    it('keeps the dialog open for an empty answer, and tells the user when rejecting fails', () => {
+    it('keeps the dialog open for an empty answer', () => {
       component.rejectRequest(request('a'));
       service.rejectRequest.and.returnValue(of(null));
       component.onRejectConfirmed({});
       expect(component.showRejectDialog).toBeTrue();
       expect(notifications.success).not.toHaveBeenCalled();
-
-      service.rejectRequest.and.returnValue(throwError(() => failure));
-      component.onRejectConfirmed({});
-      expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.REJECT_ERROR');
-      expect(component.showRejectDialog).toBeTrue();
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -284,14 +277,11 @@ describe('TransfersComponent', () => {
       expect(component.showQrDialog).toBeFalse();
     });
 
-    it('says nothing for an empty answer, and tells the user when sending fails', () => {
+    it('says nothing for an empty answer', () => {
       service.sendTransfer.and.returnValue(of(null));
       component.sendTransfer(request('a'));
       expect(notifications.success).not.toHaveBeenCalled();
-
-      service.sendTransfer.and.returnValue(throwError(() => failure));
-      component.sendTransfer(request('a'));
-      expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.SEND_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -312,14 +302,11 @@ describe('TransfersComponent', () => {
       expect(notifications.success).toHaveBeenCalledOnceWith('TRANSFERS.CANCEL_SUCCESS');
     });
 
-    it('says nothing for an empty answer, and tells the user when cancelling fails', () => {
+    it('says nothing for an empty answer', () => {
       service.cancelRequest.and.returnValue(of(null));
       component.cancelRequest(request('a'));
       expect(notifications.success).not.toHaveBeenCalled();
-
-      service.cancelRequest.and.returnValue(throwError(() => failure));
-      component.cancelRequest(request('a'));
-      expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.CANCEL_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -340,14 +327,11 @@ describe('TransfersComponent', () => {
       expect(notifications.success).toHaveBeenCalledOnceWith('TRANSFERS.MANUAL_CONFIRM_SUCCESS');
     });
 
-    it('says nothing for an empty answer, and tells the user when it fails', () => {
+    it('says nothing for an empty answer', () => {
       service.manualConfirmReceipt.and.returnValue(of(null));
       component.manualConfirmReceipt(request('a'));
       expect(notifications.success).not.toHaveBeenCalled();
-
-      service.manualConfirmReceipt.and.returnValue(throwError(() => failure));
-      component.manualConfirmReceipt(request('a'));
-      expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.MANUAL_CONFIRM_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 

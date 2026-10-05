@@ -13,7 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -299,7 +299,6 @@ export class SaleFormDialog implements AfterViewInit {
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
-  private translate = inject(TranslateService);
 
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
@@ -456,21 +455,13 @@ export class SaleFormDialog implements AfterViewInit {
       })),
     };
 
-    this.saleService.create(dto).subscribe({
-      next: (result) => {
-        this.submitting.set(false);
-        if (result) {
-          this.notifications.success(
-            this.translate.instant('SALES.CREATE_SUCCESS'),
-          );
-          this.created.emit({ success: true });
-        }
-        // A null answer is a failed request: SaleService already showed the reason (reportErrors)
-      },
-      error: () => {
-        this.submitting.set(false);
-        this.notifications.error('SALES.CREATE_ERROR');
-      },
+    this.saleService.create(dto).subscribe((result) => {
+      this.submitting.set(false);
+      if (result) {
+        this.notifications.success('SALES.CREATE_SUCCESS');
+        this.created.emit({ success: true });
+      }
+      // A null answer is a failed request: SaleService already showed the reason (reportErrors)
     });
   }
 }

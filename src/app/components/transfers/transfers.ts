@@ -563,15 +563,10 @@ export class TransfersComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.approveRequest(request.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('TRANSFERS.APPROVE_SUCCESS');
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error('TRANSFERS.APPROVE_ERROR');
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('TRANSFERS.APPROVE_SUCCESS');
+        this.applyFilters();
       }
     });
   }
@@ -591,16 +586,11 @@ export class TransfersComponent implements OnInit {
 
     this.transferService.rejectRequest(this.requestToReject.id, result.reason).pipe(
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (response) => {
-        if (response) {
-          this.notifications.success('TRANSFERS.REJECT_SUCCESS');
-          this.closeRejectDialog();
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error('TRANSFERS.REJECT_ERROR');
+    ).subscribe((response) => {
+      if (response) {
+        this.notifications.success('TRANSFERS.REJECT_SUCCESS');
+        this.closeRejectDialog();
+        this.applyFilters();
       }
     });
   }
@@ -615,20 +605,15 @@ export class TransfersComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.sendTransfer(request.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('TRANSFERS.SEND_SUCCESS');
-          this.applyFilters();
-          if (result.qrCodeDataUrl) {
-            this.currentQrDataUrl = result.qrCodeDataUrl;
-            this.currentRequest = result;
-            this.showQrDialog = true;
-          }
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('TRANSFERS.SEND_SUCCESS');
+        this.applyFilters();
+        if (result.qrCodeDataUrl) {
+          this.currentQrDataUrl = result.qrCodeDataUrl;
+          this.currentRequest = result;
+          this.showQrDialog = true;
         }
-      },
-      error: () => {
-        this.notifications.error('TRANSFERS.SEND_ERROR');
       }
     });
   }
@@ -644,15 +629,10 @@ export class TransfersComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.cancelRequest(request.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('TRANSFERS.CANCEL_SUCCESS');
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error('TRANSFERS.CANCEL_ERROR');
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('TRANSFERS.CANCEL_SUCCESS');
+        this.applyFilters();
       }
     });
   }
@@ -669,15 +649,10 @@ export class TransfersComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.transferService.manualConfirmReceipt(request.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('TRANSFERS.MANUAL_CONFIRM_SUCCESS');
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error('TRANSFERS.MANUAL_CONFIRM_ERROR');
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('TRANSFERS.MANUAL_CONFIRM_SUCCESS');
+        this.applyFilters();
       }
     });
   }

@@ -361,19 +361,10 @@ export class OutflowsComponent implements OnInit {
         switchMap(() => this.outflowService.cancel(outflow.id)),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe({
-        next: (result) => {
-          if (result) {
-            this.notifications.success(
-              this.translate.instant('OUTFLOWS.CANCEL_SUCCESS'),
-            );
-          }
-        },
-        error: () => {
-          this.notifications.error(
-            this.translate.instant('OUTFLOWS.CANCEL_ERROR'),
-          );
-        },
+      .subscribe((result) => {
+        if (result) {
+          this.notifications.success('OUTFLOWS.CANCEL_SUCCESS');
+        }
       });
   }
 }

@@ -327,16 +327,11 @@ export class LoanFormDialog {
         dueDate: this.selectedDueDate(),
         notes: generalNotes,
       })
-      .subscribe({
-        next: (result) => {
-          if (result) {
-            this.notifications.success('LOANS.LOAN_CREATED');
-            this.created.emit({ success: true, count: items.length });
-          }
-        },
-        error: () => {
-          this.notifications.error('LOANS.LOAN_ERROR');
-        },
+      .subscribe((result) => {
+        if (result) {
+          this.notifications.success('LOANS.LOAN_CREATED');
+          this.created.emit({ success: true, count: items.length });
+        }
       });
   }
 }

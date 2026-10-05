@@ -235,14 +235,9 @@ export class DischargeDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.dischargeService.findOne(id).subscribe({
-        next: (req) => {
-          this.request.set(req);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-        },
+      this.dischargeService.findOne(id).subscribe((req) => {
+        this.request.set(req);
+        this.loading.set(false);
       });
     } else {
       this.loading.set(false);
@@ -264,16 +259,11 @@ export class DischargeDetailComponent implements OnInit {
       type: 'info',
     }).subscribe((confirmed) => {
       if (confirmed) {
-        this.dischargeService.completeRequest(req.id).subscribe({
-          next: (result) => {
-            if (result) {
-              this.request.set(result);
-              this.notifications.success('DISCHARGES.COMPLETE_SUCCESS');
-            }
-          },
-          error: () => {
-            this.notifications.error('DISCHARGES.COMPLETE_ERROR');
-          },
+        this.dischargeService.completeRequest(req.id).subscribe((result) => {
+          if (result) {
+            this.request.set(result);
+            this.notifications.success('DISCHARGES.COMPLETE_SUCCESS');
+          }
         });
       }
     });
@@ -293,17 +283,12 @@ export class DischargeDetailComponent implements OnInit {
     const req = this.request();
     if (!req) return;
 
-    this.dischargeService.rejectRequest(req.id, this.rejectReason || undefined).subscribe({
-      next: (result) => {
-        if (result) {
-          this.request.set(result);
-          this.notifications.success('DISCHARGES.REJECT_SUCCESS');
-          this.closeRejectDialog();
-        }
-      },
-      error: () => {
-        this.notifications.error('DISCHARGES.REJECT_ERROR');
-      },
+    this.dischargeService.rejectRequest(req.id, this.rejectReason || undefined).subscribe((result) => {
+      if (result) {
+        this.request.set(result);
+        this.notifications.success('DISCHARGES.REJECT_SUCCESS');
+        this.closeRejectDialog();
+      }
     });
   }
 

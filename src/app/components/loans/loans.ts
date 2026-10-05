@@ -497,22 +497,17 @@ export class LoansComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.sendLoan(loan.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('LOANS.SEND_SUCCESS');
-          this.applyFilters();
-          // Show QR code
-          if (result.qrCodeDataUrl) {
-            this.currentQrDataUrl = result.qrCodeDataUrl;
-            this.currentLoan = result;
-            this.qrDialogType = 'send';
-            this.showQrDialog = true;
-          }
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('LOANS.SEND_SUCCESS');
+        this.applyFilters();
+        // Show QR code
+        if (result.qrCodeDataUrl) {
+          this.currentQrDataUrl = result.qrCodeDataUrl;
+          this.currentLoan = result;
+          this.qrDialogType = 'send';
+          this.showQrDialog = true;
         }
-      },
-      error: () => {
-        this.notifications.error('LOANS.SEND_ERROR');
       }
     });
   }
@@ -529,22 +524,17 @@ export class LoansComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.initiateReturn(loan.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('LOANS.INITIATE_RETURN_SUCCESS');
-          this.applyFilters();
-          // Show QR code
-          if (result.qrCodeDataUrl) {
-            this.currentQrDataUrl = result.qrCodeDataUrl;
-            this.currentLoan = result;
-            this.qrDialogType = 'return';
-            this.showQrDialog = true;
-          }
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('LOANS.INITIATE_RETURN_SUCCESS');
+        this.applyFilters();
+        // Show QR code
+        if (result.qrCodeDataUrl) {
+          this.currentQrDataUrl = result.qrCodeDataUrl;
+          this.currentLoan = result;
+          this.qrDialogType = 'return';
+          this.showQrDialog = true;
         }
-      },
-      error: () => {
-        this.notifications.error('LOANS.INITIATE_RETURN_ERROR');
       }
     });
   }
@@ -561,15 +551,10 @@ export class LoansComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.cancelLoan(loan.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('LOANS.CANCEL_SUCCESS');
-          this.applyFilters();
-        }
-      },
-      error: () => {
-        this.notifications.error('LOANS.CANCEL_ERROR');
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('LOANS.CANCEL_SUCCESS');
+        this.applyFilters();
       }
     });
   }
@@ -586,14 +571,9 @@ export class LoansComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.manualConfirmReceipt(loan.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS');
-        }
-      },
-      error: () => {
-        this.notifications.error('LOANS.MANUAL_CONFIRM_ERROR');
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('LOANS.MANUAL_CONFIRM_RECEIPT_SUCCESS');
       }
     });
   }
@@ -608,14 +588,9 @@ export class LoansComponent implements OnInit {
       filter(confirmed => !!confirmed),
       switchMap(() => this.loanService.manualConfirmReturn(loan.id)),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS');
-        }
-      },
-      error: () => {
-        this.notifications.error('LOANS.MANUAL_CONFIRM_RETURN_ERROR');
+    ).subscribe((result) => {
+      if (result) {
+        this.notifications.success('LOANS.MANUAL_CONFIRM_RETURN_SUCCESS');
       }
     });
   }

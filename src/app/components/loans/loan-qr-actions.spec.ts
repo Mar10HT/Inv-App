@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import { LoanQrDialog, LoanScanDialog } from './loan-qr-dialog';
 import { LoanService } from '../../services/loan.service';
@@ -141,17 +141,7 @@ describe('LoanScanDialog', () => {
     component.processScannedQr();
 
     expect(notifications.success).not.toHaveBeenCalled();
-    expect(scanned).not.toHaveBeenCalled();
-    expect(component.scannedQrData).toBe('QR-DATA');
-  });
-
-  it('tells the user when the scan fails and keeps what they pasted', () => {
-    loans.scanQr.and.returnValue(throwError(() => new Error('bad code')));
-    component.scannedQrData = 'QR-DATA';
-
-    component.processScannedQr();
-
-    expect(notifications.error).toHaveBeenCalledOnceWith('LOANS.QR.SCAN_ERROR');
+    expect(notifications.error).not.toHaveBeenCalled();
     expect(scanned).not.toHaveBeenCalled();
     expect(component.scannedQrData).toBe('QR-DATA');
   });

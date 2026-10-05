@@ -199,16 +199,11 @@ export class LoanScanDialog {
   processScannedQr(): void {
     if (!this.scannedQrData) return;
 
-    this.loanService.scanQr(this.scannedQrData).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('LOANS.QR.SCAN_SUCCESS');
-          this.scannedQrData = '';
-          this.scanned.emit({ success: true });
-        }
-      },
-      error: () => {
-        this.notifications.error('LOANS.QR.SCAN_ERROR');
+    this.loanService.scanQr(this.scannedQrData).subscribe((result) => {
+      if (result) {
+        this.notifications.success('LOANS.QR.SCAN_SUCCESS');
+        this.scannedQrData = '';
+        this.scanned.emit({ success: true });
       }
     });
   }

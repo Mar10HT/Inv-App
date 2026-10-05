@@ -188,21 +188,13 @@ describe('OutflowsComponent', () => {
       expect(notifications.success).not.toHaveBeenCalled();
     });
 
-    it('does not say it was cancelled when the service answers with nothing', () => {
+    it('does not say it was cancelled, or show its own error, when the service answers with nothing', () => {
       outflowService.cancel.and.returnValue(of(null));
 
       component.cancel(outflow());
 
       expect(notifications.success).not.toHaveBeenCalled();
-    });
-
-    it('tells the user when the cancellation fails', () => {
-      outflowService.cancel.and.returnValue(throwError(() => new Error('boom')));
-
-      component.cancel(outflow());
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('OUTFLOWS.CANCEL_ERROR');
-      expect(notifications.success).not.toHaveBeenCalled();
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 });

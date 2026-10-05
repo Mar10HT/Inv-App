@@ -153,14 +153,7 @@ describe('DischargeListComponent actions', () => {
       component.completeRequest(request('a'));
 
       expect(notifications.success).not.toHaveBeenCalled();
-    });
-
-    it('tells the user when completing fails', () => {
-      discharges.completeRequest.and.returnValue(throwError(() => new Error('boom')));
-
-      component.completeRequest(request('a'));
-
-      expect(notifications.error).toHaveBeenCalledOnceWith('DISCHARGES.COMPLETE_ERROR');
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 
@@ -209,17 +202,13 @@ describe('DischargeListComponent actions', () => {
       expect(discharges.rejectRequest).not.toHaveBeenCalled();
     });
 
-    it('keeps the dialog open when the service answers with nothing, and tells the user when it fails', () => {
+    it('keeps the dialog open when the service answers with nothing', () => {
       component.rejectRequest(request('a'));
       discharges.rejectRequest.and.returnValue(of(null));
       component.confirmReject();
       expect(component.showRejectDialog).toBeTrue();
       expect(notifications.success).not.toHaveBeenCalled();
-
-      discharges.rejectRequest.and.returnValue(throwError(() => new Error('boom')));
-      component.confirmReject();
-      expect(notifications.error).toHaveBeenCalledOnceWith('DISCHARGES.REJECT_ERROR');
-      expect(component.showRejectDialog).toBeTrue();
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 

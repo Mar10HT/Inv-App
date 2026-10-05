@@ -260,15 +260,10 @@ export class TransferFormDialog {
       destinationWarehouseId: this.selectedDestWarehouseId(),
       items: this.requestItems().filter(i => i.inventoryItemId),
       notes: this.selectedNotes() || undefined
-    }).subscribe({
-      next: (result) => {
-        if (result) {
-          this.notifications.success('TRANSFERS.REQUEST_CREATED');
-          this.created.emit({ success: true });
-        }
-      },
-      error: () => {
-        this.notifications.error('TRANSFERS.REQUEST_ERROR');
+    }).subscribe((result) => {
+      if (result) {
+        this.notifications.success('TRANSFERS.REQUEST_CREATED');
+        this.created.emit({ success: true });
       }
     });
   }

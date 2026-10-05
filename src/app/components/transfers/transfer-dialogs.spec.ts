@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import { TransferQrDialog, TransferRejectDialog, TransferScanDialog } from './transfer-qr-dialog';
 import { TransferRequestService } from '../../services/transfer-request.service';
@@ -130,16 +130,8 @@ describe('TransferScanDialog', () => {
     component.processScannedQr();
 
     expect(notifications.success).not.toHaveBeenCalled();
+    expect(notifications.error).not.toHaveBeenCalled();
     expect(scanned).not.toHaveBeenCalled();
-  });
-
-  it('tells the user when the scan fails and keeps what they pasted', () => {
-    transfers.scanQr.and.returnValue(throwError(() => new Error('bad code')));
-    component.scannedQrData = 'QR-DATA';
-
-    component.processScannedQr();
-
-    expect(notifications.error).toHaveBeenCalledOnceWith('TRANSFERS.QR.SCAN_ERROR');
     expect(component.scannedQrData).toBe('QR-DATA');
   });
 

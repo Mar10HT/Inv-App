@@ -7,6 +7,7 @@ import { LoanService } from '../../services/loan.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { tomorrowKey } from '../../utils/date.utils';
 
 /** Represents a single item in the loan form */
 export interface LoanItemEntry {
@@ -250,7 +251,7 @@ export class LoanFormDialog {
   });
 
   // Min date for due date picker (tomorrow)
-  minDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  minDate = tomorrowKey();
 
   close(): void {
     this.closed.emit();

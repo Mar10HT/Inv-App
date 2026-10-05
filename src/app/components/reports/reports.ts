@@ -10,6 +10,7 @@ import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
+import { localDateKey, parseDate } from '../../utils/date.utils';
 import { formatDate, formatDateTime } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
 import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
@@ -140,10 +141,22 @@ import { Spinner } from '../shared/spinner/spinner';
     </div>
 
     <!-- Loading State -->
-    @if (loading() && activeTab() !== 1) {
+    @if (showSpinner()) {
       <div class="flex items-center justify-center py-12">
         <app-spinner></app-spinner>
         <span class="ml-3 text-[var(--color-on-surface-variant)]">{{ 'COMMON.LOADING' | translate }}...</span>
+      </div>
+    } @else if (tabError()) {
+      <div role="alert" class="flex flex-col items-center gap-4 py-12 text-center">
+        <lucide-icon name="AlertTriangle" class="!text-[var(--color-status-warning)] !w-8 !h-8"></lucide-icon>
+        <p class="text-[var(--color-on-surface-variant)]">{{ 'REPORTS.LOAD_ERROR' | translate }}</p>
+        <button
+          type="button"
+          (click)="loadData()"
+          [disabled]="loading() || transactionsLoading()"
+          class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-4 py-2.5 rounded-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ 'REPORTS.RETRY' | translate }}
+        </button>
       </div>
     } @else {
       <!-- ========== TAB 0: VALUE REPORT ========== -->
@@ -224,6 +237,24 @@ export class Reports implements OnInit {
   // Loading states
   loading = signal<boolean>(true);
   transactionsLoading = signal<boolean>(true);
+  itemsError = signal<boolean>(false);
+  transactionsError = signal<boolean>(false);
+
+  /** Which data a tab reads: tabs 1 and 4 the transactions, 5 (downloads) none, the rest the items. */
+  private tabSource = computed(() => {
+    const tab = this.activeTab();
+    if (tab === 1 || tab === 4) return 'transactions';
+    return tab === 5 ? null : 'items';
+  });
+
+  /** Tabs 1 and 4 show their own spinner while the transactions load, and 5 has nothing to wait for. */
+  showSpinner = computed(() => this.tabSource() === 'items' && this.loading());
+
+  tabError = computed(() => {
+    const source = this.tabSource();
+    if (source === 'transactions') return this.transactionsError();
+    return source === 'items' && this.itemsError();
+  });
 
   // Data signals
   allItems = signal<InventoryItemInterface[]>([]);
@@ -353,13 +384,13 @@ export class Reports implements OnInit {
     }
 
     if (from) {
-      const fromDate = new Date(from);
+      const fromDate = parseDate(from);
       transactions = transactions.filter(t => new Date(t.date) >= fromDate);
     }
 
     if (to) {
-      const toDate = new Date(to);
-      toDate.setHours(23, 59, 59);
+      const toDate = parseDate(to);
+      toDate.setHours(23, 59, 59, 999);
       transactions = transactions.filter(t => new Date(t.date) <= toDate);
     }
 
@@ -444,12 +475,12 @@ export class Reports implements OnInit {
     for (let i = 29; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = localDateKey(date);
       map.set(dateStr, { date: dateStr, in: 0, out: 0, transfer: 0 });
     }
 
     for (const tx of transactions) {
-      const dateStr = new Date(tx.date).toISOString().split('T')[0];
+      const dateStr = localDateKey(new Date(tx.date));
       const existing = map.get(dateStr);
       if (existing) {
         if (tx.type === TransactionType.IN) existing.in++;
@@ -465,9 +496,11 @@ export class Reports implements OnInit {
     this.loadData();
   }
 
-  private loadData(): void {
+  protected loadData(): void {
     this.loading.set(true);
     this.transactionsLoading.set(true);
+    this.itemsError.set(false);
+    this.transactionsError.set(false);
 
     // Load items
     this.inventoryService.getItemsObservable().subscribe({
@@ -475,7 +508,10 @@ export class Reports implements OnInit {
         this.allItems.set(items);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.itemsError.set(true);
+        this.loading.set(false);
+      }
     });
 
     // Load transactions
@@ -484,7 +520,10 @@ export class Reports implements OnInit {
         this.allTransactions.set(transactions);
         this.transactionsLoading.set(false);
       },
-      error: () => this.transactionsLoading.set(false)
+      error: () => {
+        this.transactionsError.set(true);
+        this.transactionsLoading.set(false);
+      }
     });
   }
 
@@ -536,7 +575,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Inventory',
-      filename:    `inventario-valor-${currency}-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:    `inventario-valor-${currency}-${localDateKey(new Date())}.xlsx`,
       headerColor: '4D7C6F',
       colWidths:   [30, 12, 18, 22, 22, 8, 10, 12, 12, 8, 14],
     }));
@@ -565,7 +604,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Transactions',
-      filename:    `transacciones-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
       headerColor: '60A5FA',
       colWidths:   [18, 12, 22, 22, 20, 30, 12, 8, 30, 30],
     }));
@@ -575,7 +614,7 @@ export class Reports implements OnInit {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
 
-    const rows = this.allItems().map(item => ({
+    const rows = this.scopedItems().map(item => ({
       [t('REPORTS.TABLE.ITEM')]:         item.name,
       SKU:                               item.sku || '',
       [t('REPORTS.TABLE.CATEGORY')]:     item.category,
@@ -588,7 +627,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:        'Stock Status',
-      filename:         `estado-stock-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:         `estado-stock-${localDateKey(new Date())}.xlsx`,
       headerColor:      'B45309',
       colWidths:        [30, 12, 18, 22, 12, 10, 14, 14],
     }));
@@ -598,7 +637,7 @@ export class Reports implements OnInit {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
 
-    const rows = this.allItems()
+    const rows = this.scopedItems()
       .filter(item => item.itemType === ItemType.UNIQUE)
       .map(item => ({
         [t('REPORTS.TABLE.ITEM')]:              item.name,
@@ -614,7 +653,7 @@ export class Reports implements OnInit {
 
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:   'Assignments',
-      filename:    `asignaciones-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:    `asignaciones-${localDateKey(new Date())}.xlsx`,
       headerColor: 'A78BFA',
       colWidths:   [30, 14, 14, 18, 22, 22, 28, 16, 14],
     }));

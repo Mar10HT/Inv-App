@@ -17,6 +17,7 @@ import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
 import { RequestTracker, trackRequest } from '../utils/track-request';
+import { localDateKey } from '../utils/date.utils';
 
 const MAX_REQUESTS_LIMIT = 200;
 
@@ -277,7 +278,7 @@ export class TransferRequestService implements OnDestroy {
 
     await downloadStyledXLSX(rows, {
       sheetName:      'Transfer Requests',
-      filename:       `transfer-requests-${new Date().toISOString().split('T')[0]}.xlsx`,
+      filename:       `transfer-requests-${localDateKey(new Date())}.xlsx`,
       headerColor:    '3B82F6',
       colWidths:      [28, 14, 22, 22, 20, 20, 40, 14, 30],
       statusColIndex: 1, // Status column

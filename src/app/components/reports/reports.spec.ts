@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { signal, Type } from '@angular/core';
-import { NEVER, of, throwError } from 'rxjs';
+import { defer, NEVER, of, throwError } from 'rxjs';
+import type { WorkBook } from 'xlsx-js-style';
 
 import { Reports } from './reports';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
@@ -22,10 +23,19 @@ import { Transaction, TransactionType } from '../../interfaces/transaction.inter
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, supplier, tx, warehouse } from '../../../testing/report-fixtures';
 
-const daysAgo = (days: number): Date => {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
-  return d;
+// The trend window is "the last 30 days from now", so the tests pin "now" instead of racing midnight.
+const NOW = new Date(2026, 8, 24, 12, 0);
+const daysBefore = (days: number): Date => new Date(2026, 8, 24 - days, 12, 0);
+
+/** Runs `read` with the clock frozen at NOW; the computed signals it reads call `new Date()`. */
+const atNow = <T>(read: () => T): T => {
+  jasmine.clock().install();
+  jasmine.clock().mockDate(NOW);
+  try {
+    return read();
+  } finally {
+    jasmine.clock().uninstall();
+  }
 };
 
 describe('Reports', () => {
@@ -77,6 +87,90 @@ describe('Reports', () => {
 
       expect(component.allItems()).toEqual([]);
       expect(component.loading()).toBe(false);
+    });
+
+    it('shows an error with a retry instead of a zeroed report when the items fail', async () => {
+      let calls = 0;
+      await setup([], [], defer(() => (++calls === 1 ? throwError(() => new Error('boom')) : of([item({ id: 'a' })]))));
+
+      expect(component.itemsError()).toBe(true);
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).not.toBeNull();
+      expect(fixture.debugElement.query(By.directive(ReportsValueTab))).toBeNull();
+
+      (fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      expect(component.itemsError()).toBe(false);
+      expect(component.allItems().map((i) => i.id)).toEqual(['a']);
+      expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+      expect(fixture.debugElement.query(By.directive(ReportsValueTab))).not.toBeNull();
+    });
+
+    // What each tab shows once it is selected: its own component, or the load error in its place.
+    const alert = (): HTMLElement | null => fixture.nativeElement.querySelector('[role="alert"]');
+    const has = (type: Type<unknown>): boolean => fixture.debugElement.query(By.directive(type)) !== null;
+    const select = (tab: number): void => {
+      component.onTabChange(tab);
+      fixture.detectChanges();
+    };
+
+    it('shows the transactions error only on the tabs that read the transactions', async () => {
+      await setup([item({ id: 'a' })], [], undefined, throwError(() => new Error('boom')));
+
+      expect(component.transactionsError()).toBe(true);
+      expect(alert()).toBeNull();
+      expect(has(ReportsValueTab)).toBe(true);
+
+      for (const tab of [1, 4]) {
+        select(tab);
+        expect(alert()).not.toBeNull();
+      }
+      for (const tab of [2, 3]) {
+        select(tab);
+        expect(alert()).toBeNull();
+      }
+      select(5);
+      expect(alert()).toBeNull();
+      expect(has(ReportsDownloadsTab)).toBe(true);
+    });
+
+    it('shows the items error only on the tabs that read the items', async () => {
+      await setup([], [tx({ id: 't' })], throwError(() => new Error('boom')) as never);
+
+      for (const tab of [0, 2, 3]) {
+        select(tab);
+        expect(alert()).not.toBeNull();
+      }
+      select(1);
+      expect(alert()).toBeNull();
+      expect(has(ReportsTransactionsTab)).toBe(true);
+      select(4);
+      expect(alert()).toBeNull();
+      expect(has(ReportsTrendsTab)).toBe(true);
+      select(5);
+      expect(alert()).toBeNull();
+      expect(has(ReportsDownloadsTab)).toBe(true);
+    });
+
+    it('does not cover the tabs that read only the transactions, or the downloads, with the items spinner', async () => {
+      await setup([], [tx({ id: 't' })], NEVER);
+
+      select(4);
+      expect(has(ReportsTrendsTab)).toBe(true);
+      select(5);
+      expect(has(ReportsDownloadsTab)).toBe(true);
+      expect(fixture.nativeElement.querySelector('app-spinner')).toBeNull();
+      select(0);
+      expect(fixture.nativeElement.querySelector('app-spinner')).not.toBeNull();
+    });
+
+    it('shows the transactions error while the items still load, with the retry blocked until both finish', async () => {
+      await setup([], [], NEVER, throwError(() => new Error('boom')));
+
+      select(4);
+
+      expect(alert()).not.toBeNull();
+      expect((alert()?.querySelector('button') as HTMLButtonElement).disabled).toBe(true);
     });
   });
 
@@ -205,6 +299,21 @@ describe('Reports', () => {
       expect(component.filteredTransactions().map((t) => t.id)).toEqual(['in', 'out']);
     });
 
+    it('keeps the first day and the whole last day of the range, in local time', async () => {
+      await setup([], [
+        tx({ id: 'before', date: new Date(2026, 0, 9, 23, 0) }),
+        tx({ id: 'first', date: new Date(2026, 0, 10, 0, 30) }),
+        tx({ id: 'last', date: new Date(2026, 0, 20, 22, 0) }),
+        tx({ id: 'edge', date: new Date(2026, 0, 20, 23, 59, 59, 500) }),
+        tx({ id: 'after', date: new Date(2026, 0, 21, 0, 30) })
+      ]);
+
+      component.onDateFromChange('2026-01-10');
+      component.onDateToChange('2026-01-20');
+
+      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['first', 'last', 'edge']);
+    });
+
     it('resets every filter with clearTransactionFilters', async () => {
       await setup([], txs);
       component.onTransactionTypeChange('OUT');
@@ -314,29 +423,95 @@ describe('Reports', () => {
   });
 
   describe('trends', () => {
-    it('returns 30 ascending days ending today, all zeroed when there are no transactions', async () => {
+    it('returns 30 ascending local days ending today, all zeroed when there are no transactions', async () => {
       await setup([]);
 
-      const trends = component.transactionTrends();
+      const trends = atNow(() => component.transactionTrends());
       expect(trends).toHaveSize(30);
-      expect(trends[29].date).toBe(new Date().toISOString().split('T')[0]);
+      expect(trends[0].date).toBe('2026-08-26');
+      expect(trends[29].date).toBe('2026-09-24');
       expect(trends.map((t) => t.date)).toEqual([...trends.map((t) => t.date)].sort());
       expect(trends.every((t) => t.in + t.out + t.transfer === 0)).toBe(true);
     });
 
     it('counts transactions per day and type and ignores days outside the window', async () => {
       await setup([], [
-        tx({ id: '1', type: TransactionType.IN, date: daysAgo(0) }),
-        tx({ id: '2', type: TransactionType.IN, date: daysAgo(0) }),
-        tx({ id: '3', type: TransactionType.OUT, date: daysAgo(5) }),
-        tx({ id: '4', type: TransactionType.TRANSFER, date: daysAgo(5) }),
-        tx({ id: '5', type: TransactionType.IN, date: daysAgo(60) })
+        tx({ id: '1', type: TransactionType.IN, date: daysBefore(0) }),
+        tx({ id: '2', type: TransactionType.IN, date: daysBefore(0) }),
+        tx({ id: '3', type: TransactionType.OUT, date: daysBefore(5) }),
+        tx({ id: '4', type: TransactionType.TRANSFER, date: daysBefore(5) }),
+        tx({ id: '5', type: TransactionType.IN, date: daysBefore(60) })
       ]);
 
-      const trends = component.transactionTrends();
+      const trends = atNow(() => component.transactionTrends());
       expect(trends[29]).toEqual(jasmine.objectContaining({ in: 2, out: 0, transfer: 0 }));
       expect(trends[24]).toEqual(jasmine.objectContaining({ in: 0, out: 1, transfer: 1 }));
       expect(trends.reduce((sum, t) => sum + t.in + t.out + t.transfer, 0)).toBe(4);
+    });
+
+    it('puts a transaction on the local day it happened, right after and right before midnight', async () => {
+      await setup([], [
+        tx({ id: 'early', type: TransactionType.IN, date: new Date(2026, 8, 24, 0, 30) }),
+        tx({ id: 'late', type: TransactionType.IN, date: new Date(2026, 8, 24, 23, 30) })
+      ]);
+
+      const today = atNow(() => component.transactionTrends()[29]);
+
+      expect(today).toEqual(jasmine.objectContaining({ date: '2026-09-24', in: 2 }));
+    });
+  });
+
+  describe('exports', () => {
+    type XlsxModule = typeof import('xlsx-js-style');
+    let XLSX: XlsxModule;
+    let written: { workbook: WorkBook; filename: string }[];
+
+    // What the user downloads is whatever XLSX.writeFile receives (same seam as xlsx.utils.spec).
+    beforeEach(async () => {
+      written = [];
+      const loaded = (await import('xlsx-js-style')) as XlsxModule & { default?: XlsxModule };
+      XLSX = loaded.default ?? loaded;
+      spyOn(XLSX, 'writeFile').and.callFake(((workbook: WorkBook, filename: string) => {
+        written.push({ workbook, filename });
+      }) as never);
+    });
+
+    /** First column of every row of the last export: the item name. */
+    const exportedNames = (): unknown[] => {
+      const { workbook } = written[written.length - 1];
+      return XLSX.utils
+        .sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]])
+        .map((row) => Object.values(row)[0]);
+    };
+
+    it('exports every item in the status file when no warehouse is selected', async () => {
+      await setup([item({ id: 'a', name: 'Main item', warehouseId: 'w1' }), item({ id: 'b', name: 'Backup item', warehouseId: 'w2' })]);
+
+      await component.exportStatusReport();
+
+      expect(exportedNames()).toEqual(['Main item', 'Backup item']);
+    });
+
+    it('limits the status file to the selected warehouse', async () => {
+      await setup([item({ id: 'a', name: 'Main item', warehouseId: 'w1' }), item({ id: 'b', name: 'Backup item', warehouseId: 'w2' })]);
+      component.selectedWarehouseId.set('w1');
+
+      await component.exportStatusReport();
+
+      expect(exportedNames()).toEqual(['Main item']);
+    });
+
+    it('limits the assignments file to the unique items of the selected warehouse', async () => {
+      await setup([
+        item({ id: 'a', name: 'Main laptop', itemType: ItemType.UNIQUE, warehouseId: 'w1' }),
+        item({ id: 'b', name: 'Backup laptop', itemType: ItemType.UNIQUE, warehouseId: 'w2' }),
+        item({ id: 'c', name: 'Main cable', itemType: ItemType.BULK, warehouseId: 'w1' })
+      ]);
+      component.selectedWarehouseId.set('w1');
+
+      await component.exportAssignments();
+
+      expect(exportedNames()).toEqual(['Main laptop']);
     });
   });
 

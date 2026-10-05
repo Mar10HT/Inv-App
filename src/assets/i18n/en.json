@@ -569,6 +569,8 @@
   "REPORTS": {
     "TITLE": "Reports",
     "SUBTITLE": "Inventory value reports and analytics",
+    "LOAD_ERROR": "Could not load the report data. Check your connection and try again.",
+    "RETRY": "Retry",
     "ALL_CURRENCIES": "All Currencies",
     "ALL_TYPES": "All Types",
     "TOTAL_VALUE": "Total Value",

@@ -20,5 +20,9 @@ describe('reports.format', () => {
     it('does not include the time', () => {
       expect(formatDate(jan15)).not.toMatch(/\d{2}:\d{2}/);
     });
+
+    it('shows a date-only string as that same day, not the previous one west of UTC', () => {
+      expect(formatDate('2026-01-15')).toMatch(/^15\b.*2026$/);
+    });
   });
 });

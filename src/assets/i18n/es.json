@@ -569,6 +569,8 @@
   "REPORTS": {
     "TITLE": "Reportes",
     "SUBTITLE": "Reportes de valor de inventario y análisis",
+    "LOAD_ERROR": "No se pudieron cargar los datos del reporte. Revisa tu conexión e intenta de nuevo.",
+    "RETRY": "Reintentar",
     "ALL_CURRENCIES": "Todas las Monedas",
     "ALL_TYPES": "Todos los Tipos",
     "TOTAL_VALUE": "Valor Total",

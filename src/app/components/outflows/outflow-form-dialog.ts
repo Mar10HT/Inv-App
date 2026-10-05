@@ -158,7 +158,7 @@ const REASONS: OutflowReason[] = [
               @for (item of items(); track $index; let i = $index) {
                 <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
                   <div class="flex items-start gap-3">
-                    <div class="flex-1 space-y-3">
+                    <div class="flex-1 min-w-0 space-y-3">
                       <select
                         [ngModel]="item.inventoryItemId"
                         (ngModelChange)="updateItemId(i, $event)"
@@ -188,7 +188,7 @@ const REASONS: OutflowReason[] = [
                           type="text"
                           [ngModel]="item.notes"
                           (ngModelChange)="updateItemNotes(i, $event)"
-                          class="flex-1 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                         />
                       </div>

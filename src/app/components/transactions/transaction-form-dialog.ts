@@ -175,7 +175,7 @@ export interface TransactionFormDialogData {
             @for (item of itemsArray.controls; track $index; let i = $index) {
               <div [formGroupName]="i" class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
                 <div class="flex items-start gap-3">
-                  <div class="flex-1 space-y-3">
+                  <div class="flex-1 min-w-0 space-y-3">
                     <select
                       formControlName="inventoryItemId"
                       class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
@@ -195,7 +195,7 @@ export interface TransactionFormDialogData {
                       <input
                         type="text"
                         formControlName="notes"
-                        class="flex-1 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                        class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                         [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                       />
                     </div>

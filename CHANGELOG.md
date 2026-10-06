@@ -47,6 +47,7 @@ This project uses [Semantic Versioning](https://semver.org/). Version `0.x.x` in
 - Code audit, layout:
   - The sale, outflow, loan and transaction forms forced their dialog into horizontal scroll once the item notes field ran out of room, clipping the subtotal line (`min-w-0` was missing on a `flex-1` input, so it refused to shrink below its placeholder's width).
   - A long item name or description in the inventory table, or a long category/warehouse/supplier name in the value report, pushed every column after it out of place (`min-w-0` was missing on that one grid cell, the only one whose content length is unbounded).
+  - The sidebar's collapse toggle sits half outside the sidebar on purpose, but it lived inside `.sidebar-top`, whose `overflow-x: hidden` (needed for the nav list's scroll) clipped that protruding half, making it look like the sidebar's edge was drawn in front of the button. Moved it to a sibling of `.sidebar-top` instead of a child.
 
 ### Added
 - CI (`.github/workflows/ci.yml`): install, lint, unit tests, production build on every push/PR to `main`.

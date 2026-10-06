@@ -371,7 +371,9 @@
     "TITLE": "Roles",
     "SUBTITLE": "Manage roles and their permissions",
     "ADD": "New Role",
+    "ADD_SUBTITLE": "Create a role and choose what it can access",
     "EDIT": "Edit Role",
+    "EDIT_SUBTITLE": "Update the role's details and permissions",
     "LIST": "Role List",
     "TOTAL": "Total Roles",
     "SYSTEM_ROLES": "System Roles",
@@ -387,6 +389,7 @@
     "SELECTED": "selected",
     "NAME_HINT": "e.g. MY_CUSTOM_ROLE",
     "NO_ROLES": "No roles found",
+    "SYSTEM_ADMIN_NOTE": "This role has full access to the system and does not use individual permissions.",
     "DELETE_CONFIRM": {
       "TITLE": "Delete Role",
       "MESSAGE": "Are you sure you want to delete the role \"{{name}}\"? This action cannot be undone."

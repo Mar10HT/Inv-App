@@ -371,7 +371,9 @@
     "TITLE": "Roles",
     "SUBTITLE": "Gestionar roles y sus permisos",
     "ADD": "Nuevo Rol",
+    "ADD_SUBTITLE": "Creá un rol y elegí a qué puede acceder",
     "EDIT": "Editar Rol",
+    "EDIT_SUBTITLE": "Actualizá los datos y permisos del rol",
     "LIST": "Lista de Roles",
     "TOTAL": "Total de Roles",
     "SYSTEM_ROLES": "Roles del Sistema",
@@ -387,6 +389,7 @@
     "SELECTED": "seleccionados",
     "NAME_HINT": "ej. MI_ROL_PERSONALIZADO",
     "NO_ROLES": "No se encontraron roles",
+    "SYSTEM_ADMIN_NOTE": "Este rol tiene acceso total al sistema y no usa permisos individuales.",
     "DELETE_CONFIRM": {
       "TITLE": "Eliminar Rol",
       "MESSAGE": "¿Estás seguro de que deseas eliminar el rol \"{{name}}\"? Esta acción no se puede deshacer."

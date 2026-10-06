@@ -22,4 +22,12 @@ describe('Navigation', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('keeps the collapse toggle out of sidebar-top, whose overflow-x: hidden would clip it', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const toggle = el.querySelector('.toggle-btn');
+
+    expect(toggle?.closest('.sidebar-top')).toBeNull();
+    expect(toggle?.closest('.sidebar')).not.toBeNull();
+  });
 });

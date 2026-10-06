@@ -52,6 +52,19 @@ import { PermissionsService } from '../../../services/permissions.service';
   [class.collapsed]="isCollapsed()"
   [class.mobile-open]="isMobileMenuOpen()">
 
+  <!-- Toggle: a sibling of sidebar-top, not a child of it, so sidebar-top's overflow-x: hidden
+       (needed for the nav list's vertical scroll) does not clip this button's -14px protrusion
+       past the sidebar's edge. -->
+  <button
+    class="toggle-btn"
+    (click)="isMobileMenuOpen() ? closeMobileMenu() : toggleSidebar($event)"
+    [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('COMMON.EXPAND' | translate) : ''"
+    matTooltipPosition="right"
+    [attr.aria-label]="'COMMON.TOGGLE_SIDEBAR' | translate"
+    [attr.aria-expanded]="!isCollapsed()">
+    <lucide-icon [name]="isMobileMenuOpen() ? 'X' : (isCollapsed() ? 'ChevronRight' : 'ChevronLeft')"></lucide-icon>
+  </button>
+
   <!-- Top Section: Logo + Navigation -->
   <div class="sidebar-top">
     <!-- Logo -->
@@ -73,17 +86,6 @@ import { PermissionsService } from '../../../services/permissions.service';
         </div>
       </div>
     }
-
-    <!-- Toggle -->
-    <button
-      class="toggle-btn"
-      (click)="isMobileMenuOpen() ? closeMobileMenu() : toggleSidebar($event)"
-      [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('COMMON.EXPAND' | translate) : ''"
-      matTooltipPosition="right"
-      [attr.aria-label]="'COMMON.TOGGLE_SIDEBAR' | translate"
-      [attr.aria-expanded]="!isCollapsed()">
-      <lucide-icon [name]="isMobileMenuOpen() ? 'X' : (isCollapsed() ? 'ChevronRight' : 'ChevronLeft')"></lucide-icon>
-    </button>
 
     <!-- Navigation -->
     <nav class="sidebar-nav">

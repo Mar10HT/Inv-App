@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
@@ -8,7 +8,6 @@ import { RolesService } from '../../services/roles.service';
 import { NotificationService } from '../../services/notification.service';
 import { RoleSummary } from '../../interfaces/role.interface';
 import { ConfirmService } from '../../services/confirm.service';
-import { RoleFormDialog, RoleFormDialogData } from './role-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
 import { EmptyState } from '../shared/empty-state/empty-state';
 
@@ -187,7 +186,7 @@ import { EmptyState } from '../shared/empty-state/empty-state';
 })
 export class RolesComponent implements OnInit {
   private rolesService = inject(RolesService);
-  private dialog = inject(MatDialog);
+  private router = inject(Router);
   private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
@@ -220,29 +219,11 @@ export class RolesComponent implements OnInit {
   }
 
   openAdd(): void {
-    const dialogRef = this.dialog.open(RoleFormDialog, {
-      width: '640px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      panelClass: 'item-detail-dialog',
-      data: { mode: 'add' } satisfies RoleFormDialogData
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result?.saved) this.load();
-    });
+    this.router.navigate(['/roles', 'add']);
   }
 
   openEdit(role: RoleSummary): void {
-    const dialogRef = this.dialog.open(RoleFormDialog, {
-      width: '640px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      panelClass: 'item-detail-dialog',
-      data: { mode: 'edit', role } satisfies RoleFormDialogData
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result?.saved) this.load();
-    });
+    this.router.navigate(['/roles', 'edit', role.id]);
   }
 
   confirmDelete(role: RoleSummary): void {

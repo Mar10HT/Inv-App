@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import { RolesComponent } from './roles';
-import { RoleFormDialog } from './role-form-dialog';
 import { RolesService } from '../../services/roles.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
@@ -27,23 +26,16 @@ describe('RolesComponent', () => {
   let fixture: ComponentFixture<RolesComponent>;
   let component: RolesComponent;
   let roles: jasmine.SpyObj<RolesService>;
-  let dialog: { open: jasmine.Spy };
+  let router: Router;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
   const failure = new Error('boom');
 
-  /** Closes every dialog it opens with `result`. */
-  const closeWith = (result: unknown): void => {
-    dialog.open.and.returnValue({ afterClosed: () => of(result) });
-  };
-
   beforeEach(async () => {
     roles = jasmine.createSpyObj<RolesService>('RolesService', ['getAll', 'remove']);
     roles.getAll.and.returnValue(of([role('admin', { isSystem: true }), role('auditor'), role('clerk')]));
     roles.remove.and.returnValue(of({ message: 'Deleted' }));
-    dialog = { open: jasmine.createSpy('open') };
-    closeWith(undefined);
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['deleted', 'handleError']);
@@ -53,7 +45,6 @@ describe('RolesComponent', () => {
       providers: [
         ...provideTestBedDefaults(),
         { provide: RolesService, useValue: roles },
-        { provide: MatDialog, useValue: dialog },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
       ]
@@ -61,6 +52,8 @@ describe('RolesComponent', () => {
 
     fixture = TestBed.createComponent(RolesComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
     fixture.detectChanges();
   });
 
@@ -88,32 +81,16 @@ describe('RolesComponent', () => {
   });
 
   describe('openAdd and openEdit', () => {
-    it('openAdd opens the form in add mode and reloads the roles once one was saved', () => {
-      closeWith({ saved: true });
-
+    it('openAdd navigates to the add route', () => {
       component.openAdd();
 
-      expect(dialog.open).toHaveBeenCalledOnceWith(RoleFormDialog, jasmine.objectContaining({ width: '640px', data: { mode: 'add' } }));
-      expect(roles.getAll).toHaveBeenCalledTimes(2);
+      expect(router.navigate).toHaveBeenCalledOnceWith(['/roles', 'add']);
     });
 
-    it('openEdit opens the form in edit mode with the role and reloads once it was saved', () => {
-      const auditor = role('auditor');
-      closeWith({ saved: true });
-
-      component.openEdit(auditor);
-
-      expect(dialog.open).toHaveBeenCalledOnceWith(RoleFormDialog, jasmine.objectContaining({ data: { mode: 'edit', role: auditor } }));
-      expect(roles.getAll).toHaveBeenCalledTimes(2);
-    });
-
-    it('reload nothing when the form was dismissed', () => {
-      closeWith(undefined);
-      component.openAdd();
-      closeWith({ saved: false });
+    it('openEdit navigates to the edit route for that role', () => {
       component.openEdit(role('auditor'));
 
-      expect(roles.getAll).toHaveBeenCalledTimes(1);
+      expect(router.navigate).toHaveBeenCalledOnceWith(['/roles', 'edit', 'auditor']);
     });
   });
 

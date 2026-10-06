@@ -134,6 +134,8 @@ const PERMISSIONS: Record<string, string[]> = {
   settings: ['settings:view'],
   users: ['users:view'],
   roles: ['settings:edit'],
+  'roles/add': ['settings:edit'],
+  'roles/edit/:id': ['settings:edit'],
   transactions: ['transactions:view'],
   reports: ['reports:view'],
   audit: ['audit:view'],

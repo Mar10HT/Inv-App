@@ -91,8 +91,21 @@ export const routes: Routes = [
   },
   {
     path: 'roles',
-    loadComponent: () => import('./components/roles/roles').then(m => m.RolesComponent),
-    canActivate: [permissionGuard('settings:edit')]
+    canActivate: [permissionGuard('settings:edit')],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/roles/roles').then(m => m.RolesComponent)
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./components/roles/role-form/role-form.component').then(m => m.RoleFormComponent)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./components/roles/role-form/role-form.component').then(m => m.RoleFormComponent)
+      }
+    ]
   },
   {
     path: 'transactions',

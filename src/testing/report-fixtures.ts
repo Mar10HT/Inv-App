@@ -7,6 +7,7 @@ import {
   Warehouse
 } from '../app/interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../app/interfaces/transaction.interface';
+import { Client } from '../app/interfaces/client.interface';
 
 export const warehouse = (id: string, name: string): Warehouse => ({
   id,
@@ -21,6 +22,16 @@ export const supplier = (id: string, name: string): Supplier => ({
   id,
   name,
   location: '',
+  createdAt: new Date(0),
+  updatedAt: new Date(0)
+});
+
+export const client = (id: string, name: string): Client => ({
+  id,
+  code: id.toUpperCase(),
+  name,
+  paymentCondition: 'CASH',
+  isActive: true,
   createdAt: new Date(0),
   updatedAt: new Date(0)
 });

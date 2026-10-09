@@ -1,7 +1,7 @@
 import { ValidatorFn } from '@angular/forms';
 import { Observable } from 'rxjs';
 
-export type CrudFieldType = 'text' | 'email' | 'tel' | 'textarea' | 'number' | 'select';
+export type CrudFieldType = 'text' | 'email' | 'tel' | 'textarea' | 'number' | 'select' | 'checkbox';
 
 export interface CrudFieldOption {
   value: string;
@@ -21,6 +21,8 @@ export interface CrudFieldConfig {
   rows?: number;
   options?: CrudFieldOption[];
   errorMessages?: Record<string, { key: string; params?: CrudTranslateParams }>;
+  /** Checkbox fields only: the control's value in add mode. Defaults to false. */
+  defaultValue?: boolean;
 }
 
 export interface CrudDialogConfig {
@@ -55,4 +57,27 @@ export interface CrudDialogData<T = Record<string, unknown>> {
   entityIdField?: string;
   createFn(data: unknown): Observable<T>;
   updateFn(id: string, data: unknown): Observable<T>;
+}
+
+/**
+ * Shared builder behind every entity's `build<Entity>DialogData` function (e.g.
+ * `buildClientDialogData`, `buildSupplierDialogData`). Those per-entity wrappers exist only to
+ * pin `createFn`/`updateFn` to the entity's own DTO types instead of `unknown` — the wiring
+ * itself (bundling `mode`/`config`/`entity` and narrowing the dialog's generic form value back
+ * to a concrete DTO) is identical for all of them, so it lives here once.
+ */
+export function buildCrudDialogData<T, TCreate, TUpdate>(
+  config: CrudDialogConfig,
+  mode: 'add' | 'edit',
+  createFn: (data: TCreate) => Observable<T>,
+  updateFn: (id: string, data: TUpdate) => Observable<T>,
+  entity?: T,
+): CrudDialogData<T> {
+  return {
+    mode,
+    config,
+    entity,
+    createFn: (data: Record<string, unknown>) => createFn(data as unknown as TCreate),
+    updateFn: (id: string, data: Record<string, unknown>) => updateFn(id, data as unknown as TUpdate),
+  };
 }

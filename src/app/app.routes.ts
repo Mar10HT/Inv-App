@@ -70,6 +70,11 @@ export const routes: Routes = [
     canActivate: [permissionGuard('suppliers:view')]
   },
   {
+    path: 'clients',
+    loadComponent: () => import('./components/clients/clients').then(m => m.Clients),
+    canActivate: [permissionGuard('clients:view')]
+  },
+  {
     path: 'categories',
     loadComponent: () => import('./components/categories/categories').then(m => m.Categories),
     canActivate: [permissionGuard('categories:view')]

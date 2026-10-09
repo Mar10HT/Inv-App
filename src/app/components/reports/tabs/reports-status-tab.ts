@@ -32,19 +32,19 @@ import { StatusSummary } from '../reports.types';
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       @for (summary of summaries(); track summary.status) {
         <div class="bg-surface-variant border border-theme rounded-xl p-6"
-          [class]="summary.status === InventoryStatus.IN_STOCK ? 'border-emerald-800/50' : summary.status === InventoryStatus.LOW_STOCK ? 'border-orange-800/50' : 'border-rose-800/50'">
+          [class]="getStatusStyle(summary.status).border">
           <div class="flex items-center gap-4 mb-4">
             <div class="p-3 rounded-lg"
-              [class]="summary.status === InventoryStatus.IN_STOCK ? 'bg-emerald-500/20' : summary.status === InventoryStatus.LOW_STOCK ? 'bg-orange-500/20' : 'bg-rose-500/20'">
+              [class]="getStatusStyle(summary.status).iconBg">
               <lucide-icon
                 [name]="getStatusIcon(summary.status)"
-                [class]="summary.status === InventoryStatus.IN_STOCK ? '!text-[var(--color-status-success)]' : summary.status === InventoryStatus.LOW_STOCK ? '!text-[var(--color-status-warning)]' : '!text-[var(--color-status-error)]'"
+                [class]="'!' + getStatusStyle(summary.status).text"
                 class="!w-6 !h-6"></lucide-icon>
             </div>
             <div>
               <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'STATUS.' + summary.status | translate }}</p>
               <p class="text-3xl font-bold"
-                [class]="summary.status === InventoryStatus.IN_STOCK ? 'text-[var(--color-status-success)]' : summary.status === InventoryStatus.LOW_STOCK ? 'text-[var(--color-status-warning)]' : 'text-[var(--color-status-error)]'">
+                [class]="getStatusStyle(summary.status).text">
                 {{ summary.count }}
               </p>
             </div>
@@ -120,7 +120,18 @@ export class ReportsStatusTab {
     [InventoryStatus.IN_USE]: 'User'
   };
 
+  private static readonly STYLES: Record<InventoryStatus, { border: string; iconBg: string; text: string }> = {
+    [InventoryStatus.IN_STOCK]: { border: 'border-[var(--color-success-border)]', iconBg: 'bg-[var(--color-success-bg)]', text: 'text-[var(--color-status-success)]' },
+    [InventoryStatus.LOW_STOCK]: { border: 'border-[var(--color-warning-border)]', iconBg: 'bg-[var(--color-warning-bg)]', text: 'text-[var(--color-status-warning)]' },
+    [InventoryStatus.OUT_OF_STOCK]: { border: 'border-[var(--color-error-border)]', iconBg: 'bg-[var(--color-error-bg)]', text: 'text-[var(--color-status-error)]' },
+    [InventoryStatus.IN_USE]: { border: 'border-[var(--color-info-border)]', iconBg: 'bg-[var(--color-info-bg)]', text: 'text-[var(--color-status-info)]' },
+  };
+
   getStatusIcon(status: InventoryStatus): string {
     return ReportsStatusTab.ICONS[status] ?? 'HelpCircle';
+  }
+
+  getStatusStyle(status: InventoryStatus): { border: string; iconBg: string; text: string } {
+    return ReportsStatusTab.STYLES[status] ?? ReportsStatusTab.STYLES[InventoryStatus.OUT_OF_STOCK];
   }
 }

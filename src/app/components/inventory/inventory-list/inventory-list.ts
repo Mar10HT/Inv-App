@@ -47,8 +47,8 @@ import { localDateKey } from '../../../utils/date.utils';
     <div class="mb-8">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'DASHBOARD.TITLE' | translate }}</h1>
-          <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
+          <h1 class="text-4xl font-bold text-foreground mb-2">{{ 'INVENTORY.TITLE' | translate }}</h1>
+          <p class="text-[var(--color-on-surface-variant)] text-lg">{{ 'INVENTORY.SUBTITLE' | translate }}</p>
         </div>
         <ng-container *ngxPermissionsOnly="['inventory:create']">
           <button
@@ -87,7 +87,7 @@ import { localDateKey } from '../../../utils/date.utils';
           <select
             [value]="selectedCategory()"
             (change)="onCategoryChange($any($event.target).value)"
-            class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none custom-select-chevron"
+            class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer select-chevron"
           >
             <option value="all">{{ 'INVENTORY.ALL_CATEGORIES' | translate }}</option>
             @for (category of categories(); track category) {
@@ -101,7 +101,7 @@ import { localDateKey } from '../../../utils/date.utils';
           <select
             [value]="selectedLocation()"
             (change)="onLocationChange($any($event.target).value)"
-            class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none custom-select-chevron"
+            class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer select-chevron"
           >
             <option value="all">{{ 'INVENTORY.ALL_LOCATIONS' | translate }}</option>
             @for (location of locations(); track location) {
@@ -115,7 +115,7 @@ import { localDateKey } from '../../../utils/date.utils';
           <select
             [value]="selectedStatus()"
             (change)="onStatusChange($any($event.target).value)"
-            class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none custom-select-chevron"
+            class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer select-chevron"
           >
             <option value="all">{{ 'INVENTORY.ALL_STATUS' | translate }}</option>
             <option [value]="InventoryStatus.IN_STOCK">{{ 'INVENTORY.STATUS.IN_STOCK' | translate }}</option>

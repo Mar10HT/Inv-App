@@ -154,18 +154,18 @@ describe('CustomChartDialog', () => {
       expect(component.previewColors()).toEqual(['#3b82f6']);
     });
 
-    it('uses the palette of the chosen color for a circle chart', () => {
+    it('uses a muted multi-color palette led by the chosen color for a circle chart', () => {
       pick('categories', 'pie');
       component.selectColor('#3b82f6');
 
-      expect(component.previewColors()).toEqual(['#3b82f6', '#f97316', '#10b981', '#ec4899', '#eab308', '#06b6d4']);
+      expect(component.previewColors()).toEqual(['#3b82f6', '#4d7c6f', '#6b7bb5', '#c8884d', '#a78bfa', '#2dd4bf']);
     });
 
-    it('falls back to the color alone when it has no palette', () => {
+    it('prepends an unrecognized color to the palette for a circle chart', () => {
       pick('categories', 'pie');
       component.selectColor('#123456');
 
-      expect(component.previewColors()).toEqual(['#123456']);
+      expect(component.previewColors()).toEqual(['#123456', '#4d7c6f', '#6b7bb5', '#c8884d', '#a78bfa', '#2dd4bf']);
     });
   });
 

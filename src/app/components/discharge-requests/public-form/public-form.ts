@@ -144,7 +144,7 @@ import { LanguageSelectorComponent } from '../../shared/language-selector/langua
                         <select
                           [ngModel]="item.inventoryItemId"
                           (ngModelChange)="updateItemId(i, $event)"
-                          class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
+                          class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer select-chevron">
                           <option value="">{{ 'DISCHARGES.PUBLIC_FORM.SELECT_ITEM' | translate }}</option>
                           @for (avItem of filteredAvailableItems(); track avItem.id) {
                             <option [value]="avItem.id" [disabled]="isItemAlreadySelected(avItem.id, i)">

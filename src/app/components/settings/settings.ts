@@ -92,7 +92,7 @@ import { Spinner } from '../shared/spinner/spinner';
           <button
             (click)="toggleDarkMode()"
             class="relative w-12 h-6 rounded-full transition-colors"
-            [class]="darkMode() ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-surface-elevated)]'">
+            [class]="darkMode() ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border)]'">
             <span
               class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform"
               [class]="darkMode() ? 'left-7' : 'left-1'">
@@ -124,7 +124,7 @@ import { Spinner } from '../shared/spinner/spinner';
             <button
               (click)="toggleEmailNotifications()"
               class="relative w-12 h-6 rounded-full transition-colors"
-              [class]="emailNotifications() ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-surface-elevated)]'">
+              [class]="emailNotifications() ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border)]'">
               <span
                 class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform"
                 [class]="emailNotifications() ? 'left-7' : 'left-1'">
@@ -141,7 +141,7 @@ import { Spinner } from '../shared/spinner/spinner';
             <button
               (click)="toggleLowStockAlerts()"
               class="relative w-12 h-6 rounded-full transition-colors"
-              [class]="lowStockAlerts() ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-surface-elevated)]'">
+              [class]="lowStockAlerts() ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border)]'">
               <span
                 class="absolute top-1 w-4 h-4 bg-white rounded-full transition-transform"
                 [class]="lowStockAlerts() ? 'left-7' : 'left-1'">

@@ -200,12 +200,12 @@ describe('DashboardChartsBase', () => {
       expect(options('categories', 'bar').colors).toEqual(['#4d7c6f']);
     });
 
-    it('draws a circle chart with the palette of the chosen color', () => {
-      expect(options('categories', 'donut').colors).toEqual(['#4d7c6f', '#f97316', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308']);
+    it('draws a circle chart with the muted palette led by the chosen color', () => {
+      expect(options('categories', 'donut').colors).toEqual(['#4d7c6f', '#6b7bb5', '#c8884d', '#a78bfa', '#2dd4bf', '#b85c5c']);
     });
 
-    it('uses the color alone for a circle chart that has no palette', () => {
-      expect(options('categories', 'pie', undefined, '#123456').colors).toEqual(['#123456']);
+    it('prepends an unrecognized color to the palette for a circle chart', () => {
+      expect(options('categories', 'pie', undefined, '#123456').colors).toEqual(['#123456', '#4d7c6f', '#6b7bb5', '#c8884d', '#a78bfa', '#2dd4bf']);
     });
 
     it('sizes the hole of a donut and closes the one of a pie', () => {

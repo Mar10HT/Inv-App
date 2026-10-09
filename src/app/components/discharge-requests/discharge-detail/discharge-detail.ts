@@ -1,4 +1,5 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -19,6 +20,7 @@ import { ConfirmService } from '../../../services/confirm.service';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
+    DatePipe,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -45,7 +47,7 @@ import { ConfirmService } from '../../../services/confirm.service';
                   {{ getStatusLabel(request()!.status) }}
                 </span>
               </div>
-              <p class="text-[var(--color-on-surface-variant)]">{{ formatDate(request()!.createdAt) }}</p>
+              <p class="text-[var(--color-on-surface-variant)]">{{ request()!.createdAt | date:'mediumDate' }}</p>
             </div>
 
             @if (request()!.status === Status.PENDING) {
@@ -94,7 +96,7 @@ import { ConfirmService } from '../../../services/confirm.service';
               @if (request()!.neededByDate) {
                 <div>
                   <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</p>
-                  <p class="text-foreground">{{ formatDate(request()!.neededByDate!) }}</p>
+                  <p class="text-foreground">{{ request()!.neededByDate! | date:'mediumDate' }}</p>
                 </div>
               }
               <div>
@@ -160,7 +162,7 @@ import { ConfirmService } from '../../../services/confirm.service';
                 </div>
                 <div>
                   <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'DISCHARGES.DETAIL.RESOLVED_AT' | translate }}</p>
-                  <p class="text-foreground">{{ request()!.resolvedAt ? formatDate(request()!.resolvedAt!) : '-' }}</p>
+                  <p class="text-foreground">{{ request()!.resolvedAt ? (request()!.resolvedAt! | date:'mediumDate') : '-' }}</p>
                 </div>
                 @if (request()!.rejectedReason) {
                   <div class="sm:col-span-2">
@@ -303,9 +305,5 @@ export class DischargeDetailComponent implements OnInit {
       [DischargeRequestStatus.REJECTED]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)] border border-[var(--color-error-border)]',
     };
     return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString();
   }
 }

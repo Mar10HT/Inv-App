@@ -450,6 +450,11 @@ i-lucide svg {
   to { opacity: 1; }
 }
 
+/* Material dialog backdrop uses the design system overlay token */
+.cdk-overlay-dark-backdrop {
+  background-color: var(--color-surface-overlay);
+}
+
 /* --- Inline dialog animations --- */
 
 /* Backdrop overlay */

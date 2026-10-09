@@ -92,7 +92,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
               id="sale-filter-warehouse"
               [ngModel]="filterWarehouseId()"
               (ngModelChange)="filterWarehouseId.set($event)"
-              class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
+              class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm select-chevron"
             >
               <option value="">{{ 'COMMON.ALL' | translate }}</option>
               @for (w of warehouseService.warehouses(); track w.id) {
@@ -108,7 +108,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
               id="sale-filter-status"
               [ngModel]="filterStatus()"
               (ngModelChange)="filterStatus.set($event)"
-              class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
+              class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm select-chevron"
             >
               <option value="">{{ 'COMMON.ALL' | translate }}</option>
               <option value="ACTIVE">{{ 'SALES.STATUS.ACTIVE' | translate }}</option>
@@ -123,7 +123,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
               id="sale-filter-customer-type"
               [ngModel]="filterCustomerType()"
               (ngModelChange)="filterCustomerType.set($event)"
-              class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm"
+              class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm select-chevron"
             >
               <option value="">{{ 'COMMON.ALL' | translate }}</option>
               @for (c of customerTypeKeys; track c) {

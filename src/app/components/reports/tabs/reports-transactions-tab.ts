@@ -36,7 +36,7 @@ import { Spinner } from '../../shared/spinner/spinner';
           <select
             [value]="typeFilter()"
             (change)="typeFilterChange.emit($any($event.target).value)"
-            class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer">
+            class="bg-[var(--color-surface-variant)] border border-theme rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer select-chevron">
             <option value="ALL">{{ 'REPORTS.ALL_TYPES' | translate }}</option>
             <option value="IN">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</option>
             <option value="OUT">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</option>

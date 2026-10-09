@@ -307,8 +307,8 @@ export class CustomChartDialog implements OnInit {
   ];
 
   colorOptions = [
-    '#4d7c6f', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6',
-    '#ec4899', '#f97316', '#eab308', '#ef4444', '#64748b'
+    '#4d7c6f', '#6b7bb5', '#a78bfa', '#2dd4bf', '#c8884d',
+    '#b85c5c', '#818cf8', '#c084fc', '#fbbf24', '#64748b'
   ];
 
   // Preview signals - updated when form changes

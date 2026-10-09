@@ -210,12 +210,5 @@ describe('DischargeDetailComponent', () => {
       expect(classes[2]).toContain('error');
       expect(classes[3]).toContain('surface-elevated');
     });
-
-    it('formats a date with its day and year', () => {
-      const formatted = component.formatDate(new Date(2026, 8, 24));
-
-      expect(formatted).toContain('2026');
-      expect(formatted).toContain('24');
-    });
   });
 });

@@ -99,20 +99,48 @@ import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.inter
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.TOTAL_LOGS' | translate }}</p>
-            <p class="text-2xl font-bold text-foreground">{{ filteredLogs().length }}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.TOTAL_LOGS' | translate }}</p>
+                <p class="text-2xl font-bold text-foreground">{{ filteredLogs().length }}</p>
+              </div>
+              <div class="bg-[var(--color-primary-container)] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+                <lucide-icon name="History" class="!text-[var(--color-primary)] !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.CREATES' | translate }}</p>
-            <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ actionCounts().create }}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.CREATES' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-success)]">{{ actionCounts().create }}</p>
+              </div>
+              <div class="bg-[var(--color-success-bg)] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+                <lucide-icon name="PlusCircle" class="!text-[var(--color-status-success)] !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.UPDATES' | translate }}</p>
-            <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ actionCounts().update }}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.UPDATES' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-info)]">{{ actionCounts().update }}</p>
+              </div>
+              <div class="bg-[var(--color-info-bg)] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+                <lucide-icon name="Pencil" class="!text-[var(--color-status-info)] !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
           </div>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
-            <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DELETES' | translate }}</p>
-            <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ actionCounts().delete }}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DELETES' | translate }}</p>
+                <p class="text-2xl font-bold text-[var(--color-status-error)]">{{ actionCounts().delete }}</p>
+              </div>
+              <div class="bg-[var(--color-error-bg)] p-2.5 rounded-lg flex items-center justify-center w-10 h-10 flex-shrink-0">
+                <lucide-icon name="Trash2" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
+              </div>
+            </div>
           </div>
         </div>
 

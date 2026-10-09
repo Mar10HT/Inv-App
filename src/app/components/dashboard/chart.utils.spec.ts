@@ -1,5 +1,4 @@
 import {
-  CHART_PALETTES,
   chartColors,
   chartValueFormatter,
   cssVar,
@@ -56,20 +55,22 @@ describe('chart.utils', () => {
   });
 
   describe('chartColors', () => {
-    it('gives a circle chart the palette of the chosen color', () => {
-      expect(chartColors('#4d7c6f', 'donut')).toEqual(CHART_PALETTES['#4d7c6f']);
+    it('gives a circle chart a muted multi-color palette led by the chosen color', () => {
+      expect(chartColors('#4d7c6f', 'donut')).toEqual(['#4d7c6f', '#6b7bb5', '#c8884d', '#a78bfa', '#2dd4bf', '#b85c5c']);
     });
 
-    it('falls back to the color itself for a circle chart when there is no palette', () => {
-      expect(chartColors('#123456', 'pie')).toEqual(['#123456']);
+    it('prepends an unknown color to the palette for a circle chart', () => {
+      expect(chartColors('#123456', 'pie')).toEqual(['#123456', '#4d7c6f', '#6b7bb5', '#c8884d', '#a78bfa', '#2dd4bf']);
     });
 
     it('uses only the chosen color for a chart with axes', () => {
       expect(chartColors('#4d7c6f', 'bar')).toEqual(['#4d7c6f']);
     });
 
-    it('starts every palette with the color it belongs to', () => {
-      for (const [color, palette] of Object.entries(CHART_PALETTES)) expect(palette[0]).withContext(color).toBe(color);
+    it('starts every circle-chart palette with the color it belongs to', () => {
+      for (const color of ['#4d7c6f', '#6b7bb5', '#123456']) {
+        expect(chartColors(color, 'donut')[0]).withContext(color).toBe(color);
+      }
     });
   });
 

@@ -133,7 +133,7 @@ import { Spinner } from '../../shared/spinner/spinner';
                           class="mt-0.5 w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
                         <div class="flex-1 min-w-0">
                           <p class="text-sm text-foreground font-mono">{{ perm.key }}</p>
-                          <p class="text-xs text-[var(--color-on-surface-muted)] mt-0.5">{{ perm.description }}</p>
+                          <p class="text-xs text-[var(--color-on-surface-muted)] mt-0.5">{{ 'ROLES.PERMISSION_DESCRIPTIONS.' + perm.key | translate }}</p>
                         </div>
                       </label>
                     }

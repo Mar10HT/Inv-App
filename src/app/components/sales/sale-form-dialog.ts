@@ -2,10 +2,12 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   ElementRef,
   HostListener,
   inject,
+  input,
   output,
   signal,
   viewChild,
@@ -22,13 +24,20 @@ import { NotificationService } from '../../services/notification.service';
 import {
   CreateSaleDto,
   CustomerType,
+  Sale,
+  UpdateSaleDto,
 } from '../../interfaces/sale.interface';
+
+// Round to 2 decimals to avoid floating point noise, same rounding as the backend.
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 interface SaleItemEntry {
   inventoryItemId: string;
   quantity: number;
   unitPrice: number;
   notes: string;
+  // undefined inherits the ticket's taxPercent; an explicit value (including 0) overrides it.
+  taxPercent?: number;
 }
 
 export interface SaleFormResult {
@@ -63,11 +72,13 @@ const CURRENCIES = ['USD', 'HNL'];
       >
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="sale-form-dialog-title" class="text-xl font-semibold text-foreground">
-            {{ 'SALES.NEW_SALE' | translate }}
+            {{ (isEditing() ? 'SALES.EDIT_QUOTATION' : isQuotation() ? 'SALES.NEW_QUOTATION' : 'SALES.NEW_SALE') | translate }}
           </h2>
-          <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">
-            {{ 'SALES.NEW_SALE_DESC' | translate }}
-          </p>
+          @if (!isEditing()) {
+            <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">
+              {{ (isQuotation() ? 'SALES.NEW_QUOTATION_DESC' : 'SALES.NEW_SALE_DESC') | translate }}
+            </p>
+          }
         </div>
 
         <div class="p-6 space-y-4">
@@ -156,6 +167,24 @@ const CURRENCIES = ['USD', 'HNL'];
             </select>
           </div>
 
+          <!-- Tax percent (ticket-level default; a line can override it) -->
+          <div>
+            <label for="sale-tax-percent" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              {{ 'SALES.TAX_PERCENT' | translate }}
+            </label>
+            <input
+              id="sale-tax-percent"
+              type="number"
+              [ngModel]="taxPercent()"
+              (ngModelChange)="taxPercent.set($event === '' ? undefined : $event)"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="0"
+              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+            />
+          </div>
+
           <!-- Notes -->
           <div>
             <label for="sale-notes" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -237,6 +266,19 @@ const CURRENCIES = ['USD', 'HNL'];
                           class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                         />
+                        <div class="w-20">
+                          <input
+                            type="number"
+                            [ngModel]="item.taxPercent"
+                            (ngModelChange)="updateItemTaxPercent(i, $event)"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            [placeholder]="'SALES.TAX_PERCENT' | translate"
+                            [title]="'SALES.TAX_PERCENT' | translate"
+                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          />
+                        </div>
                       </div>
                       <div class="text-right text-xs text-[var(--color-on-surface-variant)]">
                         {{ 'SALES.SUBTOTAL' | translate }}: {{ currency() }} {{ lineTotal(item).toFixed(2) }}
@@ -264,13 +306,25 @@ const CURRENCIES = ['USD', 'HNL'];
 
           <!-- Total -->
           @if (items().length > 0) {
-            <div class="flex items-center justify-between border-t border-theme pt-4">
-              <span class="text-sm font-medium text-[var(--color-on-surface-variant)]">
-                {{ 'SALES.TOTAL' | translate }}
-              </span>
-              <span class="text-xl font-bold text-foreground">
-                {{ currency() }} {{ total().toFixed(2) }}
-              </span>
+            <div class="border-t border-theme pt-4 space-y-1">
+              @if (taxTotal() > 0) {
+                <div class="flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+                  <span>{{ 'SALES.SUBTOTAL' | translate }}</span>
+                  <span>{{ currency() }} {{ total().toFixed(2) }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+                  <span>{{ 'SALES.TAX_AMOUNT' | translate }}</span>
+                  <span>{{ currency() }} {{ taxTotal().toFixed(2) }}</span>
+                </div>
+              }
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-[var(--color-on-surface-variant)]">
+                  {{ taxTotal() > 0 ? ('SALES.GRAND_TOTAL' | translate) : ('SALES.TOTAL' | translate) }}
+                </span>
+                <span class="text-xl font-bold text-foreground">
+                  {{ currency() }} {{ grandTotal().toFixed(2) }}
+                </span>
+              </div>
             </div>
           }
         </div>
@@ -287,14 +341,14 @@ const CURRENCIES = ['USD', 'HNL'];
             [disabled]="!canSubmit() || submitting()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all"
           >
-            {{ 'SALES.CREATE' | translate }}
+            {{ (isQuotation() ? 'COMMON.SAVE' : 'SALES.CREATE') | translate }}
           </button>
         </div>
       </div>
     </div>
   `,
 })
-export class SaleFormDialog implements AfterViewInit {
+export class SaleFormDialog implements AfterViewInit, OnInit {
   private saleService = inject(SaleService);
   private warehouseService = inject(WarehouseService);
   private inventoryService = inject(InventoryService);
@@ -302,8 +356,40 @@ export class SaleFormDialog implements AfterViewInit {
 
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
+  mode = input<'sale' | 'quotation'>('sale');
+  sale = input<Sale | null>(null);
+
   closed = output<void>();
   created = output<SaleFormResult>();
+
+  isQuotation = computed(() => this.mode() === 'quotation');
+  isEditing = computed(() => this.sale() !== null);
+  // A sale reachable from this dialog's edit mode is always a DRAFT (confirm/
+  // cancel are separate actions elsewhere, never this form) — so editing one
+  // gets the same relaxed stock cap as a brand new quotation, regardless of
+  // whether the caller also set mode to 'quotation'.
+  private relaxesStockCap = computed(() => this.isQuotation() || this.isEditing());
+
+  ngOnInit(): void {
+    const existing = this.sale();
+    if (!existing) return;
+    this.name.set(existing.name ?? '');
+    this.warehouseId.set(existing.warehouseId);
+    this.customerName.set(existing.customerName ?? '');
+    this.customerType.set(existing.customerType);
+    this.currency.set(existing.currency);
+    this.notes.set(existing.notes ?? '');
+    this.taxPercent.set(existing.taxPercent ?? undefined);
+    this.items.set(
+      existing.items.map((it) => ({
+        inventoryItemId: it.inventoryItemId,
+        quantity: it.quantity,
+        unitPrice: it.unitPrice,
+        notes: it.notes ?? '',
+        taxPercent: it.taxPercent ?? undefined,
+      })),
+    );
+  }
 
   ngAfterViewInit(): void {
     queueMicrotask(() => this.dialogEl()?.nativeElement.focus());
@@ -323,15 +409,20 @@ export class SaleFormDialog implements AfterViewInit {
   customerType = signal<CustomerType | ''>('');
   currency = signal('USD');
   notes = signal('');
+  taxPercent = signal<number | undefined>(undefined);
   items = signal<SaleItemEntry[]>([]);
   submitting = signal(false);
 
   warehouses = computed(() => this.warehouseService.warehouses());
 
+  // A quotation reserves nothing, so it can reference an item regardless of
+  // current stock — only a direct sale (or confirming a quotation, which
+  // re-checks stock server-side) needs the quantity-on-hand filter/cap.
   availableItems = computed(() => {
     const wh = this.warehouseId();
     const all = this.inventoryService.items();
     if (!wh) return [];
+    if (this.relaxesStockCap()) return all.filter((item) => item.warehouseId === wh);
     return all.filter((item) => item.warehouseId === wh && item.quantity > 0);
   });
 
@@ -339,16 +430,23 @@ export class SaleFormDialog implements AfterViewInit {
     this.items().reduce((sum, it) => sum + this.lineTotal(it), 0),
   );
 
+  taxTotal = computed(() =>
+    round2(this.items().reduce((sum, it) => sum + this.lineTax(it), 0)),
+  );
+
+  grandTotal = computed(() => round2(this.total() + this.taxTotal()));
+
   canSubmit = computed(() => {
     if (!this.warehouseId() || !this.customerType()) return false;
     const list = this.items();
     if (list.length === 0) return false;
+    const relaxed = this.relaxesStockCap();
     return list.every(
       (it) =>
         !!it.inventoryItemId &&
         Number.isFinite(it.quantity) &&
         it.quantity > 0 &&
-        it.quantity <= this.getAvailable(it.inventoryItemId) &&
+        (relaxed || it.quantity <= this.getAvailable(it.inventoryItemId)) &&
         Number.isFinite(it.unitPrice) &&
         it.unitPrice >= 0,
     );
@@ -358,6 +456,11 @@ export class SaleFormDialog implements AfterViewInit {
     const qty = Number(item.quantity) || 0;
     const price = Number(item.unitPrice) || 0;
     return Math.round(qty * price * 100) / 100;
+  }
+
+  lineTax(item: SaleItemEntry): number {
+    const pct = item.taxPercent ?? this.taxPercent() ?? 0;
+    return round2((this.lineTotal(item) * pct) / 100);
   }
 
   close(): void {
@@ -418,6 +521,17 @@ export class SaleFormDialog implements AfterViewInit {
     });
   }
 
+  updateItemTaxPercent(index: number, taxPercent: number | ''): void {
+    this.items.update((list) => {
+      const next = [...list];
+      next[index] = {
+        ...next[index],
+        taxPercent: taxPercent === '' ? undefined : taxPercent,
+      };
+      return next;
+    });
+  }
+
   removeItem(index: number): void {
     this.items.update((list) => list.filter((_, i) => i !== index));
   }
@@ -440,25 +554,50 @@ export class SaleFormDialog implements AfterViewInit {
     if (!this.canSubmit() || this.submitting()) return;
     this.submitting.set(true);
 
-    const dto: CreateSaleDto = {
+    const items = this.items().map((it) => ({
+      inventoryItemId: it.inventoryItemId,
+      quantity: it.quantity,
+      unitPrice: Number(it.unitPrice) || 0,
+      notes: it.notes?.trim() || undefined,
+      taxPercent: it.taxPercent,
+    }));
+    const common = {
       name: this.name().trim() || undefined,
       warehouseId: this.warehouseId(),
       customerName: this.customerName().trim() || undefined,
       customerType: this.customerType() as CustomerType,
       currency: this.currency(),
       notes: this.notes().trim() || undefined,
-      items: this.items().map((it) => ({
-        inventoryItemId: it.inventoryItemId,
-        quantity: it.quantity,
-        unitPrice: Number(it.unitPrice) || 0,
-        notes: it.notes?.trim() || undefined,
-      })),
+      taxPercent: this.taxPercent(),
     };
 
+    const existing = this.sale();
+    if (existing) {
+      const dto: UpdateSaleDto = { ...common, items };
+      this.saleService.update(existing.id, dto).subscribe((result) => {
+        this.submitting.set(false);
+        if (result) {
+          this.notifications.success('SALES.UPDATE_SUCCESS');
+          this.created.emit({ success: true });
+        }
+        // A null answer is a failed request: SaleService already showed the reason (reportErrors)
+      });
+      return;
+    }
+
+    const dto: CreateSaleDto = {
+      ...common,
+      items,
+      // Omitted (not false) when not a quotation, so a direct sale's payload
+      // is byte-for-byte what it always was.
+      asDraft: this.isQuotation() ? true : undefined,
+    };
     this.saleService.create(dto).subscribe((result) => {
       this.submitting.set(false);
       if (result) {
-        this.notifications.success('SALES.CREATE_SUCCESS');
+        this.notifications.success(
+          this.isQuotation() ? 'SALES.CREATE_QUOTATION_SUCCESS' : 'SALES.CREATE_SUCCESS',
+        );
         this.created.emit({ success: true });
       }
       // A null answer is a failed request: SaleService already showed the reason (reportErrors)

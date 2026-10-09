@@ -24,7 +24,7 @@ const sale = (overrides: Partial<Sale> = {}): Sale =>
     ...overrides
   }) as unknown as Sale;
 
-const emptyStats: SaleStats = { total: 0, active: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} };
+const emptyStats: SaleStats = { total: 0, active: 0, draft: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} };
 
 describe('SalesComponent', () => {
   let fixture: ComponentFixture<SalesComponent>;
@@ -42,10 +42,11 @@ describe('SalesComponent', () => {
     stats = signal(emptyStats);
     saleService = jasmine.createSpyObj<SaleService>(
       'SaleService',
-      ['loadSales', 'refresh', 'cancel', 'downloadPdf'],
+      ['loadSales', 'refresh', 'cancel', 'downloadPdf', 'confirm', 'update'],
       { sales, stats, loading: signal(false), error: signal(null) } as never
     );
     saleService.cancel.and.returnValue(of(sale()));
+    saleService.confirm.and.returnValue(of(sale()));
     warehouses = jasmine.createSpyObj<WarehouseService>('WarehouseService', ['getAll'], {
       warehouses: signal([warehouse('w1', 'Main'), warehouse('w2', 'Backup')])
     } as never);
@@ -143,6 +144,70 @@ describe('SalesComponent', () => {
       expect(component.showFormDialog()).toBeTrue();
       expect(saleService.refresh).not.toHaveBeenCalled();
     });
+
+    it('opens a direct sale in "sale" mode with no entity to edit', () => {
+      component.openCreateDialog();
+
+      expect(component.dialogMode()).toBe('sale');
+      expect(component.editingSale()).toBeNull();
+    });
+
+    it('opens a quotation in "quotation" mode with no entity to edit', () => {
+      component.openQuotationDialog();
+
+      expect(component.dialogMode()).toBe('quotation');
+      expect(component.editingSale()).toBeNull();
+    });
+
+    it('opens an existing draft for editing in "quotation" mode', () => {
+      const draft = sale({ id: 'd1', status: SaleStatus.DRAFT });
+
+      component.editSale(draft);
+
+      expect(component.showFormDialog()).toBeTrue();
+      expect(component.dialogMode()).toBe('quotation');
+      expect(component.editingSale()).toBe(draft);
+    });
+
+    it('clears the editing sale when the dialog closes', () => {
+      component.editSale(sale({ id: 'd1' }));
+
+      component.closeFormDialog();
+
+      expect(component.editingSale()).toBeNull();
+    });
+  });
+
+  describe('status label/class', () => {
+    it('gives every status its own class, falling back for an unknown one', () => {
+      expect(component.getStatusClass(SaleStatus.DRAFT)).toContain('info');
+      expect(component.getStatusClass(SaleStatus.ACTIVE)).toContain('success');
+      expect(component.getStatusClass(SaleStatus.CANCELLED)).toContain('error');
+    });
+  });
+
+  describe('confirmSale', () => {
+    it('asks the user to confirm, naming the sale, then confirms it', () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('en', { SALES: { CONFIRM_CONFIRM_MESSAGE: 'Confirm {{name}}?' } });
+      translate.use('en');
+
+      component.confirmSale(sale({ id: 'd1', name: 'Quote 1' }));
+
+      expect(confirm.ask.calls.mostRecent().args[0]).toEqual(
+        jasmine.objectContaining({ type: 'warning', message: 'Confirm Quote 1?' })
+      );
+      expect(saleService.confirm).toHaveBeenCalledOnceWith('d1');
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CONFIRM_SUCCESS');
+    });
+
+    it('confirms nothing when the user does not confirm', () => {
+      confirm.ask.and.returnValue(of(false));
+
+      component.confirmSale(sale({ id: 'd1' }));
+
+      expect(saleService.confirm).not.toHaveBeenCalled();
+    });
   });
 
   describe('numbers and labels', () => {
@@ -211,6 +276,18 @@ describe('SalesComponent', () => {
 
       expect(notifications.success).not.toHaveBeenCalled();
       expect(notifications.error).not.toHaveBeenCalled();
+    });
+
+    it('uses the draft-specific confirm message and success notice for a DRAFT, since nothing is restored', () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('en', { SALES: { CONFIRM_CANCEL_DRAFT_MESSAGE: 'Cancel quote {{name}}?' } });
+      translate.use('en');
+
+      component.cancel(sale({ id: 'd1', name: 'Quote 1', status: SaleStatus.DRAFT }));
+
+      expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel quote Quote 1?');
+      expect(saleService.cancel).toHaveBeenCalledOnceWith('d1');
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CANCEL_DRAFT_SUCCESS');
     });
   });
 });

@@ -5,6 +5,7 @@ export enum CustomerType {
 }
 
 export enum SaleStatus {
+  DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
   CANCELLED = 'CANCELLED',
 }
@@ -19,6 +20,9 @@ export interface SaleItem {
   itemName: string | null;
   serviceTag: string | null;
   notes: string | null;
+  // Null inherits the sale's taxPercent; an explicit value (including 0) overrides it.
+  taxPercent: number | null;
+  taxAmount: number;
   inventoryItem?: {
     id: string;
     name: string;
@@ -48,12 +52,18 @@ export interface Sale {
   customerType: CustomerType;
   currency: string;
   totalAmount: number;
+  // Suggested default is the fiscal config's ISV%, but always editable; null = no tax.
+  taxPercent: number | null;
+  taxAmount: number;
   status: SaleStatus;
   notes: string | null;
   createdById: string;
   cancelledById: string | null;
   cancelledAt: string | null;
   cancellationReason: string | null;
+  // Real invoice number (CAI-based or a simple correlative). Null while DRAFT —
+  // a quotation isn't assigned one until confirmed.
+  number: string | null;
   createdAt: string;
   updatedAt: string;
   warehouse?: SaleWarehouseRef;
@@ -67,6 +77,7 @@ export interface CreateSaleItemDto {
   quantity: number;
   unitPrice: number;
   notes?: string;
+  taxPercent?: number;
 }
 
 export interface CreateSaleDto {
@@ -77,7 +88,13 @@ export interface CreateSaleDto {
   currency?: string;
   items: CreateSaleItemDto[];
   notes?: string;
+  taxPercent?: number;
+  // true = save as a DRAFT quotation (no stock impact, no number assigned
+  // until confirmed). Absent/false is a direct sale, exactly today's behavior.
+  asDraft?: boolean;
 }
+
+export type UpdateSaleDto = Partial<Omit<CreateSaleDto, 'asDraft'>>;
 
 export interface CancelSaleDto {
   reason?: string;
@@ -86,6 +103,7 @@ export interface CancelSaleDto {
 export interface SaleStats {
   total: number;
   active: number;
+  draft: number;
   cancelled: number;
   byCustomerType: Record<string, number>;
   revenueByCurrency: Record<string, number>;

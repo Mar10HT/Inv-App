@@ -54,17 +54,24 @@ import { StatCard } from '../shared/stat-card/stat-card';
               {{ 'SALES.SUBTITLE' | translate }}
             </p>
           </div>
-          <ng-container *ngxPermissionsOnly="['sales:create']">
-            <button (click)="openCreateDialog()" class="ds-btn ds-btn--primary self-start lg:self-auto">
-              <lucide-icon name="Plus" class="shrink-0"></lucide-icon>
-              <span>{{ 'SALES.NEW_SALE' | translate }}</span>
-            </button>
-          </ng-container>
+          <div class="flex gap-2 self-start lg:self-auto">
+            <ng-container *ngxPermissionsOnly="['sales:create']">
+              <button (click)="openQuotationDialog()" class="ds-btn ds-btn--secondary">
+                <lucide-icon name="FileText" class="shrink-0"></lucide-icon>
+                <span>{{ 'SALES.NEW_QUOTATION' | translate }}</span>
+              </button>
+              <button (click)="openCreateDialog()" class="ds-btn ds-btn--primary">
+                <lucide-icon name="Plus" class="shrink-0"></lucide-icon>
+                <span>{{ 'SALES.NEW_SALE' | translate }}</span>
+              </button>
+            </ng-container>
+          </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <app-stat-card [label]="'SALES.STATS.ACTIVE' | translate" [value]="stats().active" icon="ShoppingCart"></app-stat-card>
+          <app-stat-card [label]="'SALES.STATS.DRAFT' | translate" [value]="stats().draft" icon="FileText"></app-stat-card>
           <div class="bg-surface-variant border border-theme rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
@@ -111,6 +118,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
               class="w-full bg-[var(--color-surface)] border border-theme rounded-lg px-3 py-2 text-foreground text-sm select-chevron"
             >
               <option value="">{{ 'COMMON.ALL' | translate }}</option>
+              <option value="DRAFT">{{ 'SALES.STATUS.DRAFT' | translate }}</option>
               <option value="ACTIVE">{{ 'SALES.STATUS.ACTIVE' | translate }}</option>
               <option value="CANCELLED">{{ 'SALES.STATUS.CANCELLED' | translate }}</option>
             </select>
@@ -149,6 +157,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
             <table class="w-full">
               <thead class="bg-[var(--color-surface)] border-b border-theme">
                 <tr class="text-left text-xs uppercase tracking-wider text-[var(--color-on-surface-variant)]">
+                  <th class="px-4 py-3">{{ 'SALES.COL_NUMBER' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_NAME' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_WAREHOUSE' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_CUSTOMER' | translate }}</th>
@@ -162,6 +171,9 @@ import { StatCard } from '../shared/stat-card/stat-card';
               <tbody>
                 @for (sale of filtered(); track sale.id) {
                   <tr class="border-t border-theme hover:bg-[var(--color-surface)] transition-colors">
+                    <td class="px-4 py-3 font-mono text-sm text-[var(--color-on-surface-variant)]">
+                      {{ sale.number || '—' }}
+                    </td>
                     <td class="px-4 py-3 text-foreground">
                       <div class="font-medium">{{ sale.name || ('SALES.UNNAMED' | translate) }}</div>
                       @if (sale.notes) {
@@ -186,38 +198,74 @@ import { StatCard } from '../shared/stat-card/stat-card';
                       {{ totalQty(sale) }} ({{ sale.items.length }})
                     </td>
                     <td class="px-4 py-3">
-                      @if (sale.status === 'ACTIVE') {
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-[var(--color-success-bg)] text-[var(--color-status-success)]">
-                          {{ 'SALES.STATUS.ACTIVE' | translate }}
-                        </span>
-                      } @else {
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-[var(--color-error-bg)] text-[var(--color-status-error)]">
-                          {{ 'SALES.STATUS.CANCELLED' | translate }}
-                        </span>
-                      }
+                      <span [class]="getStatusClass(sale.status)" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium">
+                        {{ getStatusLabel(sale.status) }}
+                      </span>
                     </td>
                     <td class="px-4 py-3 text-[var(--color-on-surface-variant)] text-sm">
                       {{ sale.createdAt | date:'medium' }}
                     </td>
                     <td class="px-4 py-3">
                       <div class="flex items-center justify-end gap-2">
-                        <button
-                          (click)="downloadPdf(sale)"
-                          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-theme bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:text-foreground hover:border-[var(--color-primary)] text-xs font-medium transition-colors"
-                        >
-                          <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
-                          <span>{{ 'SALES.DOWNLOAD_PDF' | translate }}</span>
-                        </button>
-                        @if (sale.status === 'ACTIVE') {
-                          <ng-container *ngxPermissionsOnly="['sales:cancel']">
+                        @switch (sale.status) {
+                          @case (Status.DRAFT) {
+                            <ng-container *ngxPermissionsOnly="['sales:create']">
+                              <button
+                                (click)="editSale(sale)"
+                                [title]="'COMMON.EDIT' | translate"
+                                class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface)] transition-colors"
+                              >
+                                <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                              </button>
+                            </ng-container>
+                            <ng-container *ngxPermissionsOnly="['sales:confirm']">
+                              <button
+                                (click)="confirmSale(sale)"
+                                [disabled]="saleService.loading()"
+                                [title]="'SALES.CONFIRM_SALE' | translate"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:opacity-50 text-white text-xs font-medium transition-colors"
+                              >
+                                <lucide-icon name="Check" class="!w-4 !h-4"></lucide-icon>
+                                <span>{{ 'SALES.CONFIRM_SALE' | translate }}</span>
+                              </button>
+                            </ng-container>
+                            <ng-container *ngxPermissionsOnly="['sales:create']">
+                              <button
+                                (click)="cancel(sale)"
+                                [title]="'SALES.CANCEL_SALE' | translate"
+                                class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors"
+                              >
+                                <lucide-icon name="Ban" class="!w-4 !h-4"></lucide-icon>
+                              </button>
+                            </ng-container>
+                          }
+                          @case (Status.ACTIVE) {
                             <button
-                              (click)="cancel(sale)"
-                              [title]="'SALES.CANCEL_SALE' | translate"
-                              class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors"
+                              (click)="downloadPdf(sale)"
+                              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-theme bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:text-foreground hover:border-[var(--color-primary)] text-xs font-medium transition-colors"
                             >
-                              <lucide-icon name="Ban" class="!w-4 !h-4"></lucide-icon>
+                              <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
+                              <span>{{ 'SALES.DOWNLOAD_PDF' | translate }}</span>
                             </button>
-                          </ng-container>
+                            <ng-container *ngxPermissionsOnly="['sales:cancel']">
+                              <button
+                                (click)="cancel(sale)"
+                                [title]="'SALES.CANCEL_SALE' | translate"
+                                class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-[var(--color-status-error)] hover:bg-[var(--color-error-bg)] transition-colors"
+                              >
+                                <lucide-icon name="Ban" class="!w-4 !h-4"></lucide-icon>
+                              </button>
+                            </ng-container>
+                          }
+                          @default {
+                            <button
+                              (click)="downloadPdf(sale)"
+                              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-theme bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:text-foreground hover:border-[var(--color-primary)] text-xs font-medium transition-colors"
+                            >
+                              <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
+                              <span>{{ 'SALES.DOWNLOAD_PDF' | translate }}</span>
+                            </button>
+                          }
                         }
                       </div>
                     </td>
@@ -238,17 +286,12 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     </div>
                     <div class="text-xs text-[var(--color-on-surface-variant)]">
                       {{ sale.warehouse?.name }} · {{ 'SALES.CUSTOMER_TYPE.' + sale.customerType | translate }}
+                      @if (sale.number) { · <span class="font-mono">{{ sale.number }}</span> }
                     </div>
                   </div>
-                  @if (sale.status === 'ACTIVE') {
-                    <span class="shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-[var(--color-success-bg)] text-[var(--color-status-success)]">
-                      {{ 'SALES.STATUS.ACTIVE' | translate }}
-                    </span>
-                  } @else {
-                    <span class="shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-[var(--color-error-bg)] text-[var(--color-status-error)]">
-                      {{ 'SALES.STATUS.CANCELLED' | translate }}
-                    </span>
-                  }
+                  <span [class]="getStatusClass(sale.status)" class="shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium">
+                    {{ getStatusLabel(sale.status) }}
+                  </span>
                 </div>
                 @if (sale.customerName) {
                   <div class="text-sm text-foreground mb-1">{{ sale.customerName }}</div>
@@ -265,23 +308,64 @@ import { StatCard } from '../shared/stat-card/stat-card';
                   {{ sale.createdAt | date:'short' }}
                 </div>
                 <div class="flex items-center gap-2 mt-3">
-                  <button
-                    (click)="downloadPdf(sale)"
-                    class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
-                  >
-                    <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
-                    {{ 'SALES.DOWNLOAD_PDF' | translate }}
-                  </button>
-                  @if (sale.status === 'ACTIVE') {
-                    <ng-container *ngxPermissionsOnly="['sales:cancel']">
+                  @switch (sale.status) {
+                    @case (Status.DRAFT) {
+                      <ng-container *ngxPermissionsOnly="['sales:create']">
+                        <button
+                          (click)="editSale(sale)"
+                          class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
+                        >
+                          <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
+                          {{ 'COMMON.EDIT' | translate }}
+                        </button>
+                      </ng-container>
+                      <ng-container *ngxPermissionsOnly="['sales:confirm']">
+                        <button
+                          (click)="confirmSale(sale)"
+                          [disabled]="saleService.loading()"
+                          class="flex-1 py-2 rounded-lg bg-[var(--color-primary)] disabled:opacity-50 text-white text-sm flex items-center justify-center gap-1"
+                        >
+                          <lucide-icon name="Check" class="!w-4 !h-4"></lucide-icon>
+                          {{ 'SALES.CONFIRM_SALE' | translate }}
+                        </button>
+                      </ng-container>
+                      <ng-container *ngxPermissionsOnly="['sales:create']">
+                        <button
+                          (click)="cancel(sale)"
+                          class="flex-1 py-2 rounded-lg bg-[var(--color-error-bg)] text-[var(--color-status-error)] text-sm flex items-center justify-center gap-1"
+                        >
+                          <lucide-icon name="Ban" class="!w-4 !h-4"></lucide-icon>
+                          {{ 'SALES.CANCEL_SALE' | translate }}
+                        </button>
+                      </ng-container>
+                    }
+                    @case (Status.ACTIVE) {
                       <button
-                        (click)="cancel(sale)"
-                        class="flex-1 py-2 rounded-lg bg-[var(--color-error-bg)] text-[var(--color-status-error)] text-sm flex items-center justify-center gap-1"
+                        (click)="downloadPdf(sale)"
+                        class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
                       >
-                        <lucide-icon name="Ban" class="!w-4 !h-4"></lucide-icon>
-                        {{ 'SALES.CANCEL_SALE' | translate }}
+                        <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
+                        {{ 'SALES.DOWNLOAD_PDF' | translate }}
                       </button>
-                    </ng-container>
+                      <ng-container *ngxPermissionsOnly="['sales:cancel']">
+                        <button
+                          (click)="cancel(sale)"
+                          class="flex-1 py-2 rounded-lg bg-[var(--color-error-bg)] text-[var(--color-status-error)] text-sm flex items-center justify-center gap-1"
+                        >
+                          <lucide-icon name="Ban" class="!w-4 !h-4"></lucide-icon>
+                          {{ 'SALES.CANCEL_SALE' | translate }}
+                        </button>
+                      </ng-container>
+                    }
+                    @default {
+                      <button
+                        (click)="downloadPdf(sale)"
+                        class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
+                      >
+                        <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
+                        {{ 'SALES.DOWNLOAD_PDF' | translate }}
+                      </button>
+                    }
                   }
                 </div>
               </div>
@@ -293,6 +377,8 @@ import { StatCard } from '../shared/stat-card/stat-card';
 
     @if (showFormDialog()) {
       <app-sale-form-dialog
+        [mode]="dialogMode()"
+        [sale]="editingSale()"
         (closed)="closeFormDialog()"
         (created)="onCreated($event)"
       ></app-sale-form-dialog>
@@ -308,7 +394,11 @@ export class SalesComponent implements OnInit {
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
 
+  readonly Status = SaleStatus;
+
   showFormDialog = signal(false);
+  dialogMode = signal<'sale' | 'quotation'>('sale');
+  editingSale = signal<Sale | null>(null);
 
   filterWarehouseId = signal('');
   filterStatus = signal<'' | SaleStatus>('');
@@ -345,16 +435,32 @@ export class SalesComponent implements OnInit {
   }
 
   openCreateDialog(): void {
+    this.dialogMode.set('sale');
+    this.editingSale.set(null);
+    this.showFormDialog.set(true);
+  }
+
+  openQuotationDialog(): void {
+    this.dialogMode.set('quotation');
+    this.editingSale.set(null);
+    this.showFormDialog.set(true);
+  }
+
+  editSale(sale: Sale): void {
+    this.dialogMode.set('quotation');
+    this.editingSale.set(sale);
     this.showFormDialog.set(true);
   }
 
   closeFormDialog(): void {
     this.showFormDialog.set(false);
+    this.editingSale.set(null);
   }
 
   onCreated(result: SaleFormResult): void {
     if (result.success) {
       this.showFormDialog.set(false);
+      this.editingSale.set(null);
       this.saleService.refresh();
     }
   }
@@ -381,12 +487,16 @@ export class SalesComponent implements OnInit {
   }
 
   cancel(sale: Sale): void {
+    // A DRAFT never decremented stock, so cancelling one restores nothing —
+    // different copy from cancelling a real, stock-decrementing ACTIVE sale.
+    const isDraft = sale.status === SaleStatus.DRAFT;
     this.confirm
       .ask({
         title: this.translate.instant('SALES.CONFIRM_CANCEL_TITLE'),
-        message: this.translate.instant('SALES.CONFIRM_CANCEL_MESSAGE', {
-          name: sale.name || sale.id.slice(0, 8),
-        }),
+        message: this.translate.instant(
+          isDraft ? 'SALES.CONFIRM_CANCEL_DRAFT_MESSAGE' : 'SALES.CONFIRM_CANCEL_MESSAGE',
+          { name: sale.name || sale.id.slice(0, 8) },
+        ),
         confirmText: this.translate.instant('SALES.CANCEL_SALE'),
         type: 'warning',
       })
@@ -397,8 +507,43 @@ export class SalesComponent implements OnInit {
       )
       .subscribe((result) => {
         if (result) {
-          this.notifications.success('SALES.CANCEL_SUCCESS');
+          this.notifications.success(isDraft ? 'SALES.CANCEL_DRAFT_SUCCESS' : 'SALES.CANCEL_SUCCESS');
         }
       });
+  }
+
+  confirmSale(sale: Sale): void {
+    this.confirm
+      .ask({
+        title: this.translate.instant('SALES.CONFIRM_CONFIRM_TITLE'),
+        message: this.translate.instant('SALES.CONFIRM_CONFIRM_MESSAGE', {
+          name: sale.name || sale.id.slice(0, 8),
+        }),
+        confirmText: this.translate.instant('SALES.CONFIRM_SALE'),
+        type: 'warning',
+      })
+      .pipe(
+        filter((confirmed) => !!confirmed),
+        switchMap(() => this.saleService.confirm(sale.id)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        if (result) {
+          this.notifications.success('SALES.CONFIRM_SUCCESS');
+        }
+      });
+  }
+
+  getStatusLabel(status: SaleStatus): string {
+    return this.translate.instant(`SALES.STATUS.${status}`);
+  }
+
+  getStatusClass(status: SaleStatus): string {
+    const classes: Record<string, string> = {
+      [SaleStatus.DRAFT]: 'bg-[var(--color-info-bg)] text-[var(--color-status-info)]',
+      [SaleStatus.ACTIVE]: 'bg-[var(--color-success-bg)] text-[var(--color-status-success)]',
+      [SaleStatus.CANCELLED]: 'bg-[var(--color-error-bg)] text-[var(--color-status-error)]',
+    };
+    return classes[status] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 }

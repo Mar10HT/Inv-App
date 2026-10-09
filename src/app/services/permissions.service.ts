@@ -17,7 +17,7 @@ const ALL_PERMISSIONS = [
   'loans:create', 'loans:delete', 'loans:manage', 'loans:view',
   'outflows:cancel', 'outflows:create', 'outflows:view',
   'reports:export', 'reports:view',
-  'sales:cancel', 'sales:create', 'sales:view',
+  'sales:cancel', 'sales:confirm', 'sales:create', 'sales:view',
   'settings:edit', 'settings:view',
   'stocktake:create', 'stocktake:manage', 'stocktake:view',
   'suppliers:create', 'suppliers:delete', 'suppliers:edit', 'suppliers:view',

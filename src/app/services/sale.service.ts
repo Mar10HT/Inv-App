@@ -9,6 +9,7 @@ import {
   Sale,
   SaleStats,
   SaleStatus,
+  UpdateSaleDto,
 } from '../interfaces/sale.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
@@ -48,6 +49,7 @@ export class SaleService {
     const byCustomerType: Record<string, number> = {};
     const revenueByCurrency: Record<string, number> = {};
     let active = 0;
+    let draft = 0;
     let cancelled = 0;
     for (const s of list) {
       if (s.status === SaleStatus.ACTIVE) {
@@ -57,11 +59,13 @@ export class SaleService {
         revenueByCurrency[s.currency] = round2(
           (revenueByCurrency[s.currency] ?? 0) + s.totalAmount,
         );
+      } else if (s.status === SaleStatus.DRAFT) {
+        draft++;
       } else {
         cancelled++;
       }
     }
-    return { total: list.length, active, cancelled, byCustomerType, revenueByCurrency };
+    return { total: list.length, active, draft, cancelled, byCustomerType, revenueByCurrency };
   });
 
   constructor() {
@@ -97,6 +101,24 @@ export class SaleService {
         tap((created) => this.salesSignal.update((list) => [created, ...list]))
       ),
       this.tracker, 'Error creating sale', 'SALES.CREATE_ERROR'
+    );
+  }
+
+  update(id: string, dto: UpdateSaleDto): Observable<Sale | null> {
+    return trackRequest(
+      this.http.patch<Sale>(`${this.apiUrl}/${id}`, dto).pipe(
+        tap((updated) => this.salesSignal.update((list) => list.map((s) => (s.id === id ? updated : s))))
+      ),
+      this.tracker, 'Error updating sale', 'SALES.UPDATE_ERROR'
+    );
+  }
+
+  confirm(id: string): Observable<Sale | null> {
+    return trackRequest(
+      this.http.patch<Sale>(`${this.apiUrl}/${id}/confirm`, {}).pipe(
+        tap((updated) => this.salesSignal.update((list) => list.map((s) => (s.id === id ? updated : s))))
+      ),
+      this.tracker, 'Error confirming sale', 'SALES.CONFIRM_ERROR'
     );
   }
 

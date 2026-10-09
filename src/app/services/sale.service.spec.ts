@@ -15,12 +15,15 @@ const sale = (overrides: Partial<Sale> = {}): Sale => ({
   customerType: CustomerType.RETAIL,
   currency: 'USD',
   totalAmount: 10,
+  taxPercent: null,
+  taxAmount: 0,
   status: SaleStatus.ACTIVE,
   notes: null,
   createdById: 'u1',
   cancelledById: null,
   cancelledAt: null,
   cancellationReason: null,
+  number: null,
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
   items: [],
@@ -80,14 +83,15 @@ describe('SaleService', () => {
   });
 
   describe('stats', () => {
-    it('counts active and cancelled sales apart', () => {
+    it('counts active, draft and cancelled sales apart', () => {
       load(
         sale({ id: '1' }),
         sale({ id: '2' }),
-        sale({ id: '3', status: SaleStatus.CANCELLED })
+        sale({ id: '3', status: SaleStatus.CANCELLED }),
+        sale({ id: '4', status: SaleStatus.DRAFT })
       );
 
-      expect(service.stats()).toEqual(jasmine.objectContaining({ total: 3, active: 2, cancelled: 1 }));
+      expect(service.stats()).toEqual(jasmine.objectContaining({ total: 4, active: 2, draft: 1, cancelled: 1 }));
     });
 
     it('counts active sales per customer type', () => {
@@ -122,7 +126,7 @@ describe('SaleService', () => {
     it('is empty when there are no sales', () => {
       load();
 
-      expect(service.stats()).toEqual({ total: 0, active: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} });
+      expect(service.stats()).toEqual({ total: 0, active: 0, draft: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} });
     });
   });
 
@@ -180,6 +184,53 @@ describe('SaleService', () => {
       backend.expectOne(url('/a/cancel')).flush(null, { status: 409, statusText: 'Conflict' });
 
       expect(service.sales()[0].status).toBe(SaleStatus.ACTIVE);
+      expect(service.error()).toBeTruthy();
+    });
+  });
+
+  describe('update', () => {
+    it('PATCHes the sale and replaces it in the list', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT }));
+
+      service.update('a', { notes: 'Changed' }).subscribe();
+      const request = backend.expectOne(url('/a'));
+      expect(request.request.method).toBe('PATCH');
+      expect(request.request.body).toEqual({ notes: 'Changed' });
+      request.flush(sale({ id: 'a', status: SaleStatus.DRAFT, notes: 'Changed' }));
+
+      expect(service.sales()[0].notes).toBe('Changed');
+    });
+
+    it('leaves the sale as it was when the API refuses', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT, notes: null }));
+
+      service.update('a', { notes: 'Changed' }).subscribe();
+      backend.expectOne(url('/a')).flush(null, { status: 400, statusText: 'Bad Request' });
+
+      expect(service.sales()[0].notes).toBeNull();
+      expect(service.error()).toBeTruthy();
+    });
+  });
+
+  describe('confirm', () => {
+    it('PATCHes the confirm endpoint and replaces the sale with the numbered, active one', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT }));
+
+      service.confirm('a').subscribe();
+      const request = backend.expectOne(url('/a/confirm'));
+      expect(request.request.method).toBe('PATCH');
+      request.flush(sale({ id: 'a', status: SaleStatus.ACTIVE, number: 'V-0001' }));
+
+      expect(service.sales()[0]).toEqual(jasmine.objectContaining({ status: SaleStatus.ACTIVE, number: 'V-0001' }));
+    });
+
+    it('leaves the sale as it was when the API refuses', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT }));
+
+      service.confirm('a').subscribe();
+      backend.expectOne(url('/a/confirm')).flush(null, { status: 400, statusText: 'Bad Request' });
+
+      expect(service.sales()[0].status).toBe(SaleStatus.DRAFT);
       expect(service.error()).toBeTruthy();
     });
   });

@@ -7,10 +7,30 @@ import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
-import { CustomerType, Sale } from '../../interfaces/sale.interface';
+import { CustomerType, Sale, SaleStatus } from '../../interfaces/sale.interface';
 import { InventoryItemInterface } from '../../interfaces/inventory-item.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, warehouse } from '../../../testing/report-fixtures';
+
+const draftSale = (overrides: Partial<Sale> = {}): Sale =>
+  ({
+    id: 'draft-1',
+    name: 'Draft 1',
+    warehouseId: 'w1',
+    customerName: 'Acme',
+    customerType: CustomerType.RETAIL,
+    currency: 'HNL',
+    totalAmount: 900,
+    taxPercent: 15,
+    taxAmount: 135,
+    status: SaleStatus.DRAFT,
+    notes: 'draft notes',
+    number: null,
+    items: [
+      { id: 'si1', inventoryItemId: 'laptop', quantity: 1, unitPrice: 900, lineTotal: 900, taxPercent: null, taxAmount: 135, currency: 'HNL', itemName: 'Laptop', serviceTag: null, notes: null },
+    ],
+    ...overrides
+  }) as unknown as Sale;
 
 describe('SaleFormDialog', () => {
   let fixture: ComponentFixture<SaleFormDialog>;
@@ -21,6 +41,18 @@ describe('SaleFormDialog', () => {
   let closed: jasmine.Spy;
   let created: jasmine.Spy;
 
+  const setup = async (inputs: { mode?: 'sale' | 'quotation'; sale?: Sale | null } = {}): Promise<void> => {
+    fixture = TestBed.createComponent(SaleFormDialog);
+    component = fixture.componentInstance;
+    if (inputs.mode !== undefined) fixture.componentRef.setInput('mode', inputs.mode);
+    if (inputs.sale !== undefined) fixture.componentRef.setInput('sale', inputs.sale);
+    closed = jasmine.createSpy('closed');
+    created = jasmine.createSpy('created');
+    component.closed.subscribe(closed);
+    component.created.subscribe(created);
+    fixture.detectChanges();
+  };
+
   beforeEach(async () => {
     stock = signal([
       item({ id: 'laptop', warehouseId: 'w1', quantity: 5, price: 900 }),
@@ -28,8 +60,9 @@ describe('SaleFormDialog', () => {
       item({ id: 'sold-out', warehouseId: 'w1', quantity: 0, price: 5 }),
       item({ id: 'elsewhere', warehouseId: 'w2', quantity: 3, price: 7 })
     ]);
-    sales = jasmine.createSpyObj<SaleService>('SaleService', ['create']);
+    sales = jasmine.createSpyObj<SaleService>('SaleService', ['create', 'update']);
     sales.create.and.returnValue(of({ id: 'sale-1' } as Sale));
+    sales.update.and.returnValue(of({ id: 'draft-1' } as Sale));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error']);
 
     await TestBed.configureTestingModule({
@@ -43,13 +76,7 @@ describe('SaleFormDialog', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SaleFormDialog);
-    component = fixture.componentInstance;
-    closed = jasmine.createSpy('closed');
-    created = jasmine.createSpy('created');
-    component.closed.subscribe(closed);
-    component.created.subscribe(created);
-    fixture.detectChanges();
+    await setup();
   });
 
   /** A form that can be submitted: a warehouse, a customer type and one laptop. */
@@ -305,7 +332,9 @@ describe('SaleFormDialog', () => {
         customerType: CustomerType.RETAIL,
         currency: 'HNL',
         notes: 'fragile',
-        items: [{ inventoryItemId: 'laptop', quantity: 2, unitPrice: 900, notes: 'gift' }]
+        taxPercent: undefined,
+        asDraft: undefined,
+        items: [{ inventoryItemId: 'laptop', quantity: 2, unitPrice: 900, notes: 'gift', taxPercent: undefined }]
       });
     });
 
@@ -352,6 +381,109 @@ describe('SaleFormDialog', () => {
 
       expect(sales.create).toHaveBeenCalledTimes(1);
       expect(component.submitting()).toBeTrue();
+    });
+  });
+
+  describe('quotation mode', () => {
+    it('does not cap availableItems to in-stock items', async () => {
+      await setup({ mode: 'quotation' });
+      component.onWarehouseChange('w1');
+
+      expect(component.availableItems().map((i) => i.id)).toEqual(['laptop', 'mouse', 'sold-out']);
+    });
+
+    it('does not block canSubmit on a quantity over the available stock', async () => {
+      await setup({ mode: 'quotation' });
+      readyToSubmit();
+      component.updateItemQuantity(0, 999);
+
+      expect(component.canSubmit()).toBeTrue();
+    });
+
+    it('still requires a warehouse, a customer type and an item', async () => {
+      await setup({ mode: 'quotation' });
+
+      expect(component.canSubmit()).toBeFalse();
+    });
+
+    it('submits asDraft:true and reports a quotation-specific success message', async () => {
+      await setup({ mode: 'quotation' });
+      readyToSubmit();
+
+      component.submit();
+
+      expect(sales.create).toHaveBeenCalledOnceWith(jasmine.objectContaining({ asDraft: true }));
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CREATE_QUOTATION_SUCCESS');
+    });
+  });
+
+  describe('editing an existing draft', () => {
+    it('prefills every field from the given sale', async () => {
+      await setup({ sale: draftSale() });
+
+      expect(component.name()).toBe('Draft 1');
+      expect(component.warehouseId()).toBe('w1');
+      expect(component.customerName()).toBe('Acme');
+      expect(component.customerType()).toBe(CustomerType.RETAIL);
+      expect(component.currency()).toBe('HNL');
+      expect(component.notes()).toBe('draft notes');
+      expect(component.taxPercent()).toBe(15);
+      expect(component.items()).toEqual([
+        { inventoryItemId: 'laptop', quantity: 1, unitPrice: 900, notes: '', taxPercent: undefined }
+      ]);
+    });
+
+    it('is in editing mode, not add mode', async () => {
+      await setup({ sale: draftSale() });
+
+      expect(component.isEditing()).toBeTrue();
+    });
+
+    it('submits via update(), not create(), keyed by the sale id', async () => {
+      await setup({ sale: draftSale() });
+
+      component.submit();
+
+      expect(sales.update).toHaveBeenCalledOnceWith('draft-1', jasmine.objectContaining({ name: 'Draft 1' }));
+      expect(sales.create).not.toHaveBeenCalled();
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.UPDATE_SUCCESS');
+    });
+
+    it('does not cap quantity to stock either, same as any quotation', async () => {
+      await setup({ sale: draftSale() });
+
+      component.updateItemQuantity(0, 999);
+
+      expect(component.canSubmit()).toBeTrue();
+    });
+  });
+
+  describe('tax', () => {
+    it('a line with no explicit taxPercent inherits the ticket one', () => {
+      component.taxPercent.set(15);
+      const line = { inventoryItemId: 'x', quantity: 1, unitPrice: 100, notes: '' };
+
+      expect(component.lineTax(line)).toBe(15);
+    });
+
+    it('an explicit line taxPercent, including 0, overrides the ticket one', () => {
+      component.taxPercent.set(15);
+      const exempt = { inventoryItemId: 'x', quantity: 1, unitPrice: 100, notes: '', taxPercent: 0 };
+
+      expect(component.lineTax(exempt)).toBe(0);
+    });
+
+    it('taxTotal and grandTotal add up every line', () => {
+      component.onWarehouseChange('w1');
+      component.taxPercent.set(15);
+      component.addItem();
+      component.updateItemId(0, 'laptop'); // 900, taxed at 15% => 135
+      component.addItem();
+      component.updateItemId(1, 'mouse'); // 20, explicit 0% => exempt
+      component.updateItemTaxPercent(1, 0);
+
+      expect(component.taxTotal()).toBe(135);
+      expect(component.grandTotal()).toBe(900 + 20 + 135);
     });
   });
 

@@ -7,6 +7,7 @@
     "WAREHOUSES": "Warehouses",
     "CATEGORIES": "Categories",
     "SUPPLIERS": "Suppliers",
+    "CLIENTS": "Clients",
     "LOANS": "Loans",
     "TRANSFERS": "Transfers",
     "DISCHARGES": "Requests",
@@ -286,12 +287,42 @@
     "LOCATION": "Location",
     "PHONE": "Phone",
     "EMAIL": "Email",
+    "CODE": "Code",
+    "RTN": "Tax ID (RTN)",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
     "TOTAL": "Total Suppliers",
     "LIST": "Supplier List",
     "NO_SUPPLIERS": "No suppliers found",
     "NO_SUPPLIERS_DESC": "Get started by adding your first supplier",
     "DELETE_CONFIRM": {
       "TITLE": "Delete Supplier",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
+  },
+  "CLIENT": {
+    "TITLE": "Clients",
+    "SUBTITLE": "Manage your client contacts",
+    "ADD": "Add Client",
+    "EDIT": "Edit Client",
+    "CODE": "Code",
+    "NAME": "Name",
+    "RTN": "Tax ID (RTN)",
+    "PHONE": "Phone",
+    "PAYMENT_CONDITION": "Payment Condition",
+    "PAYMENT_CONDITION_OPTIONS": {
+      "CASH": "Cash",
+      "CREDIT": "Credit"
+    },
+    "CREDIT_LIMIT": "Credit Limit",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "TOTAL": "Total Clients",
+    "LIST": "Client List",
+    "NO_CLIENTS": "No clients found",
+    "NO_CLIENTS_DESC": "Get started by adding your first client",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete Client",
       "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     }
   },
@@ -412,6 +443,10 @@
       "suppliers:create": "Create suppliers",
       "suppliers:edit": "Edit suppliers",
       "suppliers:delete": "Delete suppliers",
+      "clients:view": "View clients",
+      "clients:create": "Create clients",
+      "clients:edit": "Edit clients",
+      "clients:delete": "Delete clients",
       "users:view": "View users",
       "users:create": "Create users",
       "users:edit": "Edit users",
@@ -546,7 +581,8 @@
       "MIN_LENGTH": "Minimum {{length}} characters",
       "MAX_LENGTH": "Maximum {{length}} characters",
       "EMAIL": "Invalid email",
-      "MIN_VALUE": "Minimum value: {{value}}"
+      "MIN_VALUE": "Minimum value: {{value}}",
+      "RTN": "Must be exactly 14 digits"
     }
   },
   "NOTIFICATIONS": {
@@ -576,6 +612,7 @@
       "CATEGORY": "Category",
       "WAREHOUSE": "Warehouse",
       "SUPPLIER": "Supplier",
+      "CLIENT": "Client",
       "USER": "User",
       "TRANSACTION": "Transaction",
       "ROLE": "Role"

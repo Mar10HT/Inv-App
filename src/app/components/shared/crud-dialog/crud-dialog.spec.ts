@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subject, of, throwError } from 'rxjs';
 
 import { CrudDialog } from './crud-dialog';
@@ -215,5 +216,99 @@ describe('CrudDialog', () => {
     await setup();
 
     expect(el.querySelectorAll('input, textarea, select').length).toBe(config.fields.length);
+  });
+
+  describe('checkbox fields', () => {
+    // Isolated from the shared `config` above so none of the existing
+    // exact-equality assertions on form.value need to change.
+    const checkboxConfig: CrudDialogConfig = {
+      titleAddKey: 'THING.ADD',
+      titleEditKey: 'THING.EDIT',
+      fields: [
+        { key: 'name', labelKey: 'THING.NAME', type: 'text' },
+        { key: 'active', labelKey: 'THING.ACTIVE', type: 'checkbox' }
+      ]
+    };
+
+    it('initializes to false in add mode, not an empty string', async () => {
+      await setup({ config: checkboxConfig });
+
+      expect(component.form.value).toEqual({ name: '', active: false });
+    });
+
+    it('patches the real boolean from the entity in edit mode, not a string', async () => {
+      await setup({ config: checkboxConfig, mode: 'edit', entity: { id: 'e1', name: 'Tools', active: false } });
+
+      // A naive String(false) patch would be the truthy string "false" here instead.
+      expect(component.form.value.active).toBe(false);
+    });
+
+    it('patches true the same way', async () => {
+      await setup({ config: checkboxConfig, mode: 'edit', entity: { id: 'e1', name: 'Tools', active: true } });
+
+      expect(component.form.value.active).toBe(true);
+    });
+
+    it('renders an actual checkbox input', async () => {
+      await setup({ config: checkboxConfig });
+
+      expect(el.querySelector('input[type="checkbox"]')).toBeTruthy();
+    });
+
+    it('honors defaultValue in add mode', async () => {
+      const defaultTrueConfig: CrudDialogConfig = {
+        ...checkboxConfig,
+        fields: [
+          { key: 'name', labelKey: 'THING.NAME', type: 'text' },
+          { key: 'active', labelKey: 'THING.ACTIVE', type: 'checkbox', defaultValue: true }
+        ]
+      };
+
+      await setup({ config: defaultTrueConfig });
+
+      expect(component.form.value.active).toBe(true);
+    });
+  });
+
+  describe('number fields', () => {
+    it('parses real user input as a number, not a string', async () => {
+      await setup();
+
+      // A bound [type]="field.type" (rather than a literal type="number") never matches
+      // Angular's NumberValueAccessor selector, so DefaultValueAccessor would take over
+      // and hand back the raw string the user typed instead of a parsed number.
+      const input = el.querySelector('#code') as HTMLInputElement;
+      input.value = '500';
+      input.dispatchEvent(new Event('input'));
+
+      expect(component.form.value.code).toBe(500);
+    });
+  });
+
+  describe('select fields', () => {
+    const selectConfig: CrudDialogConfig = {
+      titleAddKey: 'THING.ADD',
+      titleEditKey: 'THING.EDIT',
+      fields: [
+        {
+          key: 'kind',
+          labelKey: 'THING.KIND',
+          type: 'select',
+          options: [{ value: 'a', label: 'THING.OPTION_A' }]
+        }
+      ]
+    };
+
+    it('translates each option label, not just the raw key', async () => {
+      await setup({ config: selectConfig });
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('en', { THING: { OPTION_A: 'Option A' } });
+      translate.use('en');
+      fixture.detectChanges();
+
+      const option = el.querySelector('option[value="a"]');
+
+      expect(option?.textContent?.trim()).toBe('Option A');
+    });
   });
 });

@@ -38,6 +38,7 @@ describe('PermissionsService', () => {
     const apiPermissions = [
       'alerts:manage', 'alerts:view', 'audit:export', 'audit:view', 'auth:admin',
       'categories:create', 'categories:delete', 'categories:edit', 'categories:view',
+      'clients:create', 'clients:delete', 'clients:edit', 'clients:view',
       'dashboard:view',
       'discharges:create', 'discharges:manage', 'discharges:view',
       'inventory:create', 'inventory:delete', 'inventory:edit', 'inventory:export',

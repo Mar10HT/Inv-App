@@ -43,7 +43,14 @@ import { Spinner } from '../spinner/spinner';
               {{ field.labelKey | translate }}{{ field.required ? ' *' : '' }}
             </label>
 
-            @if (field.type === 'textarea') {
+            @if (field.type === 'checkbox') {
+              <input
+                type="checkbox"
+                [id]="field.key"
+                [formControlName]="field.key"
+                class="w-4 h-4 rounded border-[var(--color-border-subtle)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+              />
+            } @else if (field.type === 'textarea') {
               <textarea
                 [id]="field.key"
                 [formControlName]="field.key"
@@ -52,6 +59,15 @@ import { Spinner } from '../spinner/spinner';
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched"
                 [placeholder]="(field.placeholderKey || field.labelKey) | translate"
               ></textarea>
+            } @else if (field.type === 'number') {
+              <input
+                [id]="field.key"
+                type="number"
+                [formControlName]="field.key"
+                class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched"
+                [placeholder]="(field.placeholderKey || field.labelKey) | translate"
+              />
             } @else if (field.type === 'select') {
               <select
                 [id]="field.key"
@@ -60,7 +76,7 @@ import { Spinner } from '../spinner/spinner';
                 [class.!border-rose-500]="form.get(field.key)?.invalid && form.get(field.key)?.touched">
                 <option value="">{{ (field.placeholderKey || field.labelKey) | translate }}</option>
                 @for (opt of field.options; track opt.value) {
-                  <option [value]="opt.value">{{ opt.label }}</option>
+                  <option [value]="opt.value">{{ opt.label | translate }}</option>
                 }
               </select>
             } @else {
@@ -127,18 +143,22 @@ export class CrudDialog implements OnInit {
   form!: FormGroup;
 
   ngOnInit(): void {
-    const controls: Record<string, [string, ValidatorFn[]]> = {};
+    const controls: Record<string, [string | boolean, ValidatorFn[]]> = {};
     for (const field of this.data.config.fields) {
       const validators = field.validators || [];
-      controls[field.key] = ['', validators];
+      controls[field.key] = [field.type === 'checkbox' ? (field.defaultValue ?? false) : '', validators];
     }
     this.form = this.fb.group(controls);
 
     if (this.data.mode === 'edit' && this.data.entity) {
-      const patchValue: Record<string, string> = {};
+      const patchValue: Record<string, string | boolean> = {};
       for (const field of this.data.config.fields) {
         const value = this.data.entity[field.key];
-        patchValue[field.key] = value === undefined || value === null ? '' : String(value);
+        if (field.type === 'checkbox') {
+          patchValue[field.key] = Boolean(value);
+        } else {
+          patchValue[field.key] = value === undefined || value === null ? '' : String(value);
+        }
       }
       this.form.patchValue(patchValue);
     }

@@ -130,6 +130,7 @@ const PERMISSIONS: Record<string, string[]> = {
   'inventory/edit/:id': ['inventory:view', 'inventory:edit'],
   warehouses: ['warehouse:view'],
   suppliers: ['suppliers:view'],
+  clients: ['clients:view'],
   categories: ['categories:view'],
   settings: ['settings:view'],
   users: ['users:view'],

@@ -76,6 +76,7 @@ import {
   DollarSign,
   Banknote,
   ShoppingCart,
+  Landmark,
 
   // Charts & Analytics
   BarChart2,
@@ -273,6 +274,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   DollarSign,
   Banknote,
   ShoppingCart,
+  Landmark,
 
   // Charts & Analytics
   BarChart2,

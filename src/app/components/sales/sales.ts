@@ -21,6 +21,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import {
   Sale,
   CustomerType,
@@ -192,7 +193,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
                       {{ sale.warehouse?.name || '—' }}
                     </td>
                     <td class="px-4 py-3">
-                      <div class="text-foreground">{{ sale.customerName || '—' }}</div>
+                      <div class="text-foreground">{{ customerLabel(sale) }}</div>
                       <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-xs font-medium bg-[var(--color-surface)] text-[var(--color-on-surface-variant)]">
                         {{ 'SALES.CUSTOMER_TYPE.' + sale.customerType | translate }}
                       </span>
@@ -313,8 +314,8 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
                     {{ getStatusLabel(sale.status) }}
                   </span>
                 </div>
-                @if (sale.customerName) {
-                  <div class="text-sm text-foreground mb-1">{{ sale.customerName }}</div>
+                @if (sale.client || sale.customerName) {
+                  <div class="text-sm text-foreground mb-1">{{ customerLabel(sale) }}</div>
                 }
                 <div class="flex items-center justify-between text-sm">
                   <span class="font-medium text-foreground">
@@ -435,6 +436,7 @@ export class SalesComponent implements OnInit {
   warehouseService = inject(WarehouseService);
   private clientService = inject(ClientService);
   private inventoryService = inject(InventoryService);
+  private fiscalConfigService = inject(FiscalConfigService);
   private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
@@ -488,6 +490,7 @@ export class SalesComponent implements OnInit {
     this.clientService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
+    this.fiscalConfigService.get().subscribe();
     this.inventoryService.loadItems();
   }
 
@@ -548,6 +551,13 @@ export class SalesComponent implements OnInit {
 
   totalQty(sale: Sale): number {
     return sale.items.reduce((sum, it) => sum + it.quantity, 0);
+  }
+
+  // The linked Client (used for credit-limit tracking) is the authoritative
+  // name when present; customerName is only the free-text fallback for a
+  // walk-in sale with no client record.
+  customerLabel(sale: Sale): string {
+    return sale.client?.name || sale.customerName || '—';
   }
 
   formatMoney(amount: number, currency: string): string {

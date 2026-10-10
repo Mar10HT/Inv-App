@@ -21,6 +21,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { SupplierService } from '../../services/supplier.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import {
   PurchaseInvoice,
   PurchaseInvoiceStatus,
@@ -322,6 +323,7 @@ export class PurchasesComponent implements OnInit {
   warehouseService = inject(WarehouseService);
   supplierService = inject(SupplierService);
   private inventoryService = inject(InventoryService);
+  private fiscalConfigService = inject(FiscalConfigService);
   private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
@@ -365,6 +367,7 @@ export class PurchasesComponent implements OnInit {
     this.supplierService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
+    this.fiscalConfigService.get().subscribe();
     this.inventoryService.loadItems();
   }
 

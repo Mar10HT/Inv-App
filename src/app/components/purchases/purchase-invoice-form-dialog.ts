@@ -6,6 +6,7 @@ import {
   ElementRef,
   HostListener,
   inject,
+  OnInit,
   output,
   signal,
   viewChild,
@@ -21,6 +22,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { SupplierService } from '../../services/supplier.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import { ItemType } from '../../interfaces/inventory-item.interface';
 import {
   CreatePurchaseInvoiceDto,
@@ -389,17 +391,25 @@ const emptyItem = (): PurchaseItemEntry => ({
     </div>
   `,
 })
-export class PurchaseInvoiceFormDialog implements AfterViewInit {
+export class PurchaseInvoiceFormDialog implements AfterViewInit, OnInit {
   private purchaseInvoiceService = inject(PurchaseInvoiceService);
   private warehouseService = inject(WarehouseService);
   private supplierService = inject(SupplierService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
+  private fiscalConfigService = inject(FiscalConfigService);
 
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
   closed = output<void>();
   created = output<PurchaseInvoiceFormResult>();
+
+  ngOnInit(): void {
+    // Suggested default from Fiscal Config's ISV% — always editable, never
+    // forced (same contract as Sale.taxPercent; purchase invoices have no
+    // edit mode, so this always applies).
+    this.taxPercent.set(this.fiscalConfigService.config()?.isvPercent);
+  }
 
   ngAfterViewInit(): void {
     // cdkTrapFocusAutoCapture handles initial focus, but ensure the dialog

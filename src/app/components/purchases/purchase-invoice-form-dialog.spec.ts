@@ -8,6 +8,8 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { SupplierService } from '../../services/supplier.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { ItemType, InventoryItemInterface } from '../../interfaces/inventory-item.interface';
 import {
   PaymentCondition,
@@ -20,6 +22,7 @@ describe('PurchaseInvoiceFormDialog', () => {
   let fixture: ComponentFixture<PurchaseInvoiceFormDialog>;
   let component: PurchaseInvoiceFormDialog;
   let stock: ReturnType<typeof signal<InventoryItemInterface[]>>;
+  let fiscalConfig: ReturnType<typeof signal<FiscalConfig | null>>;
   let purchases: jasmine.SpyObj<PurchaseInvoiceService>;
   let notifications: jasmine.SpyObj<NotificationService>;
   let closed: jasmine.Spy;
@@ -32,6 +35,7 @@ describe('PurchaseInvoiceFormDialog', () => {
       item({ id: 'laptop-1', warehouseId: 'w1', quantity: 1, itemType: ItemType.UNIQUE }),
       item({ id: 'elsewhere', warehouseId: 'w2', quantity: 3, itemType: ItemType.BULK }),
     ]);
+    fiscalConfig = signal<FiscalConfig | null>(null);
     purchases = jasmine.createSpyObj<PurchaseInvoiceService>('PurchaseInvoiceService', ['create']);
     purchases.create.and.returnValue(of({ id: 'purchase-1' } as PurchaseInvoice));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error']);
@@ -44,6 +48,7 @@ describe('PurchaseInvoiceFormDialog', () => {
         { provide: WarehouseService, useValue: { warehouses: signal([warehouse('w1', 'Main'), warehouse('w2', 'Backup')]) } },
         { provide: SupplierService, useValue: { suppliers: signal([supplier('s1', 'Acme')]) } },
         { provide: InventoryService, useValue: { items: stock } },
+        { provide: FiscalConfigService, useValue: { config: fiscalConfig } },
         { provide: NotificationService, useValue: notifications }
       ]
     }).compileComponents();
@@ -66,6 +71,21 @@ describe('PurchaseInvoiceFormDialog', () => {
     component.updateItemField(0, 'inventoryItemId', 'cable');
     component.updateItemField(0, 'unitPrice', 10);
   };
+
+  describe('the tax percent default', () => {
+    it('is undefined when no fiscal config is loaded', () => {
+      expect(component.taxPercent()).toBeUndefined();
+    });
+
+    it('is suggested from the fiscal config ISV% on open', () => {
+      fiscalConfig.set({ isvPercent: 18 } as FiscalConfig);
+
+      const freshFixture = TestBed.createComponent(PurchaseInvoiceFormDialog);
+      freshFixture.detectChanges();
+
+      expect(freshFixture.componentInstance.taxPercent()).toBe(18);
+    });
+  });
 
   describe('the items a BULK line can target', () => {
     it('are none until a warehouse is chosen', () => {

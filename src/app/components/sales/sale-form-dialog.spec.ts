@@ -12,6 +12,8 @@ import { PaymentCondition } from '../../interfaces/purchase-invoice.interface';
 import { InventoryItemInterface } from '../../interfaces/inventory-item.interface';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, warehouse } from '../../../testing/report-fixtures';
 
@@ -50,6 +52,7 @@ describe('SaleFormDialog', () => {
   let component: SaleFormDialog;
   let stock: ReturnType<typeof signal<InventoryItemInterface[]>>;
   let clients: ReturnType<typeof signal<Client[]>>;
+  let fiscalConfig: ReturnType<typeof signal<FiscalConfig | null>>;
   let sales: jasmine.SpyObj<SaleService>;
   let notifications: jasmine.SpyObj<NotificationService>;
   let closed: jasmine.Spy;
@@ -75,6 +78,7 @@ describe('SaleFormDialog', () => {
       item({ id: 'elsewhere', warehouseId: 'w2', quantity: 3, price: 7 })
     ]);
     clients = signal([client({ id: 'c1', paymentCondition: PaymentCondition.CREDIT })]);
+    fiscalConfig = signal<FiscalConfig | null>(null);
     sales = jasmine.createSpyObj<SaleService>('SaleService', ['create', 'update']);
     sales.create.and.returnValue(of({ id: 'sale-1' } as Sale));
     sales.update.and.returnValue(of({ id: 'draft-1' } as Sale));
@@ -88,6 +92,7 @@ describe('SaleFormDialog', () => {
         { provide: WarehouseService, useValue: { warehouses: signal([warehouse('w1', 'Main'), warehouse('w2', 'Backup')]) } },
         { provide: InventoryService, useValue: { items: stock } },
         { provide: ClientService, useValue: { clients } },
+        { provide: FiscalConfigService, useValue: { config: fiscalConfig } },
         { provide: NotificationService, useValue: notifications }
       ]
     }).compileComponents();
@@ -102,6 +107,20 @@ describe('SaleFormDialog', () => {
     component.addItem();
     component.updateItemId(0, 'laptop');
   };
+
+  describe('the tax percent default', () => {
+    it('is undefined for a new sale when no fiscal config is loaded', () => {
+      expect(component.taxPercent()).toBeUndefined();
+    });
+
+    it('is suggested from the fiscal config ISV% for a new sale', async () => {
+      fiscalConfig.set({ isvPercent: 18 } as FiscalConfig);
+
+      await setup();
+
+      expect(component.taxPercent()).toBe(18);
+    });
+  });
 
   describe('the items that can be sold', () => {
     it('are none until a warehouse is chosen', () => {

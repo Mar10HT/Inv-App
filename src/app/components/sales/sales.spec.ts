@@ -11,7 +11,9 @@ import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import { CustomerType, Sale, SaleStats, SaleStatus } from '../../interfaces/sale.interface';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { warehouse } from '../../../testing/report-fixtures';
 
@@ -37,6 +39,7 @@ describe('SalesComponent', () => {
   let warehouses: jasmine.SpyObj<WarehouseService>;
   let inventory: jasmine.SpyObj<InventoryService>;
   let clients: jasmine.SpyObj<ClientService>;
+  let fiscalConfig: jasmine.SpyObj<FiscalConfigService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
@@ -57,6 +60,12 @@ describe('SalesComponent', () => {
     inventory = jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']);
     clients = jasmine.createSpyObj<ClientService>('ClientService', ['getAll'], { clients: signal([]) } as never);
     clients.getAll.and.returnValue(of([]));
+    fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
+      'FiscalConfigService',
+      ['get'],
+      { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
+    );
+    fiscalConfig.get.and.returnValue(of(null));
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']);
@@ -69,6 +78,7 @@ describe('SalesComponent', () => {
         { provide: WarehouseService, useValue: warehouses },
         { provide: ClientService, useValue: clients },
         { provide: InventoryService, useValue: inventory },
+        { provide: FiscalConfigService, useValue: fiscalConfig },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
       ]
@@ -80,10 +90,11 @@ describe('SalesComponent', () => {
   });
 
   describe('loading', () => {
-    it('asks for the sales, the warehouses, the clients and the items when it opens', () => {
+    it('asks for the sales, the warehouses, the clients, the fiscal config and the items when it opens', () => {
       expect(saleService.loadSales).toHaveBeenCalledTimes(1);
       expect(warehouses.getAll).toHaveBeenCalledTimes(1);
       expect(clients.getAll).toHaveBeenCalledTimes(1);
+      expect(fiscalConfig.get).toHaveBeenCalledTimes(1);
       expect(inventory.loadItems).toHaveBeenCalledTimes(1);
     });
 
@@ -264,6 +275,12 @@ describe('SalesComponent', () => {
       expect(component.totalQty(sale({ items: [] }))).toBe(0);
     });
 
+    it('customerLabel prefers the linked client over the free-text name, and falls back to a dash', () => {
+      expect(component.customerLabel(sale({ client: { id: 'c1', name: 'Ferretería El Progreso' }, customerName: 'Juan' } as never))).toBe('Ferretería El Progreso');
+      expect(component.customerLabel(sale({ client: null, customerName: 'Juan' } as never))).toBe('Juan');
+      expect(component.customerLabel(sale({ client: null, customerName: null } as never))).toBe('—');
+    });
+
     it('formats money with the currency and two decimals, and a missing amount as zero', () => {
       expect(component.formatMoney(12.5, 'USD')).toBe('USD 12.50');
       expect(component.formatMoney(undefined as unknown as number, 'HNL')).toBe('HNL 0.00');
@@ -362,6 +379,12 @@ describe('SalesComponent — accounts receivable view (route data: onlyWithBalan
     warehouses.getAll.and.returnValue(of([]));
     const clients = jasmine.createSpyObj<ClientService>('ClientService', ['getAll'], { clients: signal([]) } as never);
     clients.getAll.and.returnValue(of([]));
+    const fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
+      'FiscalConfigService',
+      ['get'],
+      { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
+    );
+    fiscalConfig.get.and.returnValue(of(null));
 
     await TestBed.configureTestingModule({
       imports: [SalesComponent],
@@ -371,6 +394,7 @@ describe('SalesComponent — accounts receivable view (route data: onlyWithBalan
         { provide: WarehouseService, useValue: warehouses },
         { provide: ClientService, useValue: clients },
         { provide: InventoryService, useValue: jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']) },
+        { provide: FiscalConfigService, useValue: fiscalConfig },
         { provide: ConfirmService, useValue: jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']) },
         { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']) },
         { provide: ActivatedRoute, useValue: { snapshot: { data: { onlyWithBalance: true } } } }

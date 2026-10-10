@@ -22,6 +22,7 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import {
   CreateSaleDto,
   CustomerType,
@@ -396,6 +397,7 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   private clientService = inject(ClientService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
+  private fiscalConfigService = inject(FiscalConfigService);
 
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
@@ -415,7 +417,12 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
 
   ngOnInit(): void {
     const existing = this.sale();
-    if (!existing) return;
+    if (!existing) {
+      // Suggested default from Fiscal Config's ISV% — always editable, never
+      // forced (see the `taxPercent` comment on the Sale interface).
+      this.taxPercent.set(this.fiscalConfigService.config()?.isvPercent);
+      return;
+    }
     this.name.set(existing.name ?? '');
     this.warehouseId.set(existing.warehouseId);
     this.customerName.set(existing.customerName ?? '');

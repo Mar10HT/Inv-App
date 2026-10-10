@@ -46,6 +46,11 @@ export interface SaleWarehouseRef {
   name: string;
 }
 
+export interface SaleClientRef {
+  id: string;
+  name: string;
+}
+
 export interface Sale {
   id: string;
   name: string | null;
@@ -75,6 +80,7 @@ export interface Sale {
   createdAt: string;
   updatedAt: string;
   warehouse?: SaleWarehouseRef;
+  client?: SaleClientRef | null;
   createdBy?: SaleUserRef;
   cancelledBy?: SaleUserRef | null;
   items: SaleItem[];

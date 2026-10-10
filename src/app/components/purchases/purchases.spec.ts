@@ -11,6 +11,8 @@ import { SupplierService } from '../../services/supplier.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import {
   PaymentCondition,
   PurchaseInvoice,
@@ -44,6 +46,7 @@ describe('PurchasesComponent', () => {
   let warehouses: jasmine.SpyObj<WarehouseService>;
   let suppliers: jasmine.SpyObj<SupplierService>;
   let inventory: jasmine.SpyObj<InventoryService>;
+  let fiscalConfig: jasmine.SpyObj<FiscalConfigService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
@@ -67,6 +70,12 @@ describe('PurchasesComponent', () => {
     } as never);
     suppliers.getAll.and.returnValue(of([]));
     inventory = jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']);
+    fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
+      'FiscalConfigService',
+      ['get'],
+      { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
+    );
+    fiscalConfig.get.and.returnValue(of(null));
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']);
@@ -79,6 +88,7 @@ describe('PurchasesComponent', () => {
         { provide: WarehouseService, useValue: warehouses },
         { provide: SupplierService, useValue: suppliers },
         { provide: InventoryService, useValue: inventory },
+        { provide: FiscalConfigService, useValue: fiscalConfig },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
       ]
@@ -90,10 +100,11 @@ describe('PurchasesComponent', () => {
   });
 
   describe('loading', () => {
-    it('asks for the purchases, the warehouses, the suppliers and the items when it opens', () => {
+    it('asks for the purchases, the warehouses, the suppliers, the fiscal config and the items when it opens', () => {
       expect(purchaseInvoiceService.loadPurchaseInvoices).toHaveBeenCalledTimes(1);
       expect(warehouses.getAll).toHaveBeenCalledTimes(1);
       expect(suppliers.getAll).toHaveBeenCalledTimes(1);
+      expect(fiscalConfig.get).toHaveBeenCalledTimes(1);
       expect(inventory.loadItems).toHaveBeenCalledTimes(1);
     });
 
@@ -301,6 +312,12 @@ describe('PurchasesComponent — accounts payable view (route data: onlyWithBala
       suppliers: signal([])
     } as never);
     suppliers.getAll.and.returnValue(of([]));
+    const fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
+      'FiscalConfigService',
+      ['get'],
+      { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
+    );
+    fiscalConfig.get.and.returnValue(of(null));
 
     await TestBed.configureTestingModule({
       imports: [PurchasesComponent],
@@ -310,6 +327,7 @@ describe('PurchasesComponent — accounts payable view (route data: onlyWithBala
         { provide: WarehouseService, useValue: warehouses },
         { provide: SupplierService, useValue: suppliers },
         { provide: InventoryService, useValue: jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']) },
+        { provide: FiscalConfigService, useValue: fiscalConfig },
         { provide: ConfirmService, useValue: jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']) },
         { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']) },
         { provide: ActivatedRoute, useValue: { snapshot: { data: { onlyWithBalance: true } } } }

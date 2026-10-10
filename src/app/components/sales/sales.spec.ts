@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import { SalesComponent } from './sales';
 import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
@@ -34,6 +36,7 @@ describe('SalesComponent', () => {
   let saleService: jasmine.SpyObj<SaleService>;
   let warehouses: jasmine.SpyObj<WarehouseService>;
   let inventory: jasmine.SpyObj<InventoryService>;
+  let clients: jasmine.SpyObj<ClientService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
@@ -52,6 +55,8 @@ describe('SalesComponent', () => {
     } as never);
     warehouses.getAll.and.returnValue(of([]));
     inventory = jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']);
+    clients = jasmine.createSpyObj<ClientService>('ClientService', ['getAll'], { clients: signal([]) } as never);
+    clients.getAll.and.returnValue(of([]));
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']);
@@ -62,6 +67,7 @@ describe('SalesComponent', () => {
         ...provideTestBedDefaults(),
         { provide: SaleService, useValue: saleService },
         { provide: WarehouseService, useValue: warehouses },
+        { provide: ClientService, useValue: clients },
         { provide: InventoryService, useValue: inventory },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
@@ -74,15 +80,25 @@ describe('SalesComponent', () => {
   });
 
   describe('loading', () => {
-    it('asks for the sales, the warehouses and the items when it opens', () => {
+    it('asks for the sales, the warehouses, the clients and the items when it opens', () => {
       expect(saleService.loadSales).toHaveBeenCalledTimes(1);
       expect(warehouses.getAll).toHaveBeenCalledTimes(1);
+      expect(clients.getAll).toHaveBeenCalledTimes(1);
       expect(inventory.loadItems).toHaveBeenCalledTimes(1);
     });
 
     it('tells the user when the warehouses fail to load', () => {
       const failure = new Error('boom');
       warehouses.getAll.and.returnValue(throwError(() => failure));
+
+      TestBed.createComponent(SalesComponent).detectChanges();
+
+      expect(notifications.handleError).toHaveBeenCalledWith(failure as never);
+    });
+
+    it('tells the user when the clients fail to load', () => {
+      const failure = new Error('boom');
+      clients.getAll.and.returnValue(throwError(() => failure));
 
       TestBed.createComponent(SalesComponent).detectChanges();
 
@@ -175,6 +191,38 @@ describe('SalesComponent', () => {
       component.closeFormDialog();
 
       expect(component.editingSale()).toBeNull();
+    });
+  });
+
+  describe('payment dialog', () => {
+    it('opens with the sale to pay and closes clearing it', () => {
+      const target = sale({ id: 'a' });
+
+      component.openPaymentDialog(target);
+      expect(component.showPaymentDialog()).toBeTrue();
+      expect(component.payingSale()).toBe(target);
+
+      component.closePaymentDialog();
+      expect(component.showPaymentDialog()).toBeFalse();
+      expect(component.payingSale()).toBeNull();
+    });
+
+    it('refreshes the sales list when a payment is recorded', () => {
+      component.onPaymentRecorded();
+
+      expect(saleService.refresh).toHaveBeenCalledTimes(1);
+    });
+
+    it('builds the minimal payment document from the sale', () => {
+      const target = sale({ id: 'a', totalAmount: 100, taxAmount: 15, currency: 'HNL' });
+
+      expect(component.toPaymentDocument(target)).toEqual({
+        id: 'a',
+        totalAmount: 100,
+        taxAmount: 15,
+        currency: 'HNL',
+        documentType: 'sale',
+      });
     });
   });
 
@@ -289,5 +337,61 @@ describe('SalesComponent', () => {
       expect(saleService.cancel).toHaveBeenCalledOnceWith('d1');
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CANCEL_DRAFT_SUCCESS');
     });
+  });
+});
+
+describe('SalesComponent — accounts receivable view (route data: onlyWithBalance)', () => {
+  let fixture: ComponentFixture<SalesComponent>;
+  let component: SalesComponent;
+  let sales: ReturnType<typeof signal<Sale[]>>;
+
+  beforeEach(async () => {
+    sales = signal([
+      sale({ id: 'a', status: SaleStatus.ACTIVE, balance: 50 } as never),
+      sale({ id: 'b', status: SaleStatus.ACTIVE, balance: 0 } as never),
+      sale({ id: 'c', status: SaleStatus.DRAFT, balance: 50 } as never),
+    ]);
+    const saleService = jasmine.createSpyObj<SaleService>(
+      'SaleService',
+      ['loadSales', 'refresh', 'cancel', 'downloadPdf', 'confirm', 'update'],
+      { sales, stats: signal(emptyStats), loading: signal(false), error: signal(null) } as never
+    );
+    const warehouses = jasmine.createSpyObj<WarehouseService>('WarehouseService', ['getAll'], {
+      warehouses: signal([])
+    } as never);
+    warehouses.getAll.and.returnValue(of([]));
+    const clients = jasmine.createSpyObj<ClientService>('ClientService', ['getAll'], { clients: signal([]) } as never);
+    clients.getAll.and.returnValue(of([]));
+
+    await TestBed.configureTestingModule({
+      imports: [SalesComponent],
+      providers: [
+        ...provideTestBedDefaults(),
+        { provide: SaleService, useValue: saleService },
+        { provide: WarehouseService, useValue: warehouses },
+        { provide: ClientService, useValue: clients },
+        { provide: InventoryService, useValue: jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']) },
+        { provide: ConfirmService, useValue: jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']) },
+        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']) },
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { onlyWithBalance: true } } } }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SalesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('flags isReceivablesView from the route data', () => {
+    expect(component.isReceivablesView).toBeTrue();
+  });
+
+  it('shows the Accounts Receivable copy instead of the Sales one', () => {
+    const title = fixture.nativeElement.querySelector('h1').textContent;
+    expect(title).toContain('ACCOUNTS_RECEIVABLE.TITLE');
+  });
+
+  it('only keeps ACTIVE sales with an outstanding balance', () => {
+    expect(component.filtered().map((s) => s.id)).toEqual(['a']);
   });
 });

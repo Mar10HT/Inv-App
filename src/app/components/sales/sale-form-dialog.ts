@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import {
@@ -27,6 +28,7 @@ import {
   Sale,
   UpdateSaleDto,
 } from '../../interfaces/sale.interface';
+import { PaymentCondition } from '../../interfaces/purchase-invoice.interface';
 
 // Round to 2 decimals to avoid floating point noise, same rounding as the backend.
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -51,6 +53,11 @@ const CUSTOMER_TYPES: CustomerType[] = [
 ];
 
 const CURRENCIES = ['USD', 'HNL'];
+
+const PAYMENT_CONDITIONS: PaymentCondition[] = [
+  PaymentCondition.CASH,
+  PaymentCondition.CREDIT,
+];
 
 @Component({
   selector: 'app-sale-form-dialog',
@@ -145,6 +152,41 @@ const CURRENCIES = ['USD', 'HNL'];
                 <option value="">{{ 'SALES.SELECT_CUSTOMER_TYPE' | translate }}</option>
                 @for (c of customerTypes; track c) {
                   <option [value]="c">{{ 'SALES.CUSTOMER_TYPE.' + c | translate }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Client + payment condition -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="sale-client" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.CLIENT' | translate }}
+              </label>
+              <select
+                id="sale-client"
+                [ngModel]="clientId()"
+                (ngModelChange)="onClientChange($event)"
+                class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+              >
+                <option value="">{{ 'SALES.SELECT_CLIENT' | translate }}</option>
+                @for (c of clients(); track c.id) {
+                  <option [value]="c.id">{{ c.name }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="sale-payment-condition" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.PAYMENT_CONDITION' | translate }}
+              </label>
+              <select
+                id="sale-payment-condition"
+                [ngModel]="paymentCondition()"
+                (ngModelChange)="paymentCondition.set($event)"
+                class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+              >
+                @for (pc of paymentConditions; track pc) {
+                  <option [value]="pc">{{ 'SALES.PAYMENT_CONDITIONS.' + pc | translate }}</option>
                 }
               </select>
             </div>
@@ -351,6 +393,7 @@ const CURRENCIES = ['USD', 'HNL'];
 export class SaleFormDialog implements AfterViewInit, OnInit {
   private saleService = inject(SaleService);
   private warehouseService = inject(WarehouseService);
+  private clientService = inject(ClientService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
 
@@ -377,6 +420,8 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     this.warehouseId.set(existing.warehouseId);
     this.customerName.set(existing.customerName ?? '');
     this.customerType.set(existing.customerType);
+    this.clientId.set(existing.clientId ?? '');
+    this.paymentCondition.set(existing.paymentCondition);
     this.currency.set(existing.currency);
     this.notes.set(existing.notes ?? '');
     this.taxPercent.set(existing.taxPercent ?? undefined);
@@ -402,11 +447,14 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
 
   readonly customerTypes = CUSTOMER_TYPES;
   readonly currencies = CURRENCIES;
+  readonly paymentConditions = PAYMENT_CONDITIONS;
 
   name = signal('');
   warehouseId = signal('');
   customerName = signal('');
   customerType = signal<CustomerType | ''>('');
+  clientId = signal('');
+  paymentCondition = signal<PaymentCondition>(PaymentCondition.CASH);
   currency = signal('USD');
   notes = signal('');
   taxPercent = signal<number | undefined>(undefined);
@@ -414,6 +462,7 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   submitting = signal(false);
 
   warehouses = computed(() => this.warehouseService.warehouses());
+  clients = computed(() => this.clientService.clients());
 
   // A quotation reserves nothing, so it can reference an item regardless of
   // current stock — only a direct sale (or confirming a quotation, which
@@ -471,6 +520,16 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     this.warehouseId.set(id);
     // Clear items because they were scoped to the previous warehouse
     this.items.set([]);
+  }
+
+  // Prefill, same "suggestion the seller can override" pattern as
+  // updateItemId's unit-price prefill — never enforced server-side.
+  onClientChange(id: string): void {
+    this.clientId.set(id);
+    const client = this.clients().find((c) => c.id === id);
+    if (client) {
+      this.paymentCondition.set(client.paymentCondition);
+    }
   }
 
   addItem(): void {
@@ -566,6 +625,8 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
       warehouseId: this.warehouseId(),
       customerName: this.customerName().trim() || undefined,
       customerType: this.customerType() as CustomerType,
+      clientId: this.clientId() || undefined,
+      paymentCondition: this.paymentCondition(),
       currency: this.currency(),
       notes: this.notes().trim() || undefined,
       taxPercent: this.taxPercent(),

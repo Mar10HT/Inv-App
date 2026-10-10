@@ -8,6 +8,7 @@ import {
 } from '../app/interfaces/inventory-item.interface';
 import { Transaction, TransactionType } from '../app/interfaces/transaction.interface';
 import { Client } from '../app/interfaces/client.interface';
+import { PaymentCondition } from '../app/interfaces/purchase-invoice.interface';
 
 export const warehouse = (id: string, name: string): Warehouse => ({
   id,
@@ -30,7 +31,7 @@ export const client = (id: string, name: string): Client => ({
   id,
   code: id.toUpperCase(),
   name,
-  paymentCondition: 'CASH',
+  paymentCondition: PaymentCondition.CASH,
   isActive: true,
   createdAt: new Date(0),
   updatedAt: new Date(0)

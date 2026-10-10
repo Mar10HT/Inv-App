@@ -14,6 +14,8 @@
     "OUTFLOWS": "Outflows",
     "PURCHASES": "Purchases",
     "SALES": "Sales",
+    "ACCOUNTS_RECEIVABLE": "Receivables",
+    "ACCOUNTS_PAYABLE": "Payables",
     "STOCK_TAKE": "Stock Take",
     "USERS": "Users",
     "ROLES": "Roles",
@@ -1075,6 +1077,7 @@
     "COL_INVOICE_NUMBER": "Supplier invoice",
     "COL_WAREHOUSE": "Warehouse",
     "COL_ITEMS": "Items",
+    "COL_BALANCE": "Balance",
     "COL_STATUS": "Status",
     "COL_DATE": "Date",
     "COL_ACTIONS": "Actions",
@@ -1135,6 +1138,13 @@
     "CUSTOMER_NAME_PLACEHOLDER": "Customer name (optional)",
     "CUSTOMER_TYPE_LABEL": "Customer type",
     "SELECT_CUSTOMER_TYPE": "Select type",
+    "CLIENT": "Client",
+    "SELECT_CLIENT": "Select client (optional)",
+    "PAYMENT_CONDITION": "Payment condition",
+    "PAYMENT_CONDITIONS": {
+      "CASH": "Cash",
+      "CREDIT": "Credit"
+    },
     "CURRENCY": "Currency",
     "UNIT_PRICE": "Unit price",
     "TAX_PERCENT": "Tax %",
@@ -1161,6 +1171,7 @@
     "COL_WAREHOUSE": "Warehouse",
     "COL_CUSTOMER": "Customer",
     "COL_AMOUNT": "Amount",
+    "COL_BALANCE": "Balance",
     "COL_ITEMS": "Items",
     "COL_STATUS": "Status",
     "COL_DATE": "Date",
@@ -1182,6 +1193,38 @@
       "DISTRIBUTOR": "Distributor",
       "RETAIL": "Retail"
     }
+  },
+  "PAYMENTS": {
+    "TITLE": "Payments",
+    "RECORD_PAYMENT": "Record payment",
+    "BALANCE": "Balance",
+    "AMOUNT": "Amount",
+    "METHOD": "Method",
+    "METHOD_OPTIONS": {
+      "CASH": "Cash",
+      "BANK_TRANSFER": "Bank transfer",
+      "CHECK": "Check"
+    },
+    "REFERENCE": "Reference",
+    "NOTES": "Notes",
+    "NO_PAYMENTS": "No payments recorded yet",
+    "LOADING_ERROR": "Could not load payments",
+    "CREATE_SUCCESS": "Payment recorded",
+    "CREATE_ERROR": "Could not record payment",
+    "CANCEL_PAYMENT": "Cancel payment",
+    "CONFIRM_CANCEL_MESSAGE": "Cancel the payment of {{amount}}?",
+    "CANCEL_SUCCESS": "Payment cancelled",
+    "CANCEL_ERROR": "Could not cancel the payment"
+  },
+  "ACCOUNTS_RECEIVABLE": {
+    "TITLE": "Accounts Receivable",
+    "SUBTITLE": "Sales with an outstanding balance",
+    "EMPTY": "No outstanding sales"
+  },
+  "ACCOUNTS_PAYABLE": {
+    "TITLE": "Accounts Payable",
+    "SUBTITLE": "Purchases with an outstanding balance",
+    "EMPTY": "No outstanding purchases"
   },
   "DISCHARGES": {
     "TITLE": "Material Requests",

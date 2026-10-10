@@ -1,3 +1,5 @@
+import { PaymentCondition } from './purchase-invoice.interface';
+
 export enum CustomerType {
   WHOLESALE = 'WHOLESALE',
   DISTRIBUTOR = 'DISTRIBUTOR',
@@ -50,6 +52,12 @@ export interface Sale {
   warehouseId: string;
   customerName: string | null;
   customerType: CustomerType;
+  // Optional link to a real Client (Phase 2/5). Null for a walk-in sale —
+  // customerName above is unaffected either way.
+  clientId: string | null;
+  // Only CREDIT sales with an outstanding balance count toward a client's
+  // credit limit.
+  paymentCondition: PaymentCondition;
   currency: string;
   totalAmount: number;
   // Suggested default is the fiscal config's ISV%, but always editable; null = no tax.
@@ -70,6 +78,9 @@ export interface Sale {
   createdBy?: SaleUserRef;
   cancelledBy?: SaleUserRef | null;
   items: SaleItem[];
+  // Present on list responses (totalAmount + taxAmount - paid), absent
+  // otherwise. Never stored — always computed by the backend on read.
+  balance?: number;
 }
 
 export interface CreateSaleItemDto {
@@ -85,6 +96,8 @@ export interface CreateSaleDto {
   warehouseId: string;
   customerName?: string;
   customerType: CustomerType;
+  clientId?: string;
+  paymentCondition?: PaymentCondition;
   currency?: string;
   items: CreateSaleItemDto[];
   notes?: string;

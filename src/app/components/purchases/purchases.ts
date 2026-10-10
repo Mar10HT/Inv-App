@@ -7,9 +7,10 @@ import {
   signal,
   OnInit,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -31,6 +32,7 @@ import {
   PurchaseInvoiceFormResult,
 } from './purchase-invoice-form-dialog';
 import { StatCard } from '../shared/stat-card/stat-card';
+import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form-dialog';
 
 @Component({
   selector: 'app-purchases',
@@ -39,10 +41,12 @@ import { StatCard } from '../shared/stat-card/stat-card';
   imports: [
     FormsModule,
     DatePipe,
+    NgClass,
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
     PurchaseInvoiceFormDialog,
+    PaymentFormDialog,
     StatCard,
   ],
   template: `
@@ -52,10 +56,10 @@ import { StatCard } from '../shared/stat-card/stat-card';
         <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h1 class="text-4xl font-bold text-foreground mb-2">
-              {{ 'PURCHASES.TITLE' | translate }}
+              {{ (isPayablesView ? 'ACCOUNTS_PAYABLE.TITLE' : 'PURCHASES.TITLE') | translate }}
             </h1>
             <p class="text-[var(--color-on-surface-variant)] text-lg">
-              {{ 'PURCHASES.SUBTITLE' | translate }}
+              {{ (isPayablesView ? 'ACCOUNTS_PAYABLE.SUBTITLE' : 'PURCHASES.SUBTITLE') | translate }}
             </p>
           </div>
           <ng-container *ngxPermissionsOnly="['purchases:create']">
@@ -132,7 +136,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
         } @else if (filtered().length === 0) {
           <div class="bg-surface-variant border border-theme rounded-xl p-12 text-center">
             <lucide-icon name="PackagePlus" class="!w-12 !h-12 mx-auto mb-3 text-[var(--color-on-surface-muted)]"></lucide-icon>
-            <p class="text-[var(--color-on-surface-variant)]">{{ 'PURCHASES.EMPTY' | translate }}</p>
+            <p class="text-[var(--color-on-surface-variant)]">{{ (isPayablesView ? 'ACCOUNTS_PAYABLE.EMPTY' : 'PURCHASES.EMPTY') | translate }}</p>
           </div>
         } @else {
           <!-- Table (desktop) -->
@@ -145,6 +149,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
                   <th class="px-4 py-3">{{ 'PURCHASES.COL_INVOICE_NUMBER' | translate }}</th>
                   <th class="px-4 py-3">{{ 'PURCHASES.COL_WAREHOUSE' | translate }}</th>
                   <th class="px-4 py-3 text-right">{{ 'PURCHASES.COL_ITEMS' | translate }}</th>
+                  <th class="px-4 py-3 text-right">{{ 'PURCHASES.COL_BALANCE' | translate }}</th>
                   <th class="px-4 py-3">{{ 'PURCHASES.COL_STATUS' | translate }}</th>
                   <th class="px-4 py-3">{{ 'PURCHASES.COL_DATE' | translate }}</th>
                   <th class="px-4 py-3 text-right">{{ 'PURCHASES.COL_ACTIONS' | translate }}</th>
@@ -162,6 +167,9 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     <td class="px-4 py-3 text-right text-foreground">
                       {{ purchase.items.length }}
                     </td>
+                    <td class="px-4 py-3 text-right" [ngClass]="(purchase.balance ?? 0) > 0 ? 'text-[var(--color-status-error)]' : 'text-[var(--color-on-surface-variant)]'">
+                      {{ formatMoney(purchase.balance ?? 0, purchase.currency) }}
+                    </td>
                     <td class="px-4 py-3">
                       @if (purchase.status === 'ACTIVE') {
                         <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-[var(--color-success-bg)] text-[var(--color-status-success)]">
@@ -178,6 +186,17 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     </td>
                     <td class="px-4 py-3">
                       <div class="flex items-center justify-end gap-2">
+                        @if (purchase.status === 'ACTIVE' && (purchase.balance ?? 0) > 0) {
+                          <ng-container *ngxPermissionsOnly="['payments:create']">
+                            <button
+                              (click)="openPaymentDialog(purchase)"
+                              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-medium transition-colors"
+                            >
+                              <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
+                              <span>{{ 'PAYMENTS.RECORD_PAYMENT' | translate }}</span>
+                            </button>
+                          </ng-container>
+                        }
                         <button
                           (click)="downloadPdf(purchase)"
                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-theme bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:text-foreground hover:border-[var(--color-primary)] text-xs font-medium transition-colors"
@@ -236,7 +255,24 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     {{ purchase.createdAt | date:'short' }}
                   </span>
                 </div>
+                @if ((purchase.balance ?? 0) > 0) {
+                  <div class="flex items-center justify-between text-sm mt-1">
+                    <span class="text-[var(--color-on-surface-variant)]">{{ 'PURCHASES.COL_BALANCE' | translate }}</span>
+                    <span class="font-medium text-[var(--color-status-error)]">{{ formatMoney(purchase.balance ?? 0, purchase.currency) }}</span>
+                  </div>
+                }
                 <div class="flex items-center gap-2 mt-3">
+                  @if (purchase.status === 'ACTIVE' && (purchase.balance ?? 0) > 0) {
+                    <ng-container *ngxPermissionsOnly="['payments:create']">
+                      <button
+                        (click)="openPaymentDialog(purchase)"
+                        class="flex-1 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm flex items-center justify-center gap-1"
+                      >
+                        <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
+                        {{ 'PAYMENTS.RECORD_PAYMENT' | translate }}
+                      </button>
+                    </ng-container>
+                  }
                   <button
                     (click)="downloadPdf(purchase)"
                     class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
@@ -271,6 +307,14 @@ import { StatCard } from '../shared/stat-card/stat-card';
         (created)="onCreated($event)"
       ></app-purchase-invoice-form-dialog>
     }
+
+    @if (showPaymentDialog() && payingPurchase()) {
+      <app-payment-form-dialog
+        [document]="toPaymentDocument(payingPurchase()!)"
+        (closed)="closePaymentDialog()"
+        (paymentRecorded)="onPaymentRecorded()"
+      ></app-payment-form-dialog>
+    }
   `,
 })
 export class PurchasesComponent implements OnInit {
@@ -282,8 +326,14 @@ export class PurchasesComponent implements OnInit {
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
+  private route = inject(ActivatedRoute);
+
+  readonly isPayablesView = !!this.route.snapshot.data['onlyWithBalance'];
 
   showFormDialog = signal(false);
+
+  showPaymentDialog = signal(false);
+  payingPurchase = signal<PurchaseInvoice | null>(null);
 
   filterWarehouseId = signal('');
   filterStatus = signal<'' | PurchaseInvoiceStatus>('');
@@ -297,10 +347,12 @@ export class PurchasesComponent implements OnInit {
     const wh = this.filterWarehouseId();
     const st = this.filterStatus();
     const sup = this.filterSupplierId();
+    const payablesOnly = this.isPayablesView;
     return list.filter((p) => {
       if (wh && p.warehouseId !== wh) return false;
       if (st && p.status !== st) return false;
       if (sup && p.supplierId !== sup) return false;
+      if (payablesOnly && !(p.status === PurchaseInvoiceStatus.ACTIVE && (p.balance ?? 0) > 0)) return false;
       return true;
     });
   });
@@ -333,6 +385,34 @@ export class PurchasesComponent implements OnInit {
 
   downloadPdf(purchase: PurchaseInvoice): void {
     this.purchaseInvoiceService.downloadPdf(purchase.id);
+  }
+
+  formatMoney(amount: number, currency: string): string {
+    return `${currency} ${(amount ?? 0).toFixed(2)}`;
+  }
+
+  openPaymentDialog(purchase: PurchaseInvoice): void {
+    this.payingPurchase.set(purchase);
+    this.showPaymentDialog.set(true);
+  }
+
+  closePaymentDialog(): void {
+    this.showPaymentDialog.set(false);
+    this.payingPurchase.set(null);
+  }
+
+  onPaymentRecorded(): void {
+    this.purchaseInvoiceService.refresh();
+  }
+
+  toPaymentDocument(purchase: PurchaseInvoice): PaymentFormDocument {
+    return {
+      id: purchase.id,
+      totalAmount: purchase.totalAmount,
+      taxAmount: purchase.taxAmount,
+      currency: purchase.currency,
+      documentType: 'purchase',
+    };
   }
 
   hasUniqueLine(purchase: PurchaseInvoice): boolean {

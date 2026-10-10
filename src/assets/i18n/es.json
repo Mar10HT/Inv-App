@@ -14,6 +14,8 @@
     "OUTFLOWS": "Salidas",
     "PURCHASES": "Compras",
     "SALES": "Ventas",
+    "ACCOUNTS_RECEIVABLE": "Cuentas por Cobrar",
+    "ACCOUNTS_PAYABLE": "Cuentas por Pagar",
     "STOCK_TAKE": "Conteo Físico",
     "USERS": "Usuarios",
     "ROLES": "Roles",
@@ -1075,6 +1077,7 @@
     "COL_INVOICE_NUMBER": "Factura del proveedor",
     "COL_WAREHOUSE": "Bodega",
     "COL_ITEMS": "Items",
+    "COL_BALANCE": "Saldo",
     "COL_STATUS": "Estado",
     "COL_DATE": "Fecha",
     "COL_ACTIONS": "Acciones",
@@ -1135,6 +1138,13 @@
     "CUSTOMER_NAME_PLACEHOLDER": "Nombre del cliente (opcional)",
     "CUSTOMER_TYPE_LABEL": "Tipo de cliente",
     "SELECT_CUSTOMER_TYPE": "Seleccionar tipo",
+    "CLIENT": "Cliente",
+    "SELECT_CLIENT": "Seleccionar cliente (opcional)",
+    "PAYMENT_CONDITION": "Condición de pago",
+    "PAYMENT_CONDITIONS": {
+      "CASH": "Contado",
+      "CREDIT": "Crédito"
+    },
     "CURRENCY": "Moneda",
     "UNIT_PRICE": "Precio unit.",
     "TAX_PERCENT": "% Impuesto",
@@ -1161,6 +1171,7 @@
     "COL_WAREHOUSE": "Bodega",
     "COL_CUSTOMER": "Cliente",
     "COL_AMOUNT": "Monto",
+    "COL_BALANCE": "Saldo",
     "COL_ITEMS": "Items",
     "COL_STATUS": "Estado",
     "COL_DATE": "Fecha",
@@ -1182,6 +1193,38 @@
       "DISTRIBUTOR": "Distribuidor",
       "RETAIL": "Cliente final"
     }
+  },
+  "PAYMENTS": {
+    "TITLE": "Pagos",
+    "RECORD_PAYMENT": "Registrar pago",
+    "BALANCE": "Saldo",
+    "AMOUNT": "Monto",
+    "METHOD": "Método",
+    "METHOD_OPTIONS": {
+      "CASH": "Efectivo",
+      "BANK_TRANSFER": "Transferencia bancaria",
+      "CHECK": "Cheque"
+    },
+    "REFERENCE": "Referencia",
+    "NOTES": "Notas",
+    "NO_PAYMENTS": "Aún no hay pagos registrados",
+    "LOADING_ERROR": "No se pudieron cargar los pagos",
+    "CREATE_SUCCESS": "Pago registrado",
+    "CREATE_ERROR": "No se pudo registrar el pago",
+    "CANCEL_PAYMENT": "Anular pago",
+    "CONFIRM_CANCEL_MESSAGE": "¿Anular el pago de {{amount}}?",
+    "CANCEL_SUCCESS": "Pago anulado",
+    "CANCEL_ERROR": "No se pudo anular el pago"
+  },
+  "ACCOUNTS_RECEIVABLE": {
+    "TITLE": "Cuentas por Cobrar",
+    "SUBTITLE": "Ventas con saldo pendiente",
+    "EMPTY": "No hay ventas con saldo pendiente"
+  },
+  "ACCOUNTS_PAYABLE": {
+    "TITLE": "Cuentas por Pagar",
+    "SUBTITLE": "Compras con saldo pendiente",
+    "EMPTY": "No hay compras con saldo pendiente"
   },
   "DISCHARGES": {
     "TITLE": "Solicitudes de Material",

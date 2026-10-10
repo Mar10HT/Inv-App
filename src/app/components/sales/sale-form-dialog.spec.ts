@@ -8,9 +8,22 @@ import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { CustomerType, Sale, SaleStatus } from '../../interfaces/sale.interface';
+import { PaymentCondition } from '../../interfaces/purchase-invoice.interface';
 import { InventoryItemInterface } from '../../interfaces/inventory-item.interface';
+import { Client } from '../../interfaces/client.interface';
+import { ClientService } from '../../services/client.service';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, warehouse } from '../../../testing/report-fixtures';
+
+const client = (overrides: Partial<Client> = {}): Client =>
+  ({
+    id: 'c1',
+    code: 'CLI-001',
+    name: 'Acme Corp',
+    paymentCondition: PaymentCondition.CREDIT,
+    isActive: true,
+    ...overrides
+  }) as unknown as Client;
 
 const draftSale = (overrides: Partial<Sale> = {}): Sale =>
   ({
@@ -36,6 +49,7 @@ describe('SaleFormDialog', () => {
   let fixture: ComponentFixture<SaleFormDialog>;
   let component: SaleFormDialog;
   let stock: ReturnType<typeof signal<InventoryItemInterface[]>>;
+  let clients: ReturnType<typeof signal<Client[]>>;
   let sales: jasmine.SpyObj<SaleService>;
   let notifications: jasmine.SpyObj<NotificationService>;
   let closed: jasmine.Spy;
@@ -60,6 +74,7 @@ describe('SaleFormDialog', () => {
       item({ id: 'sold-out', warehouseId: 'w1', quantity: 0, price: 5 }),
       item({ id: 'elsewhere', warehouseId: 'w2', quantity: 3, price: 7 })
     ]);
+    clients = signal([client({ id: 'c1', paymentCondition: PaymentCondition.CREDIT })]);
     sales = jasmine.createSpyObj<SaleService>('SaleService', ['create', 'update']);
     sales.create.and.returnValue(of({ id: 'sale-1' } as Sale));
     sales.update.and.returnValue(of({ id: 'draft-1' } as Sale));
@@ -72,6 +87,7 @@ describe('SaleFormDialog', () => {
         { provide: SaleService, useValue: sales },
         { provide: WarehouseService, useValue: { warehouses: signal([warehouse('w1', 'Main'), warehouse('w2', 'Backup')]) } },
         { provide: InventoryService, useValue: { items: stock } },
+        { provide: ClientService, useValue: { clients } },
         { provide: NotificationService, useValue: notifications }
       ]
     }).compileComponents();
@@ -307,6 +323,32 @@ describe('SaleFormDialog', () => {
     });
   });
 
+  describe('client selection', () => {
+    it('prefills the payment condition from the chosen client', () => {
+      component.onClientChange('c1');
+
+      expect(component.clientId()).toBe('c1');
+      expect(component.paymentCondition()).toBe(PaymentCondition.CREDIT);
+    });
+
+    it('stays editable after the prefill: the seller can still override it', () => {
+      component.onClientChange('c1');
+
+      component.paymentCondition.set(PaymentCondition.CASH);
+
+      expect(component.paymentCondition()).toBe(PaymentCondition.CASH);
+    });
+
+    it('does nothing to the payment condition when no client matches the id', () => {
+      component.paymentCondition.set(PaymentCondition.CREDIT);
+
+      component.onClientChange('unknown');
+
+      expect(component.clientId()).toBe('unknown');
+      expect(component.paymentCondition()).toBe(PaymentCondition.CREDIT);
+    });
+  });
+
   describe('submit', () => {
     it('sends nothing while the form cannot be submitted', () => {
       component.submit();
@@ -330,12 +372,25 @@ describe('SaleFormDialog', () => {
         warehouseId: 'w1',
         customerName: undefined,
         customerType: CustomerType.RETAIL,
+        clientId: undefined,
+        paymentCondition: PaymentCondition.CASH,
         currency: 'HNL',
         notes: 'fragile',
         taxPercent: undefined,
         asDraft: undefined,
         items: [{ inventoryItemId: 'laptop', quantity: 2, unitPrice: 900, notes: 'gift', taxPercent: undefined }]
       });
+    });
+
+    it('includes the chosen client and its payment condition in the DTO', () => {
+      readyToSubmit();
+      component.onClientChange('c1');
+
+      component.submit();
+
+      expect(sales.create).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({ clientId: 'c1', paymentCondition: PaymentCondition.CREDIT })
+      );
     });
 
     it('tells the user and reports the sale once it was created', () => {

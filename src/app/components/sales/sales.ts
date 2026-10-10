@@ -7,9 +7,10 @@ import {
   signal,
   OnInit,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -17,6 +18,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import {
@@ -27,6 +29,7 @@ import {
 import { ConfirmService } from '../../services/confirm.service';
 import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
 import { StatCard } from '../shared/stat-card/stat-card';
+import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form-dialog';
 
 @Component({
   selector: 'app-sales',
@@ -35,10 +38,12 @@ import { StatCard } from '../shared/stat-card/stat-card';
   imports: [
     FormsModule,
     DatePipe,
+    NgClass,
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
     SaleFormDialog,
+    PaymentFormDialog,
     StatCard,
   ],
   template: `
@@ -48,10 +53,10 @@ import { StatCard } from '../shared/stat-card/stat-card';
         <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h1 class="text-4xl font-bold text-foreground mb-2">
-              {{ 'SALES.TITLE' | translate }}
+              {{ (isReceivablesView ? 'ACCOUNTS_RECEIVABLE.TITLE' : 'SALES.TITLE') | translate }}
             </h1>
             <p class="text-[var(--color-on-surface-variant)] text-lg">
-              {{ 'SALES.SUBTITLE' | translate }}
+              {{ (isReceivablesView ? 'ACCOUNTS_RECEIVABLE.SUBTITLE' : 'SALES.SUBTITLE') | translate }}
             </p>
           </div>
           <div class="flex gap-2 self-start lg:self-auto">
@@ -149,7 +154,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
         } @else if (filtered().length === 0) {
           <div class="bg-surface-variant border border-theme rounded-xl p-12 text-center">
             <lucide-icon name="ShoppingCart" class="!w-12 !h-12 mx-auto mb-3 text-[var(--color-on-surface-muted)]"></lucide-icon>
-            <p class="text-[var(--color-on-surface-variant)]">{{ 'SALES.EMPTY' | translate }}</p>
+            <p class="text-[var(--color-on-surface-variant)]">{{ (isReceivablesView ? 'ACCOUNTS_RECEIVABLE.EMPTY' : 'SALES.EMPTY') | translate }}</p>
           </div>
         } @else {
           <!-- Table (desktop) -->
@@ -162,6 +167,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
                   <th class="px-4 py-3">{{ 'SALES.COL_WAREHOUSE' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_CUSTOMER' | translate }}</th>
                   <th class="px-4 py-3 text-right">{{ 'SALES.COL_AMOUNT' | translate }}</th>
+                  <th class="px-4 py-3 text-right">{{ 'SALES.COL_BALANCE' | translate }}</th>
                   <th class="px-4 py-3 text-right">{{ 'SALES.COL_ITEMS' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_STATUS' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_DATE' | translate }}</th>
@@ -193,6 +199,9 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     </td>
                     <td class="px-4 py-3 text-right font-medium text-foreground">
                       {{ formatMoney(sale.totalAmount, sale.currency) }}
+                    </td>
+                    <td class="px-4 py-3 text-right" [ngClass]="(sale.balance ?? 0) > 0 ? 'text-[var(--color-status-error)]' : 'text-[var(--color-on-surface-variant)]'">
+                      {{ formatMoney(sale.balance ?? 0, sale.currency) }}
                     </td>
                     <td class="px-4 py-3 text-right text-foreground">
                       {{ totalQty(sale) }} ({{ sale.items.length }})
@@ -240,6 +249,17 @@ import { StatCard } from '../shared/stat-card/stat-card';
                             </ng-container>
                           }
                           @case (Status.ACTIVE) {
+                            @if ((sale.balance ?? 0) > 0) {
+                              <ng-container *ngxPermissionsOnly="['payments:create']">
+                                <button
+                                  (click)="openPaymentDialog(sale)"
+                                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-medium transition-colors"
+                                >
+                                  <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
+                                  <span>{{ 'PAYMENTS.RECORD_PAYMENT' | translate }}</span>
+                                </button>
+                              </ng-container>
+                            }
                             <button
                               (click)="downloadPdf(sale)"
                               class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-theme bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:text-foreground hover:border-[var(--color-primary)] text-xs font-medium transition-colors"
@@ -304,6 +324,12 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     {{ totalQty(sale) }} ({{ sale.items.length }} {{ 'SALES.COL_ITEMS' | translate }})
                   </span>
                 </div>
+                @if ((sale.balance ?? 0) > 0) {
+                  <div class="flex items-center justify-between text-sm mt-1">
+                    <span class="text-[var(--color-on-surface-variant)]">{{ 'SALES.COL_BALANCE' | translate }}</span>
+                    <span class="font-medium text-[var(--color-status-error)]">{{ formatMoney(sale.balance ?? 0, sale.currency) }}</span>
+                  </div>
+                }
                 <div class="text-[var(--color-on-surface-variant)] text-xs mt-1">
                   {{ sale.createdAt | date:'short' }}
                 </div>
@@ -340,6 +366,17 @@ import { StatCard } from '../shared/stat-card/stat-card';
                       </ng-container>
                     }
                     @case (Status.ACTIVE) {
+                      @if ((sale.balance ?? 0) > 0) {
+                        <ng-container *ngxPermissionsOnly="['payments:create']">
+                          <button
+                            (click)="openPaymentDialog(sale)"
+                            class="flex-1 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm flex items-center justify-center gap-1"
+                          >
+                            <lucide-icon name="DollarSign" class="!w-4 !h-4"></lucide-icon>
+                            {{ 'PAYMENTS.RECORD_PAYMENT' | translate }}
+                          </button>
+                        </ng-container>
+                      }
                       <button
                         (click)="downloadPdf(sale)"
                         class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
@@ -383,22 +420,37 @@ import { StatCard } from '../shared/stat-card/stat-card';
         (created)="onCreated($event)"
       ></app-sale-form-dialog>
     }
+
+    @if (showPaymentDialog() && payingSale()) {
+      <app-payment-form-dialog
+        [document]="toPaymentDocument(payingSale()!)"
+        (closed)="closePaymentDialog()"
+        (paymentRecorded)="onPaymentRecorded()"
+      ></app-payment-form-dialog>
+    }
   `,
 })
 export class SalesComponent implements OnInit {
   saleService = inject(SaleService);
   warehouseService = inject(WarehouseService);
+  private clientService = inject(ClientService);
   private inventoryService = inject(InventoryService);
   private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
+  private route = inject(ActivatedRoute);
 
   readonly Status = SaleStatus;
+
+  readonly isReceivablesView = !!this.route.snapshot.data['onlyWithBalance'];
 
   showFormDialog = signal(false);
   dialogMode = signal<'sale' | 'quotation'>('sale');
   editingSale = signal<Sale | null>(null);
+
+  showPaymentDialog = signal(false);
+  payingSale = signal<Sale | null>(null);
 
   filterWarehouseId = signal('');
   filterStatus = signal<'' | SaleStatus>('');
@@ -418,10 +470,12 @@ export class SalesComponent implements OnInit {
     const wh = this.filterWarehouseId();
     const st = this.filterStatus();
     const ct = this.filterCustomerType();
+    const receivablesOnly = this.isReceivablesView;
     return list.filter((s) => {
       if (wh && s.warehouseId !== wh) return false;
       if (st && s.status !== st) return false;
       if (ct && s.customerType !== ct) return false;
+      if (receivablesOnly && !(s.status === SaleStatus.ACTIVE && (s.balance ?? 0) > 0)) return false;
       return true;
     });
   });
@@ -429,6 +483,9 @@ export class SalesComponent implements OnInit {
   ngOnInit(): void {
     this.saleService.loadSales();
     this.warehouseService.getAll().subscribe({
+      error: (err) => this.notifications.handleError(err),
+    });
+    this.clientService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
     this.inventoryService.loadItems();
@@ -463,6 +520,30 @@ export class SalesComponent implements OnInit {
       this.editingSale.set(null);
       this.saleService.refresh();
     }
+  }
+
+  openPaymentDialog(sale: Sale): void {
+    this.payingSale.set(sale);
+    this.showPaymentDialog.set(true);
+  }
+
+  closePaymentDialog(): void {
+    this.showPaymentDialog.set(false);
+    this.payingSale.set(null);
+  }
+
+  onPaymentRecorded(): void {
+    this.saleService.refresh();
+  }
+
+  toPaymentDocument(sale: Sale): PaymentFormDocument {
+    return {
+      id: sale.id,
+      totalAmount: sale.totalAmount,
+      taxAmount: sale.taxAmount,
+      currency: sale.currency,
+      documentType: 'sale',
+    };
   }
 
   totalQty(sale: Sale): number {

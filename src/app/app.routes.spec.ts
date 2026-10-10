@@ -147,6 +147,8 @@ const PERMISSIONS: Record<string, string[]> = {
   outflows: ['outflows:view'],
   purchases: ['purchases:view'],
   sales: ['sales:view'],
+  'accounts-receivable': ['sales:view'],
+  'accounts-payable': ['purchases:view'],
   'discharges/:id': ['discharges:view']
 };
 

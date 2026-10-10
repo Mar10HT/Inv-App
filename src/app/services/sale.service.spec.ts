@@ -4,6 +4,7 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { SaleService } from './sale.service';
 import { NotificationService } from './notification.service';
 import { CustomerType, Sale, SaleStatus } from '../interfaces/sale.interface';
+import { PaymentCondition } from '../interfaces/purchase-invoice.interface';
 import { environment } from '../../environments/environment';
 import { provideTestBedDefaults } from '../../testing/test-providers';
 
@@ -13,6 +14,8 @@ const sale = (overrides: Partial<Sale> = {}): Sale => ({
   warehouseId: 'w1',
   customerName: null,
   customerType: CustomerType.RETAIL,
+  clientId: null,
+  paymentCondition: PaymentCondition.CASH,
   currency: 'USD',
   totalAmount: 10,
   taxPercent: null,

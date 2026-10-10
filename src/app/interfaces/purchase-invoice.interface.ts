@@ -76,6 +76,9 @@ export interface PurchaseInvoice {
   createdBy?: PurchaseInvoiceUserRef;
   cancelledBy?: PurchaseInvoiceUserRef | null;
   items: PurchaseInvoiceItem[];
+  // Present on list responses (totalAmount + taxAmount - paid), absent
+  // otherwise. Never stored — always computed by the backend on read.
+  balance?: number;
 }
 
 export interface CreatePurchaseInvoiceBulkItemDto {

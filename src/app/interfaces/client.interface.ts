@@ -1,4 +1,4 @@
-export type PaymentCondition = 'CASH' | 'CREDIT';
+import { PaymentCondition } from './purchase-invoice.interface';
 
 export interface Client {
   id: string;

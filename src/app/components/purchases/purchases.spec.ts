@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
@@ -222,6 +223,38 @@ describe('PurchasesComponent', () => {
     });
   });
 
+  describe('payment dialog', () => {
+    it('opens with the purchase to pay and closes clearing it', () => {
+      const target = purchaseInvoice({ id: 'a' });
+
+      component.openPaymentDialog(target);
+      expect(component.showPaymentDialog()).toBeTrue();
+      expect(component.payingPurchase()).toBe(target);
+
+      component.closePaymentDialog();
+      expect(component.showPaymentDialog()).toBeFalse();
+      expect(component.payingPurchase()).toBeNull();
+    });
+
+    it('refreshes the purchases list when a payment is recorded', () => {
+      component.onPaymentRecorded();
+
+      expect(purchaseInvoiceService.refresh).toHaveBeenCalledTimes(1);
+    });
+
+    it('builds the minimal payment document from the purchase', () => {
+      const target = purchaseInvoice({ id: 'a', totalAmount: 100, taxAmount: 15, currency: 'HNL' });
+
+      expect(component.toPaymentDocument(target)).toEqual({
+        id: 'a',
+        totalAmount: 100,
+        taxAmount: 15,
+        currency: 'HNL',
+        documentType: 'purchase',
+      });
+    });
+  });
+
   describe('hasUniqueLine', () => {
     it('is false when every line is BULK', () => {
       const purchase = purchaseInvoice({
@@ -241,5 +274,63 @@ describe('PurchasesComponent', () => {
 
       expect(component.hasUniqueLine(purchase)).toBeTrue();
     });
+  });
+});
+
+describe('PurchasesComponent — accounts payable view (route data: onlyWithBalance)', () => {
+  let fixture: ComponentFixture<PurchasesComponent>;
+  let component: PurchasesComponent;
+  let purchaseInvoices: ReturnType<typeof signal<PurchaseInvoice[]>>;
+
+  beforeEach(async () => {
+    purchaseInvoices = signal([
+      purchaseInvoice({ id: 'a', status: PurchaseInvoiceStatus.ACTIVE, balance: 50 } as never),
+      purchaseInvoice({ id: 'b', status: PurchaseInvoiceStatus.ACTIVE, balance: 0 } as never),
+      purchaseInvoice({ id: 'c', status: PurchaseInvoiceStatus.CANCELLED, balance: 50 } as never),
+    ]);
+    const purchaseInvoiceService = jasmine.createSpyObj<PurchaseInvoiceService>(
+      'PurchaseInvoiceService',
+      ['loadPurchaseInvoices', 'refresh', 'cancel', 'downloadPdf'],
+      { purchaseInvoices, stats: signal(emptyStats), loading: signal(false), error: signal(null) } as never
+    );
+    const warehouses = jasmine.createSpyObj<WarehouseService>('WarehouseService', ['getAll'], {
+      warehouses: signal([])
+    } as never);
+    warehouses.getAll.and.returnValue(of([]));
+    const suppliers = jasmine.createSpyObj<SupplierService>('SupplierService', ['getAll'], {
+      suppliers: signal([])
+    } as never);
+    suppliers.getAll.and.returnValue(of([]));
+
+    await TestBed.configureTestingModule({
+      imports: [PurchasesComponent],
+      providers: [
+        ...provideTestBedDefaults(),
+        { provide: PurchaseInvoiceService, useValue: purchaseInvoiceService },
+        { provide: WarehouseService, useValue: warehouses },
+        { provide: SupplierService, useValue: suppliers },
+        { provide: InventoryService, useValue: jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']) },
+        { provide: ConfirmService, useValue: jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']) },
+        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']) },
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { onlyWithBalance: true } } } }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PurchasesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('flags isPayablesView from the route data', () => {
+    expect(component.isPayablesView).toBeTrue();
+  });
+
+  it('shows the Accounts Payable copy instead of the Purchases one', () => {
+    const title = fixture.nativeElement.querySelector('h1').textContent;
+    expect(title).toContain('ACCOUNTS_PAYABLE.TITLE');
+  });
+
+  it('only keeps ACTIVE purchases with an outstanding balance', () => {
+    expect(component.filtered().map((p) => p.id)).toEqual(['a']);
   });
 });

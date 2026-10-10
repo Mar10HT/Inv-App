@@ -285,6 +285,36 @@ import { PermissionsService } from '../../../services/permissions.service';
         </a>
       </ng-container>
 
+      <ng-container *ngxPermissionsOnly="['sales:view']">
+        <a
+          routerLink="/accounts-receivable"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.ACCOUNTS_RECEIVABLE' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Banknote" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.ACCOUNTS_RECEIVABLE' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['purchases:view']">
+        <a
+          routerLink="/accounts-payable"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.ACCOUNTS_PAYABLE' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="CreditCard" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.ACCOUNTS_PAYABLE' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
       <ng-container *ngxPermissionsOnly="['stocktake:view']">
         <a
           routerLink="/stock-take"

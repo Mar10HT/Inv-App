@@ -163,6 +163,18 @@ export const routes: Routes = [
     canActivate: [permissionGuard('sales:view')]
   },
   {
+    path: 'accounts-receivable',
+    loadComponent: () => import('./components/sales/sales').then(m => m.SalesComponent),
+    canActivate: [permissionGuard('sales:view')],
+    data: { onlyWithBalance: true }
+  },
+  {
+    path: 'accounts-payable',
+    loadComponent: () => import('./components/purchases/purchases').then(m => m.PurchasesComponent),
+    canActivate: [permissionGuard('purchases:view')],
+    data: { onlyWithBalance: true }
+  },
+  {
     path: 'discharges/:id',
     loadComponent: () => import('./components/discharge-requests/discharge-detail/discharge-detail').then(m => m.DischargeDetailComponent),
     canActivate: [permissionGuard('discharges:view')]

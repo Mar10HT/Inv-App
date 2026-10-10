@@ -148,6 +148,11 @@ export const routes: Routes = [
     canActivate: [permissionGuard('outflows:view')]
   },
   {
+    path: 'purchases',
+    loadComponent: () => import('./components/purchases/purchases').then(m => m.PurchasesComponent),
+    canActivate: [permissionGuard('purchases:view')]
+  },
+  {
     path: 'sales',
     loadComponent: () => import('./components/sales/sales').then(m => m.SalesComponent),
     canActivate: [permissionGuard('sales:view')]

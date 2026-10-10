@@ -112,7 +112,7 @@ import { PermissionsService } from '../../../services/permissions.service';
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'loans:view', 'transfers:view', 'discharges:view', 'outflows:view', 'sales:view', 'stocktake:view']">
+      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'loans:view', 'transfers:view', 'discharges:view', 'outflows:view', 'purchases:view', 'sales:view', 'stocktake:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -236,6 +236,21 @@ import { PermissionsService } from '../../../services/permissions.service';
           <lucide-icon name="PackageMinus" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
             <span class="nav-text">{{ 'NAV.OUTFLOWS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['purchases:view']">
+        <a
+          routerLink="/purchases"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.PURCHASES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="PackagePlus" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.PURCHASES' | translate }}</span>
           }
         </a>
       </ng-container>

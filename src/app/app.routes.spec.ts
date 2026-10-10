@@ -144,6 +144,7 @@ const PERMISSIONS: Record<string, string[]> = {
   'stock-take': ['stocktake:view'],
   discharges: ['discharges:view'],
   outflows: ['outflows:view'],
+  purchases: ['purchases:view'],
   sales: ['sales:view'],
   'discharges/:id': ['discharges:view']
 };

@@ -45,7 +45,7 @@ import { getLoanDueDateClass, getLoanStatusClass, summarizeLoanItems, totalLoanQ
             </div>
             <div>
               <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.DUE_DATE' | translate }}</p>
-              <p [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</p>
+              <p [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate':'UTC' }}</p>
             </div>
           </div>
           <!-- PDF download — always available -->

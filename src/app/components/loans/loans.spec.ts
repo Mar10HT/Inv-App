@@ -115,6 +115,18 @@ describe('LoansComponent', () => {
 
       expect(ids()).toEqual(['d', 'a', 'b', 'c']);
     });
+
+    it('shows the due date as the day it was set, not a day earlier from a timezone shift', () => {
+      // A bare ISO date (no time) parses as UTC midnight; rendering it without
+      // forcing the UTC timezone would roll back a day in a negative-offset zone.
+      allLoans.set([loan('a', { dueDate: new Date('2027-03-01') })]);
+      TestBed.tick();
+      fixture.detectChanges();
+
+      const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+      expect(text).toContain('Mar 1, 2027');
+      expect(text).not.toContain('Feb 28, 2027');
+    });
   });
 
   describe('filters', () => {

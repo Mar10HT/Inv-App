@@ -171,7 +171,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       </div>
                     </td>
                     <td class="px-6 py-4">
-                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</span>
+                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate':'UTC' }}</span>
                     </td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(loan.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">

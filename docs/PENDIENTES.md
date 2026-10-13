@@ -39,7 +39,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [x] **`neededByDate` de Solicitudes de Material se mostraba un día antes.** Confirmado y resuelto en `31ba7ac` (Inv-App): el detalle formatea la fecha en UTC, igual que el vencimiento de Préstamos. Verificado en la app con hora de Honduras: una solicitud para el 1 de marzo se ve el 1 de marzo.
 - [x] **`seed:fake` fallaba en Préstamos.** Resuelto en `a17120f` (API): cada préstamo de prueba lleva de 1 a 3 ítems de su bodega de origen. Probado en una base aparte, corriendo el seed dos veces seguidas.
 
-- [ ] **Test de fechas que falla en Chromium 141.** `reports-transactions-tab.spec.ts` ("shows one row per transaction...") compara `'15 ene 2026, 06:00 a. m.'` con una cadena que se ve igual: probablemente difieren en un espacio angosto que depende de la versión de ICU del navegador. Falla también sin cambios en el código.
+- [x] **Test de fechas que fallaba en Chromium 141.** Resuelto en `7f87519` (Inv-App): era el espacio angosto antes de "a. m."; el test ahora normaliza los espacios en ambos lados. La suite completa del frontend pasa (1479).
 
 ## Inconsistencias y mejoras
 

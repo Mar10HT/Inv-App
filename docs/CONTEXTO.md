@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App | `7f87519` | Test de fechas de Reportes ya no falla en Chromium 141 |
 | 2026-10-13 | Inv-App-API | `a17120f` | `seed:fake` crea préstamos con varios ítems y ya no falla |
 | 2026-10-13 | Inv-App | `31ba7ac` | La fecha "Necesario para" de Solicitudes de Material ya no se muestra un día antes |
 | 2026-10-13 | Inv-App-API | `8324e9e` | Rango CAI y fecha de vencimiento de Inventario aceptan fecha sola por API (antes daban 500) |
@@ -66,7 +67,7 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 - **Idioma en capturas**: antes de navegar, `localStorage.setItem('language', 'es')` (por el bug del selector, ver PENDIENTES).
 - **API desde el navegador logueado**: pedir `GET /api/auth/csrf-token` **una sola vez** y reutilizarlo en el header `X-CSRF-Token` (pedirlo en cada llamada da 403 por límite).
 - **Fechas a la API**: conviene mandar ISO completo (`2027-06-30T00:00:00.000Z`). Rangos CAI y vencimiento de Inventario ya aceptan fecha sola; otros campos no se revisaron.
-- **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. Un test de `reports-transactions-tab.spec.ts` falla en este entorno sin relación con los cambios (ver PENDIENTES).
+- **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. La suite completa pasa.
 - **Tests del backend**: `npx jest` (446), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
 - **No usar** `pkill -f "node dist/main.js"` dentro de un comando que contenga ese texto: se mata a sí mismo. Usar `pkill -f "^node dist/main.js"` o el PID.
 

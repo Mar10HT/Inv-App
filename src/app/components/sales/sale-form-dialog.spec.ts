@@ -388,6 +388,29 @@ describe('SaleFormDialog', () => {
       expect(component.clientId()).toBe('unknown');
       expect(component.paymentCondition()).toBe(PaymentCondition.CREDIT);
     });
+
+    it('asks for a name only once the walk-in option is picked', async () => {
+      const nameInput = (): HTMLInputElement | null => fixture.nativeElement.querySelector('#sale-customer-name');
+      expect(nameInput()).toBeNull();
+
+      component.onClientChange(component.walkInOption);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(nameInput()).not.toBeNull();
+      expect(component.clientSelection()).toBe(component.walkInOption);
+    });
+
+    it('drops the typed walk-in name when a registered client is picked instead', () => {
+      component.onClientChange(component.walkInOption);
+      component.customerName.set('Juan');
+
+      component.onClientChange('c1');
+
+      expect(component.walkIn()).toBeFalse();
+      expect(component.customerName()).toBe('');
+      expect(component.clientSelection()).toBe('c1');
+    });
   });
 
   describe('submit', () => {
@@ -429,6 +452,18 @@ describe('SaleFormDialog', () => {
 
       expect(sales.create).toHaveBeenCalledOnceWith(
         jasmine.objectContaining({ clientId: 'c1', paymentCondition: PaymentCondition.CREDIT })
+      );
+    });
+
+    it('sends a walk-in customer by name, with no client', () => {
+      readyToSubmit();
+      component.onClientChange(component.walkInOption);
+      component.customerName.set('  Juan Pérez  ');
+
+      component.submit();
+
+      expect(sales.create).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({ customerName: 'Juan Pérez', clientId: undefined })
       );
     });
 
@@ -517,6 +552,8 @@ describe('SaleFormDialog', () => {
 
       expect(component.warehouseId()).toBe('w1');
       expect(component.customerName()).toBe('Acme');
+      // No client record, only a typed name: it reopens as a walk-in
+      expect(component.walkIn()).toBeTrue();
       expect(component.customerType()).toBe(CustomerType.RETAIL);
       expect(component.currency()).toBe('HNL');
       expect(component.notes()).toBe('draft notes');

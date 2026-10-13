@@ -111,21 +111,24 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
             </select>
           </div>
 
-          <!-- Customer name + type -->
+          <!-- Client (a registered one, or a walk-in typed by name) + type -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label for="sale-customer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
-                {{ 'SALES.CUSTOMER_NAME' | translate }}
+              <label for="sale-client" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.CLIENT' | translate }}
               </label>
-              <input
-                id="sale-customer-name"
-                type="text"
-                [ngModel]="customerName()"
-                (ngModelChange)="customerName.set($event)"
-                maxlength="120"
-                [placeholder]="'SALES.CUSTOMER_NAME_PLACEHOLDER' | translate"
+              <select
+                id="sale-client"
+                [ngModel]="clientSelection()"
+                (ngModelChange)="onClientChange($event)"
                 class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              />
+              >
+                <option value="">{{ 'SALES.SELECT_CLIENT' | translate }}</option>
+                @for (c of clients(); track c.id) {
+                  <option [value]="c.id">{{ c.name }}</option>
+                }
+                <option [value]="walkInOption">{{ 'SALES.WALK_IN_CLIENT' | translate }}</option>
+              </select>
             </div>
             <div>
               <label for="sale-customer-type" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -145,24 +148,25 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
             </div>
           </div>
 
-          <!-- Client + payment condition -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          @if (walkIn()) {
             <div>
-              <label for="sale-client" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
-                {{ 'SALES.CLIENT' | translate }}
+              <label for="sale-customer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.CUSTOMER_NAME' | translate }}
               </label>
-              <select
-                id="sale-client"
-                [ngModel]="clientId()"
-                (ngModelChange)="onClientChange($event)"
+              <input
+                id="sale-customer-name"
+                type="text"
+                [ngModel]="customerName()"
+                (ngModelChange)="customerName.set($event)"
+                maxlength="120"
+                [placeholder]="'SALES.CUSTOMER_NAME_PLACEHOLDER' | translate"
                 class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              >
-                <option value="">{{ 'SALES.SELECT_CLIENT' | translate }}</option>
-                @for (c of clients(); track c.id) {
-                  <option [value]="c.id">{{ c.name }}</option>
-                }
-              </select>
+              />
             </div>
+          }
+
+          <!-- Payment condition -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label for="sale-payment-condition" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
                 {{ 'SALES.PAYMENT_CONDITION' | translate }}
@@ -414,6 +418,7 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     }
     this.warehouseId.set(existing.warehouseId);
     this.customerName.set(existing.customerName ?? '');
+    this.walkIn.set(!existing.clientId && !!existing.customerName);
     this.customerType.set(existing.customerType);
     this.clientId.set(existing.clientId ?? '');
     this.paymentCondition.set(existing.paymentCondition);
@@ -448,6 +453,10 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   customerName = signal('');
   customerType = signal<CustomerType | ''>('');
   clientId = signal('');
+  // A walk-in customer has no Client record: their name is typed instead.
+  walkIn = signal(false);
+  readonly walkInOption = '__walk_in__';
+  clientSelection = computed(() => this.clientId() || (this.walkIn() ? this.walkInOption : ''));
   paymentCondition = signal<PaymentCondition>(PaymentCondition.CASH);
   currency = signal('USD');
   notes = signal('');
@@ -519,6 +528,13 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   // Prefill, same "suggestion the seller can override" pattern as
   // updateItemId's unit-price prefill — never enforced server-side.
   onClientChange(id: string): void {
+    if (id === this.walkInOption) {
+      this.walkIn.set(true);
+      this.clientId.set('');
+      return;
+    }
+    this.walkIn.set(false);
+    this.customerName.set('');
     this.clientId.set(id);
     const client = this.clients().find((c) => c.id === id);
     if (client) {
@@ -616,9 +632,9 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     }));
     const common = {
       warehouseId: this.warehouseId(),
-      customerName: this.customerName().trim() || undefined,
+      customerName: this.walkIn() ? this.customerName().trim() || undefined : undefined,
       customerType: this.customerType() as CustomerType,
-      clientId: this.clientId() || undefined,
+      clientId: this.walkIn() ? undefined : this.clientId() || undefined,
       paymentCondition: this.paymentCondition(),
       currency: this.currency(),
       notes: this.notes().trim() || undefined,

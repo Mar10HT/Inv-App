@@ -17,7 +17,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 ## Decisiones del usuario (respetarlas)
 
-- **Commits directo en `feat/purchase-invoices`** en ambos repos, **pidiendo confirmación antes de cada push**.
+- **Commits directo en `feat/purchase-invoices`** en ambos repos. Dentro del loop de pendientes el usuario autorizó pushear sin preguntar, siempre con tests, lint y build en verde; fuera del loop, pedir confirmación antes de cada push.
 - Trabajar los pendientes en orden de prioridad; lo que necesite una decisión de diseño se pregunta antes de tocar código.
 - **Formato de reportes y PDFs**: todavía no está definido. No agregar capturas de comprobantes ni reportes exportables al manual hasta que el usuario lo defina.
 - **Manual de usuario**: solo vista de administrador, trato de **usted**, sin guiones largos (—), recuadros "Importante" solo para avisos que evitan errores del usuario. Los bugs internos van a `PENDIENTES.md`, no al manual.
@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App | `b10282e` | El selector de idioma del sidebar ya no pasa la app a inglés |
 | 2026-10-13 | Inv-App-API | `607d8be` | Estado de stock y alertas se recalculan en cada movimiento de stock (`StockLevelService`, `computeInventoryStatus`); únicos nunca LOW_STOCK; refresh al arrancar |
 | 2026-10-13 | Inv-App | `30fff85` | Panel de la campana dentro de la pantalla; "Ver todas" abre Reportes en `?tab=status` |
 | 2026-10-12/13 | Manual | (doc) | Capturas Media/Baja, secciones nuevas (Compras, Transacciones, Ctrl+K, alertas, etc.), reformateo completo |
@@ -67,13 +68,12 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 
 Orden sugerido (detalle en `PENDIENTES.md`):
 
-1. Selector de idioma que pasa la app a inglés al expandir el sidebar (frontend, una línea).
-2. Borrar una Transacción manual no devuelve el stock (backend).
-3. Moneda por defecto USD en Compras (y revisar Ventas) en vez de la de Configuración Fiscal.
-4. Flyout transparente del menú Comercial con el sidebar colapsado.
-5. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
-6. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
-7. `seed:fake` desactualizado para Préstamos.
-8. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
-9. Formato de reportes y PDFs: esperar definición del usuario.
-10. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock" y la pregunta frecuente de la campana).
+1. Borrar una Transacción manual no devuelve el stock (backend).
+2. Moneda por defecto USD en Compras (y revisar Ventas) en vez de la de Configuración Fiscal.
+3. Flyout transparente del menú Comercial con el sidebar colapsado.
+4. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
+5. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
+6. `seed:fake` desactualizado para Préstamos.
+7. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
+8. Formato de reportes y PDFs: esperar definición del usuario.
+9. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock" y la pregunta frecuente de la campana).

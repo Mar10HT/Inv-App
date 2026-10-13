@@ -28,7 +28,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 
 ## Bugs
 
-- [ ] **El sidebar expandido cambia la app a inglés.** `language-selector.ts` lee `localStorage.getItem('language') || 'en'` al iniciarse: un usuario sin idioma guardado que expande el sidebar ve toda la app pasar a inglés.
+- [x] **El sidebar expandido cambiaba la app a inglés.** Resuelto en `b10282e` (Inv-App): el selector ya no llama `translate.use()` al iniciar, solo refleja el idioma activo.
 - [ ] **Borrar una Transacción manual no devuelve el stock.** `create()` ajusta cantidades, pero `remove()` en `transactions.service.ts` solo borra el registro. El inventario queda descuadrado.
 - [ ] **Flyout del menú Comercial sin fondo.** Con el sidebar colapsado, el menú flotante de Comercial se abre transparente y el texto queda encima de los íconos.
 - [ ] **Moneda por defecto en Compras.** El formulario Nueva compra arranca en USD aunque la Configuración Fiscal tenga HNL. Revisar también Nueva venta.

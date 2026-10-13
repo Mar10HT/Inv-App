@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { Transaction, TransactionType } from '../../../interfaces/transaction.interface';
+import { StockMovement, TransactionType } from '../../../interfaces/transaction.interface';
 import { formatDateTime } from '../reports.format';
 import { TransactionStats } from '../reports.types';
 import { Spinner } from '../../shared/spinner/spinner';
@@ -96,6 +96,7 @@ import { Spinner } from '../../shared/spinner/spinner';
               <tr class="bg-[var(--color-surface)]">
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TYPE' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.ORIGIN' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.FROM' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.TO' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'REPORTS.TABLE.USER' | translate }}</th>
@@ -110,8 +111,17 @@ import { Spinner } from '../../shared/spinner/spinner';
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
                       [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-[var(--color-status-success)]' : tx.type === 'OUT' ? 'bg-rose-500/20 text-[var(--color-status-error)]' : 'bg-blue-500/20 text-[var(--color-status-info)]'">
                       <lucide-icon [name]="getTransactionIcon(tx.type)" class="!text-sm !w-4 !h-4"></lucide-icon>
-                      {{ tx.type }}
+                      {{ 'TRANSACTIONS.TYPE.' + tx.type | translate }}
                     </span>
+                  </td>
+                  <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">
+                    <div>{{ 'REPORTS.MOVEMENT_ORIGIN.' + tx.origin | translate }}</div>
+                    @if (tx.reference || tx.cancellation) {
+                      <div class="text-xs">
+                        {{ tx.reference }}
+                        @if (tx.cancellation) { ({{ 'REPORTS.CANCELLATION' | translate }}) }
+                      </div>
+                    }
                   </td>
                   <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.sourceWarehouse?.name || '-' }}</td>
                   <td class="px-6 py-4 text-[var(--color-on-surface-variant)]">{{ tx.destinationWarehouse?.name || '-' }}</td>
@@ -120,7 +130,7 @@ import { Spinner } from '../../shared/spinner/spinner';
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="6" class="px-6 py-12 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</td>
+                  <td colspan="7" class="px-6 py-12 text-center text-[var(--color-on-surface-variant)]">{{ 'COMMON.NO_DATA' | translate }}</td>
                 </tr>
               }
             </tbody>
@@ -137,10 +147,16 @@ import { Spinner } from '../../shared/spinner/spinner';
                   <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium"
                     [class]="tx.type === 'IN' ? 'bg-emerald-500/20 text-[var(--color-status-success)]' : tx.type === 'OUT' ? 'bg-rose-500/20 text-[var(--color-status-error)]' : 'bg-blue-500/20 text-[var(--color-status-info)]'">
                     <lucide-icon [name]="getTransactionIcon(tx.type)" class="!w-3 !h-3"></lucide-icon>
-                    {{ tx.type }}
+                    {{ 'TRANSACTIONS.TYPE.' + tx.type | translate }}
                   </span>
                   <span class="text-foreground font-medium text-xs">{{ tx.items.length }} items</span>
                 </div>
+
+                <!-- Origin -->
+                <p class="text-foreground text-xs mb-1">
+                  {{ 'REPORTS.MOVEMENT_ORIGIN.' + tx.origin | translate }} {{ tx.reference }}
+                  @if (tx.cancellation) { ({{ 'REPORTS.CANCELLATION' | translate }}) }
+                </p>
 
                 <!-- Date -->
                 <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ formatDateTime(tx.date) }}</p>
@@ -177,7 +193,7 @@ export class ReportsTransactionsTab {
   dateTo = input('');
   typeFilter = input('ALL');
   stats = input.required<TransactionStats>();
-  transactions = input.required<Transaction[]>();
+  transactions = input.required<StockMovement[]>();
 
   dateFromChange = output<string>();
   dateToChange = output<string>();

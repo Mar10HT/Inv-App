@@ -6,7 +6,7 @@ import {
   Supplier,
   Warehouse
 } from '../app/interfaces/inventory-item.interface';
-import { Transaction, TransactionType } from '../app/interfaces/transaction.interface';
+import { StockMovement, Transaction, TransactionType } from '../app/interfaces/transaction.interface';
 import { Client } from '../app/interfaces/client.interface';
 import { PaymentCondition } from '../app/interfaces/purchase-invoice.interface';
 
@@ -53,9 +53,13 @@ export const item = (overrides: Partial<InventoryItemInterface> = {}): Inventory
   ...overrides
 });
 
-export const tx = (overrides: Partial<Transaction> = {}): Transaction => ({
+/** A manual transaction, as /reports/movements returns it (a Transaction that is also a StockMovement). */
+export const tx = (overrides: Partial<Transaction & StockMovement> = {}): Transaction & StockMovement => ({
   id: 't',
   type: TransactionType.IN,
+  origin: 'TRANSACTION',
+  reference: null,
+  cancellation: false,
   userId: 'u',
   date: new Date('2026-01-15T12:00:00Z'),
   createdAt: new Date(0),

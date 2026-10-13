@@ -65,7 +65,7 @@ describe('Reports', () => {
             getItemsObservable: () => itemsSource
           }
         },
-        { provide: TransactionService, useValue: { getAll: () => transactionsSource } },
+        { provide: TransactionService, useValue: { getMovements: () => transactionsSource } },
         ...extraProviders
       ]
     }).compileComponents();

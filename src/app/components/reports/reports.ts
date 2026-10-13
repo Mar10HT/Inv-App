@@ -10,7 +10,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { PdfExportService } from '../../services/pdf-export.service';
 import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
-import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
+import { StockMovement, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
 import { addMoney, MoneyByCurrency, totalOf } from '../../utils/money.utils';
 import { localDateKey, parseDate } from '../../utils/date.utils';
@@ -272,7 +272,8 @@ export class Reports implements OnInit {
 
   // Data signals
   allItems = signal<InventoryItemInterface[]>([]);
-  allTransactions = signal<Transaction[]>([]);
+  /** Every stock movement: manual transactions and those from sales, purchases, outflows, transfers, stock takes and discharges. */
+  allTransactions = signal<StockMovement[]>([]);
   selectedCurrency = signal<ReportCurrency>('USD');
 
   // Transaction filters
@@ -529,8 +530,8 @@ export class Reports implements OnInit {
       }
     });
 
-    // Load transactions
-    this.transactionService.getAll().subscribe({
+    // Load every stock movement, not only the manual transactions
+    this.transactionService.getMovements().subscribe({
       next: (transactions) => {
         this.allTransactions.set(transactions);
         this.transactionsLoading.set(false);
@@ -596,6 +597,14 @@ export class Reports implements OnInit {
     }));
   }
 
+  /** "Venta V-0001", "Compra COM-0003 (cancelación)", "Transacción manual"... */
+  private originLabel(movement: StockMovement): string {
+    const parts = [this.translate.instant(`REPORTS.MOVEMENT_ORIGIN.${movement.origin}`)];
+    if (movement.reference) parts.push(movement.reference);
+    const label = parts.join(' ');
+    return movement.cancellation ? `${label} (${this.translate.instant('REPORTS.CANCELLATION')})` : label;
+  }
+
   async exportTransactions(): Promise<void> {
     const t = (key: string) => this.translate.instant(key);
     const rows: XlsxRow[] = [];
@@ -605,6 +614,7 @@ export class Reports implements OnInit {
         rows.push({
           [t('REPORTS.TABLE.DATE')]:               formatDateTime(tx.date),
           [t('REPORTS.TABLE.TYPE')]:               t(`TRANSACTIONS.TYPE.${tx.type}`),
+          [t('REPORTS.TABLE.ORIGIN')]:             this.originLabel(tx),
           [t('TRANSACTION.SOURCE_WAREHOUSE')]:     tx.sourceWarehouse?.name || '',
           [t('TRANSACTION.DEST_WAREHOUSE')]:       tx.destinationWarehouse?.name || '',
           [t('REPORTS.TABLE.USER')]:               tx.user?.name || tx.user?.email || '',
@@ -621,7 +631,7 @@ export class Reports implements OnInit {
       sheetName:   'Transactions',
       filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
       headerColor: '60A5FA',
-      colWidths:   [18, 12, 22, 22, 20, 30, 12, 8, 30, 30],
+      colWidths:   [18, 12, 26, 22, 22, 20, 30, 12, 8, 30, 30],
     }));
   }
 

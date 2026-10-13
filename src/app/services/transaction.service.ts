@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
-import { Transaction, CreateTransactionDto } from '../interfaces/transaction.interface';
+import { Transaction, CreateTransactionDto, StockMovement } from '../interfaces/transaction.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { environment } from '../../environments/environment';
 
@@ -18,6 +18,11 @@ export class TransactionService {
 
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+
+  /** Every stock movement across modules, newest first (Reports' Transactions and Trends tabs). */
+  getMovements(): Observable<StockMovement[]> {
+    return this.http.get<StockMovement[]>(`${environment.apiUrl}/reports/movements`);
+  }
 
   getAll(page = 1, limit = 50): Observable<Transaction[]> {
     this.loading.set(true);

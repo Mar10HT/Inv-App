@@ -794,10 +794,21 @@
       "TOTAL": "Valor Total",
       "DATE": "Fecha",
       "TYPE": "Tipo",
+      "ORIGIN": "Documento",
       "FROM": "Origen",
       "TO": "Destino",
       "USER": "Usuario"
     },
+    "MOVEMENT_ORIGIN": {
+      "TRANSACTION": "Transacción manual",
+      "SALE": "Venta",
+      "PURCHASE": "Compra",
+      "OUTFLOW": "Salida",
+      "TRANSFER": "Transferencia",
+      "STOCK_TAKE": "Conteo físico",
+      "DISCHARGE": "Baja"
+    },
+    "CANCELLATION": "cancelación",
     "TAB_DOWNLOADS": "Descargas",
     "DOWNLOAD_EXCEL": "Descarga reportes Excel generados por el servidor",
     "FILTER_WAREHOUSE": "Filtrar por bodega",

@@ -2,16 +2,27 @@
 
 Lista de problemas encontrados al probar la app y escribir el Manual de Usuario. Todo se verificó en la app corriendo (frontend `Inv-App` y backend `Inv-App-API`, rama `feat/purchase-invoices`).
 
-Última actualización: 2026-10-12.
+Última actualización: 2026-10-13.
 
 ## Prioridad: arreglar las alertas
 
 La campana del sidebar tiene varios problemas a la vez:
 
-- [ ] **El panel se abre fuera de la pantalla.** Con el sidebar expandido, el panel de la campana se despliega hacia la izquierda y queda cortado: los nombres de los ítems no se leen completos. Componente: `src/app/components/shared/notification-bell/notification-bell.ts`.
+- [ ] **El panel se abre fuera de la pantalla.** Con el sidebar expandido, el panel de la campana se despliega hacia la izquierda y queda cortado (arranca 61 px fuera de la pantalla a 1440 px de ancho): los nombres de los ítems no se leen completos. Componente: `src/app/components/shared/notification-bell/notification-bell.ts`.
 - [ ] **Las alertas solo se generan cada 6 horas.** `checkLowStock()` corre con `@Cron(EVERY_6_HOURS)` en `Inv-App-API/src/alerts/alerts.service.ts` y no se dispara cuando cambia el stock (ventas, salidas, compras, conteos). Después de reiniciar el servidor la campana dice "Sin alertas activas" aunque el Dashboard muestre 39 ítems con stock bajo. Existe `POST /alerts/trigger-check`, pero nadie lo llama desde la app.
 - [ ] **"Ver todas" lleva al Historial de Cambios** (`routerLink="/audit"`) en vez de a una lista de alertas.
 - [ ] **Ítem único con stock 1/1 marcado como stock bajo.** Una laptop (ítem Único, 1 unidad, mínimo 1) aparece en la campana como "Stock bajo · 1/1". La alerta toma el `status` del ítem, así que hay que revisar cómo se calcula `LOW_STOCK` para ítems únicos.
+
+## Formato de reportes y documentos exportables
+
+Falta cambiar el formato de los documentos que genera la app. Hasta que eso esté hecho, el manual no lleva capturas de ellos (los menciona sin imagen).
+
+- [ ] **Comprobantes PDF** de Ventas, Compras, Transferencias, Préstamos y Salidas: definir el formato final. Lo que se vio al probarlos:
+    - El **Estado** sale en inglés (`ACTIVE`, `APPROVED`).
+    - El comprobante de venta **no trae los datos fiscales de la empresa** (RTN, dirección, teléfono de la Configuración Fiscal).
+    - El comprobante de transferencia muestra el **ID interno** (`cmv5u…`) en vez de un número legible.
+- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): revisar el formato junto con los comprobantes.
+- [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
 
 ## Bugs
 

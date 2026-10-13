@@ -50,7 +50,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 
 Decisiones del usuario: borrar los roles duplicados; numeración automática en lugar de Referencia; un solo campo Cliente con "Cliente ocasional"; Reportes lee todos los movimientos. Commits locales en `feat/purchase-invoices` de los dos repos (ver CONTEXTO.md).
 
-- [x] **Roles del sistema duplicados.** `scripts/seed-data.ts` creaba copias en minúscula. Ahora usa las constantes RBAC, y `seed:rbac` / `POST /seed` borran las copias que ya existan (pasando sus usuarios al rol oficial). En producción se limpian la próxima vez que se corra `seed:rbac`.
+- [x] **Roles del sistema duplicados.** `scripts/seed-data.ts` creaba copias en minúscula. Ahora usa las constantes RBAC, y `seed:rbac` / `POST /seed` borran las copias que ya existan (pasando sus usuarios al rol oficial). En producción se limpian la próxima vez que se corra `seed:rbac` (manual: `railway run npm run seed:rbac`, ver CONTEXTO.md).
 - [x] **Transacciones no estaba en el menú lateral.** Ahora está debajo de Conteo Físico.
 - [x] **Íconos muy chicos en el menú flotante de Comercial.** Lucide copiaba `mr-2` al svg interno; ahora miden 18 px.
 - [x] **El tema de Material no generaba las variables `--mat-sys-*`.** Ahora se generan y siguen los colores de la app en modo oscuro y claro (diálogos, paginador y menú comparados antes y después).
@@ -64,6 +64,7 @@ Decisiones del usuario: borrar los roles duplicados; numeración automática en 
 
 ### Quedó pendiente de esto
 
+- [ ] **Después de desplegar el API**: correr `railway run npm run seed:rbac` una vez para borrar los roles duplicados de producción.
 - [ ] **Al desplegar el API**: `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push` (numera lo existente, mueve las referencias y crea los índices únicos). Probado sobre una copia de la base local con los mismos pasos.
 - [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. Unificarlo cuando se defina el formato de reportes.
 - [ ] **Conteos físicos anteriores a este cambio** no aparecen en Transacciones/Tendencias: no se guardaba si se aplicaron los ajustes.

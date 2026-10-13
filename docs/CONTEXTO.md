@@ -70,6 +70,21 @@ cd /home/user/Inv-App && (nohup npx ng serve --port 4200 > /tmp/frontend.log 2>&
 
 Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.env` con `DATABASE_URL`, `JWT_SECRET` y `CSRF_SECRET` (64 bytes hex), `npx prisma db push --schema=./prisma/schema.prisma`, `npm run seed:rbac`, `npm run seed:fake` y otra vez `npm run seed:rbac` para vincular roles. Ojo: `seed:fake` borra los datos de la base antes de cargar; para probarlo sin perder datos, apuntar `DATABASE_URL` a una base aparte. Login: `admin@example.com` / `password123`.
 
+## Correr `seed:rbac` en producción (manual, a propósito)
+
+Decisión del usuario: se corre cuando se necesite, no en cada deploy. Correrlo en cada deploy borraría los cambios de permisos que se hagan a los roles del sistema desde la pantalla de Roles. Se necesita después de agregar permisos o roles nuevos en `src/common/constants`, o para limpiar roles duplicados.
+
+Desde la terminal, sin entrar al panel de Railway:
+
+```bash
+npm i -g @railway/cli        # una sola vez
+railway login                # una sola vez
+cd inv-app-api && railway link   # una sola vez: proyecto y servicio del API
+railway run npm run seed:rbac    # cada vez que se necesite
+```
+
+`railway run` corre el script en la máquina local con las variables de producción (incluida `DATABASE_URL`). Alternativa sin CLI: `DATABASE_URL="<URL pública de Postgres>" npm run seed:rbac` (no guardar la URL en el repo).
+
 ## Herramientas y trucos
 
 - **Navegador**: Playwright del repo frontend con `executablePath: '/opt/pw-browsers/chromium'`. No hay browsers-mcp en el cloud.

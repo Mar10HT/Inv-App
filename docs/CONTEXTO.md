@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App | `9b27512` | Compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal |
 | 2026-10-13 | Inv-App-API / Inv-App | `89da9fe` / `5569cd1` | Borrar una transacción manual revierte su movimiento de stock; Salida mayor que el stock se rechaza |
 | 2026-10-13 | Inv-App | `b10282e` | El selector de idioma del sidebar ya no pasa la app a inglés |
 | 2026-10-13 | Inv-App-API | `607d8be` | Estado de stock y alertas se recalculan en cada movimiento de stock (`StockLevelService`, `computeInventoryStatus`); únicos nunca LOW_STOCK; refresh al arrancar |
@@ -69,11 +70,10 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 
 Orden sugerido (detalle en `PENDIENTES.md`):
 
-1. Moneda por defecto USD en Compras (y revisar Ventas) en vez de la de Configuración Fiscal.
-2. Flyout transparente del menú Comercial con el sidebar colapsado.
-3. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
-4. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
-5. `seed:fake` desactualizado para Préstamos.
-6. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
-7. Formato de reportes y PDFs: esperar definición del usuario.
-8. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales y sus preguntas frecuentes).
+1. Flyout transparente del menú Comercial con el sidebar colapsado.
+2. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
+3. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
+4. `seed:fake` desactualizado para Préstamos.
+5. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
+6. Formato de reportes y PDFs: esperar definición del usuario.
+7. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).

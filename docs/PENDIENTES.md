@@ -13,7 +13,7 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
 - [x] **"Ver todas" llevaba al Historial de Cambios.** Ahora abre Reportes en la pestaña Estado.
 - [x] **Ítems Únicos marcados como stock bajo (1/1).** Eran 13 en la base de prueba; el Dashboard bajó de 39 a 26 ítems con stock bajo.
 - [x] Las alertas de ítems eliminados ahora se resuelven solas.
-- [ ] **Actualizar el Manual de Usuario cuando esto llegue a producción**: la sección "Alertas de stock" y la pregunta frecuente sobre la campana todavía dicen que las alertas se revisan cada 6 horas. Lo mismo con Transacciones manuales: el recuadro "Importante" y la pregunta "Registré una transacción por error" dicen que borrar no devuelve el stock; ahora sí lo devuelve.
+- [ ] **Actualizar el Manual de Usuario cuando esto llegue a producción**: en Compras, quitar el recuadro "Importante" que pide revisar la Moneda (ya arranca en la de la Configuración Fiscal). la sección "Alertas de stock" y la pregunta frecuente sobre la campana todavía dicen que las alertas se revisan cada 6 horas. Lo mismo con Transacciones manuales: el recuadro "Importante" y la pregunta "Registré una transacción por error" dicen que borrar no devuelve el stock; ahora sí lo devuelve.
 
 ## Formato de reportes y documentos exportables
 
@@ -31,7 +31,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [x] **El sidebar expandido cambiaba la app a inglés.** Resuelto en `b10282e` (Inv-App): el selector ya no llama `translate.use()` al iniciar, solo refleja el idioma activo.
 - [x] **Borrar una Transacción manual no devolvía el stock.** Resuelto en `89da9fe` (API) y `5569cd1` (texto de confirmación): el borrado revierte el movimiento, rechaza borrar una Entrada cuyo stock ya se usó, y una Salida mayor que el stock se rechaza en vez de recortarse a 0.
 - [ ] **Flyout del menú Comercial sin fondo.** Con el sidebar colapsado, el menú flotante de Comercial se abre transparente y el texto queda encima de los íconos.
-- [ ] **Moneda por defecto en Compras.** El formulario Nueva compra arranca en USD aunque la Configuración Fiscal tenga HNL. Revisar también Nueva venta.
+- [x] **Moneda por defecto en Compras y Ventas.** Resuelto en `9b27512` (Inv-App): las compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal.
 - [ ] **Crear un rango CAI por API con fecha sola da 500.** El DTO acepta `expiresAt: "2027-06-30"` (`@IsDateString`), pero Prisma lo rechaza. Desde la pantalla de Ajustes funciona porque manda la fecha completa.
 - [ ] **`neededByDate` de Solicitudes de Material** probablemente tiene el mismo corrimiento de un día que tenía `dueDate` en Préstamos. No verificado.
 - [ ] **`seed:fake` falla en Préstamos.** El script no está actualizado al modelo de varios ítems por préstamo (`Unknown argument inventoryItemId`).

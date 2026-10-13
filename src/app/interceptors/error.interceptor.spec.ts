@@ -47,7 +47,7 @@ describe('errorInterceptor', () => {
         provideHttpClientTesting(),
         importProvidersFrom(TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: EmptyLoader } })),
         { provide: AuthService, useValue: { logout } },
-        { provide: LoggerService, useValue: { error: jasmine.createSpy('error') } }
+        { provide: LoggerService, useValue: { error: jasmine.createSpy('error'), warn: jasmine.createSpy('warn') } }
       ]
     });
     http = TestBed.inject(HttpClient);
@@ -91,12 +91,12 @@ describe('errorInterceptor', () => {
       expect(error?.message).toBe('NOTIFICATIONS.ERRORS.VALIDATION_FAILED');
     });
 
-    it('shows the generic validation text instead of the list Nest sends for DTO validation errors', async () => {
+    it('joins the list of messages the API sends when there is no translation for them', async () => {
       const result = get('/things');
       fail('/things', 400, { message: ['email must be an email', 'password is too short'] });
 
       const { error } = await result;
-      expect(error?.error?.message).toBe('NOTIFICATIONS.ERRORS.VALIDATION_FAILED');
+      expect(error?.error?.message).toBe('email must be an email. password is too short');
     });
 
     describe('with an error code', () => {
@@ -105,6 +105,7 @@ describe('errorInterceptor', () => {
         translate.setTranslation('es', {
           NOTIFICATIONS: { ERRORS: { VALIDATION_FAILED: 'Error de validación.', CONFLICT: 'Conflicto.' } },
           API_ERRORS: {
+            VALIDATION_FAILED: 'Revisa los datos del formulario.',
             INSUFFICIENT_STOCK: 'Cantidad insuficiente de {{item}}. Disponible: {{available}}, solicitado: {{requested}}.',
             SALE_NOT_EDITABLE: 'No se puede editar una venta en estado {{status}}.',
             EMAIL_ALREADY_EXISTS: 'Ya existe un usuario con este correo electrónico.',
@@ -159,18 +160,29 @@ describe('errorInterceptor', () => {
         expect(error?.error?.code).toBe('SOMETHING_NEW');
       });
 
-      it('shows the translated generic text for validation lists without a code', async () => {
+      it('shows the generic form message for a DTO validation failure, not the English list', async () => {
         const result = get('/things');
-        fail('/things', 400, { message: ['email must be an email'] });
+        fail('/things', 400, { message: ['email must be an email'], code: 'VALIDATION_FAILED' });
 
-        expect((await result).error?.error?.message).toBe('Error de validación.');
+        expect((await result).error?.error?.message).toBe('Revisa los datos del formulario.');
       });
 
-      it('shows the generic conflict text for a 409 list without a code', async () => {
+      it('keeps the server text of an error that has no code, and warns so a code gets added', async () => {
+        const logger = TestBed.inject(LoggerService) as unknown as { warn: jasmine.Spy };
         const result = get('/things');
         fail('/things', 409, { message: ['A record with this value already exists'] });
 
-        expect((await result).error?.error?.message).toBe('Conflicto.');
+        expect((await result).error?.error?.message).toBe('A record with this value already exists');
+        expect(logger.warn).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not warn about a translated code', async () => {
+        const logger = TestBed.inject(LoggerService) as unknown as { warn: jasmine.Spy };
+        const result = get('/things');
+        fail('/things', 409, { message: ['User with this email already exists'], code: 'EMAIL_ALREADY_EXISTS' });
+
+        await result;
+        expect(logger.warn).not.toHaveBeenCalled();
       });
     });
 

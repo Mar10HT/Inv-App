@@ -1504,6 +1504,7 @@
     "EMPTY_RANGE": "0 of {{total}}"
   },
   "API_ERRORS": {
+    "VALIDATION_FAILED": "Check the form: some fields are empty or have invalid values.",
     "BULK_ITEM_IDENTIFIERS_NOT_ALLOWED": "Quantity-based (BULK) items cannot have a service tag or serial number.",
     "BULK_ITEM_NOT_ASSIGNABLE": "Quantity-based (BULK) items cannot be assigned to users.",
     "CAI_RANGE_EXHAUSTED": "The active CAI range is exhausted. Register a new range to keep invoicing.",

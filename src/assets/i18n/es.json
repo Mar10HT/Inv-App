@@ -1504,6 +1504,7 @@
     "EMPTY_RANGE": "0 de {{total}}"
   },
   "API_ERRORS": {
+    "VALIDATION_FAILED": "Revisa los datos: hay campos vacíos o con valores no válidos.",
     "BULK_ITEM_IDENTIFIERS_NOT_ALLOWED": "Los ítems por cantidad (BULK) no pueden tener service tag ni número de serie.",
     "BULK_ITEM_NOT_ASSIGNABLE": "Los ítems por cantidad (BULK) no se pueden asignar a usuarios.",
     "CAI_RANGE_EXHAUSTED": "El rango CAI activo se agotó. Registra un nuevo rango para continuar facturando.",

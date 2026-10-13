@@ -48,13 +48,15 @@ function isParams(value: unknown): value is ApiErrorParams {
 
 /**
  * The text a 400/409/422 shows the user:
- * - a known `code` gives its API_ERRORS translation, with `params` interpolated;
- * - a list of messages without a code is DTO validation, shown as the generic text for the status;
- * - anything else keeps the server's own message.
+ * - a `code` with an API_ERRORS translation gives that translation, with `params` interpolated
+ *   (DTO validation failures arrive as VALIDATION_FAILED and get the generic form message);
+ * - a code with no translation yet, or no code at all, keeps the server's own text, so the user
+ *   still learns what went wrong, and `onUntranslated` reports it so the translation gets added.
  */
 function userFacingError(
   error: HttpErrorResponse,
   translate: TranslateService,
+  onUntranslated: (code: string | undefined, message: string) => void,
 ): ApiError['error'] {
   const body: ServerErrorBody | null = typeof error.error === 'object' ? error.error : null;
   if (!body) return null;
@@ -68,14 +70,12 @@ function userFacingError(
     if (typeof text === 'string' && text !== key) return { message: text, code, params };
   }
 
-  const message = body.message;
-  if (Array.isArray(message)) {
-    if (!code) {
-      return { message: translate.instant(`NOTIFICATIONS.ERRORS.${ERROR_KEYS[error.status] ?? 'VALIDATION_FAILED'}`) };
-    }
-    return message.length ? { message: message.join('. '), code, params } : null;
-  }
-  return typeof message === 'string' && message ? { message, code, params } : null;
+  // The API sends the message as a list (one entry per failed check for DTO validation).
+  const raw = body.message;
+  const message = Array.isArray(raw) ? raw.filter((m): m is string => typeof m === 'string').join('. ') : raw;
+  if (typeof message !== 'string' || !message) return null;
+  onUntranslated(code, message);
+  return { message, code, params };
 }
 
 /** Statuses arrive as enum values (PENDING); show them the way the user knows them. */
@@ -98,7 +98,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     return {
       status: error.status,
       message: translate.instant(`NOTIFICATIONS.ERRORS.${ERROR_KEYS[error.status] ?? 'UNKNOWN'}`),
-      error: USER_FACING_STATUSES.includes(error.status) ? userFacingError(error, translate) : null,
+      error: USER_FACING_STATUSES.includes(error.status)
+        ? userFacingError(error, translate, (code, message) =>
+            logger.warn(`Untranslated API error ${code ?? '(no code)'}: add API_ERRORS.${code ?? '<code>'} to the i18n files`, { message, url: req.url }))
+        : null,
       originalError: error,
     };
   };

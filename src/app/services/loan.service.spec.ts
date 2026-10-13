@@ -72,7 +72,7 @@ describe('LoanService', () => {
     });
 
     it('turns the API payload into the front end model', () => {
-      const service = create(raw({ id: 'l7', name: 'Trip', status: 'SENT', returnDate: undefined }));
+      const service = create(raw({ id: 'l7', number: 'PRE-0007', status: 'SENT', returnDate: undefined }));
 
       const [loan] = service.loans();
       expect(loan.id).toBe('l7');

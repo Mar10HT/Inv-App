@@ -48,8 +48,8 @@ describe('LoansComponent', () => {
 
   beforeEach(async () => {
     allLoans = signal([
-      loan('a', { name: 'Screens', status: LoanStatus.SENT, loanDate: new Date(2026, 0, 3), items: [{ inventoryItemName: 'Monitor', quantity: 1, inventoryItemServiceTag: 'TAG-9' }] as Loan['items'] }),
-      loan('b', { name: undefined, sourceWarehouseName: 'North', destinationWarehouseName: 'South', loanDate: new Date(2026, 0, 2) }),
+      loan('a', { number: 'PRE-0001', status: LoanStatus.SENT, loanDate: new Date(2026, 0, 3), items: [{ inventoryItemName: 'Monitor', quantity: 1, inventoryItemServiceTag: 'TAG-9' }] as Loan['items'] }),
+      loan('b', { number: undefined, sourceWarehouseName: 'North', destinationWarehouseName: 'South', loanDate: new Date(2026, 0, 2) }),
       loan('c', { status: LoanStatus.RETURNED, loanDate: new Date(2026, 0, 1) })
     ]);
     loanService = jasmine.createSpyObj<LoanService>(
@@ -130,8 +130,8 @@ describe('LoansComponent', () => {
   });
 
   describe('filters', () => {
-    it('searches the name, the warehouses, the item names and the service tags, ignoring case', () => {
-      component.searchQuery = 'SCREENS';
+    it('searches the number, the warehouses, the item names and the service tags, ignoring case', () => {
+      component.searchQuery = 'pre-0001';
       component.applyFilters();
       expect(ids()).toEqual(['a']);
 

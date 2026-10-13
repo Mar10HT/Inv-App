@@ -30,7 +30,7 @@ const client = (overrides: Partial<Client> = {}): Client =>
 const draftSale = (overrides: Partial<Sale> = {}): Sale =>
   ({
     id: 'draft-1',
-    name: 'Draft 1',
+    quoteNumber: 'COT-0001',
     warehouseId: 'w1',
     customerName: 'Acme',
     customerType: CustomerType.RETAIL,
@@ -399,7 +399,6 @@ describe('SaleFormDialog', () => {
 
     it('sends the sale, trimming the text and leaving out what is blank', () => {
       readyToSubmit();
-      component.name.set('  Order 1  ');
       component.customerName.set('   ');
       component.notes.set(' fragile ');
       component.currency.set('HNL');
@@ -409,7 +408,6 @@ describe('SaleFormDialog', () => {
       component.submit();
 
       expect(sales.create).toHaveBeenCalledOnceWith({
-        name: 'Order 1',
         warehouseId: 'w1',
         customerName: undefined,
         customerType: CustomerType.RETAIL,
@@ -517,7 +515,6 @@ describe('SaleFormDialog', () => {
     it('prefills every field from the given sale', async () => {
       await setup({ sale: draftSale() });
 
-      expect(component.name()).toBe('Draft 1');
       expect(component.warehouseId()).toBe('w1');
       expect(component.customerName()).toBe('Acme');
       expect(component.customerType()).toBe(CustomerType.RETAIL);
@@ -540,7 +537,7 @@ describe('SaleFormDialog', () => {
 
       component.submit();
 
-      expect(sales.update).toHaveBeenCalledOnceWith('draft-1', jasmine.objectContaining({ name: 'Draft 1' }));
+      expect(sales.update).toHaveBeenCalledOnceWith('draft-1', jasmine.objectContaining({ warehouseId: 'w1', notes: 'draft notes' }));
       expect(sales.create).not.toHaveBeenCalled();
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.UPDATE_SUCCESS');
     });

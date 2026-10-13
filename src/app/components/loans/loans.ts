@@ -149,8 +149,8 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                   <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
-                        <p class="text-foreground font-medium">{{ loan.name || summarize(loan) }}</p>
-                        @if (loan.name) {
+                        <p class="text-foreground font-medium">{{ loan.number || summarize(loan) }}</p>
+                        @if (loan.number) {
                           <p class="text-[var(--color-on-surface-variant)] text-sm">{{ summarize(loan) }}</p>
                         } @else if (loan.items.length > 1) {
                           <p class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.items.length }} {{ 'TRANSACTION.ITEMS' | translate }}</p>
@@ -422,7 +422,7 @@ export class LoansComponent implements OnInit {
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       loans = loans.filter(loan =>
-        (loan.name?.toLowerCase().includes(query) ?? false) ||
+        (loan.number?.toLowerCase().includes(query) ?? false) ||
         loan.sourceWarehouseName.toLowerCase().includes(query) ||
         loan.destinationWarehouseName.toLowerCase().includes(query) ||
         loan.items.some(i =>

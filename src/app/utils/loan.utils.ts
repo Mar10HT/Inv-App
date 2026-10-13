@@ -31,7 +31,7 @@ export function transformLoan(loan: RawLoan): Loan {
 
   return {
     id: loan.id,
-    name: loan.name ?? undefined,
+    number: loan.number ?? undefined,
     items,
     sourceWarehouseId: loan.sourceWarehouseId,
     sourceWarehouseName: loan.sourceWarehouse?.name || '',

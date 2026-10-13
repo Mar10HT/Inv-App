@@ -20,7 +20,8 @@ import { warehouse } from '../../../testing/report-fixtures';
 const sale = (overrides: Partial<Sale> = {}): Sale =>
   ({
     id: 'sale-1234567890',
-    name: 'Order 1',
+    number: null,
+    quoteNumber: null,
     warehouseId: 'w1',
     status: SaleStatus.ACTIVE,
     customerType: CustomerType.RETAIL,
@@ -251,10 +252,10 @@ describe('SalesComponent', () => {
       translate.setTranslation('en', { SALES: { CONFIRM_CONFIRM_MESSAGE: 'Confirm {{name}}?' } });
       translate.use('en');
 
-      component.confirmSale(sale({ id: 'd1', name: 'Quote 1' }));
+      component.confirmSale(sale({ id: 'd1', quoteNumber: 'COT-0001' }));
 
       expect(confirm.ask.calls.mostRecent().args[0]).toEqual(
-        jasmine.objectContaining({ type: 'warning', message: 'Confirm Quote 1?' })
+        jasmine.objectContaining({ type: 'warning', message: 'Confirm COT-0001?' })
       );
       expect(saleService.confirm).toHaveBeenCalledOnceWith('d1');
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CONFIRM_SUCCESS');
@@ -304,17 +305,17 @@ describe('SalesComponent', () => {
   });
 
   describe('cancel', () => {
-    it('asks the user to confirm, naming the sale, or its short id when it has no name', () => {
+    it('asks the user to confirm, naming the sale by its number, or its short id when it has none', () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation('en', { SALES: { CONFIRM_CANCEL_MESSAGE: 'Cancel {{name}}?' } });
       translate.use('en');
 
-      component.cancel(sale({ name: 'Order 1' }));
+      component.cancel(sale({ number: 'V-0001' }));
       expect(confirm.ask.calls.mostRecent().args[0]).toEqual(
-        jasmine.objectContaining({ type: 'warning', title: 'SALES.CONFIRM_CANCEL_TITLE', message: 'Cancel Order 1?' })
+        jasmine.objectContaining({ type: 'warning', title: 'SALES.CONFIRM_CANCEL_TITLE', message: 'Cancel V-0001?' })
       );
 
-      component.cancel(sale({ name: undefined, id: 'sale-1234567890' }));
+      component.cancel(sale({ number: null, quoteNumber: null, id: 'sale-1234567890' }));
       expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel sale-123?');
     });
 
@@ -348,9 +349,9 @@ describe('SalesComponent', () => {
       translate.setTranslation('en', { SALES: { CONFIRM_CANCEL_DRAFT_MESSAGE: 'Cancel quote {{name}}?' } });
       translate.use('en');
 
-      component.cancel(sale({ id: 'd1', name: 'Quote 1', status: SaleStatus.DRAFT }));
+      component.cancel(sale({ id: 'd1', quoteNumber: 'COT-0001', status: SaleStatus.DRAFT }));
 
-      expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel quote Quote 1?');
+      expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel quote COT-0001?');
       expect(saleService.cancel).toHaveBeenCalledOnceWith('d1');
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CANCEL_DRAFT_SUCCESS');
     });

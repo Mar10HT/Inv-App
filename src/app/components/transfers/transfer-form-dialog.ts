@@ -36,20 +36,6 @@ export interface TransferFormResult {
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.NEW_REQUEST_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
-          <!-- Transfer name -->
-          <div>
-            <label for="transfer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NAME' | translate }}</label>
-            <input
-              type="text"
-              id="transfer-name"
-              [ngModel]="selectedName()"
-              (ngModelChange)="selectedName.set($event)"
-              maxlength="120"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              [placeholder]="'TRANSFERS.NAME_PLACEHOLDER' | translate"
-            />
-          </div>
-
           <!-- Source Warehouse -->
           <div>
             <label for="transfer-source" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.SOURCE' | translate }} *</label>
@@ -181,7 +167,6 @@ export class TransferFormDialog {
   created = output<TransferFormResult>();
 
   // Form signals
-  selectedName = signal('');
   selectedSourceWarehouseId = signal('');
   selectedDestWarehouseId = signal('');
   selectedNotes = signal('');
@@ -255,7 +240,6 @@ export class TransferFormDialog {
     if (!this.canCreateRequest()) return;
 
     this.transferService.createRequest({
-      name: this.selectedName().trim() || undefined,
       sourceWarehouseId: this.selectedSourceWarehouseId(),
       destinationWarehouseId: this.selectedDestWarehouseId(),
       items: this.requestItems().filter(i => i.inventoryItemId),

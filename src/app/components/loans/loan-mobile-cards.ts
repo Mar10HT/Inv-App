@@ -17,8 +17,8 @@ import { getLoanDueDateClass, getLoanStatusClass, summarizeLoanItems, totalLoanQ
         <div class="p-4">
           <div class="flex justify-between items-start mb-3">
             <div>
-              <p class="text-foreground font-medium">{{ loan.name || summarize(loan) }}</p>
-              @if (loan.name) {
+              <p class="text-foreground font-medium">{{ loan.number || summarize(loan) }}</p>
+              @if (loan.number) {
                 <p class="text-[var(--color-on-surface-variant)] text-xs mb-1">{{ summarize(loan) }}</p>
               }
               <p class="text-[var(--color-on-surface-variant)] text-sm">

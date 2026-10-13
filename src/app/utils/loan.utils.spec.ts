@@ -51,7 +51,7 @@ describe('loan.utils', () => {
     it('maps dates, warehouse names and item details from the raw response', () => {
       const result = transformLoan(
         rawLoan({
-          name: 'Field kit',
+          number: 'PRE-0003',
           sourceWarehouse: { name: 'North' },
           destinationWarehouse: { name: 'South' },
           items: [
@@ -66,7 +66,7 @@ describe('loan.utils', () => {
         })
       );
 
-      expect(result.name).toBe('Field kit');
+      expect(result.number).toBe('PRE-0003');
       expect(result.sourceWarehouseName).toBe('North');
       expect(result.destinationWarehouseName).toBe('South');
       expect(result.loanDate).toEqual(new Date('2026-03-10T00:00:00.000Z'));
@@ -86,12 +86,12 @@ describe('loan.utils', () => {
     it('falls back to empty names and no optional fields when relations are missing', () => {
       const result = transformLoan(
         rawLoan({
-          name: null,
+          number: null,
           items: [{ id: 'li-2', inventoryItemId: 'item-2', quantity: 1 } as RawLoan['items'][number]]
         })
       );
 
-      expect(result.name).toBeUndefined();
+      expect(result.number).toBeUndefined();
       expect(result.sourceWarehouseName).toBe('');
       expect(result.destinationWarehouseName).toBe('');
       expect(result.createdByName).toBe('');

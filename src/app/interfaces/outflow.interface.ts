@@ -42,7 +42,8 @@ export interface OutflowWarehouseRef {
 
 export interface Outflow {
   id: string;
-  name: string | null;
+  // Automatic correlative, e.g. SAL-0001
+  number: string | null;
   warehouseId: string;
   reason: OutflowReason;
   status: OutflowStatus;
@@ -66,7 +67,6 @@ export interface CreateOutflowItemDto {
 }
 
 export interface CreateOutflowDto {
-  name?: string;
   warehouseId: string;
   reason: OutflowReason;
   items: CreateOutflowItemDto[];

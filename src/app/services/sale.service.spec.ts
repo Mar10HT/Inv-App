@@ -10,7 +10,7 @@ import { provideTestBedDefaults } from '../../testing/test-providers';
 
 const sale = (overrides: Partial<Sale> = {}): Sale => ({
   id: 's1',
-  name: null,
+  quoteNumber: null,
   warehouseId: 'w1',
   customerName: null,
   customerType: CustomerType.RETAIL,

@@ -8,7 +8,7 @@ export interface RawTransferRequestItem {
 
 export interface RawTransferRequest {
   id: string;
-  name?: string | null;
+  number?: string | null;
   status: string;
   sourceWarehouseId: string;
   sourceWarehouse?: { name: string };
@@ -53,7 +53,8 @@ export interface TransferRequestItem {
 
 export interface TransferRequest {
   id: string;
-  name?: string;
+  // Automatic correlative, e.g. TRA-0001
+  number?: string;
   status: TransferRequestStatus;
   // Source warehouse
   sourceWarehouseId: string;
@@ -85,7 +86,6 @@ export interface TransferRequest {
 }
 
 export interface CreateTransferRequestDto {
-  name?: string;
   sourceWarehouseId: string;
   destinationWarehouseId: string;
   items: {

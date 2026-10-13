@@ -53,7 +53,8 @@ export interface SaleClientRef {
 
 export interface Sale {
   id: string;
-  name: string | null;
+  // Quotation correlative (COT-0001), set when the sale was created as a DRAFT.
+  quoteNumber: string | null;
   warehouseId: string;
   customerName: string | null;
   customerType: CustomerType;
@@ -98,7 +99,6 @@ export interface CreateSaleItemDto {
 }
 
 export interface CreateSaleDto {
-  name?: string;
   warehouseId: string;
   customerName?: string;
   customerType: CustomerType;

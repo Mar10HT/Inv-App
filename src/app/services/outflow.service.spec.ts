@@ -9,7 +9,7 @@ import { provideTestBedDefaults } from '../../testing/test-providers';
 
 const outflow = (overrides: Partial<Outflow> = {}): Outflow => ({
   id: 'o1',
-  name: null,
+  number: null,
   warehouseId: 'w1',
   reason: OutflowReason.DAMAGED,
   status: OutflowStatus.ACTIVE,

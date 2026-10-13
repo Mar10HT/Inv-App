@@ -71,22 +71,6 @@ const REASONS: OutflowReason[] = [
         </div>
 
         <div class="p-6 space-y-4">
-          <!-- Name -->
-          <div>
-            <label for="outflow-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
-              {{ 'OUTFLOWS.NAME' | translate }}
-            </label>
-            <input
-              id="outflow-name"
-              type="text"
-              [ngModel]="name()"
-              (ngModelChange)="name.set($event)"
-              maxlength="120"
-              [placeholder]="'OUTFLOWS.NAME_PLACEHOLDER' | translate"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-
           <!-- Warehouse -->
           <div>
             <label for="outflow-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -257,7 +241,6 @@ export class OutflowFormDialog implements AfterViewInit {
 
   readonly reasons = REASONS;
 
-  name = signal('');
   warehouseId = signal('');
   reason = signal<OutflowReason | ''>('');
   notes = signal('');
@@ -350,7 +333,6 @@ export class OutflowFormDialog implements AfterViewInit {
     this.submitting.set(true);
 
     const dto: CreateOutflowDto = {
-      name: this.name().trim() || undefined,
       warehouseId: this.warehouseId(),
       reason: this.reason() as OutflowReason,
       notes: this.notes().trim() || undefined,

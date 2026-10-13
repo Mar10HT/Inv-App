@@ -91,10 +91,10 @@ describe('LoanMobileCards', () => {
       expect(el.textContent).toContain('LOANS.STATUS.SENT');
     });
 
-    it('uses the loan name as the title and moves the item summary below it', async () => {
-      await render([loan({ name: 'Field kit' })]);
+    it('uses the loan number as the title and moves the item summary below it', async () => {
+      await render([loan({ number: 'PRE-0007' })]);
 
-      expect(el.querySelector('.p-4 p.font-medium')?.textContent).toContain('Field kit');
+      expect(el.querySelector('.p-4 p.font-medium')?.textContent).toContain('PRE-0007');
       expect(el.textContent).toContain('Laptop ×2');
     });
 

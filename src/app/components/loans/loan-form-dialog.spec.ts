@@ -201,9 +201,8 @@ describe('LoanFormDialog', () => {
       expect(loans.createLoan).not.toHaveBeenCalled();
     });
 
-    it('sends the loan, trimming the name and leaving out what is blank', () => {
+    it('sends the loan, leaving out what is blank (no reference: loans are numbered by the server)', () => {
       readyToSubmit();
-      component.selectedName.set('  Screens for the demo  ');
       component.selectedNotes.set('');
       component.updateLoanItemQuantity(0, 2);
       component.addLoanItem();
@@ -213,7 +212,6 @@ describe('LoanFormDialog', () => {
       component.createLoan();
 
       expect(loans.createLoan).toHaveBeenCalledOnceWith({
-        name: 'Screens for the demo',
         items: [
           { inventoryItemId: 'laptop', quantity: 2, notes: undefined },
           { inventoryItemId: 'mouse', quantity: 1, notes: 'wireless' }
@@ -225,14 +223,13 @@ describe('LoanFormDialog', () => {
       });
     });
 
-    it('sends the general notes when there are some, and no name when it is blank', () => {
+    it('sends the general notes when there are some', () => {
       readyToSubmit();
-      component.selectedName.set('   ');
       component.selectedNotes.set('Return by Friday');
 
       component.createLoan();
 
-      expect(loans.createLoan.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({ name: undefined, notes: 'Return by Friday' }));
+      expect(loans.createLoan.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({ notes: 'Return by Friday' }));
     });
 
     it('tells the user and reports how many items were lent once the loan was created', () => {

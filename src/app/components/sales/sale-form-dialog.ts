@@ -81,6 +81,9 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="sale-form-dialog-title" class="text-xl font-semibold text-foreground">
             {{ (isEditing() ? 'SALES.EDIT_QUOTATION' : isQuotation() ? 'SALES.NEW_QUOTATION' : 'SALES.NEW_SALE') | translate }}
+            @if (sale()?.quoteNumber; as quoteNumber) {
+              <span class="font-mono text-base text-[var(--color-on-surface-variant)]">{{ quoteNumber }}</span>
+            }
           </h2>
           @if (!isEditing()) {
             <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">
@@ -90,22 +93,6 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
         </div>
 
         <div class="p-6 space-y-4">
-          <!-- Name -->
-          <div>
-            <label for="sale-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
-              {{ 'SALES.NAME' | translate }}
-            </label>
-            <input
-              id="sale-name"
-              type="text"
-              [ngModel]="name()"
-              (ngModelChange)="name.set($event)"
-              maxlength="120"
-              [placeholder]="'SALES.NAME_PLACEHOLDER' | translate"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-
           <!-- Warehouse -->
           <div>
             <label for="sale-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -425,7 +412,6 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
       if (fiscal?.currency) this.currency.set(fiscal.currency);
       return;
     }
-    this.name.set(existing.name ?? '');
     this.warehouseId.set(existing.warehouseId);
     this.customerName.set(existing.customerName ?? '');
     this.customerType.set(existing.customerType);
@@ -458,7 +444,6 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   readonly currencies = CURRENCIES;
   readonly paymentConditions = PAYMENT_CONDITIONS;
 
-  name = signal('');
   warehouseId = signal('');
   customerName = signal('');
   customerType = signal<CustomerType | ''>('');
@@ -630,7 +615,6 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
       taxPercent: it.taxPercent,
     }));
     const common = {
-      name: this.name().trim() || undefined,
       warehouseId: this.warehouseId(),
       customerName: this.customerName().trim() || undefined,
       customerType: this.customerType() as CustomerType,

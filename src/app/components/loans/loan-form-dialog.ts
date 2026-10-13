@@ -40,20 +40,6 @@ export interface LoanFormResult {
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'LOANS.NEW_LOAN_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
-          <!-- Loan name -->
-          <div>
-            <label for="loan-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NAME' | translate }}</label>
-            <input
-              id="loan-name"
-              type="text"
-              [ngModel]="selectedName()"
-              (ngModelChange)="selectedName.set($event)"
-              maxlength="120"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              [placeholder]="'LOANS.NAME_PLACEHOLDER' | translate"
-            />
-          </div>
-
           <!-- Source Warehouse Select -->
           <div>
             <label for="loan-source-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.SOURCE_WAREHOUSE' | translate }} *</label>
@@ -209,7 +195,6 @@ export class LoanFormDialog {
   created = output<LoanFormResult>();
 
   // Form signals
-  selectedName = signal('');
   selectedSourceWarehouseId = signal('');
   selectedDestWarehouseId = signal('');
   selectedDueDate = signal('');
@@ -316,7 +301,6 @@ export class LoanFormDialog {
 
     this.loanService
       .createLoan({
-        name: this.selectedName().trim() || undefined,
         items: items.map((i) => ({
           inventoryItemId: i.inventoryItemId,
           quantity: i.quantity,

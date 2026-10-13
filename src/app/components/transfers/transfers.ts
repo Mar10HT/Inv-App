@@ -145,9 +145,9 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                   <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
-                        <p class="text-foreground font-medium">{{ request.name || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
+                        <p class="text-foreground font-medium">{{ request.number || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
                         <p class="text-[var(--color-on-surface-variant)] text-sm truncate max-w-xs">
-                          @if (request.name) {
+                          @if (request.number) {
                             {{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }} · {{ getItemsPreview(request) }}
                           } @else {
                             {{ getItemsPreview(request) }}
@@ -266,9 +266,9 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
               <div class="p-4">
                 <div class="flex justify-between items-start mb-3">
                   <div>
-                    <p class="text-foreground font-medium">{{ request.name || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
+                    <p class="text-foreground font-medium">{{ request.number || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
                     <p class="text-[var(--color-on-surface-variant)] text-sm">
-                      @if (request.name) {
+                      @if (request.number) {
                         {{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }} · {{ getItemsPreview(request) }}
                       } @else {
                         {{ getItemsPreview(request) }}
@@ -497,6 +497,7 @@ export class TransfersComponent implements OnInit {
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       requests = requests.filter(req =>
+        (req.number?.toLowerCase().includes(query) ?? false) ||
         req.sourceWarehouseName.toLowerCase().includes(query) ||
         req.destinationWarehouseName.toLowerCase().includes(query) ||
         req.requestedByName.toLowerCase().includes(query) ||

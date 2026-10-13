@@ -164,7 +164,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
               <thead class="bg-[var(--color-surface)] border-b border-theme">
                 <tr class="text-left text-xs uppercase tracking-wider text-[var(--color-on-surface-variant)]">
                   <th class="px-4 py-3">{{ 'SALES.COL_NUMBER' | translate }}</th>
-                  <th class="px-4 py-3">{{ 'SALES.COL_NAME' | translate }}</th>
+                  <th class="px-4 py-3">{{ 'SALES.COL_NOTES' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_WAREHOUSE' | translate }}</th>
                   <th class="px-4 py-3">{{ 'SALES.COL_CUSTOMER' | translate }}</th>
                   <th class="px-4 py-3 text-right">{{ 'SALES.COL_AMOUNT' | translate }}</th>
@@ -178,16 +178,15 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
               <tbody>
                 @for (sale of filtered(); track sale.id) {
                   <tr class="border-t border-theme hover:bg-[var(--color-surface)] transition-colors">
-                    <td class="px-4 py-3 font-mono text-sm text-[var(--color-on-surface-variant)]">
-                      {{ sale.number || '—' }}
-                    </td>
-                    <td class="px-4 py-3 text-foreground">
-                      <div class="font-medium">{{ sale.name || ('SALES.UNNAMED' | translate) }}</div>
-                      @if (sale.notes) {
-                        <div class="text-xs text-[var(--color-on-surface-variant)] truncate max-w-xs" [title]="sale.notes">
-                          {{ sale.notes }}
-                        </div>
+                    <td class="px-4 py-3 font-mono text-sm">
+                      <div class="text-foreground">{{ documentNumber(sale) || '—' }}</div>
+                      <!-- A confirmed quotation keeps showing the quote it came from -->
+                      @if (sale.number && sale.quoteNumber) {
+                        <div class="text-xs text-[var(--color-on-surface-variant)]">{{ sale.quoteNumber }}</div>
                       }
+                    </td>
+                    <td class="px-4 py-3 text-sm text-[var(--color-on-surface-variant)]">
+                      <div class="truncate max-w-xs" [title]="sale.notes || ''">{{ sale.notes || '—' }}</div>
                     </td>
                     <td class="px-4 py-3 text-[var(--color-on-surface-variant)]">
                       {{ sale.warehouse?.name || '—' }}
@@ -302,12 +301,11 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
               <div class="bg-surface-variant border border-theme rounded-xl p-4">
                 <div class="flex items-start justify-between gap-3 mb-2">
                   <div class="min-w-0">
-                    <div class="font-medium text-foreground truncate">
-                      {{ sale.name || ('SALES.UNNAMED' | translate) }}
+                    <div class="font-medium font-mono text-foreground truncate">
+                      {{ documentNumber(sale) || '—' }}
                     </div>
                     <div class="text-xs text-[var(--color-on-surface-variant)]">
                       {{ sale.warehouse?.name }} · {{ 'SALES.CUSTOMER_TYPE.' + sale.customerType | translate }}
-                      @if (sale.number) { · <span class="font-mono">{{ sale.number }}</span> }
                     </div>
                   </div>
                   <span [class]="getStatusClass(sale.status)" class="shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium">
@@ -556,6 +554,11 @@ export class SalesComponent implements OnInit {
   // The linked Client (used for credit-limit tracking) is the authoritative
   // name when present; customerName is only the free-text fallback for a
   // walk-in sale with no client record.
+  /** The invoice number once confirmed, else the quotation number. */
+  documentNumber(sale: Sale): string | null {
+    return sale.number ?? sale.quoteNumber ?? null;
+  }
+
   customerLabel(sale: Sale): string {
     return sale.client?.name || sale.customerName || '—';
   }
@@ -586,7 +589,7 @@ export class SalesComponent implements OnInit {
         title: this.translate.instant('SALES.CONFIRM_CANCEL_TITLE'),
         message: this.translate.instant(
           isDraft ? 'SALES.CONFIRM_CANCEL_DRAFT_MESSAGE' : 'SALES.CONFIRM_CANCEL_MESSAGE',
-          { name: sale.name || sale.id.slice(0, 8) },
+          { name: this.documentNumber(sale) || sale.id.slice(0, 8) },
         ),
         confirmText: this.translate.instant('SALES.CANCEL_SALE'),
         type: 'warning',
@@ -608,7 +611,7 @@ export class SalesComponent implements OnInit {
       .ask({
         title: this.translate.instant('SALES.CONFIRM_CONFIRM_TITLE'),
         message: this.translate.instant('SALES.CONFIRM_CONFIRM_MESSAGE', {
-          name: sale.name || sale.id.slice(0, 8),
+          name: this.documentNumber(sale) || sale.id.slice(0, 8),
         }),
         confirmText: this.translate.instant('SALES.CONFIRM_SALE'),
         type: 'warning',

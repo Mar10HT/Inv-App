@@ -216,7 +216,6 @@ describe('OutflowFormDialog', () => {
 
     it('sends the outflow, trimming the text and leaving out what is blank', () => {
       readyToSubmit();
-      component.name.set('  Broken screens  ');
       component.notes.set('   ');
       component.updateItemQuantity(0, 2);
       component.updateItemNotes(0, '  cracked  ');
@@ -224,7 +223,6 @@ describe('OutflowFormDialog', () => {
       component.submit();
 
       expect(outflows.create).toHaveBeenCalledOnceWith({
-        name: 'Broken screens',
         warehouseId: 'w1',
         reason: OutflowReason.DAMAGED,
         notes: undefined,

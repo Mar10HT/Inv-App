@@ -449,6 +449,7 @@ import { Spinner } from '../shared/spinner/spinner';
                     <option value="TRANSFERS">{{ 'SCHEDULED_REPORTS.TYPE.TRANSFERS' | translate }}</option>
                     <option value="STOCK_TAKES">{{ 'SCHEDULED_REPORTS.TYPE.STOCK_TAKES' | translate }}</option>
                     <option value="DISCHARGES">{{ 'SCHEDULED_REPORTS.TYPE.DISCHARGES' | translate }}</option>
+                    <option value="OUTFLOWS">{{ 'SCHEDULED_REPORTS.TYPE.OUTFLOWS' | translate }}</option>
                   </select>
                 </div>
 

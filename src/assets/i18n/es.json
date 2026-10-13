@@ -1488,7 +1488,8 @@
       "LOANS": "Préstamos",
       "TRANSFERS": "Transferencias",
       "STOCK_TAKES": "Conteos Físicos",
-      "DISCHARGES": "Bajas"
+      "DISCHARGES": "Bajas",
+      "OUTFLOWS": "Salidas"
     }
   },
   "PAGINATOR": {

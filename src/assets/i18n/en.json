@@ -1488,7 +1488,8 @@
       "LOANS": "Loans",
       "TRANSFERS": "Transfer Requests",
       "STOCK_TAKES": "Stock Takes",
-      "DISCHARGES": "Discharges"
+      "DISCHARGES": "Discharges",
+      "OUTFLOWS": "Outflows"
     }
   },
   "PAGINATOR": {

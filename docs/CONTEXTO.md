@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App-API / Inv-App | `89da9fe` / `5569cd1` | Borrar una transacción manual revierte su movimiento de stock; Salida mayor que el stock se rechaza |
 | 2026-10-13 | Inv-App | `b10282e` | El selector de idioma del sidebar ya no pasa la app a inglés |
 | 2026-10-13 | Inv-App-API | `607d8be` | Estado de stock y alertas se recalculan en cada movimiento de stock (`StockLevelService`, `computeInventoryStatus`); únicos nunca LOW_STOCK; refresh al arrancar |
 | 2026-10-13 | Inv-App | `30fff85` | Panel de la campana dentro de la pantalla; "Ver todas" abre Reportes en `?tab=status` |
@@ -61,19 +62,18 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 - **API desde el navegador logueado**: pedir `GET /api/auth/csrf-token` **una sola vez** y reutilizarlo en el header `X-CSRF-Token` (pedirlo en cada llamada da 403 por límite).
 - **Fechas a la API**: ISO completo (`2027-06-30T00:00:00.000Z`); la fecha sola da 500 en rangos CAI.
 - **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. Un test de `reports-transactions-tab.spec.ts` falla en este entorno sin relación con los cambios (ver PENDIENTES).
-- **Tests del backend**: `npx jest` (441), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
+- **Tests del backend**: `npx jest` (446), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
 - **No usar** `pkill -f "node dist/main.js"` dentro de un comando que contenga ese texto: se mata a sí mismo. Usar `pkill -f "^node dist/main.js"` o el PID.
 
 ## Próximos pasos
 
 Orden sugerido (detalle en `PENDIENTES.md`):
 
-1. Borrar una Transacción manual no devuelve el stock (backend).
-2. Moneda por defecto USD en Compras (y revisar Ventas) en vez de la de Configuración Fiscal.
-3. Flyout transparente del menú Comercial con el sidebar colapsado.
-4. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
-5. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
-6. `seed:fake` desactualizado para Préstamos.
-7. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
-8. Formato de reportes y PDFs: esperar definición del usuario.
-9. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock" y la pregunta frecuente de la campana).
+1. Moneda por defecto USD en Compras (y revisar Ventas) en vez de la de Configuración Fiscal.
+2. Flyout transparente del menú Comercial con el sidebar colapsado.
+3. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
+4. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
+5. `seed:fake` desactualizado para Préstamos.
+6. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
+7. Formato de reportes y PDFs: esperar definición del usuario.
+8. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales y sus preguntas frecuentes).

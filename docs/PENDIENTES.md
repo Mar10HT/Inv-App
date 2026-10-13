@@ -36,7 +36,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [x] **Flyout del menú Comercial sin fondo.** Resuelto en `098a279` (Inv-App): el tema de Material no genera `--mat-sys-surface-container`; el panel del menú ahora usa los colores de la app, en modo oscuro y claro.
 - [x] **Moneda por defecto en Compras y Ventas.** Resuelto en `9b27512` (Inv-App): las compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal.
 - [x] **Crear un rango CAI por API con fecha sola da 500.** Resuelto en `8324e9e` (API): `expiresAt` se normaliza a fecha y hora completas antes de guardar. La fecha de vencimiento de Inventario (`expirationDate`) tenía el mismo bug y quedó resuelta en el mismo commit.
-- [ ] **`neededByDate` de Solicitudes de Material** probablemente tiene el mismo corrimiento de un día que tenía `dueDate` en Préstamos. No verificado.
+- [x] **`neededByDate` de Solicitudes de Material se mostraba un día antes.** Confirmado y resuelto en `31ba7ac` (Inv-App): el detalle formatea la fecha en UTC, igual que el vencimiento de Préstamos. Verificado en la app con hora de Honduras: una solicitud para el 1 de marzo se ve el 1 de marzo.
 - [ ] **`seed:fake` falla en Préstamos.** El script no está actualizado al modelo de varios ítems por préstamo (`Unknown argument inventoryItemId`).
 
 - [ ] **Test de fechas que falla en Chromium 141.** `reports-transactions-tab.spec.ts` ("shows one row per transaction...") compara `'15 ene 2026, 06:00 a. m.'` con una cadena que se ve igual: probablemente difieren en un espacio angosto que depende de la versión de ICU del navegador. Falla también sin cambios en el código.
@@ -52,5 +52,6 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [ ] **Transacciones y Tendencias de Reportes desconectadas.** Ninguna operación (ventas, compras, salidas, transferencias, préstamos, conteos) escribe en Transacciones, así que esas pestañas solo muestran lo cargado a mano.
 - [ ] **Roles del sistema duplicados** (versiones en mayúscula y minúscula del mismo rol).
 - [ ] **"Salidas" no se puede programar** en Reportes Programados, aunque tiene Excel en Descargas.
+- [ ] **Fechas en formato inglés con la app en español.** Varias pantallas (por ejemplo el detalle de Solicitudes de Material) muestran "Mar 1, 2027" en vez de "1 mar 2027": la app no configura `LOCALE_ID` ni registra el locale `es`, y el `DatePipe` usa inglés salvo donde se le pasa el idioma a mano.
 - [ ] **Login en inglés** mientras el resto de la app está en español.
 - [ ] **Dos campos "Cliente" en Editar cotización** (texto libre y selector), confusos para el usuario.

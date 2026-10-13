@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App | `31ba7ac` | La fecha "Necesario para" de Solicitudes de Material ya no se muestra un día antes |
 | 2026-10-13 | Inv-App-API | `8324e9e` | Rango CAI y fecha de vencimiento de Inventario aceptan fecha sola por API (antes daban 500) |
 | 2026-10-13 | Inv-App | `098a279` | El menú flotante de Comercial (sidebar colapsado) ya no es transparente |
 | 2026-10-13 | Inv-App | `9b27512` | Compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal |
@@ -72,8 +73,7 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 
 Orden sugerido (detalle en `PENDIENTES.md`):
 
-1. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
-2. `seed:fake` desactualizado para Préstamos.
-3. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
-4. Formato de reportes y PDFs: esperar definición del usuario.
-5. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).
+1. `seed:fake` desactualizado para Préstamos.
+2. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, fechas en formato inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
+3. Formato de reportes y PDFs: esperar definición del usuario.
+4. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).

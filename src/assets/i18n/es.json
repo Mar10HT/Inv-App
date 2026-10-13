@@ -515,7 +515,7 @@
     "NO_TRANSACTIONS_DESC": "Comienza creando tu primera transacción",
     "DELETE_CONFIRM": {
       "TITLE": "Eliminar Transacción",
-      "MESSAGE": "¿Estás seguro de eliminar esta transacción? Esta acción no se puede deshacer."
+      "MESSAGE": "¿Estás seguro de eliminar esta transacción? Se revertirá el movimiento de stock que registró."
     },
     "SOURCE_WAREHOUSE": "Bodega de Origen",
     "DEST_WAREHOUSE": "Bodega de Destino",

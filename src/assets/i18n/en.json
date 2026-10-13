@@ -515,7 +515,7 @@
     "NO_TRANSACTIONS_DESC": "Get started by creating your first transaction",
     "DELETE_CONFIRM": {
       "TITLE": "Delete Transaction",
-      "MESSAGE": "Are you sure you want to delete this transaction? This action cannot be undone."
+      "MESSAGE": "Are you sure you want to delete this transaction? The stock movement it recorded will be reversed."
     },
     "SOURCE_WAREHOUSE": "Source Warehouse",
     "DEST_WAREHOUSE": "Destination Warehouse",

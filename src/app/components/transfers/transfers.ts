@@ -17,9 +17,11 @@ import { ConfirmService } from '../../services/confirm.service';
 import { TransferStatsCards } from './transfer-stats';
 import { TransferFormDialog, TransferFormResult } from './transfer-form-dialog';
 import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRejectDialog, TransferRejectResult } from './transfer-qr-dialog';
+import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-transfers',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

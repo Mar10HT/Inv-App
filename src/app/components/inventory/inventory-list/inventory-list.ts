@@ -24,9 +24,11 @@ import { ImportDialog } from '../../import/import-dialog';
 import { SkeletonCardComponent } from '../../shared/skeleton/skeleton-card';
 import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
 import { localDateKey } from '../../../utils/date.utils';
+import { provideTranslatedPaginator } from '../../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-inventory-list',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

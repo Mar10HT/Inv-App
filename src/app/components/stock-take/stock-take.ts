@@ -20,9 +20,11 @@ import { StockTakeFormDialogComponent } from './stock-take-form-dialog';
 import { StockTakeCompleteDialogComponent } from './stock-take-complete-dialog';
 import { StockTakeVarianceComponent } from './stock-take-variance';
 import { StockTakeStatsCards } from './stock-take-stats';
+import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-stock-take',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

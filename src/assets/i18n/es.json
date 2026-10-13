@@ -1490,5 +1490,14 @@
       "STOCK_TAKES": "Conteos Físicos",
       "DISCHARGES": "Bajas"
     }
+  },
+  "PAGINATOR": {
+    "ITEMS_PER_PAGE": "Elementos por página",
+    "NEXT_PAGE": "Página siguiente",
+    "PREVIOUS_PAGE": "Página anterior",
+    "FIRST_PAGE": "Primera página",
+    "LAST_PAGE": "Última página",
+    "RANGE": "{{start}} – {{end}} de {{total}}",
+    "EMPTY_RANGE": "0 de {{total}}"
   }
 }

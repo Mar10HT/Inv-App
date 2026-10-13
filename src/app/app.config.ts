@@ -1,4 +1,6 @@
-import { ApplicationConfig, ErrorHandler, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, LOCALE_ID, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEsHN from '@angular/common/locales/es-HN';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslationObject } from '@ngx-translate/core';
@@ -10,6 +12,10 @@ import { Observable, of } from 'rxjs';
 import { routes } from './app.routes';
 import { authInterceptor, errorInterceptor } from './interceptors';
 import { APP_ICONS } from './shared/icons';
+import { savedLocale } from './shared/app-language';
+
+// Date and number pipes format in Spanish (Honduras) unless the user picked English.
+registerLocaleData(localeEsHN);
 
 // Import translations directly so no HTTP request is needed to start
 import ES_TRANSLATIONS from '../assets/i18n/es.json';
@@ -31,6 +37,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    { provide: LOCALE_ID, useFactory: savedLocale },
     { provide: ErrorHandler, useValue: Sentry.createErrorHandler() },
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideHttpClient(

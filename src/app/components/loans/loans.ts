@@ -19,9 +19,11 @@ import { LoanMobileCards } from './loan-mobile-cards';
 import { ConfirmService } from '../../services/confirm.service';
 import { LoanFormDialog, LoanFormResult } from './loan-form-dialog';
 import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
+import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-loans',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

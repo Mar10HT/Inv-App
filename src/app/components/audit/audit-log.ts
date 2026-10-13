@@ -8,9 +8,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuditService } from '../../services/audit.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.interface';
+import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-audit-log',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

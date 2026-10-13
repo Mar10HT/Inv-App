@@ -13,9 +13,11 @@ import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/di
 import { ConfirmService } from '../../../services/confirm.service';
 import { Spinner } from '../../shared/spinner/spinner';
 import { StatCard } from '../../shared/stat-card/stat-card';
+import { provideTranslatedPaginator } from '../../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-discharge-list',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

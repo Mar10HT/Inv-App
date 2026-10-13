@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App-API | `a17120f` | `seed:fake` crea préstamos con varios ítems y ya no falla |
 | 2026-10-13 | Inv-App | `31ba7ac` | La fecha "Necesario para" de Solicitudes de Material ya no se muestra un día antes |
 | 2026-10-13 | Inv-App-API | `8324e9e` | Rango CAI y fecha de vencimiento de Inventario aceptan fecha sola por API (antes daban 500) |
 | 2026-10-13 | Inv-App | `098a279` | El menú flotante de Comercial (sidebar colapsado) ya no es transparente |
@@ -57,7 +58,7 @@ cd /home/user/inv-app-api && npm run build && (NODE_ENV=development nohup node d
 cd /home/user/Inv-App && (nohup npx ng serve --port 4200 > /tmp/frontend.log 2>&1 &)
 ```
 
-Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.env` con `DATABASE_URL`, `JWT_SECRET` y `CSRF_SECRET` (64 bytes hex), `npx prisma db push --schema=./prisma/schema.prisma`, `npm run seed:rbac`, `npm run seed:fake` (falla en Préstamos pero carga lo anterior) y otra vez `npm run seed:rbac` para vincular roles. Login: `admin@example.com` / `password123`.
+Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.env` con `DATABASE_URL`, `JWT_SECRET` y `CSRF_SECRET` (64 bytes hex), `npx prisma db push --schema=./prisma/schema.prisma`, `npm run seed:rbac`, `npm run seed:fake` y otra vez `npm run seed:rbac` para vincular roles. Ojo: `seed:fake` borra los datos de la base antes de cargar; para probarlo sin perder datos, apuntar `DATABASE_URL` a una base aparte. Login: `admin@example.com` / `password123`.
 
 ## Herramientas y trucos
 
@@ -73,7 +74,8 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 
 Orden sugerido (detalle en `PENDIENTES.md`):
 
-1. `seed:fake` desactualizado para Préstamos.
-2. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, fechas en formato inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
-3. Formato de reportes y PDFs: esperar definición del usuario.
-4. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).
+Los bugs que no necesitaban decisión ya están resueltos. Queda lo que espera al usuario:
+
+1. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, fechas en formato inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
+2. Formato de reportes y PDFs: esperar definición del usuario.
+3. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).

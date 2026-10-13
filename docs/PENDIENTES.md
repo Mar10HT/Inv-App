@@ -37,7 +37,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [x] **Moneda por defecto en Compras y Ventas.** Resuelto en `9b27512` (Inv-App): las compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal.
 - [x] **Crear un rango CAI por API con fecha sola da 500.** Resuelto en `8324e9e` (API): `expiresAt` se normaliza a fecha y hora completas antes de guardar. La fecha de vencimiento de Inventario (`expirationDate`) tenía el mismo bug y quedó resuelta en el mismo commit.
 - [x] **`neededByDate` de Solicitudes de Material se mostraba un día antes.** Confirmado y resuelto en `31ba7ac` (Inv-App): el detalle formatea la fecha en UTC, igual que el vencimiento de Préstamos. Verificado en la app con hora de Honduras: una solicitud para el 1 de marzo se ve el 1 de marzo.
-- [ ] **`seed:fake` falla en Préstamos.** El script no está actualizado al modelo de varios ítems por préstamo (`Unknown argument inventoryItemId`).
+- [x] **`seed:fake` fallaba en Préstamos.** Resuelto en `a17120f` (API): cada préstamo de prueba lleva de 1 a 3 ítems de su bodega de origen. Probado en una base aparte, corriendo el seed dos veces seguidas.
 
 - [ ] **Test de fechas que falla en Chromium 141.** `reports-transactions-tab.spec.ts` ("shows one row per transaction...") compara `'15 ene 2026, 06:00 a. m.'` con una cadena que se ve igual: probablemente difieren en un espacio angosto que depende de la versión de ICU del navegador. Falla también sin cambios en el código.
 

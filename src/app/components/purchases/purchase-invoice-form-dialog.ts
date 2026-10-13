@@ -405,10 +405,12 @@ export class PurchaseInvoiceFormDialog implements AfterViewInit, OnInit {
   created = output<PurchaseInvoiceFormResult>();
 
   ngOnInit(): void {
-    // Suggested default from Fiscal Config's ISV% — always editable, never
-    // forced (same contract as Sale.taxPercent; purchase invoices have no
-    // edit mode, so this always applies).
-    this.taxPercent.set(this.fiscalConfigService.config()?.isvPercent);
+    // Suggested defaults from Fiscal Config's ISV% and currency — always
+    // editable, never forced (same contract as Sale.taxPercent; purchase
+    // invoices have no edit mode, so this always applies).
+    const fiscal = this.fiscalConfigService.config();
+    this.taxPercent.set(fiscal?.isvPercent);
+    if (fiscal?.currency) this.currency.set(fiscal.currency);
   }
 
   ngAfterViewInit(): void {

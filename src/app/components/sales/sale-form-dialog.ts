@@ -418,9 +418,11 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   ngOnInit(): void {
     const existing = this.sale();
     if (!existing) {
-      // Suggested default from Fiscal Config's ISV% — always editable, never
-      // forced (see the `taxPercent` comment on the Sale interface).
-      this.taxPercent.set(this.fiscalConfigService.config()?.isvPercent);
+      // Suggested defaults from Fiscal Config's ISV% and currency — always
+      // editable, never forced (see the `taxPercent` comment on the Sale interface).
+      const fiscal = this.fiscalConfigService.config();
+      this.taxPercent.set(fiscal?.isvPercent);
+      if (fiscal?.currency) this.currency.set(fiscal.currency);
       return;
     }
     this.name.set(existing.name ?? '');

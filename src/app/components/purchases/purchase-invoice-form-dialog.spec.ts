@@ -87,6 +87,21 @@ describe('PurchaseInvoiceFormDialog', () => {
     });
   });
 
+  describe('the currency default', () => {
+    it('is USD when no fiscal config is loaded', () => {
+      expect(component.currency()).toBe('USD');
+    });
+
+    it('follows the fiscal config currency on open', () => {
+      fiscalConfig.set({ currency: 'HNL' } as FiscalConfig);
+
+      const freshFixture = TestBed.createComponent(PurchaseInvoiceFormDialog);
+      freshFixture.detectChanges();
+
+      expect(freshFixture.componentInstance.currency()).toBe('HNL');
+    });
+  });
+
   describe('the items a BULK line can target', () => {
     it('are none until a warehouse is chosen', () => {
       expect(component.availableBulkItems()).toEqual([]);

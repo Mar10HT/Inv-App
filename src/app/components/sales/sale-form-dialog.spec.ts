@@ -122,6 +122,28 @@ describe('SaleFormDialog', () => {
     });
   });
 
+  describe('the currency default', () => {
+    it('is USD for a new sale when no fiscal config is loaded', () => {
+      expect(component.currency()).toBe('USD');
+    });
+
+    it('follows the fiscal config currency for a new sale', async () => {
+      fiscalConfig.set({ currency: 'HNL' } as FiscalConfig);
+
+      await setup();
+
+      expect(component.currency()).toBe('HNL');
+    });
+
+    it('keeps the currency of a quotation being edited', async () => {
+      fiscalConfig.set({ currency: 'USD' } as FiscalConfig);
+
+      await setup({ sale: draftSale({ currency: 'HNL' }) });
+
+      expect(component.currency()).toBe('HNL');
+    });
+  });
+
   describe('the items that can be sold', () => {
     it('are none until a warehouse is chosen', () => {
       expect(component.availableItems()).toEqual([]);

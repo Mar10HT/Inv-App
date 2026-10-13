@@ -13,7 +13,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 | `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `feat/purchase-invoices` |
 | `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `feat/purchase-invoices` |
 
-`feat/purchase-invoices` va 8 commits delante de `main` en el frontend: el menú Comercial, Compras, Pagos y Cuentas por Cobrar/Pagar existen solo ahí. Este archivo y `PENDIENTES.md` viven en la rama `claude/obsidian-pendings-context-pn3gf8` de `Inv-App`.
+`feat/purchase-invoices` va 8 commits delante de `main` en el frontend: el menú Comercial, Compras, Pagos y Cuentas por Cobrar/Pagar existen solo ahí. Este archivo y `PENDIENTES.md` viven en `docs/` de `feat/purchase-invoices` (la rama `claude/obsidian-pendings-context-pn3gf8` ya se mergeó ahí).
 
 ## Decisiones del usuario (respetarlas)
 
@@ -34,6 +34,9 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App-API / Inv-App | `4376274` / `d819a2f` | Errores: `VALIDATION_FAILED` por código, texto del servidor si falta traducción, tests de cobertura y paridad |
+| 2026-10-13 | Inv-App | `830c920` | Fechas siguen el idioma al cambiarlo sin recargar (pipe `appDate`) |
+| 2026-10-13 | Inv-App | `f0ccafe` | Rama de docs mergeada en `feat/purchase-invoices`: los docs se editan ahí desde ahora |
 | 2026-10-13 | Inv-App-API / Inv-App | `dc64b17` / `064371f` | Reportes: Transacciones y Tendencias leen todos los movimientos (`GET /reports/movements`); `Sale.confirmedAt` y `StockTake.adjustmentsApplied` nuevos |
 | 2026-10-13 | Inv-App | `4edc50d` | Un solo campo Cliente con opción "Cliente ocasional" |
 | 2026-10-13 | Inv-App-API / Inv-App | `ed74f6e` / `35455d1` | Numeración automática PRE-/TRA-/SAL-/COT- en lugar de Referencia; script `migrate-document-numbers.sql` |
@@ -91,10 +94,11 @@ railway run npm run seed:rbac    # cada vez que se necesite
 - **Idioma en capturas**: antes de navegar, `localStorage.setItem('language', 'es')` (por el bug del selector, ver PENDIENTES).
 - **API desde el navegador logueado**: pedir `GET /api/auth/csrf-token` **una sola vez** y reutilizarlo en el header `X-CSRF-Token` (pedirlo en cada llamada da 403 por límite).
 - **Cambios de esquema**: hay dos archivos (`prisma/schema.prisma` y `prisma/schema.prod.prisma`), cambiar los dos. Producción usa `prisma db push` sin `--accept-data-loss`: columnas nuevas opcionales o con default, e índices únicos creados antes por SQL. `prisma format` reformatea todo el archivo, no usarlo.
-- **Errores del API**: lanzar con `apiError('CODIGO', 'texto en inglés', params)` y agregar `API_ERRORS.CODIGO` en es/en (la app tutea).
+- **Errores del API**: lanzar con `apiError('CODIGO', 'texto en inglés', params)` y agregar `API_ERRORS.CODIGO` en es/en (la app tutea). Hay tests que fallan si falta el código o la traducción en un idioma.
+- **Fechas en plantillas**: usar `| appDate` (mismos argumentos que `date`), no `| date`.
 - **Fechas a la API**: conviene mandar ISO completo (`2027-06-30T00:00:00.000Z`). Rangos CAI y vencimiento de Inventario ya aceptan fecha sola; otros campos no se revisaron.
-- **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. La suite completa pasa (1501).
-- **Tests del backend**: `npx jest` (475), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
+- **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. La suite completa pasa (1507).
+- **Tests del backend**: `npx jest` (477), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
 - **No usar** `pkill -f "node dist/main.js"` dentro de un comando que contenga ese texto: se mata a sí mismo. Usar `pkill -f "^node dist/main.js"` o el PID.
 
 ## Próximos pasos
@@ -102,6 +106,6 @@ railway run npm run seed:rbac    # cada vez que se necesite
 Todas las inconsistencias quedaron resueltas (ver PENDIENTES.md). Lo que queda:
 
 1. **Pushear** los commits locales de `feat/purchase-invoices` en los dos repos (pendiente de confirmación del usuario). Al desplegar el API, `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push`.
-2. Formato de reportes y PDFs: esperar definición del usuario (incluye unificar el Excel de Transacciones con los movimientos).
+2. Formato de reportes y PDFs: pospuesto; el usuario está definiendo formato fijo para instalaciones de clientes y personalizable en producción (incluye unificar el Excel de Transacciones con los movimientos).
 3. Cuando todo esto llegue a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
 4. Pendientes menores anotados en PENDIENTES.md ("Quedó pendiente de esto").

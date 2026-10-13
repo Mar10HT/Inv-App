@@ -25,6 +25,8 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
 
 ## Formato de reportes y documentos exportables
 
+Pospuesto por el usuario: hay que definir cómo dejar un formato fijo para instalaciones cerradas en servidores de un cliente y uno personalizable en producción.
+
 Falta cambiar el formato de los documentos que genera la app. Hasta que eso esté hecho, el manual no lleva capturas de ellos (los menciona sin imagen).
 
 - [ ] **Comprobantes PDF** de Ventas, Compras, Transferencias, Préstamos y Salidas: definir el formato final. Lo que se vio al probarlos:
@@ -67,6 +69,6 @@ Decisiones del usuario: borrar los roles duplicados; numeración automática en 
 - [ ] **Después de desplegar el API**: correr `railway run npm run seed:rbac` una vez para borrar los roles duplicados de producción.
 - [ ] **Al desplegar el API**: `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push` (numera lo existente, mueve las referencias y crea los índices únicos). Probado sobre una copia de la base local con los mismos pasos.
 - [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. Unificarlo cuando se defina el formato de reportes.
-- [ ] **Conteos físicos anteriores a este cambio** no aparecen en Transacciones/Tendencias: no se guardaba si se aplicaron los ajustes.
-- [ ] **Cambiar de idioma**: los textos cambian al instante, pero las fechas siguen en el idioma anterior hasta recargar la página.
-- [ ] **Errores sin código**: si en el futuro se agrega un error 400 sin `apiError(...)`, se verá "Error de validación" en vez del texto. Toda excepción nueva debe llevar código y su traducción en `API_ERRORS`.
+- [ ] (sin prioridad) **Conteos físicos anteriores a este cambio** no aparecen en Transacciones/Tendencias: no se guardaba si se aplicaron los ajustes.
+- [x] **Cambiar de idioma**: resuelto. Las fechas siguen el idioma al instante (pipe `appDate` en lugar de `date`; Inventario y Reportes también). Quedan fuera las exportaciones de Transferencias y Auditoría, que entran en el trabajo de formato.
+- [x] **Errores sin código**: resuelto. La validación de formularios llega con el código `VALIDATION_FAILED` y muestra un mensaje genérico traducido. Un error sin código o sin traducción muestra el texto del servidor y deja un aviso en consola. Un test del API falla si se lanza una excepción 400/409/422 sin `apiError(...)`, y otro del frontend falla si es/en no traducen los mismos códigos.

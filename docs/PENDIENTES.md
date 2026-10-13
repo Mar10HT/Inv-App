@@ -33,7 +33,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 
 - [x] **El sidebar expandido cambiaba la app a inglés.** Resuelto en `b10282e` (Inv-App): el selector ya no llama `translate.use()` al iniciar, solo refleja el idioma activo.
 - [x] **Borrar una Transacción manual no devolvía el stock.** Resuelto en `89da9fe` (API) y `5569cd1` (texto de confirmación): el borrado revierte el movimiento, rechaza borrar una Entrada cuyo stock ya se usó, y una Salida mayor que el stock se rechaza en vez de recortarse a 0.
-- [ ] **Flyout del menú Comercial sin fondo.** Con el sidebar colapsado, el menú flotante de Comercial se abre transparente y el texto queda encima de los íconos.
+- [x] **Flyout del menú Comercial sin fondo.** Resuelto en `098a279` (Inv-App): el tema de Material no genera `--mat-sys-surface-container`; el panel del menú ahora usa los colores de la app, en modo oscuro y claro.
 - [x] **Moneda por defecto en Compras y Ventas.** Resuelto en `9b27512` (Inv-App): las compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal.
 - [ ] **Crear un rango CAI por API con fecha sola da 500.** El DTO acepta `expiresAt: "2027-06-30"` (`@IsDateString`), pero Prisma lo rechaza. Desde la pantalla de Ajustes funciona porque manda la fecha completa.
 - [ ] **`neededByDate` de Solicitudes de Material** probablemente tiene el mismo corrimiento de un día que tenía `dueDate` en Préstamos. No verificado.
@@ -42,6 +42,9 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [ ] **Test de fechas que falla en Chromium 141.** `reports-transactions-tab.spec.ts` ("shows one row per transaction...") compara `'15 ene 2026, 06:00 a. m.'` con una cadena que se ve igual: probablemente difieren en un espacio angosto que depende de la versión de ICU del navegador. Falla también sin cambios en el código.
 
 ## Inconsistencias y mejoras
+
+- [ ] **Íconos muy chicos en el menú flotante de Comercial** (sidebar colapsado): se ven de unos 8 px. Revisar el tamaño de `lucide-icon` dentro de `mat-menu-item`.
+- [ ] **El tema de Material no genera las variables `--mat-sys-*`** (`custom-theme.scss` usa mapas propios en `mat.theme`). Hoy solo afecta al menú, que ya tiene colores propios; otros componentes de Material que dependan de esas variables pueden verse sin fondo.
 
 - [ ] **Mensajes de error del backend en inglés.** Para errores 400 el frontend muestra el texto que manda la API ("Insufficient quantity for item...", "Cannot delete this entry..."). Traducirlos o mapearlos a claves i18n.
 

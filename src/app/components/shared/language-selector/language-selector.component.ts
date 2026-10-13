@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -48,14 +49,18 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class LanguageSelectorComponent implements OnInit {
   private translate = inject(TranslateService);
+  private destroyRef = inject(DestroyRef);
 
   currentLang = signal<string>('en');
 
   ngOnInit() {
-    // Load saved language or default to 'en'
-    const savedLang = localStorage.getItem('language') || 'en';
-    this.currentLang.set(savedLang);
-    this.translate.use(savedLang);
+    // Only reflect the language the app already chose (saved, else the browser's, see app.ts).
+    // Calling use() here with an 'en' fallback switched the whole app to English the first
+    // time a user without a saved language expanded the sidebar.
+    this.currentLang.set(this.translate.getCurrentLang() || 'en');
+    this.translate.onLangChange
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ lang }) => this.currentLang.set(lang));
   }
 
   changeLang(lang: string) {

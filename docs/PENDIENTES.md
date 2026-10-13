@@ -4,14 +4,16 @@ Lista de problemas encontrados al probar la app y escribir el Manual de Usuario.
 
 Última actualización: 2026-10-13.
 
-## Prioridad: arreglar las alertas
+## Alertas: resuelto el 2026-10-13
 
-La campana del sidebar tiene varios problemas a la vez:
+Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
 
-- [ ] **El panel se abre fuera de la pantalla.** Con el sidebar expandido, el panel de la campana se despliega hacia la izquierda y queda cortado (arranca 61 px fuera de la pantalla a 1440 px de ancho): los nombres de los ítems no se leen completos. Componente: `src/app/components/shared/notification-bell/notification-bell.ts`.
-- [ ] **Las alertas solo se generan cada 6 horas.** `checkLowStock()` corre con `@Cron(EVERY_6_HOURS)` en `Inv-App-API/src/alerts/alerts.service.ts` y no se dispara cuando cambia el stock (ventas, salidas, compras, conteos). Después de reiniciar el servidor la campana dice "Sin alertas activas" aunque el Dashboard muestre 39 ítems con stock bajo. Existe `POST /alerts/trigger-check`, pero nadie lo llama desde la app.
-- [ ] **"Ver todas" lleva al Historial de Cambios** (`routerLink="/audit"`) en vez de a una lista de alertas.
-- [ ] **Ítem único con stock 1/1 marcado como stock bajo.** Una laptop (ítem Único, 1 unidad, mínimo 1) aparece en la campana como "Stock bajo · 1/1". La alerta toma el `status` del ítem, así que hay que revisar cómo se calcula `LOW_STOCK` para ítems únicos.
+- [x] **El panel se abría fuera de la pantalla.** Ahora queda fijo sobre el pie del menú lateral, dentro de la pantalla en computadora y en celular.
+- [x] **Las alertas solo se generaban cada 6 horas.** Causa de fondo: ventas, compras, salidas, transferencias, solicitudes, conteos y transacciones cambiaban la cantidad sin recalcular el estado del ítem, así que tampoco se actualizaban el Dashboard ni Reportes. Ahora cada operación recalcula estados y alertas al terminar, y también al arrancar el servidor.
+- [x] **"Ver todas" llevaba al Historial de Cambios.** Ahora abre Reportes en la pestaña Estado.
+- [x] **Ítems Únicos marcados como stock bajo (1/1).** Eran 13 en la base de prueba; el Dashboard bajó de 39 a 26 ítems con stock bajo.
+- [x] Las alertas de ítems eliminados ahora se resuelven solas.
+- [ ] **Actualizar el Manual de Usuario cuando esto llegue a producción**: la sección "Alertas de stock" y la pregunta frecuente sobre la campana todavía dicen que las alertas se revisan cada 6 horas.
 
 ## Formato de reportes y documentos exportables
 
@@ -33,6 +35,8 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [ ] **Crear un rango CAI por API con fecha sola da 500.** El DTO acepta `expiresAt: "2027-06-30"` (`@IsDateString`), pero Prisma lo rechaza. Desde la pantalla de Ajustes funciona porque manda la fecha completa.
 - [ ] **`neededByDate` de Solicitudes de Material** probablemente tiene el mismo corrimiento de un día que tenía `dueDate` en Préstamos. No verificado.
 - [ ] **`seed:fake` falla en Préstamos.** El script no está actualizado al modelo de varios ítems por préstamo (`Unknown argument inventoryItemId`).
+
+- [ ] **Test de fechas que falla en Chromium 141.** `reports-transactions-tab.spec.ts` ("shows one row per transaction...") compara `'15 ene 2026, 06:00 a. m.'` con una cadena que se ve igual: probablemente difieren en un espacio angosto que depende de la versión de ICU del navegador. Falla también sin cambios en el código.
 
 ## Inconsistencias y mejoras
 

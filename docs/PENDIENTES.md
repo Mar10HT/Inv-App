@@ -13,7 +13,10 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
 - [x] **"Ver todas" llevaba al Historial de Cambios.** Ahora abre Reportes en la pestaña Estado.
 - [x] **Ítems Únicos marcados como stock bajo (1/1).** Eran 13 en la base de prueba; el Dashboard bajó de 39 a 26 ítems con stock bajo.
 - [x] Las alertas de ítems eliminados ahora se resuelven solas.
-- [ ] **Actualizar el Manual de Usuario cuando esto llegue a producción**: en Compras, quitar el recuadro "Importante" que pide revisar la Moneda (ya arranca en la de la Configuración Fiscal). la sección "Alertas de stock" y la pregunta frecuente sobre la campana todavía dicen que las alertas se revisan cada 6 horas. Lo mismo con Transacciones manuales: el recuadro "Importante" y la pregunta "Registré una transacción por error" dicen que borrar no devuelve el stock; ahora sí lo devuelve.
+- [ ] **Actualizar el Manual de Usuario cuando estos arreglos lleguen a producción**:
+    - "Alertas de stock" y la pregunta frecuente de la campana: ya no esperan 6 horas, se generan al mover stock.
+    - Transacciones manuales: el recuadro "Importante" y la pregunta "Registré una transacción por error" dicen que borrar no devuelve el stock; ahora sí lo devuelve.
+    - Compras: quitar el recuadro "Importante" que pide revisar la Moneda (ya arranca en la de la Configuración Fiscal).
 
 ## Formato de reportes y documentos exportables
 

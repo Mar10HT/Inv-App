@@ -4,7 +4,7 @@ import { catchError, switchMap, throwError, BehaviorSubject, filter, take, Obser
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
-import { ApiError, isApiError } from '../interfaces/api-error.interface';
+import { ApiError, ApiErrorParams, isApiError } from '../interfaces/api-error.interface';
 import { environment } from '../../environments/environment';
 
 let isRefreshing = false;
@@ -32,11 +32,58 @@ const ERROR_KEYS: Record<number, string> = {
 // Statuses whose server message is written for the user. Others could leak internals.
 const USER_FACING_STATUSES = [400, 409, 422];
 
-/** Nest sends a string, or a list of strings for DTO validation. */
-function serverMessage(error: HttpErrorResponse): string | null {
-  const message = error.error?.message;
-  if (Array.isArray(message)) return message.join('. ');
-  return typeof message === 'string' ? message : null;
+/** Body of a 4xx from the API (see the backend's GlobalExceptionFilter and apiError()). */
+interface ServerErrorBody {
+  /** English text. Nest sends a list of strings for DTO validation. */
+  message?: unknown;
+  /** Stable error code, translated under API_ERRORS.<code>. */
+  code?: unknown;
+  /** Values to interpolate into the translation. */
+  params?: unknown;
+}
+
+function isParams(value: unknown): value is ApiErrorParams {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * The text a 400/409/422 shows the user:
+ * - a known `code` gives its API_ERRORS translation, with `params` interpolated;
+ * - a list of messages without a code is DTO validation, shown as the generic text for the status;
+ * - anything else keeps the server's own message.
+ */
+function userFacingError(
+  error: HttpErrorResponse,
+  translate: TranslateService,
+): ApiError['error'] {
+  const body: ServerErrorBody | null = typeof error.error === 'object' ? error.error : null;
+  if (!body) return null;
+
+  const code = typeof body.code === 'string' && body.code ? body.code : undefined;
+  const params = isParams(body.params) ? body.params : undefined;
+
+  if (code) {
+    const key = `API_ERRORS.${code}`;
+    const text: unknown = translate.instant(key, localizeParams(params, translate));
+    if (typeof text === 'string' && text !== key) return { message: text, code, params };
+  }
+
+  const message = body.message;
+  if (Array.isArray(message)) {
+    if (!code) {
+      return { message: translate.instant(`NOTIFICATIONS.ERRORS.${ERROR_KEYS[error.status] ?? 'VALIDATION_FAILED'}`) };
+    }
+    return message.length ? { message: message.join('. '), code, params } : null;
+  }
+  return typeof message === 'string' && message ? { message, code, params } : null;
+}
+
+/** Statuses arrive as enum values (PENDING); show them the way the user knows them. */
+function localizeParams(params: ApiErrorParams | undefined, translate: TranslateService): ApiErrorParams | undefined {
+  if (typeof params?.['status'] !== 'string') return params;
+  const key = `API_ERRORS.STATUS_VALUES.${params['status']}`;
+  const status: unknown = translate.instant(key);
+  return typeof status === 'string' && status !== key ? { ...params, status } : params;
 }
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
@@ -48,11 +95,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const translate = inject(TranslateService);
 
   const toApiError = (error: HttpErrorResponse): ApiError => {
-    const message = USER_FACING_STATUSES.includes(error.status) ? serverMessage(error) : null;
     return {
       status: error.status,
       message: translate.instant(`NOTIFICATIONS.ERRORS.${ERROR_KEYS[error.status] ?? 'UNKNOWN'}`),
-      error: message ? { message } : null,
+      error: USER_FACING_STATUSES.includes(error.status) ? userFacingError(error, translate) : null,
       originalError: error,
     };
   };

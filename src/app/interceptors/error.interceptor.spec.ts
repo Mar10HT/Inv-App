@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
-import { TranslateLoader, TranslateModule, TranslationObject } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateService, TranslationObject } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 
 import { errorInterceptor } from './error.interceptor';
@@ -91,12 +91,87 @@ describe('errorInterceptor', () => {
       expect(error?.message).toBe('NOTIFICATIONS.ERRORS.VALIDATION_FAILED');
     });
 
-    it('joins the message list Nest sends for DTO validation errors', async () => {
+    it('shows the generic validation text instead of the list Nest sends for DTO validation errors', async () => {
       const result = get('/things');
       fail('/things', 400, { message: ['email must be an email', 'password is too short'] });
 
       const { error } = await result;
-      expect(error?.error?.message).toBe('email must be an email. password is too short');
+      expect(error?.error?.message).toBe('NOTIFICATIONS.ERRORS.VALIDATION_FAILED');
+    });
+
+    describe('with an error code', () => {
+      beforeEach(() => {
+        const translate = TestBed.inject(TranslateService);
+        translate.setTranslation('es', {
+          NOTIFICATIONS: { ERRORS: { VALIDATION_FAILED: 'Error de validación.', CONFLICT: 'Conflicto.' } },
+          API_ERRORS: {
+            INSUFFICIENT_STOCK: 'Cantidad insuficiente de {{item}}. Disponible: {{available}}, solicitado: {{requested}}.',
+            SALE_NOT_EDITABLE: 'No se puede editar una venta en estado {{status}}.',
+            EMAIL_ALREADY_EXISTS: 'Ya existe un usuario con este correo electrónico.',
+            STATUS_VALUES: { CANCELLED: 'Cancelado' }
+          }
+        });
+        translate.use('es');
+      });
+
+      it('shows the translation of the code with its params', async () => {
+        const params = { item: 'Mouse', available: 1, requested: 3 };
+        const result = get('/things');
+        fail('/things', 400, {
+          statusCode: 400,
+          message: ['Insufficient quantity for item Mouse. Available: 1, Requested: 3'],
+          code: 'INSUFFICIENT_STOCK',
+          params
+        });
+
+        const { error } = await result;
+        expect(error?.error).toEqual({
+          message: 'Cantidad insuficiente de Mouse. Disponible: 1, solicitado: 3.',
+          code: 'INSUFFICIENT_STOCK',
+          params
+        });
+      });
+
+      it('translates a status param the way the user knows it', async () => {
+        const result = get('/things');
+        fail('/things', 400, {
+          message: ['Cannot edit a sale in CANCELLED status'],
+          code: 'SALE_NOT_EDITABLE',
+          params: { status: 'CANCELLED' }
+        });
+
+        expect((await result).error?.error?.message).toBe('No se puede editar una venta en estado Cancelado.');
+      });
+
+      it('translates a code sent with a 409', async () => {
+        const result = get('/things');
+        fail('/things', 409, { message: ['User with this email already exists'], code: 'EMAIL_ALREADY_EXISTS' });
+
+        expect((await result).error?.error?.message).toBe('Ya existe un usuario con este correo electrónico.');
+      });
+
+      it('falls back to the server message when the code has no translation', async () => {
+        const result = get('/things');
+        fail('/things', 400, { message: ['Loan numbering is exhausted'], code: 'SOMETHING_NEW' });
+
+        const { error } = await result;
+        expect(error?.error?.message).toBe('Loan numbering is exhausted');
+        expect(error?.error?.code).toBe('SOMETHING_NEW');
+      });
+
+      it('shows the translated generic text for validation lists without a code', async () => {
+        const result = get('/things');
+        fail('/things', 400, { message: ['email must be an email'] });
+
+        expect((await result).error?.error?.message).toBe('Error de validación.');
+      });
+
+      it('shows the generic conflict text for a 409 list without a code', async () => {
+        const result = get('/things');
+        fail('/things', 409, { message: ['A record with this value already exists'] });
+
+        expect((await result).error?.error?.message).toBe('Conflicto.');
+      });
     });
 
     it('exposes the server message of a 409', async () => {

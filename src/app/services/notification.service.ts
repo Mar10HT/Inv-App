@@ -166,7 +166,8 @@ export class NotificationService {
       this.error('NOTIFICATIONS.ERRORS.NOT_FOUND', {
         interpolateParams: { entity: entityKey ? this.translate.instant(entityKey) : '' }
       });
-    } else if (error?.status === 409) {
+    } else if (error?.status === 409 && !error?.error?.message) {
+      // A conflict the API explained (already translated by errorInterceptor) is shown below.
       this.error('NOTIFICATIONS.ERRORS.CONFLICT');
     } else if (error?.status >= 500) {
       this.error('NOTIFICATIONS.ERRORS.SERVER');

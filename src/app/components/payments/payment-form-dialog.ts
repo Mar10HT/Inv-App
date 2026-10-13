@@ -14,7 +14,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { LucideAngularModule } from 'lucide-angular';
@@ -31,6 +30,7 @@ import {
   PaymentMethod,
   PaymentStatus,
 } from '../../interfaces/payment.interface';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -52,7 +52,7 @@ const METHODS: PaymentMethod[] = [
 @Component({
   selector: 'app-payment-form-dialog',
   standalone: true,
-  imports: [FormsModule, A11yModule, LucideAngularModule, TranslateModule, DatePipe, NgxPermissionsModule],
+  imports: [FormsModule, A11yModule, LucideAngularModule, TranslateModule, AppDatePipe, NgxPermissionsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -90,7 +90,7 @@ const METHODS: PaymentMethod[] = [
                       {{ document().currency }} {{ p.amount }} · {{ 'PAYMENTS.METHOD_OPTIONS.' + p.method | translate }}
                     </div>
                     <div class="text-xs text-[var(--color-on-surface-variant)]">
-                      {{ p.createdAt | date:'short' }}
+                      {{ p.createdAt | appDate:'short' }}
                       @if (p.reference) { · {{ p.reference }} }
                     </div>
                   </div>

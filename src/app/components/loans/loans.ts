@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -20,6 +20,7 @@ import { ConfirmService } from '../../services/confirm.service';
 import { LoanFormDialog, LoanFormResult } from './loan-form-dialog';
 import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
 import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-loans',
@@ -35,7 +36,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
     LoanFormDialog,
     LoanQrDialog,
     LoanScanDialog,
-    DatePipe,
+    AppDatePipe,
     LoanStatsCards,
     LoanMobileCards
   ],
@@ -173,7 +174,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                       </div>
                     </td>
                     <td class="px-6 py-4">
-                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate':'UTC' }}</span>
+                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | appDate:'mediumDate':'UTC' }}</span>
                     </td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(loan.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
@@ -273,7 +274,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                             </ng-container>
                           }
                           @case (LoanStatus.RETURNED) {
-                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | date:'mediumDate' }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | appDate:'mediumDate' }}</span>
                           }
                           @case (LoanStatus.CANCELLED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>

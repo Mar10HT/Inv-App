@@ -17,6 +17,7 @@ import { CaiRange, CreateCaiRangeDto } from '../../interfaces/cai-range.interfac
 import { Currency } from '../../interfaces/inventory-item.interface';
 import { parseDate } from '../../utils/date.utils';
 import { Spinner } from '../shared/spinner/spinner';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-settings',
@@ -24,6 +25,7 @@ import { Spinner } from '../shared/spinner/spinner';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    AppDatePipe,
     FormsModule,
     LucideAngularModule,
     TranslateModule,
@@ -352,7 +354,7 @@ import { Spinner } from '../shared/spinner/spinner';
                   <p class="text-xs mt-1.5" style="color: var(--color-on-surface-variant);">
                     {{ range.establishmentCode }}-{{ range.emissionPointCode }}-{{ range.documentTypeCode }} ·
                     {{ range.rangeStart }}–{{ range.rangeEnd }} ({{ range.currentNumber }}) ·
-                    {{ 'SETTINGS.CAI.EXPIRES_AT' | translate }}: {{ range.expiresAt | date:'dd/MM/yyyy' }}
+                    {{ 'SETTINGS.CAI.EXPIRES_AT' | translate }}: {{ range.expiresAt | appDate:'dd/MM/yyyy' }}
                   </p>
                 </div>
                 <ng-container *ngxPermissionsOnly="['settings:edit']">
@@ -524,7 +526,7 @@ import { Spinner } from '../shared/spinner/spinner';
                     </div>
                     <p class="text-xs mt-1.5 truncate" style="color: var(--color-on-surface-variant);">{{ report.recipientEmails }}</p>
                     <p class="text-xs mt-0.5" style="color: var(--color-on-surface-variant);">
-                      {{ 'SCHEDULED_REPORTS.NEXT_SEND' | translate }}: {{ report.nextSendAt | date:'dd/MM/yyyy HH:mm' }}
+                      {{ 'SCHEDULED_REPORTS.NEXT_SEND' | translate }}: {{ report.nextSendAt | appDate:'dd/MM/yyyy HH:mm' }}
                     </p>
                   </div>
                   <div class="flex items-center gap-2 ml-3 flex-shrink-0">

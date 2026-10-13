@@ -1,5 +1,4 @@
 import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -21,6 +20,7 @@ import { StockTakeCompleteDialogComponent } from './stock-take-complete-dialog';
 import { StockTakeVarianceComponent } from './stock-take-variance';
 import { StockTakeStatsCards } from './stock-take-stats';
 import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-stock-take',
@@ -36,7 +36,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
     StockTakeFormDialogComponent,
     StockTakeCompleteDialogComponent,
     StockTakeVarianceComponent,
-    DatePipe,
+    AppDatePipe,
     StockTakeStatsCards
   ],
   template: `
@@ -138,7 +138,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                         </div>
                       </td>
                       <td class="px-6 py-4 text-foreground">{{ st.startedByName }}</td>
-                      <td class="px-6 py-4 text-foreground">{{ st.createdAt | date:'mediumDate' }}</td>
+                      <td class="px-6 py-4 text-foreground">{{ st.createdAt | appDate:'mediumDate' }}</td>
                       <td class="px-6 py-4">
                         <span [class]="getStatusClass(st.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                           {{ getStatusLabel(st.status) }}
@@ -200,7 +200,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                   </div>
                   <div class="flex justify-between text-sm">
                     <span class="text-[var(--color-on-surface-variant)]">{{ st.startedByName }}</span>
-                    <span class="text-[var(--color-on-surface-variant)]">{{ st.createdAt | date:'mediumDate' }}</span>
+                    <span class="text-[var(--color-on-surface-variant)]">{{ st.createdAt | appDate:'mediumDate' }}</span>
                   </div>
                 </div>
               } @empty {

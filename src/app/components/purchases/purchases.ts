@@ -10,7 +10,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -34,6 +34,7 @@ import {
 } from './purchase-invoice-form-dialog';
 import { StatCard } from '../shared/stat-card/stat-card';
 import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form-dialog';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-purchases',
@@ -41,7 +42,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    DatePipe,
+    AppDatePipe,
     NgClass,
     LucideAngularModule,
     TranslateModule,
@@ -183,7 +184,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
                       }
                     </td>
                     <td class="px-4 py-3 text-[var(--color-on-surface-variant)] text-sm">
-                      {{ purchase.createdAt | date:'medium' }}
+                      {{ purchase.createdAt | appDate:'medium' }}
                     </td>
                     <td class="px-4 py-3">
                       <div class="flex items-center justify-end gap-2">
@@ -253,7 +254,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
                     {{ purchase.items.length }} {{ 'PURCHASES.COL_ITEMS' | translate }}
                   </span>
                   <span class="text-[var(--color-on-surface-variant)] text-xs">
-                    {{ purchase.createdAt | date:'short' }}
+                    {{ purchase.createdAt | appDate:'short' }}
                   </span>
                 </div>
                 @if ((purchase.balance ?? 0) > 0) {

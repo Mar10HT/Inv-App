@@ -8,6 +8,7 @@ import { NotificationService } from '../../services/notification.service';
 import { UserRole } from '../../interfaces/user.interface';
 import { ChangePasswordDialog } from './change-password-dialog/change-password-dialog';
 import { Spinner } from '../shared/spinner/spinner';
+import { dateFormatterFor } from '../../shared/app-language';
 
 @Component({
   selector: 'app-profile',
@@ -254,10 +255,6 @@ export class Profile implements OnInit {
   formatDate(date: Date | string | undefined): string {
     if (!date) return '';
     const d = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }).format(d);
+    return dateFormatterFor(this.translate.getCurrentLang(), { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
   }
 }

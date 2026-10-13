@@ -10,7 +10,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -31,6 +31,7 @@ import { ConfirmService } from '../../services/confirm.service';
 import { SaleFormDialog, SaleFormResult } from './sale-form-dialog';
 import { StatCard } from '../shared/stat-card/stat-card';
 import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form-dialog';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-sales',
@@ -38,7 +39,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    DatePipe,
+    AppDatePipe,
     NgClass,
     LucideAngularModule,
     TranslateModule,
@@ -212,7 +213,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
                       </span>
                     </td>
                     <td class="px-4 py-3 text-[var(--color-on-surface-variant)] text-sm">
-                      {{ sale.createdAt | date:'medium' }}
+                      {{ sale.createdAt | appDate:'medium' }}
                     </td>
                     <td class="px-4 py-3">
                       <div class="flex items-center justify-end gap-2">
@@ -330,7 +331,7 @@ import { PaymentFormDialog, PaymentFormDocument } from '../payments/payment-form
                   </div>
                 }
                 <div class="text-[var(--color-on-surface-variant)] text-xs mt-1">
-                  {{ sale.createdAt | date:'short' }}
+                  {{ sale.createdAt | appDate:'short' }}
                 </div>
                 <div class="flex items-center gap-2 mt-3">
                   @switch (sale.status) {

@@ -1,5 +1,4 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -10,6 +9,7 @@ import { DischargeRequestService } from '../../../services/discharge-request.ser
 import { NotificationService } from '../../../services/notification.service';
 import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/discharge-request.interface';
 import { ConfirmService } from '../../../services/confirm.service';
+import { AppDatePipe } from '../../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-discharge-detail',
@@ -20,7 +20,7 @@ import { ConfirmService } from '../../../services/confirm.service';
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
-    DatePipe,
+    AppDatePipe,
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -47,7 +47,7 @@ import { ConfirmService } from '../../../services/confirm.service';
                   {{ getStatusLabel(request()!.status) }}
                 </span>
               </div>
-              <p class="text-[var(--color-on-surface-variant)]">{{ request()!.createdAt | date:'mediumDate' }}</p>
+              <p class="text-[var(--color-on-surface-variant)]">{{ request()!.createdAt | appDate:'mediumDate' }}</p>
             </div>
 
             @if (request()!.status === Status.PENDING) {
@@ -96,7 +96,7 @@ import { ConfirmService } from '../../../services/confirm.service';
               @if (request()!.neededByDate) {
                 <div>
                   <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</p>
-                  <p class="text-foreground">{{ request()!.neededByDate! | date:'mediumDate':'UTC' }}</p>
+                  <p class="text-foreground">{{ request()!.neededByDate! | appDate:'mediumDate':'UTC' }}</p>
                 </div>
               }
               <div>
@@ -162,7 +162,7 @@ import { ConfirmService } from '../../../services/confirm.service';
                 </div>
                 <div>
                   <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'DISCHARGES.DETAIL.RESOLVED_AT' | translate }}</p>
-                  <p class="text-foreground">{{ request()!.resolvedAt ? (request()!.resolvedAt! | date:'mediumDate') : '-' }}</p>
+                  <p class="text-foreground">{{ request()!.resolvedAt ? (request()!.resolvedAt! | appDate:'mediumDate') : '-' }}</p>
                 </div>
                 @if (request()!.rejectedReason) {
                   <div class="sm:col-span-2">

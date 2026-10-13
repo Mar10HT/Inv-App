@@ -22,6 +22,7 @@ import { ReportsTransactionsTab } from './tabs/reports-transactions-tab';
 import { ReportsTrendsTab } from './tabs/reports-trends-tab';
 import { ReportsValueTab } from './tabs/reports-value-tab';
 import { Spinner } from '../shared/spinner/spinner';
+import { localeFor } from '../../shared/app-language';
 
 @Component({
   selector: 'app-reports',
@@ -607,12 +608,13 @@ export class Reports implements OnInit {
 
   async exportTransactions(): Promise<void> {
     const t = (key: string) => this.translate.instant(key);
+    const locale = localeFor(this.translate.getCurrentLang());
     const rows: XlsxRow[] = [];
 
     for (const tx of this.filteredTransactions()) {
       for (const item of tx.items) {
         rows.push({
-          [t('REPORTS.TABLE.DATE')]:               formatDateTime(tx.date),
+          [t('REPORTS.TABLE.DATE')]:               formatDateTime(tx.date, locale),
           [t('REPORTS.TABLE.TYPE')]:               t(`TRANSACTIONS.TYPE.${tx.type}`),
           [t('REPORTS.TABLE.ORIGIN')]:             this.originLabel(tx),
           [t('TRANSACTION.SOURCE_WAREHOUSE')]:     tx.sourceWarehouse?.name || '',
@@ -661,6 +663,7 @@ export class Reports implements OnInit {
   async exportAssignments(): Promise<void> {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
+    const locale = localeFor(this.translate.getCurrentLang());
 
     const rows = this.scopedItems()
       .filter(item => item.itemType === ItemType.UNIQUE)
@@ -672,7 +675,7 @@ export class Reports implements OnInit {
         [t('REPORTS.PDF.WAREHOUSE')]:           warehouses.find(w => w.id === item.warehouseId)?.name || '',
         [t('REPORTS.CSV.ASSIGNED_TO')]:         item.assignedToUser?.name || '',
         [t('REPORTS.PDF.EMAIL')]:               item.assignedToUser?.email || '',
-        [t('REPORTS.CSV.ASSIGNMENT_DATE')]:     item.assignedAt ? formatDate(item.assignedAt) : '',
+        [t('REPORTS.CSV.ASSIGNMENT_DATE')]:     item.assignedAt ? formatDate(item.assignedAt, locale) : '',
         [t('REPORTS.CSV.ASSIGNMENT_STATUS')]:   item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED'),
       }));
 

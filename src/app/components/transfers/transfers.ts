@@ -1,7 +1,6 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -18,6 +17,7 @@ import { TransferStatsCards } from './transfer-stats';
 import { TransferFormDialog, TransferFormResult } from './transfer-form-dialog';
 import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRejectDialog, TransferRejectResult } from './transfer-qr-dialog';
 import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-transfers',
@@ -34,7 +34,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
     TransferQrDialog,
     TransferScanDialog,
     TransferRejectDialog,
-    DatePipe,
+    AppDatePipe,
     TransferStatsCards
   ],
   template: `
@@ -168,7 +168,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                       </div>
                     </td>
                     <td class="px-6 py-4 text-foreground">{{ request.requestedByName }}</td>
-                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | date:'mediumDate' }}</td>
+                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | appDate:'mediumDate' }}</td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                         {{ getStatusLabel(request.status) }}
@@ -233,7 +233,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                             </ng-container>
                           }
                           @case (Status.COMPLETED) {
-                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | date:'mediumDate' }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | appDate:'mediumDate' }}</span>
                           }
                           @case (Status.REJECTED) {
                             <span class="text-[var(--color-status-error)] text-sm truncate max-w-[150px]" [title]="request.rejectedReason">
@@ -290,7 +290,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                   </div>
                   <div>
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
-                    <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
+                    <p class="text-foreground">{{ request.createdAt | appDate:'mediumDate' }}</p>
                   </div>
                 </div>
                 <!-- PDF download — always available -->

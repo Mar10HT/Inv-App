@@ -17,10 +17,30 @@ export function savedLanguage(): AppLanguage {
   return saved === 'en' || saved === 'es' ? saved : 'es';
 }
 
+/** Locale to format dates with for a language; Spanish (Honduras) unless it is English. */
+export function localeFor(language: string | null | undefined): string {
+  return language === 'en' ? LOCALES.en : LOCALES.es;
+}
+
 /**
- * LOCALE_ID is read once at startup, so after switching language the dates
- * follow on the next page load.
+ * LOCALE_ID, read once at startup. Number pipes use it (es-HN and en-US
+ * format numbers the same way); dates go through AppDatePipe and localeFor()
+ * instead, so they follow a language switch without reloading.
  */
 export function savedLocale(): string {
   return LOCALES[savedLanguage()];
+}
+
+const formatters = new Map<string, Intl.DateTimeFormat>();
+
+/** A cached Intl.DateTimeFormat for the given app language (see localeFor). */
+export function dateFormatterFor(language: string | null | undefined, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const locale = localeFor(language);
+  const key = `${locale}|${JSON.stringify(options)}`;
+  let formatter = formatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options);
+    formatters.set(key, formatter);
+  }
+  return formatter;
 }

@@ -1,16 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Loan, LoanStatus } from '../../interfaces/loan.interface';
 import { getLoanDueDateClass, getLoanStatusClass, summarizeLoanItems, totalLoanQuantity } from '../../utils/loan.utils';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-loan-mobile-cards',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, LucideAngularModule, NgxPermissionsModule, TranslateModule],
+  imports: [AppDatePipe, LucideAngularModule, NgxPermissionsModule, TranslateModule],
   template: `
     <div class="lg:hidden divide-y divide-[var(--color-border-subtle)]">
       @for (loan of loans(); track loan.id) {
@@ -45,7 +45,7 @@ import { getLoanDueDateClass, getLoanStatusClass, summarizeLoanItems, totalLoanQ
             </div>
             <div>
               <p class="text-[var(--color-on-surface-variant)]">{{ 'LOANS.DUE_DATE' | translate }}</p>
-              <p [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate':'UTC' }}</p>
+              <p [class]="getDueDateClass(loan)">{{ loan.dueDate | appDate:'mediumDate':'UTC' }}</p>
             </div>
           </div>
           <!-- PDF download — always available -->

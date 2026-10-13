@@ -1,5 +1,4 @@
 import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -9,6 +8,7 @@ import { AuditService } from '../../services/audit.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.interface';
 import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-audit-log',
@@ -20,7 +20,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
     LucideAngularModule,
     MatPaginatorModule,
     TranslateModule,
-    DatePipe
+    AppDatePipe
   ],
   template: `
     <div class="min-h-screen bg-surface p-6">
@@ -185,7 +185,7 @@ import { provideTranslatedPaginator } from '../../shared/translated-paginator-in
                         <p class="text-[var(--color-on-surface-variant)] text-sm">{{ log.entityName }}</p>
                       </div>
                       <div class="text-sm text-[var(--color-on-surface-variant)]">
-                        {{ log.createdAt | date:'medium' }}
+                        {{ log.createdAt | appDate:'medium' }}
                       </div>
                     </div>
 

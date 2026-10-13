@@ -12,6 +12,7 @@ import { ConfirmService } from '../../services/confirm.service';
 import { TransactionFormDialog } from './transaction-form-dialog';
 import { Spinner } from '../shared/spinner/spinner';
 import { EmptyState } from '../shared/empty-state/empty-state';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-transactions',
@@ -19,6 +20,7 @@ import { EmptyState } from '../shared/empty-state/empty-state';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    AppDatePipe,
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
@@ -158,7 +160,7 @@ import { EmptyState } from '../shared/empty-state/empty-state';
 
                   <!-- Date Column -->
                   <td class="px-6 py-4">
-                    <span class="text-foreground">{{ transaction.date | date:'MMM d, y, hh:mm a' }}</span>
+                    <span class="text-foreground">{{ transaction.date | appDate:'MMM d, y, hh:mm a' }}</span>
                   </td>
 
                   <!-- Warehouses Column -->
@@ -221,7 +223,7 @@ import { EmptyState } from '../shared/empty-state/empty-state';
                 </div>
 
                 <!-- Date -->
-                <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ transaction.date | date:'MMM d, y, hh:mm a' }}</p>
+                <p class="text-[var(--color-on-surface-variant)] text-xs mb-2">{{ transaction.date | appDate:'MMM d, y, hh:mm a' }}</p>
 
                 <!-- Warehouses -->
                 <div class="text-xs space-y-0.5 mb-2">

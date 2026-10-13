@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StockMovement, TransactionType } from '../../../interfaces/transaction.interface';
 import { formatDateTime } from '../reports.format';
 import { TransactionStats } from '../reports.types';
 import { Spinner } from '../../shared/spinner/spinner';
+import { localeFor } from '../../../shared/app-language';
 
 @Component({
   selector: 'app-reports-transactions-tab',
@@ -202,7 +203,12 @@ export class ReportsTransactionsTab {
   csvRequested = output<void>();
   pdfRequested = output<void>();
 
-  formatDateTime = formatDateTime;
+  private translate = inject(TranslateService);
+
+  /** In the language currently shown. */
+  formatDateTime(date: Date | string): string {
+    return formatDateTime(date, localeFor(this.translate.getCurrentLang()));
+  }
 
   private static readonly ICONS: Partial<Record<TransactionType, string>> = {
     [TransactionType.IN]: 'ArrowDown',

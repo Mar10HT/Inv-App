@@ -11,6 +11,7 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { NotificationService } from '../../../services/notification.service';
 import { currencySymbol } from '../../../utils/money.utils';
 import { Spinner } from '../../shared/spinner/spinner';
+import { dateFormatterFor } from '../../../shared/app-language';
 
 export interface InventoryItemDialogData {
   itemId: string;
@@ -392,19 +393,17 @@ export class InventoryItem implements OnInit {
     }
   }
 
-  // Memoized date formatter
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
+  // In the language currently shown; formatters are cached per language
   formatDate(date: Date | string | undefined): string {
     if (!date) return '-';
     const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
+    return dateFormatterFor(this.translate.getCurrentLang(), {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(d);
   }
 
   formatCurrency(price: number | undefined, currency: string): string {

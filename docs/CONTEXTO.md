@@ -34,6 +34,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-13 | Inv-App-API | `8324e9e` | Rango CAI y fecha de vencimiento de Inventario aceptan fecha sola por API (antes daban 500) |
 | 2026-10-13 | Inv-App | `098a279` | El menú flotante de Comercial (sidebar colapsado) ya no es transparente |
 | 2026-10-13 | Inv-App | `9b27512` | Compras y ventas nuevas arrancan en la moneda de la Configuración Fiscal |
 | 2026-10-13 | Inv-App-API / Inv-App | `89da9fe` / `5569cd1` | Borrar una transacción manual revierte su movimiento de stock; Salida mayor que el stock se rechaza |
@@ -62,7 +63,7 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 - **Navegador**: Playwright del repo frontend con `executablePath: '/opt/pw-browsers/chromium'`. No hay browsers-mcp en el cloud.
 - **Idioma en capturas**: antes de navegar, `localStorage.setItem('language', 'es')` (por el bug del selector, ver PENDIENTES).
 - **API desde el navegador logueado**: pedir `GET /api/auth/csrf-token` **una sola vez** y reutilizarlo en el header `X-CSRF-Token` (pedirlo en cada llamada da 403 por límite).
-- **Fechas a la API**: ISO completo (`2027-06-30T00:00:00.000Z`); la fecha sola da 500 en rangos CAI.
+- **Fechas a la API**: conviene mandar ISO completo (`2027-06-30T00:00:00.000Z`). Rangos CAI y vencimiento de Inventario ya aceptan fecha sola; otros campos no se revisaron.
 - **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. Un test de `reports-transactions-tab.spec.ts` falla en este entorno sin relación con los cambios (ver PENDIENTES).
 - **Tests del backend**: `npx jest` (446), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
 - **No usar** `pkill -f "node dist/main.js"` dentro de un comando que contenga ese texto: se mata a sí mismo. Usar `pkill -f "^node dist/main.js"` o el PID.
@@ -71,9 +72,8 @@ Si el entorno es nuevo: crear usuario y base `obsid`/`obsid` en PostgreSQL, `.en
 
 Orden sugerido (detalle en `PENDIENTES.md`):
 
-1. Rango CAI por API con fecha sola da 500 (validar o normalizar la fecha).
-2. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
-3. `seed:fake` desactualizado para Préstamos.
-4. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
-5. Formato de reportes y PDFs: esperar definición del usuario.
-6. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).
+1. `neededByDate` de Solicitudes de Material: verificar el corrimiento de un día.
+2. `seed:fake` desactualizado para Préstamos.
+3. Inconsistencias (Transacciones fuera del menú, roles duplicados, Salidas no programable, Login en inglés, dos campos Cliente en cotizaciones): preguntar al usuario antes, son decisiones de producto.
+4. Formato de reportes y PDFs: esperar definición del usuario.
+5. Cuando las alertas lleguen a producción: actualizar el manual (sección "Alertas de stock", Transacciones manuales, el recuadro de Moneda en Compras y sus preguntas frecuentes).

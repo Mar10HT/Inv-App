@@ -37,9 +37,14 @@ describe('ReportsTransactionsTab', () => {
     fixture.detectChanges();
   };
 
+  // Collapses every kind of whitespace: newer ICU builds put narrow no-break
+  // spaces in formatted times ("06:00\u202fa. m."), and the cells are compared
+  // against formatDateTime() output normalized the same way.
+  const squash = (text: string): string => text.replace(/\s+/g, ' ').trim();
+
   const rows = (): string[][] =>
     Array.from(el.querySelectorAll('tbody tr')).map((tr) =>
-      Array.from(tr.querySelectorAll('td')).map((td) => td.textContent?.replace(/\s+/g, ' ').trim() ?? '')
+      Array.from(tr.querySelectorAll('td')).map((td) => squash(td.textContent ?? ''))
     );
 
   const button = (label: string): HTMLButtonElement | undefined =>
@@ -78,8 +83,8 @@ describe('ReportsTransactionsTab', () => {
       render();
 
       const [inRow, outRow] = rows();
-      expect(inRow).toEqual([formatDateTime(sample[0].date), 'IN', '-', 'Main', 'Ana', '1']);
-      expect(outRow).toEqual([formatDateTime(sample[1].date), 'OUT', 'Backup', '-', 'bob@x.com', '2']);
+      expect(inRow).toEqual([squash(formatDateTime(sample[0].date)), 'IN', '-', 'Main', 'Ana', '1']);
+      expect(outRow).toEqual([squash(formatDateTime(sample[1].date)), 'OUT', 'Backup', '-', 'bob@x.com', '2']);
     });
 
     it('shows an empty message when there are no transactions', () => {

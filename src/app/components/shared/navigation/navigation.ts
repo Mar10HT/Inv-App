@@ -114,7 +114,7 @@ import { PermissionsService } from '../../../services/permissions.service';
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'clients:view', 'discharges:view', 'stocktake:view']">
+      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'clients:view', 'discharges:view', 'stocktake:view', 'transactions:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -288,31 +288,31 @@ import { PermissionsService } from '../../../services/permissions.service';
           <mat-menu #commercialMenu="matMenu">
             <ng-container *ngxPermissionsOnly="['sales:view']">
               <button mat-menu-item [matMenuTriggerFor]="salesFlyout">
-                <lucide-icon name="ShoppingCart" class="!w-4 !h-4 mr-2"></lucide-icon>
+                <lucide-icon name="ShoppingCart" class="flyout-icon"></lucide-icon>
                 {{ 'NAV.SALES' | translate }}
               </button>
             </ng-container>
             <ng-container *ngxPermissionsOnly="['purchases:view']">
               <button mat-menu-item [matMenuTriggerFor]="purchasesFlyout">
-                <lucide-icon name="PackagePlus" class="!w-4 !h-4 mr-2"></lucide-icon>
+                <lucide-icon name="PackagePlus" class="flyout-icon"></lucide-icon>
                 {{ 'NAV.PURCHASES' | translate }}
               </button>
             </ng-container>
             <ng-container *ngxPermissionsOnly="['transfers:view']">
               <a mat-menu-item routerLink="/transfers" (click)="closeMobileMenu()">
-                <lucide-icon name="ArrowLeftRight" class="!w-4 !h-4 mr-2"></lucide-icon>
+                <lucide-icon name="ArrowLeftRight" class="flyout-icon"></lucide-icon>
                 {{ 'NAV.TRANSFERS' | translate }}
               </a>
             </ng-container>
             <ng-container *ngxPermissionsOnly="['outflows:view']">
               <a mat-menu-item routerLink="/outflows" (click)="closeMobileMenu()">
-                <lucide-icon name="PackageMinus" class="!w-4 !h-4 mr-2"></lucide-icon>
+                <lucide-icon name="PackageMinus" class="flyout-icon"></lucide-icon>
                 {{ 'NAV.OUTFLOWS' | translate }}
               </a>
             </ng-container>
             <ng-container *ngxPermissionsOnly="['loans:view']">
               <a mat-menu-item routerLink="/loans" (click)="closeMobileMenu()">
-                <lucide-icon name="HandCoins" class="!w-4 !h-4 mr-2"></lucide-icon>
+                <lucide-icon name="HandCoins" class="flyout-icon"></lucide-icon>
                 {{ 'NAV.LOANS' | translate }}
               </a>
             </ng-container>
@@ -320,22 +320,22 @@ import { PermissionsService } from '../../../services/permissions.service';
 
           <mat-menu #salesFlyout="matMenu">
             <a mat-menu-item routerLink="/sales" (click)="closeMobileMenu()">
-              <lucide-icon name="ShoppingCart" class="!w-4 !h-4 mr-2"></lucide-icon>
+              <lucide-icon name="ShoppingCart" class="flyout-icon"></lucide-icon>
               {{ 'NAV.ALL_SALES' | translate }}
             </a>
             <a mat-menu-item routerLink="/accounts-receivable" (click)="closeMobileMenu()">
-              <lucide-icon name="Banknote" class="!w-4 !h-4 mr-2"></lucide-icon>
+              <lucide-icon name="Banknote" class="flyout-icon"></lucide-icon>
               {{ 'NAV.ACCOUNTS_RECEIVABLE' | translate }}
             </a>
           </mat-menu>
 
           <mat-menu #purchasesFlyout="matMenu">
             <a mat-menu-item routerLink="/purchases" (click)="closeMobileMenu()">
-              <lucide-icon name="PackagePlus" class="!w-4 !h-4 mr-2"></lucide-icon>
+              <lucide-icon name="PackagePlus" class="flyout-icon"></lucide-icon>
               {{ 'NAV.ALL_PURCHASES' | translate }}
             </a>
             <a mat-menu-item routerLink="/accounts-payable" (click)="closeMobileMenu()">
-              <lucide-icon name="CreditCard" class="!w-4 !h-4 mr-2"></lucide-icon>
+              <lucide-icon name="CreditCard" class="flyout-icon"></lucide-icon>
               {{ 'NAV.ACCOUNTS_PAYABLE' | translate }}
             </a>
           </mat-menu>
@@ -368,6 +368,21 @@ import { PermissionsService } from '../../../services/permissions.service';
           <lucide-icon name="ClipboardCheck" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
             <span class="nav-text">{{ 'NAV.STOCK_TAKE' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['transactions:view']">
+        <a
+          routerLink="/transactions"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSACTIONS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Receipt" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
           }
         </a>
       </ng-container>

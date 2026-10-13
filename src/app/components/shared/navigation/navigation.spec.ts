@@ -82,6 +82,24 @@ describe('Navigation', () => {
       expect(fixture.nativeElement.textContent).not.toContain('NAV.COMMERCIAL');
     });
   });
+
+  describe('the Transactions link', () => {
+    const transactionsLink = async (permissions: string[]): Promise<HTMLAnchorElement | null> => {
+      await TestBed.inject(NgxPermissionsService).loadPermissions(permissions);
+      fixture.detectChanges();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+      return (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>('a[href="/transactions"]');
+    };
+
+    it('is in the sidebar for someone who can view transactions', async () => {
+      expect(await transactionsLink(['transactions:view'])).not.toBeNull();
+    });
+
+    it('is left out for someone who cannot', async () => {
+      expect(await transactionsLink(['inventory:view'])).toBeNull();
+    });
+  });
 });
 
 describe('Navigation — opened directly on a Sales address', () => {

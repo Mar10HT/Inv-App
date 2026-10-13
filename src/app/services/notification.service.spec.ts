@@ -231,6 +231,13 @@ describe('NotificationService messages', () => {
       expect(config().duration).toBe(5000);
     });
 
+    it('shows the message the API sent for a 409 instead of the generic conflict text', () => {
+      service.handleError(fail(409, { message: 'Ya existe un ítem con el SKU A-1.' }));
+
+      expect(error).not.toHaveBeenCalled();
+      expect(config().data).toEqual({ message: 'Ya existe un ítem con el SKU A-1.', type: 'error' });
+    });
+
     it('falls back to the message of the response itself', () => {
       service.handleError(fail(400, null, 'Http failure response'));
 

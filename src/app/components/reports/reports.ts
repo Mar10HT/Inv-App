@@ -1,4 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
 import { downloadStyledXLSX, XlsxRow } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -231,9 +233,20 @@ export class Reports implements OnInit {
   private translate = inject(TranslateService);
   private pdfExportService = inject(PdfExportService);
   private notifications = inject(NotificationService);
+  private route = inject(ActivatedRoute);
+
+  /** Values accepted in ?tab=, in tab order (e.g. the alert bell links to ?tab=status). */
+  private static readonly TAB_IDS = ['value', 'transactions', 'status', 'assignments', 'trends', 'downloads'];
 
   // Tab state
   activeTab = signal<number>(0);
+
+  constructor() {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const index = Reports.TAB_IDS.indexOf(params.get('tab') ?? '');
+      if (index >= 0) this.activeTab.set(index);
+    });
+  }
 
   // Loading states
   loading = signal<boolean>(true);

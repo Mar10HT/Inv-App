@@ -35,7 +35,7 @@ import { AlertsService } from '../../../services/alerts.service';
 
       <!-- Dropdown -->
       @if (isOpen()) {
-        <div class="notification-dropdown absolute bottom-full mb-2 right-0 w-80 rounded-xl border shadow-lg z-50"
+        <div class="notification-dropdown fixed left-4 bottom-16 w-80 max-w-[calc(100vw-2rem)] rounded-xl border shadow-lg z-50"
              style="background-color: var(--color-surface-elevated); border-color: var(--color-border);">
           <!-- Header -->
           <div class="flex items-center justify-between px-4 py-3 border-b" style="border-color: var(--color-border);">
@@ -112,7 +112,8 @@ import { AlertsService } from '../../../services/alerts.service';
           <!-- Footer -->
           <div class="px-4 py-3">
             <a
-              routerLink="/audit"
+              routerLink="/reports"
+              [queryParams]="{ tab: 'status' }"
               class="text-xs font-medium transition-opacity hover:opacity-80"
               style="color: var(--color-primary);"
               (click)="close()">

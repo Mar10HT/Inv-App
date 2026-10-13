@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { signal, Type } from '@angular/core';
+import { Provider, signal, Type } from '@angular/core';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { defer, NEVER, of, throwError } from 'rxjs';
 import type { WorkBook } from 'xlsx-js-style';
 
@@ -49,7 +50,8 @@ describe('Reports', () => {
     items: InventoryItemInterface[],
     transactions: Transaction[] = [],
     itemsSource = of(items),
-    transactionsSource = of(transactions)
+    transactionsSource = of(transactions),
+    extraProviders: Provider[] = []
   ): Promise<void> => {
     await TestBed.configureTestingModule({
       imports: [Reports],
@@ -63,7 +65,8 @@ describe('Reports', () => {
             getItemsObservable: () => itemsSource
           }
         },
-        { provide: TransactionService, useValue: { getAll: () => transactionsSource } }
+        { provide: TransactionService, useValue: { getAll: () => transactionsSource } },
+        ...extraProviders
       ]
     }).compileComponents();
 
@@ -71,6 +74,23 @@ describe('Reports', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   };
+
+  describe('opening a tab from the URL', () => {
+    const withTab = (tab: string): Provider => ({
+      provide: ActivatedRoute,
+      useValue: { queryParamMap: of(convertToParamMap({ tab })) }
+    });
+
+    it('opens the Status tab for ?tab=status, where the alert bell links', async () => {
+      await setup([], [], of([]), of([]), [withTab('status')]);
+      expect(component.activeTab()).toBe(2);
+    });
+
+    it('stays on the first tab for an unknown ?tab value', async () => {
+      await setup([], [], of([]), of([]), [withTab('nope')]);
+      expect(component.activeTab()).toBe(0);
+    });
+  });
 
   describe('loading', () => {
     it('loads items and transactions and clears both loading flags', async () => {

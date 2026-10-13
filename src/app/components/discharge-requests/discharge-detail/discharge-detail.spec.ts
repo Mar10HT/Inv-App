@@ -91,6 +91,17 @@ describe('DischargeDetailComponent', () => {
       expect(discharges.rejectRequest).not.toHaveBeenCalled();
     });
 
+    it('shows the needed-by date as the day it was picked, not a day earlier from a timezone shift', async () => {
+      // A bare ISO date (no time) parses as UTC midnight; rendering it without
+      // forcing the UTC timezone would roll back a day in a negative-offset zone.
+      await setup({ found: of(request({ neededByDate: new Date('2027-03-01') })) });
+      fixture.detectChanges();
+
+      const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+      expect(text).toContain('Mar 1, 2027');
+      expect(text).not.toContain('Feb 28, 2027');
+    });
+
     it('goBack returns to the list of discharges', async () => {
       await setup();
 

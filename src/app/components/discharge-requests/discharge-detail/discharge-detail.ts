@@ -96,7 +96,7 @@ import { ConfirmService } from '../../../services/confirm.service';
               @if (request()!.neededByDate) {
                 <div>
                   <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'DISCHARGES.PUBLIC_FORM.NEEDED_BY' | translate }}</p>
-                  <p class="text-foreground">{{ request()!.neededByDate! | date:'mediumDate' }}</p>
+                  <p class="text-foreground">{{ request()!.neededByDate! | date:'mediumDate':'UTC' }}</p>
                 </div>
               }
               <div>

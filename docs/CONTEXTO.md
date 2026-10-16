@@ -20,6 +20,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 - **Commits directo en `feat/purchase-invoices`** en ambos repos. Dentro del loop de pendientes el usuario autorizó pushear sin preguntar, siempre con tests, lint y build en verde; fuera del loop, pedir confirmación antes de cada push.
 - Trabajar los pendientes en orden de prioridad; lo que necesite una decisión de diseño se pregunta antes de tocar código.
 - **Formato de reportes y PDFs**: todavía no está definido. No agregar capturas de comprobantes ni reportes exportables al manual hasta que el usuario lo defina.
+- **Revisión de los PRs a producción (2026-10-16)**: cancelar una venta o compra con pagos activos se bloquea (primero se anulan los pagos); el límite de crédito está en la moneda del cliente (`Client.creditLimitCurrency`) y una venta a crédito en otra moneda se rechaza; pasar los montos de `Float` a `Decimal` va en un PR aparte, después; producción arranca con una base nueva, así que los datos legados (numerar ventas viejas, compras seriadas, códigos borrados) no importan. El usuario hace el merge de los PRs.
 - **Manual de usuario**: solo vista de administrador, trato de **usted**, sin guiones largos (—), recuadros "Importante" solo para avisos que evitan errores del usuario. Los bugs internos van a `PENDIENTES.md`, no al manual.
 
 ## Manual de Usuario
@@ -34,6 +35,9 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-16 | Inv-App-API / Inv-App | `aa80d8e` `24bdef1` / `add19cc` | Revisión de los PRs: listados limitados a las bodegas del usuario, edición de cotizaciones, crédito por moneda, CAI (fin del día en Honduras, rangos), estadísticas del servidor con impuesto, listas completas (el API corta en 100), cancelar con pagos bloqueado, guardas de doble envío |
+| 2026-10-16 | Inv-App-API | `657c51a` | Concurrencia: no se vende de más ni se procesa dos veces un documento (decremento condicional y lock de la fila); test de integración con Postgres en CI |
+| 2026-10-16 | Inv-App-API | `31a0588` | `migrate-document-numbers.sql` funciona en base vacía, en la de `main` y en una ya migrada |
 | 2026-10-13 | Inv-App-API / Inv-App | `4376274` / `d819a2f` | Errores: `VALIDATION_FAILED` por código, texto del servidor si falta traducción, tests de cobertura y paridad |
 | 2026-10-13 | Inv-App | `830c920` | Fechas siguen el idioma al cambiarlo sin recargar (pipe `appDate`) |
 | 2026-10-13 | Inv-App | `f0ccafe` | Rama de docs mergeada en `feat/purchase-invoices`: los docs se editan ahí desde ahora |
@@ -103,9 +107,10 @@ railway run npm run seed:rbac    # cada vez que se necesite
 
 ## Próximos pasos
 
-Todas las inconsistencias quedaron resueltas (ver PENDIENTES.md). Lo que queda:
+PRs abiertos: [Mar10HT/Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41) y [Mar10HT/Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), los dos desde `feat/purchase-invoices` hacia `main`. Las revisiones técnicas del usuario y de los agentes quedaron atendidas (ver PENDIENTES.md, "Revisión de los PRs").
 
-1. **Pushear** los commits locales de `feat/purchase-invoices` en los dos repos (pendiente de confirmación del usuario). Al desplegar el API, `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push`.
-2. Formato de reportes y PDFs: pospuesto; el usuario está definiendo formato fijo para instalaciones de clientes y personalizable en producción (incluye unificar el Excel de Transacciones con los movimientos).
-3. Cuando todo esto llegue a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
-4. Pendientes menores anotados en PENDIENTES.md ("Quedó pendiente de esto").
+1. Pushear los arreglos de la revisión (pendiente de confirmación del usuario), esperar el CI en verde y avisar al usuario para que haga el merge.
+2. Después del merge: PR aparte para pasar los montos de `Float` a `Decimal`.
+3. Formato de reportes y PDFs: pospuesto; el usuario está definiendo formato fijo para instalaciones de clientes y personalizable en producción (incluye unificar el Excel de Transacciones con los movimientos).
+4. Cuando todo esto llegue a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
+5. Pendientes menores anotados en PENDIENTES.md.

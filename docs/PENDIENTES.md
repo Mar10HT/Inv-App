@@ -23,6 +23,29 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
     - Reportes Programados: se puede programar Salidas.
     - El login y las fechas salen en español.
 
+## Revisión de los PRs a producción: resuelto el 2026-10-16
+
+Revisiones técnicas del usuario en [Mar10HT/Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41) y [Mar10HT/Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), más dos revisiones de agentes.
+
+- [x] **Venta de más con pedidos simultáneos.** El stock se descuenta solo si alcanza, en una sola operación, y cada confirmación, cancelación o aprobación bloquea su documento antes de leer el estado. Lo cubre un test de integración contra Postgres que corre en CI.
+- [x] **Cancelar con pagos registrados.** Ventas y compras se rechazan mientras tengan pagos activos; la app lo avisa antes de preguntar, con el monto a anular.
+- [x] **Límite de crédito en una moneda.** Nuevo campo Moneda del Límite en Clientes (HNL por defecto); solo cuentan las ventas a crédito en esa moneda.
+- [x] **Filtro por bodega que saltaba el acceso.** Elegir una bodega en un listado ahora restringe dentro de las bodegas del usuario (ventas, compras, salidas, bajas, PDF de inventario); ver, editar o borrar una transacción también respeta las bodegas.
+- [x] **Editar una cotización perdía el cliente y la condición de pago**, y no validaba la bodega nueva. Resuelto; los campos vaciados se borran.
+- [x] **Vencimiento del CAI un día antes.** Una fecha sola vence al final de ese día en Honduras. Editar el rango valida el número final contra el inicial y lo ya emitido.
+- [x] **Listas cortadas en 100.** Ventas, compras, préstamos, salidas y pagos traen todas las páginas; Cuentas por cobrar/pagar piden solo lo que tiene saldo.
+- [x] **Estadísticas de la página cargada.** Vienen del servidor, con impuesto incluido, igual que la columna Monto.
+- [x] **Doble envío** en Préstamos y Transferencias; **Configuración Fiscal** daba 403 a quien vende o compra sin acceso a Configuración; el **ISV por defecto** se perdía si la configuración llegaba tarde.
+- [x] **Movimientos**: las bajas salían dos veces (la baja y su salida) y las cotizaciones canceladas aparecían como movimiento.
+- [x] **Roles duplicados**: la limpieza solo toca los nombres que creaba el seed viejo.
+- [x] **Migración de numeración** funciona en base vacía, en la de `main` y en una ya migrada.
+
+### Quedó para después
+
+- [ ] **Montos en `Decimal`** en lugar de `Float` (decisión del usuario: PR aparte, después del merge).
+- [ ] **`GET /reports/movements` no tiene límite de cantidad**: con muchos años de datos conviene paginarlo o acotarlo por fechas.
+- [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
+
 ## Formato de reportes y documentos exportables
 
 Pospuesto por el usuario: hay que definir cómo dejar un formato fijo para instalaciones cerradas en servidores de un cliente y uno personalizable en producción.

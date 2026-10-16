@@ -110,7 +110,7 @@ railway run npm run seed:rbac    # cada vez que se necesite
 PRs abiertos: [Mar10HT/Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41) y [Mar10HT/Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), los dos desde `feat/purchase-invoices` hacia `main`. Las revisiones técnicas del usuario y de los agentes quedaron atendidas (ver PENDIENTES.md, "Revisión de los PRs").
 
 1. Pushear los arreglos de la revisión (pendiente de confirmación del usuario), esperar el CI en verde y avisar al usuario para que haga el merge.
-2. Después del merge: PR aparte para pasar los montos de `Float` a `Decimal`.
+2. Después del merge, un PR por cada seguimiento de la revisión: lock y concurrencia al completar conteos físicos; paginación y filtros por fecha en `GET /reports/movements`; montos de `Float` a `Decimal`. Antes de desplegar, verificar las migraciones contra staging o una copia de producción (ver PENDIENTES.md).
 3. Formato de reportes y PDFs: pospuesto; el usuario está definiendo formato fijo para instalaciones de clientes y personalizable en producción (incluye unificar el Excel de Transacciones con los movimientos).
 4. Cuando todo esto llegue a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
 5. Pendientes menores anotados en PENDIENTES.md.

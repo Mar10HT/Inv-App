@@ -42,8 +42,16 @@ Revisiones técnicas del usuario en [Mar10HT/Inv-App#41](https://github.com/Mar1
 
 ### Quedó para después
 
-- [ ] **Montos en `Decimal`** en lugar de `Float` (decisión del usuario: PR aparte, después del merge).
-- [ ] **`GET /reports/movements` no tiene límite de cantidad**: con muchos años de datos conviene paginarlo o acotarlo por fechas.
+Los dos PRs se aprobaron el 2026-10-16 con estas condiciones y seguimientos (comentarios del usuario en los PRs). Cada seguimiento va en su propio PR.
+
+**Condiciones del merge**
+- [ ] **API**: verificar las migraciones (`railway:migrate`) contra una base de staging o una copia de la de producción antes de desplegar. En local se probó en una base vacía, en una con el schema de `main` y datos, y en una ya migrada.
+- [x] **Frontend**: CI en verde y los flujos principales funcionando contra el API actualizado (verificado en local con Playwright).
+
+**Seguimientos**
+- [ ] **Conteo físico: lock y concurrencia.** Al completar un conteo, bloquear la fila y volver a validar el estado (igual que ventas, compras y transferencias), con tests de concurrencia contra Postgres.
+- [ ] **`GET /reports/movements`: paginación y filtros por fecha.** Hoy no tiene límite de cantidad.
+- [ ] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: migración de los datos y validación de los cálculos.
 - [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
 
 ## Formato de reportes y documentos exportables

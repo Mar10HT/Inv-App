@@ -5,10 +5,11 @@ import {
   computed,
   ElementRef,
   HostListener,
+  effect,
   inject,
-  OnInit,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { NgClass } from '@angular/common';
@@ -159,7 +160,7 @@ const emptyItem = (): PurchaseItemEntry => ({
               <select
                 id="purchase-currency"
                 [ngModel]="currency()"
-                (ngModelChange)="currency.set($event)"
+                (ngModelChange)="setCurrency($event)"
                 class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
               >
                 @for (cur of currencies; track cur) {
@@ -193,7 +194,7 @@ const emptyItem = (): PurchaseItemEntry => ({
               id="purchase-tax-percent"
               type="number"
               [ngModel]="taxPercent()"
-              (ngModelChange)="taxPercent.set($event === '' ? undefined : $event)"
+              (ngModelChange)="setTaxPercent($event)"
               min="0"
               max="100"
               step="0.01"
@@ -391,7 +392,7 @@ const emptyItem = (): PurchaseItemEntry => ({
     </div>
   `,
 })
-export class PurchaseInvoiceFormDialog implements AfterViewInit, OnInit {
+export class PurchaseInvoiceFormDialog implements AfterViewInit {
   private purchaseInvoiceService = inject(PurchaseInvoiceService);
   private warehouseService = inject(WarehouseService);
   private supplierService = inject(SupplierService);
@@ -404,13 +405,31 @@ export class PurchaseInvoiceFormDialog implements AfterViewInit, OnInit {
   closed = output<void>();
   created = output<PurchaseInvoiceFormResult>();
 
-  ngOnInit(): void {
-    // Suggested defaults from Fiscal Config's ISV% and currency — always
-    // editable, never forced (same contract as Sale.taxPercent; purchase
-    // invoices have no edit mode, so this always applies).
+  // Suggested defaults from Fiscal Config's ISV% and currency — always
+  // editable, never forced (same contract as Sale.taxPercent; purchase
+  // invoices have no edit mode). The settings row may still be loading when
+  // the dialog opens, so they are applied when it arrives, unless the user
+  // already picked their own.
+  private fiscalTouched = false;
+  private fiscalDefaults = effect(() => {
     const fiscal = this.fiscalConfigService.config();
-    this.taxPercent.set(fiscal?.isvPercent);
-    if (fiscal?.currency) this.currency.set(fiscal.currency);
+    if (!fiscal) return;
+    untracked(() => {
+      if (this.fiscalTouched) return;
+      this.fiscalTouched = true;
+      this.taxPercent.set(fiscal.isvPercent);
+      if (fiscal.currency) this.currency.set(fiscal.currency);
+    });
+  });
+
+  setCurrency(value: string): void {
+    this.fiscalTouched = true;
+    this.currency.set(value);
+  }
+
+  setTaxPercent(value: number | ''): void {
+    this.fiscalTouched = true;
+    this.taxPercent.set(value === '' ? undefined : value);
   }
 
   ngAfterViewInit(): void {

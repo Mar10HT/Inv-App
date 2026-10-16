@@ -320,6 +320,11 @@
       "CREDIT": "Crédito"
     },
     "CREDIT_LIMIT": "Límite de Crédito",
+    "CREDIT_LIMIT_CURRENCY": "Moneda del Límite",
+    "CURRENCY_OPTIONS": {
+      "HNL": "Lempiras (HNL)",
+      "USD": "Dólares (USD)"
+    },
     "ACTIVE": "Activo",
     "INACTIVE": "Inactivo",
     "TOTAL": "Total de Clientes",
@@ -492,7 +497,10 @@
       "settings:view": "Ver configuración del sistema",
       "settings:edit": "Editar configuración del sistema",
       "dashboard:view": "Ver el panel principal",
-      "auth:admin": "Realizar operaciones privilegiadas de autenticación (restablecer contraseñas, enlaces de administrador)"
+      "auth:admin": "Realizar operaciones privilegiadas de autenticación (restablecer contraseñas, enlaces de administrador)",
+      "payments:view": "Ver pagos de ventas y compras",
+      "payments:create": "Registrar pagos de ventas y compras",
+      "payments:cancel": "Anular pagos registrados"
     },
     "DELETE_CONFIRM": {
       "TITLE": "Eliminar Rol",
@@ -805,8 +813,7 @@
       "PURCHASE": "Compra",
       "OUTFLOW": "Salida",
       "TRANSFER": "Transferencia",
-      "STOCK_TAKE": "Conteo físico",
-      "DISCHARGE": "Baja"
+      "STOCK_TAKE": "Conteo físico"
     },
     "CANCELLATION": "cancelación",
     "TAB_DOWNLOADS": "Descargas",
@@ -1511,7 +1518,7 @@
     "CAI_RANGE_EXPIRED": "El rango CAI activo está vencido. Registra un nuevo rango para continuar facturando.",
     "CAI_RANGE_INVALID": "El número final del rango debe ser mayor que el número inicial.",
     "CLIENT_CODE_ALREADY_EXISTS": "Ya existe un cliente con el código \"{{code}}\".",
-    "CREDIT_LIMIT_EXCEEDED": "Esta venta excede el límite de crédito del cliente ({{creditLimit}}). Saldo pendiente más esta venta: {{projected}}.",
+    "CREDIT_LIMIT_EXCEEDED": "Esta venta excede el límite de crédito del cliente ({{creditLimit}} {{currency}}). Saldo pendiente más esta venta: {{projected}} {{currency}}.",
     "CURRENT_PASSWORD_INCORRECT": "La contraseña actual es incorrecta.",
     "DESTINATION_WAREHOUSE_INACTIVE": "La bodega de destino está inactiva.",
     "DISCHARGE_REQUEST_NOT_PENDING": "La solicitud de descargo ya no está pendiente. Estado actual: {{status}}.",
@@ -1614,6 +1621,11 @@
       "DRAFT": "Cotización",
       "IN_PROGRESS": "En progreso",
       "unknown": "desconocido"
-    }
+    },
+    "SALE_HAS_ACTIVE_PAYMENTS": "Esta venta tiene pagos registrados por {{amount}} {{currency}}. Anúlalos primero y después cancela la venta.",
+    "PURCHASE_INVOICE_HAS_ACTIVE_PAYMENTS": "Esta compra tiene pagos registrados por {{amount}} {{currency}}. Anúlalos primero y después cancela la compra.",
+    "CREDIT_LIMIT_CURRENCY_MISMATCH": "El límite de crédito de este cliente está en {{limitCurrency}}; no se puede dar crédito en {{saleCurrency}}. Cambia la moneda de la venta o véndele de contado.",
+    "CAI_RANGE_IN_USE": "Ya se emitieron facturas con este rango, así que su número inicial no se puede cambiar.",
+    "CAI_RANGE_BELOW_ISSUED": "El número final no puede quedar por debajo de la última factura emitida ({{lastIssued}})."
   }
 }

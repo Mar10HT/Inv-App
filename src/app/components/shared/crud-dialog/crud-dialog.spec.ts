@@ -268,6 +268,28 @@ describe('CrudDialog', () => {
 
       expect(component.form.value.active).toBe(true);
     });
+
+    it('preselects a select option given as defaultValue in add mode', async () => {
+      await setup({
+        config: {
+          ...checkboxConfig,
+          fields: [
+            {
+              key: 'currency',
+              labelKey: 'THING.CURRENCY',
+              type: 'select',
+              defaultValue: 'HNL',
+              options: [
+                { value: 'HNL', label: 'HNL' },
+                { value: 'USD', label: 'USD' },
+              ],
+            },
+          ],
+        },
+      });
+
+      expect(component.form.value.currency).toBe('HNL');
+    });
   });
 
   describe('number fields', () => {

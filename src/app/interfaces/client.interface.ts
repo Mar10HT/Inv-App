@@ -8,6 +8,8 @@ export interface Client {
   phone?: string;
   paymentCondition: PaymentCondition;
   creditLimit?: number;
+  // Currency of creditLimit; credit sales in another one are refused
+  creditLimitCurrency: 'HNL' | 'USD';
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +22,7 @@ export interface CreateClientDto {
   phone?: string;
   paymentCondition?: PaymentCondition;
   creditLimit?: number;
+  creditLimitCurrency?: 'HNL' | 'USD';
   isActive?: boolean;
 }
 
@@ -30,5 +33,6 @@ export interface UpdateClientDto {
   phone?: string;
   paymentCondition?: PaymentCondition;
   creditLimit?: number;
+  creditLimitCurrency?: 'HNL' | 'USD';
   isActive?: boolean;
 }

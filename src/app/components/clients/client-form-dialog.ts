@@ -63,6 +63,17 @@ export const CLIENT_DIALOG_CONFIG: CrudDialogConfig = {
       },
     },
     {
+      // The limit only covers credit sales in this currency
+      key: 'creditLimitCurrency',
+      labelKey: 'CLIENT.CREDIT_LIMIT_CURRENCY',
+      type: 'select',
+      defaultValue: 'HNL',
+      options: [
+        { value: 'HNL', label: 'CLIENT.CURRENCY_OPTIONS.HNL' },
+        { value: 'USD', label: 'CLIENT.CURRENCY_OPTIONS.USD' },
+      ],
+    },
+    {
       key: 'isActive',
       labelKey: 'CLIENT.ACTIVE',
       type: 'checkbox',

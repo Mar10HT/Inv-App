@@ -22,6 +22,7 @@ import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { PermissionsService } from '../../services/permissions.service';
 import {
   Sale,
   CustomerType,
@@ -199,10 +200,11 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                       </span>
                     </td>
                     <td class="px-4 py-3 text-right font-medium text-foreground">
-                      {{ formatMoney(sale.totalAmount, sale.currency) }}
+                      {{ formatMoney(grandTotal(sale), sale.currency) }}
                     </td>
-                    <td class="px-4 py-3 text-right" [ngClass]="(sale.balance ?? 0) > 0 ? 'text-[var(--color-status-error)]' : 'text-[var(--color-on-surface-variant)]'">
-                      {{ formatMoney(sale.balance ?? 0, sale.currency) }}
+                    <!-- Only a registered sale is owed: a quotation or a cancelled sale shows no balance -->
+                    <td class="px-4 py-3 text-right" [ngClass]="sale.status === Status.ACTIVE && (sale.balance ?? 0) > 0 ? 'text-[var(--color-status-error)]' : 'text-[var(--color-on-surface-variant)]'">
+                      {{ sale.status === Status.ACTIVE ? formatMoney(sale.balance ?? 0, sale.currency) : '—' }}
                     </td>
                     <td class="px-4 py-3 text-right text-foreground">
                       {{ totalQty(sale) }} ({{ sale.items.length }})
@@ -318,13 +320,13 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                 }
                 <div class="flex items-center justify-between text-sm">
                   <span class="font-medium text-foreground">
-                    {{ formatMoney(sale.totalAmount, sale.currency) }}
+                    {{ formatMoney(grandTotal(sale), sale.currency) }}
                   </span>
                   <span class="text-[var(--color-on-surface-variant)]">
                     {{ totalQty(sale) }} ({{ sale.items.length }} {{ 'SALES.COL_ITEMS' | translate }})
                   </span>
                 </div>
-                @if ((sale.balance ?? 0) > 0) {
+                @if (sale.status === Status.ACTIVE && (sale.balance ?? 0) > 0) {
                   <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-[var(--color-on-surface-variant)]">{{ 'SALES.COL_BALANCE' | translate }}</span>
                     <span class="font-medium text-[var(--color-status-error)]">{{ formatMoney(sale.balance ?? 0, sale.currency) }}</span>
@@ -436,6 +438,7 @@ export class SalesComponent implements OnInit {
   private clientService = inject(ClientService);
   private inventoryService = inject(InventoryService);
   private fiscalConfigService = inject(FiscalConfigService);
+  private permissions = inject(PermissionsService);
   private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
@@ -482,14 +485,17 @@ export class SalesComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.saleService.loadSales();
+    this.saleService.loadSales(this.isReceivablesView);
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
     this.clientService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
-    this.fiscalConfigService.get().subscribe();
+    // Only the form needs the default tax rate, and only who can create may open it
+    if (this.permissions.hasPermission('sales:create')) {
+      this.fiscalConfigService.get().subscribe();
+    }
     this.inventoryService.loadItems();
   }
 
@@ -564,6 +570,11 @@ export class SalesComponent implements OnInit {
     return sale.client?.name || sale.customerName || '—';
   }
 
+  /** What the customer owes in all: totalAmount is the subtotal before tax. */
+  grandTotal(sale: Sale): number {
+    return sale.totalAmount + (sale.taxAmount ?? 0);
+  }
+
   formatMoney(amount: number, currency: string): string {
     return `${currency} ${(amount ?? 0).toFixed(2)}`;
   }
@@ -581,7 +592,22 @@ export class SalesComponent implements OnInit {
     this.saleService.downloadPdf(sale.id);
   }
 
+  /** Recorded payments, read off the list's balance; 0 when it wasn't sent. */
+  paidAmount(sale: Sale): number {
+    if (sale.balance === undefined) return 0;
+    return Math.round((this.grandTotal(sale) - sale.balance) * 100) / 100;
+  }
+
   cancel(sale: Sale): void {
+    // Cancelling would leave those payments pointing at a cancelled sale, so
+    // the API refuses it; say so before asking, with the amount to void.
+    const paid = this.paidAmount(sale);
+    if (paid > 0) {
+      this.notifications.error('API_ERRORS.SALE_HAS_ACTIVE_PAYMENTS', {
+        interpolateParams: { amount: paid.toFixed(2), currency: sale.currency },
+      });
+      return;
+    }
     // A DRAFT never decremented stock, so cancelling one restores nothing —
     // different copy from cancelling a real, stock-decrementing ACTIVE sale.
     const isDraft = sale.status === SaleStatus.DRAFT;

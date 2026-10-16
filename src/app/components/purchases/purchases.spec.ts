@@ -12,6 +12,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { PermissionsService } from '../../services/permissions.service';
 import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import {
   PaymentCondition,
@@ -47,6 +48,7 @@ describe('PurchasesComponent', () => {
   let suppliers: jasmine.SpyObj<SupplierService>;
   let inventory: jasmine.SpyObj<InventoryService>;
   let fiscalConfig: jasmine.SpyObj<FiscalConfigService>;
+  let permissions: jasmine.SpyObj<PermissionsService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
@@ -76,6 +78,8 @@ describe('PurchasesComponent', () => {
       { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
     );
     fiscalConfig.get.and.returnValue(of(null));
+    permissions = jasmine.createSpyObj<PermissionsService>('PermissionsService', ['hasPermission']);
+    permissions.hasPermission.and.returnValue(true);
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']);
@@ -89,6 +93,7 @@ describe('PurchasesComponent', () => {
         { provide: SupplierService, useValue: suppliers },
         { provide: InventoryService, useValue: inventory },
         { provide: FiscalConfigService, useValue: fiscalConfig },
+        { provide: PermissionsService, useValue: permissions },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
       ]
@@ -106,6 +111,16 @@ describe('PurchasesComponent', () => {
       expect(suppliers.getAll).toHaveBeenCalledTimes(1);
       expect(fiscalConfig.get).toHaveBeenCalledTimes(1);
       expect(inventory.loadItems).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not ask for the fiscal config when the user cannot create, since only the form uses it', async () => {
+      fiscalConfig.get.calls.reset();
+      permissions.hasPermission.and.returnValue(false);
+
+      TestBed.createComponent(PurchasesComponent).detectChanges();
+
+      expect(permissions.hasPermission).toHaveBeenCalledWith('purchases:create');
+      expect(fiscalConfig.get).not.toHaveBeenCalled();
     });
 
     it('tells the user when the warehouses fail to load', () => {
@@ -198,6 +213,16 @@ describe('PurchasesComponent', () => {
 
       expect(purchaseInvoiceService.cancel).toHaveBeenCalledOnceWith('a');
       expect(notifications.success).toHaveBeenCalledOnceWith('PURCHASES.CANCEL_SUCCESS');
+    });
+
+    it('refuses up front, with the amount paid, a purchase that has payments, without asking', () => {
+      component.cancel(purchaseInvoice({ totalAmount: 200, taxAmount: 30, balance: 30, currency: 'USD' } as never));
+
+      expect(notifications.error).toHaveBeenCalledOnceWith('API_ERRORS.PURCHASE_INVOICE_HAS_ACTIVE_PAYMENTS', {
+        interpolateParams: { amount: '200.00', currency: 'USD' }
+      });
+      expect(confirm.ask).not.toHaveBeenCalled();
+      expect(purchaseInvoiceService.cancel).not.toHaveBeenCalled();
     });
 
     it('cancels nothing when the user does not confirm', () => {

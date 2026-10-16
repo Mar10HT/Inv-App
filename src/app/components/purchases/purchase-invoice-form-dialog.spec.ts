@@ -85,6 +85,25 @@ describe('PurchaseInvoiceFormDialog', () => {
 
       expect(freshFixture.componentInstance.taxPercent()).toBe(18);
     });
+
+    it('is applied when the fiscal config arrives after the dialog opened, unless the user already picked one', () => {
+      component.setCurrency('USD');
+
+      fiscalConfig.set({ isvPercent: 15, currency: 'HNL' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBeUndefined();
+      expect(component.currency()).toBe('USD');
+
+      const untouched = TestBed.createComponent(PurchaseInvoiceFormDialog);
+      fiscalConfig.set(null);
+      untouched.detectChanges();
+      fiscalConfig.set({ isvPercent: 15, currency: 'HNL' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(untouched.componentInstance.taxPercent()).toBe(15);
+      expect(untouched.componentInstance.currency()).toBe('HNL');
+    });
   });
 
   describe('the currency default', () => {

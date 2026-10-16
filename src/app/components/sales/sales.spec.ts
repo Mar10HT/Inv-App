@@ -12,6 +12,7 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { PermissionsService } from '../../services/permissions.service';
 import { CustomerType, Sale, SaleStats, SaleStatus } from '../../interfaces/sale.interface';
 import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
@@ -41,6 +42,7 @@ describe('SalesComponent', () => {
   let inventory: jasmine.SpyObj<InventoryService>;
   let clients: jasmine.SpyObj<ClientService>;
   let fiscalConfig: jasmine.SpyObj<FiscalConfigService>;
+  let permissions: jasmine.SpyObj<PermissionsService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
@@ -67,6 +69,8 @@ describe('SalesComponent', () => {
       { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
     );
     fiscalConfig.get.and.returnValue(of(null));
+    permissions = jasmine.createSpyObj<PermissionsService>('PermissionsService', ['hasPermission']);
+    permissions.hasPermission.and.returnValue(true);
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']);
@@ -80,6 +84,7 @@ describe('SalesComponent', () => {
         { provide: ClientService, useValue: clients },
         { provide: InventoryService, useValue: inventory },
         { provide: FiscalConfigService, useValue: fiscalConfig },
+        { provide: PermissionsService, useValue: permissions },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
       ]
@@ -97,6 +102,16 @@ describe('SalesComponent', () => {
       expect(clients.getAll).toHaveBeenCalledTimes(1);
       expect(fiscalConfig.get).toHaveBeenCalledTimes(1);
       expect(inventory.loadItems).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not ask for the fiscal config when the user cannot create, since only the form uses it', async () => {
+      fiscalConfig.get.calls.reset();
+      permissions.hasPermission.and.returnValue(false);
+
+      TestBed.createComponent(SalesComponent).detectChanges();
+
+      expect(permissions.hasPermission).toHaveBeenCalledWith('sales:create');
+      expect(fiscalConfig.get).not.toHaveBeenCalled();
     });
 
     it('tells the user when the warehouses fail to load', () => {
@@ -287,6 +302,11 @@ describe('SalesComponent', () => {
       expect(component.formatMoney(undefined as unknown as number, 'HNL')).toBe('HNL 0.00');
     });
 
+    it('shows the grand total with tax as the amount of a sale', () => {
+      expect(component.grandTotal(sale({ totalAmount: 100, taxAmount: 15 } as never))).toBe(115);
+      expect(component.grandTotal(sale({ totalAmount: 100, taxAmount: null } as never))).toBe(100);
+    });
+
     it('shows a dash when there is no revenue', () => {
       expect(component.revenueLabel()).toBe('—');
     });
@@ -296,6 +316,18 @@ describe('SalesComponent', () => {
 
       expect(component.revenueLabel()).toBe('USD 100.00 · HNL 2500.50');
     });
+  });
+
+  it('shows no balance owed on a cancelled sale', () => {
+    sales.set([
+      sale({ id: 'x', status: SaleStatus.CANCELLED, currency: 'USD', totalAmount: 10, taxAmount: 0, balance: 7 } as never),
+      sale({ id: 'y', status: SaleStatus.ACTIVE, currency: 'USD', totalAmount: 20, taxAmount: 0, balance: 9 } as never)
+    ]);
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).not.toContain('USD 7.00');
+    expect(text).toContain('USD 9.00');
   });
 
   it('downloads the pdf of a sale by its id', () => {
@@ -324,6 +356,23 @@ describe('SalesComponent', () => {
 
       expect(saleService.cancel).toHaveBeenCalledOnceWith('a');
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CANCEL_SUCCESS');
+    });
+
+    it('refuses up front, with the amount paid, a sale that has payments, without asking', () => {
+      component.cancel(sale({ totalAmount: 100, taxAmount: 15, balance: 75, currency: 'HNL' } as never));
+
+      expect(notifications.error).toHaveBeenCalledOnceWith('API_ERRORS.SALE_HAS_ACTIVE_PAYMENTS', {
+        interpolateParams: { amount: '40.00', currency: 'HNL' }
+      });
+      expect(confirm.ask).not.toHaveBeenCalled();
+      expect(saleService.cancel).not.toHaveBeenCalled();
+    });
+
+    it('asks as usual for a sale with nothing paid, or whose balance did not come in the list', () => {
+      component.cancel(sale({ totalAmount: 100, taxAmount: 15, balance: 115 } as never));
+      component.cancel(sale({ totalAmount: 100, taxAmount: 15 } as never));
+
+      expect(confirm.ask).toHaveBeenCalledTimes(2);
     });
 
     it('cancels nothing when the user does not confirm', () => {
@@ -418,5 +467,9 @@ describe('SalesComponent — accounts receivable view (route data: onlyWithBalan
 
   it('only keeps ACTIVE sales with an outstanding balance', () => {
     expect(component.filtered().map((s) => s.id)).toEqual(['a']);
+  });
+
+  it('asks the service only for the sales with a balance', () => {
+    expect(TestBed.inject(SaleService).loadSales).toHaveBeenCalledOnceWith(true);
   });
 });

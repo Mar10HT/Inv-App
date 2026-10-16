@@ -145,7 +145,7 @@ export interface TransferFormResult {
           </button>
           <button
             (click)="createRequest()"
-            [disabled]="!canCreateRequest()"
+            [disabled]="!canCreateRequest() || submitting()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all">
             {{ 'TRANSFERS.CREATE_REQUEST' | translate }}
           </button>
@@ -236,8 +236,12 @@ export class TransferFormDialog {
            this.selectedSourceWarehouseId() !== this.selectedDestWarehouseId();
   }
 
+  // Set while the request is in flight, so a second click can't create a duplicate
+  submitting = signal(false);
+
   createRequest(): void {
-    if (!this.canCreateRequest()) return;
+    if (!this.canCreateRequest() || this.submitting()) return;
+    this.submitting.set(true);
 
     this.transferService.createRequest({
       sourceWarehouseId: this.selectedSourceWarehouseId(),
@@ -245,6 +249,7 @@ export class TransferFormDialog {
       items: this.requestItems().filter(i => i.inventoryItemId),
       notes: this.selectedNotes() || undefined
     }).subscribe((result) => {
+      this.submitting.set(false);
       if (result) {
         this.notifications.success('TRANSFERS.REQUEST_CREATED');
         this.created.emit({ success: true });

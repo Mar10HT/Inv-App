@@ -32,6 +32,7 @@ export const client = (id: string, name: string): Client => ({
   code: id.toUpperCase(),
   name,
   paymentCondition: PaymentCondition.CASH,
+  creditLimitCurrency: 'HNL',
   isActive: true,
   createdAt: new Date(0),
   updatedAt: new Date(0)

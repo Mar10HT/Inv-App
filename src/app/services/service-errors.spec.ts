@@ -48,6 +48,10 @@ describe('business services report failed calls to the user', () => {
     errorSpy = spyOn(notifications, 'error');
   });
 
+  // A list load also asks for its counters, which report nothing on their own
+  const notStats = (r: { url: string }) => !r.url.endsWith('/stats');
+  const quietStats = () => backend.match((r) => r.url.endsWith('/stats')).forEach((r) => r.flush({}));
+
   services.forEach(([name, create, start]) => {
     describe(name, () => {
       it('shows an error when a request fails', () => {
@@ -55,7 +59,8 @@ describe('business services report failed calls to the user', () => {
         TestBed.tick();
         start(service as never);
 
-        backend.expectOne(() => true).flush(null, { status: 500, statusText: 'Server Error' });
+        backend.expectOne(notStats).flush(null, { status: 500, statusText: 'Server Error' });
+        quietStats();
         TestBed.tick();
 
         expect(service.error()).toBeTruthy();
@@ -67,7 +72,8 @@ describe('business services report failed calls to the user', () => {
         TestBed.tick();
         start(service as never);
 
-        backend.expectOne(() => true).flush({ data: [] });
+        backend.expectOne(notStats).flush({ data: [], meta: { total: 0, page: 1, limit: 100, totalPages: 0 } });
+        quietStats();
         TestBed.tick();
 
         expect(errorSpy).not.toHaveBeenCalled();
@@ -96,7 +102,7 @@ describe('getQrCode', () => {
       'LoanService',
       () => TestBed.inject(LoanService).getQrCode('l1', 'send'),
       '/loans/l1/qr/send',
-      (b) => b.expectOne((r) => r.url.endsWith('/loans')).flush({ data: [] })
+      (b) => b.expectOne((r) => r.url.endsWith('/loans')).flush({ data: [], meta: { total: 0, page: 1, limit: 100, totalPages: 0 } })
     ],
     [
       'TransferRequestService',

@@ -28,7 +28,7 @@ const raw = (overrides: Partial<RawLoan> = {}): RawLoan => ({
   ...overrides
 });
 
-const page = (...loans: RawLoan[]): { data: RawLoan[] } => ({ data: loans });
+const page = (...loans: RawLoan[]) => ({ data: loans, meta: { total: loans.length, page: 1, limit: 100, totalPages: 1 } });
 const loansUrl = (path = ''): string => `${environment.apiUrl}/loans${path}`;
 
 describe('LoanService', () => {
@@ -59,11 +59,11 @@ describe('LoanService', () => {
   });
 
   describe('loading', () => {
-    it('loads the loans when created, asking for at most 200', () => {
+    it('loads every loan when created, a page of 100 at a time', () => {
       const service = TestBed.inject(LoanService);
 
       const request = backend.expectOne((r) => r.url === loansUrl());
-      expect(request.request.params.get('limit')).toBe('200');
+      expect(request.request.params.get('limit')).toBe('100');
       expect(service.loading()).toBeTrue();
       request.flush(page(raw()));
 

@@ -32,7 +32,7 @@ describe('OutflowService', () => {
 
   const load = (...outflows: Outflow[]): void => {
     service.loadOutflows();
-    backend.expectOne((r) => r.url === url()).flush({ data: outflows });
+    backend.expectOne((r) => r.url === url()).flush({ data: outflows, meta: { total: 0, page: 1, limit: 100, totalPages: 1 } });
   };
 
   beforeEach(() => {
@@ -53,13 +53,13 @@ describe('OutflowService', () => {
   });
 
   describe('loadOutflows', () => {
-    it('asks for at most 200 outflows and keeps what comes back', () => {
+    it('asks for every outflow, a page of 100 at a time, and keeps what comes back', () => {
       service.loadOutflows();
 
       const request = backend.expectOne((r) => r.url === url());
-      expect(request.request.params.get('limit')).toBe('200');
+      expect(request.request.params.get('limit')).toBe('100');
       expect(service.loading()).toBeTrue();
-      request.flush({ data: [outflow({ id: 'a' }), outflow({ id: 'b' })] });
+      request.flush({ data: [outflow({ id: 'a' }), outflow({ id: 'b' })], meta: { total: 0, page: 1, limit: 100, totalPages: 1 } });
 
       expect(service.outflows().map((o) => o.id)).toEqual(['a', 'b']);
       expect(service.loading()).toBeFalse();

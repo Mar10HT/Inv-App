@@ -120,6 +120,35 @@ describe('SaleFormDialog', () => {
 
       expect(component.taxPercent()).toBe(18);
     });
+
+    it('is applied when the fiscal config arrives after the dialog opened', () => {
+      fiscalConfig.set({ isvPercent: 15, currency: 'HNL' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBe(15);
+      expect(component.currency()).toBe('HNL');
+    });
+
+    it('does not overwrite what the user already picked when the fiscal config arrives late', () => {
+      component.setTaxPercent(0);
+      component.setCurrency('USD');
+
+      fiscalConfig.set({ isvPercent: 15, currency: 'HNL' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBe(0);
+      expect(component.currency()).toBe('USD');
+    });
+
+    it('does not overwrite the values of a quotation being edited when the fiscal config arrives late', async () => {
+      await setup({ sale: draftSale() });
+
+      fiscalConfig.set({ isvPercent: 18, currency: 'USD' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBe(15);
+      expect(component.currency()).toBe('HNL');
+    });
   });
 
   describe('the currency default', () => {
@@ -577,6 +606,19 @@ describe('SaleFormDialog', () => {
       expect(sales.update).toHaveBeenCalledOnceWith('draft-1', jasmine.objectContaining({ warehouseId: 'w1', notes: 'draft notes' }));
       expect(sales.create).not.toHaveBeenCalled();
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.UPDATE_SUCCESS');
+    });
+
+    it('sends what was cleared as null, so the edit removes it instead of keeping the old value', async () => {
+      await setup({ sale: draftSale() });
+      component.notes.set('  ');
+      component.setTaxPercent('');
+
+      component.submit();
+
+      expect(sales.update).toHaveBeenCalledOnceWith(
+        'draft-1',
+        jasmine.objectContaining({ notes: null, taxPercent: null, clientId: null })
+      );
     });
 
     it('does not cap quantity to stock either, same as any quotation', async () => {

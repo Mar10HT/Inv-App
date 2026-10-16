@@ -4,12 +4,14 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   ElementRef,
   HostListener,
   inject,
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -192,7 +194,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
             <select
               id="sale-currency"
               [ngModel]="currency()"
-              (ngModelChange)="currency.set($event)"
+              (ngModelChange)="setCurrency($event)"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
             >
               @for (cur of currencies; track cur) {
@@ -210,7 +212,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
               id="sale-tax-percent"
               type="number"
               [ngModel]="taxPercent()"
-              (ngModelChange)="taxPercent.set($event === '' ? undefined : $event)"
+              (ngModelChange)="setTaxPercent($event)"
               min="0"
               max="100"
               step="0.01"
@@ -390,6 +392,33 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   private notifications = inject(NotificationService);
   private fiscalConfigService = inject(FiscalConfigService);
 
+  // Suggested defaults from Fiscal Config's ISV% and currency — always
+  // editable, never forced (see the `taxPercent` comment on the Sale
+  // interface). The settings row may still be loading when the dialog opens,
+  // so they are applied when it arrives, unless the user already picked their
+  // own or an existing sale filled them.
+  private fiscalTouched = false;
+  private fiscalDefaults = effect(() => {
+    const fiscal = this.fiscalConfigService.config();
+    if (!fiscal) return;
+    untracked(() => {
+      if (this.fiscalTouched || this.sale()) return;
+      this.fiscalTouched = true;
+      this.taxPercent.set(fiscal.isvPercent);
+      if (fiscal.currency) this.currency.set(fiscal.currency);
+    });
+  });
+
+  setCurrency(value: string): void {
+    this.fiscalTouched = true;
+    this.currency.set(value);
+  }
+
+  setTaxPercent(value: number | ''): void {
+    this.fiscalTouched = true;
+    this.taxPercent.set(value === '' ? undefined : value);
+  }
+
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
   mode = input<'sale' | 'quotation'>('sale');
@@ -408,14 +437,8 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
 
   ngOnInit(): void {
     const existing = this.sale();
-    if (!existing) {
-      // Suggested defaults from Fiscal Config's ISV% and currency — always
-      // editable, never forced (see the `taxPercent` comment on the Sale interface).
-      const fiscal = this.fiscalConfigService.config();
-      this.taxPercent.set(fiscal?.isvPercent);
-      if (fiscal?.currency) this.currency.set(fiscal.currency);
-      return;
-    }
+    if (!existing) return;
+    this.fiscalTouched = true;
     this.warehouseId.set(existing.warehouseId);
     this.customerName.set(existing.customerName ?? '');
     this.walkIn.set(!existing.clientId && !!existing.customerName);
@@ -643,7 +666,14 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
 
     const existing = this.sale();
     if (existing) {
-      const dto: UpdateSaleDto = { ...common, items };
+      const dto: UpdateSaleDto = {
+        ...common,
+        customerName: common.customerName ?? null,
+        clientId: common.clientId ?? null,
+        notes: common.notes ?? null,
+        taxPercent: common.taxPercent ?? null,
+        items,
+      };
       this.saleService.update(existing.id, dto).subscribe((result) => {
         this.submitting.set(false);
         if (result) {

@@ -1,19 +1,18 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, catchError, finalize, map, of } from 'rxjs';
+import { Observable, catchError, finalize, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   CancelPaymentDto,
   CreatePaymentDto,
   Payment,
 } from '../interfaces/payment.interface';
-import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { RequestTracker, trackRequest } from '../utils/track-request';
+import { fetchAllPages } from '../utils/fetch-all-pages';
 
-const MAX_PAYMENTS_LIMIT = 200;
 
 /**
  * Deliberately no cached list signal (unlike OutflowService/
@@ -48,14 +47,12 @@ export class PaymentService {
   findAll(params: { saleId?: string; purchaseInvoiceId?: string }): Observable<Payment[]> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-    let httpParams = new HttpParams().set('limit', String(MAX_PAYMENTS_LIMIT));
+    let httpParams = new HttpParams();
     if (params.saleId) httpParams = httpParams.set('saleId', params.saleId);
     if (params.purchaseInvoiceId) httpParams = httpParams.set('purchaseInvoiceId', params.purchaseInvoiceId);
 
-    return this.http
-      .get<PaginatedResponse<Payment>>(this.apiUrl, { params: httpParams })
+    return fetchAllPages<Payment>(this.http, this.apiUrl, httpParams)
       .pipe(
-        map((res) => res.data),
         catchError((err) => {
           this.logger.error('Error loading payments', err);
           this.errorSignal.set(

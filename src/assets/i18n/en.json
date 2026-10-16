@@ -320,6 +320,11 @@
       "CREDIT": "Credit"
     },
     "CREDIT_LIMIT": "Credit Limit",
+    "CREDIT_LIMIT_CURRENCY": "Credit Limit Currency",
+    "CURRENCY_OPTIONS": {
+      "HNL": "Lempiras (HNL)",
+      "USD": "US dollars (USD)"
+    },
     "ACTIVE": "Active",
     "INACTIVE": "Inactive",
     "TOTAL": "Total Clients",
@@ -492,7 +497,10 @@
       "settings:view": "View system settings",
       "settings:edit": "Edit system settings",
       "dashboard:view": "View the main dashboard",
-      "auth:admin": "Perform privileged auth operations (password resets, admin links)"
+      "auth:admin": "Perform privileged auth operations (password resets, admin links)",
+      "payments:view": "View sale and purchase payments",
+      "payments:create": "Record sale and purchase payments",
+      "payments:cancel": "Void recorded payments"
     },
     "DELETE_CONFIRM": {
       "TITLE": "Delete Role",
@@ -805,8 +813,7 @@
       "PURCHASE": "Purchase",
       "OUTFLOW": "Outflow",
       "TRANSFER": "Transfer",
-      "STOCK_TAKE": "Stock take",
-      "DISCHARGE": "Discharge"
+      "STOCK_TAKE": "Stock take"
     },
     "CANCELLATION": "cancellation",
     "TAB_DOWNLOADS": "Downloads",
@@ -1511,7 +1518,7 @@
     "CAI_RANGE_EXPIRED": "The active CAI range has expired. Register a new range to keep invoicing.",
     "CAI_RANGE_INVALID": "The range end must be greater than the range start.",
     "CLIENT_CODE_ALREADY_EXISTS": "A client with code \"{{code}}\" already exists.",
-    "CREDIT_LIMIT_EXCEEDED": "This sale would exceed the client's credit limit ({{creditLimit}}). Outstanding balance plus this sale: {{projected}}.",
+    "CREDIT_LIMIT_EXCEEDED": "This sale would exceed the client's credit limit ({{creditLimit}} {{currency}}). Outstanding balance plus this sale: {{projected}} {{currency}}.",
     "CURRENT_PASSWORD_INCORRECT": "The current password is incorrect.",
     "DESTINATION_WAREHOUSE_INACTIVE": "The destination warehouse is inactive.",
     "DISCHARGE_REQUEST_NOT_PENDING": "The discharge request is no longer pending. Current status: {{status}}.",
@@ -1614,6 +1621,11 @@
       "DRAFT": "Quotation",
       "IN_PROGRESS": "In progress",
       "unknown": "unknown"
-    }
+    },
+    "SALE_HAS_ACTIVE_PAYMENTS": "This sale has {{amount}} {{currency}} in recorded payments. Void them first, then cancel the sale.",
+    "PURCHASE_INVOICE_HAS_ACTIVE_PAYMENTS": "This purchase has {{amount}} {{currency}} in recorded payments. Void them first, then cancel the purchase.",
+    "CREDIT_LIMIT_CURRENCY_MISMATCH": "This client's credit limit is in {{limitCurrency}}, so credit can't be given in {{saleCurrency}}. Change the sale's currency or sell for cash.",
+    "CAI_RANGE_IN_USE": "Invoices were already issued from this range, so its starting number can't change.",
+    "CAI_RANGE_BELOW_ISSUED": "The ending number can't be below the last invoice issued ({{lastIssued}})."
   }
 }

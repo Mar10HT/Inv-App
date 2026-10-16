@@ -42,9 +42,12 @@ describe('PurchaseInvoiceService', () => {
   let service: PurchaseInvoiceService;
   let backend: HttpTestingController;
 
+  const page = (data: PurchaseInvoice[]) => ({ data, meta: { total: data.length, page: 1, limit: 100, totalPages: 1 } });
+  const emptyStats = { total: 0, active: 0, cancelled: 0, totalByCurrency: {} };
+
   const load = (...invoices: PurchaseInvoice[]): void => {
     service.loadPurchaseInvoices();
-    backend.expectOne((r) => r.url === url()).flush({ data: invoices });
+    backend.expectOne((r) => r.url === url()).flush(page(invoices));
   };
 
   beforeEach(() => {
@@ -58,23 +61,38 @@ describe('PurchaseInvoiceService', () => {
     backend = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => backend.verify());
+  afterEach(() => {
+    // Every load and every change also refreshes the counters
+    backend.match(url('/stats')).forEach((r) => r.flush(emptyStats));
+    backend.verify();
+  });
 
   it('has the notification service show the errors of its requests', () => {
     expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
   });
 
   describe('loadPurchaseInvoices', () => {
-    it('asks for at most 200 purchase invoices and keeps what comes back', () => {
+    it('asks for every purchase invoice, a page at a time, and keeps what comes back', () => {
       service.loadPurchaseInvoices();
 
       const request = backend.expectOne((r) => r.url === url());
-      expect(request.request.params.get('limit')).toBe('200');
+      expect(request.request.params.get('limit')).toBe('100');
+      expect(request.request.params.get('page')).toBe('1');
       expect(service.loading()).toBeTrue();
-      request.flush({ data: [purchaseInvoice({ id: 'a' }), purchaseInvoice({ id: 'b' })] });
+      request.flush(page([purchaseInvoice({ id: 'a' }), purchaseInvoice({ id: 'b' })]));
 
       expect(service.purchaseInvoices().map((p) => p.id)).toEqual(['a', 'b']);
       expect(service.loading()).toBeFalse();
+    });
+
+    it('asks only for purchases with a balance for accounts payable, and keeps asking that on refresh', () => {
+      service.loadPurchaseInvoices(true);
+      const request = backend.expectOne((r) => r.url === url());
+      expect(request.request.params.get('onlyWithBalance')).toBe('true');
+      request.flush(page([]));
+
+      service.refresh();
+      expect(backend.expectOne((r) => r.url === url()).request.params.get('onlyWithBalance')).toBe('true');
     });
 
     it('records an error and shows no purchases when the load fails', () => {
@@ -89,24 +107,20 @@ describe('PurchaseInvoiceService', () => {
   });
 
   describe('stats', () => {
-    it('counts active and cancelled purchases apart', () => {
-      load(
-        purchaseInvoice({ id: '1' }),
-        purchaseInvoice({ id: '2' }),
-        purchaseInvoice({ id: '3', status: PurchaseInvoiceStatus.CANCELLED })
-      );
+    it('comes from the API, counted over every purchase and not just the loaded ones', () => {
+      const counted = { total: 300, active: 280, cancelled: 20, totalByCurrency: { USD: 575 } };
+      load(purchaseInvoice({ id: '1' }));
 
-      expect(service.stats()).toEqual(jasmine.objectContaining({ total: 3, active: 2, cancelled: 1 }));
+      backend.expectOne(url('/stats')).flush(counted);
+
+      expect(service.stats()).toEqual(counted);
     });
 
-    it('sums the active total per currency', () => {
-      load(
-        purchaseInvoice({ id: '1', currency: 'USD', totalAmount: 100 }),
-        purchaseInvoice({ id: '2', currency: 'USD', totalAmount: 50 }),
-        purchaseInvoice({ id: '3', currency: 'HNL', totalAmount: 500, status: PurchaseInvoiceStatus.CANCELLED })
-      );
+    it('is asked again after a change', () => {
+      service.cancel('p1').subscribe();
+      backend.expectOne(url('/p1/cancel')).flush(purchaseInvoice({ status: PurchaseInvoiceStatus.CANCELLED }));
 
-      expect(service.stats().totalByCurrency).toEqual({ USD: 150 });
+      expect(backend.match(url('/stats')).length).toBe(1);
     });
   });
 

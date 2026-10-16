@@ -21,8 +21,9 @@ export interface CrudFieldConfig {
   rows?: number;
   options?: CrudFieldOption[];
   errorMessages?: Record<string, { key: string; params?: CrudTranslateParams }>;
-  /** Checkbox fields only: the control's value in add mode. Defaults to false. */
-  defaultValue?: boolean;
+  /** The control's value in add mode: a boolean for a checkbox (false if
+   *  unset), an option value for a select ('' if unset). */
+  defaultValue?: boolean | string;
 }
 
 export interface CrudDialogConfig {

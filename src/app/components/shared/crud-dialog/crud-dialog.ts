@@ -146,7 +146,7 @@ export class CrudDialog implements OnInit {
     const controls: Record<string, [string | boolean, ValidatorFn[]]> = {};
     for (const field of this.data.config.fields) {
       const validators = field.validators || [];
-      controls[field.key] = [field.type === 'checkbox' ? (field.defaultValue ?? false) : '', validators];
+      controls[field.key] = [field.defaultValue ?? (field.type === 'checkbox' ? false : ''), validators];
     }
     this.form = this.fb.group(controls);
 

@@ -55,7 +55,7 @@ describe('PaymentService', () => {
 
       const request = backend.expectOne((r) => r.url === url());
       expect(request.request.params.get('saleId')).toBe('s1');
-      request.flush({ data: [payment({ id: 'a' }), payment({ id: 'b' })] });
+      request.flush({ data: [payment({ id: 'a' }), payment({ id: 'b' })], meta: { total: 0, page: 1, limit: 100, totalPages: 1 } });
 
       expect(result?.map((p) => p.id)).toEqual(['a', 'b']);
     });
@@ -65,7 +65,7 @@ describe('PaymentService', () => {
 
       const request = backend.expectOne((r) => r.url === url());
       expect(request.request.params.get('purchaseInvoiceId')).toBe('inv-1');
-      request.flush({ data: [] });
+      request.flush({ data: [], meta: { total: 0, page: 1, limit: 100, totalPages: 1 } });
     });
 
     it('resolves with an empty list and records an error when the request fails', () => {

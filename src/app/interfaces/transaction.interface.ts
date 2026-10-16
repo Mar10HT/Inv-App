@@ -65,7 +65,7 @@ export interface ReportTransaction {
   }[];
 }
 
-export type MovementOrigin = 'TRANSACTION' | 'SALE' | 'PURCHASE' | 'OUTFLOW' | 'TRANSFER' | 'STOCK_TAKE' | 'DISCHARGE';
+export type MovementOrigin = 'TRANSACTION' | 'SALE' | 'PURCHASE' | 'OUTFLOW' | 'TRANSFER' | 'STOCK_TAKE';
 
 export interface StockMovement extends ReportTransaction {
   origin: MovementOrigin;

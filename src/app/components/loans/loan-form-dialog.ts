@@ -173,7 +173,7 @@ export interface LoanFormResult {
           </button>
           <button
             (click)="createLoan()"
-            [disabled]="!canCreateLoan()"
+            [disabled]="!canCreateLoan() || submitting()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all">
             {{ 'LOANS.CREATE_LOAN' | translate }}
           </button>
@@ -293,8 +293,12 @@ export class LoanFormDialog {
            this.selectedSourceWarehouseId() !== this.selectedDestWarehouseId();
   }
 
+  // Set while the request is in flight, so a second click can't create a duplicate
+  submitting = signal(false);
+
   createLoan(): void {
-    if (!this.canCreateLoan()) return;
+    if (!this.canCreateLoan() || this.submitting()) return;
+    this.submitting.set(true);
 
     const items = this.loanItems().filter((item) => item.inventoryItemId);
     const generalNotes = this.selectedNotes() || undefined;
@@ -312,6 +316,7 @@ export class LoanFormDialog {
         notes: generalNotes,
       })
       .subscribe((result) => {
+        this.submitting.set(false);
         if (result) {
           this.notifications.success('LOANS.LOAN_CREATED');
           this.created.emit({ success: true, count: items.length });

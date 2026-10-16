@@ -22,6 +22,7 @@ import { SupplierService } from '../../services/supplier.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { PermissionsService } from '../../services/permissions.service';
 import {
   PurchaseInvoice,
   PurchaseInvoiceStatus,
@@ -169,8 +170,9 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                     <td class="px-4 py-3 text-right text-foreground">
                       {{ purchase.items.length }}
                     </td>
-                    <td class="px-4 py-3 text-right" [ngClass]="(purchase.balance ?? 0) > 0 ? 'text-[var(--color-status-error)]' : 'text-[var(--color-on-surface-variant)]'">
-                      {{ formatMoney(purchase.balance ?? 0, purchase.currency) }}
+                    <!-- A cancelled purchase is owed nothing -->
+                    <td class="px-4 py-3 text-right" [ngClass]="purchase.status === 'ACTIVE' && (purchase.balance ?? 0) > 0 ? 'text-[var(--color-status-error)]' : 'text-[var(--color-on-surface-variant)]'">
+                      {{ purchase.status === 'ACTIVE' ? formatMoney(purchase.balance ?? 0, purchase.currency) : '—' }}
                     </td>
                     <td class="px-4 py-3">
                       @if (purchase.status === 'ACTIVE') {
@@ -257,7 +259,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                     {{ purchase.createdAt | appDate:'short' }}
                   </span>
                 </div>
-                @if ((purchase.balance ?? 0) > 0) {
+                @if (purchase.status === 'ACTIVE' && (purchase.balance ?? 0) > 0) {
                   <div class="flex items-center justify-between text-sm mt-1">
                     <span class="text-[var(--color-on-surface-variant)]">{{ 'PURCHASES.COL_BALANCE' | translate }}</span>
                     <span class="font-medium text-[var(--color-status-error)]">{{ formatMoney(purchase.balance ?? 0, purchase.currency) }}</span>
@@ -325,6 +327,7 @@ export class PurchasesComponent implements OnInit {
   supplierService = inject(SupplierService);
   private inventoryService = inject(InventoryService);
   private fiscalConfigService = inject(FiscalConfigService);
+  private permissions = inject(PermissionsService);
   private confirm = inject(ConfirmService);
   private notifications = inject(NotificationService);
   private translate = inject(TranslateService);
@@ -361,14 +364,17 @@ export class PurchasesComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.purchaseInvoiceService.loadPurchaseInvoices();
+    this.purchaseInvoiceService.loadPurchaseInvoices(this.isPayablesView);
     this.warehouseService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
     this.supplierService.getAll().subscribe({
       error: (err) => this.notifications.handleError(err),
     });
-    this.fiscalConfigService.get().subscribe();
+    // Only the form needs the default tax rate, and only who can create may open it
+    if (this.permissions.hasPermission('purchases:create')) {
+      this.fiscalConfigService.get().subscribe();
+    }
     this.inventoryService.loadItems();
   }
 
@@ -423,9 +429,24 @@ export class PurchasesComponent implements OnInit {
     return purchase.items.some((item) => item.inventoryItem?.itemType === ItemType.UNIQUE);
   }
 
+  /** Recorded payments, read off the list's balance; 0 when it wasn't sent. */
+  paidAmount(purchase: PurchaseInvoice): number {
+    if (purchase.balance === undefined) return 0;
+    const grandTotal = purchase.totalAmount + (purchase.taxAmount ?? 0);
+    return Math.round((grandTotal - purchase.balance) * 100) / 100;
+  }
+
   cancel(purchase: PurchaseInvoice): void {
     if (this.hasUniqueLine(purchase)) {
       this.notifications.error('PURCHASES.CANNOT_CANCEL_UNIQUE');
+      return;
+    }
+    // The API refuses to cancel over recorded payments; say so before asking
+    const paid = this.paidAmount(purchase);
+    if (paid > 0) {
+      this.notifications.error('API_ERRORS.PURCHASE_INVOICE_HAS_ACTIVE_PAYMENTS', {
+        interpolateParams: { amount: paid.toFixed(2), currency: purchase.currency },
+      });
       return;
     }
 

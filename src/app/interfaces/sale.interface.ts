@@ -113,7 +113,12 @@ export interface CreateSaleDto {
   asDraft?: boolean;
 }
 
-export type UpdateSaleDto = Partial<Omit<CreateSaleDto, 'asDraft'>>;
+// On an edit, an absent field keeps the stored value and null clears it, so a
+// field emptied in the form has to be sent as null, not left out.
+type Clearable = 'customerName' | 'clientId' | 'notes' | 'taxPercent';
+export type UpdateSaleDto = Partial<Omit<CreateSaleDto, 'asDraft' | Clearable>> & {
+  [K in Clearable]?: CreateSaleDto[K] | null;
+};
 
 export interface CancelSaleDto {
   reason?: string;

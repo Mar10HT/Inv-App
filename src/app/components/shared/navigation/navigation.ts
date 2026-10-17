@@ -1,7 +1,8 @@
 import { Component, inject, computed, signal, effect, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -21,6 +22,7 @@ import { PermissionsService } from '../../../services/permissions.service';
     RouterLinkActive,
     LucideAngularModule,
     MatTooltipModule,
+    MatMenuModule,
     TranslateModule,
     NgxPermissionsModule,
     LanguageSelectorComponent,
@@ -112,7 +114,7 @@ import { PermissionsService } from '../../../services/permissions.service';
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'loans:view', 'transfers:view', 'discharges:view', 'outflows:view', 'sales:view', 'stocktake:view']">
+      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'clients:view', 'discharges:view', 'stocktake:view', 'transactions:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -180,35 +182,165 @@ import { PermissionsService } from '../../../services/permissions.service';
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['loans:view']">
+      <ng-container *ngxPermissionsOnly="['clients:view']">
         <a
-          routerLink="/loans"
+          routerLink="/clients"
           routerLinkActive="active-link"
           class="nav-link"
           (click)="closeMobileMenu()"
-          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.LOANS' | translate) : ''"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.CLIENTS' | translate) : ''"
           matTooltipPosition="right">
-          <lucide-icon name="HandCoins" class="nav-icon"></lucide-icon>
+          <lucide-icon name="Contact" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
-            <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
+            <span class="nav-text">{{ 'NAV.CLIENTS' | translate }}</span>
           }
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['transfers:view']">
-        <a
-          routerLink="/transfers"
-          routerLinkActive="active-link"
-          class="nav-link"
-          (click)="closeMobileMenu()"
-          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSFERS' | translate) : ''"
-          matTooltipPosition="right">
-          <lucide-icon name="ArrowLeftRight" class="nav-icon"></lucide-icon>
-          @if (showExpandedContent()) {
-            <span class="nav-text">{{ 'NAV.TRANSFERS' | translate }}</span>
-          }
-        </a>
+      <!-- COMMERCIAL Section: Sales/Purchases nest their Accounts Receivable/Payable
+           views as a 2-level submenu. See navigation.css for .nav-sublink/.nav-subsublink. -->
+      <ng-container *ngxPermissionsOnly="['sales:view', 'purchases:view', 'transfers:view', 'outflows:view', 'loans:view']">
+        @if (showExpandedContent()) {
+          <div class="nav-group-label">{{ 'NAV.COMMERCIAL' | translate }}</div>
+        } @else {
+          <div class="nav-divider"></div>
+        }
       </ng-container>
+
+      @if (showExpandedContent()) {
+        <ng-container *ngxPermissionsOnly="['sales:view', 'purchases:view', 'transfers:view', 'outflows:view', 'loans:view']">
+          <button type="button" class="nav-link" (click)="toggleCommercial()" [attr.aria-expanded]="commercialOpen()">
+            <lucide-icon name="Building2" class="nav-icon"></lucide-icon>
+            <span class="nav-text">{{ 'NAV.COMMERCIAL' | translate }}</span>
+            <lucide-icon [name]="commercialOpen() ? 'ChevronDown' : 'ChevronRight'" class="nav-icon nav-chevron"></lucide-icon>
+          </button>
+        </ng-container>
+
+        @if (commercialOpen()) {
+          <ng-container *ngxPermissionsOnly="['sales:view']">
+            <button type="button" class="nav-link nav-sublink" (click)="toggleSalesSubmenu()" [attr.aria-expanded]="salesSubmenuOpen()">
+              <lucide-icon name="ShoppingCart" class="nav-icon"></lucide-icon>
+              <span class="nav-text">{{ 'NAV.SALES' | translate }}</span>
+              <lucide-icon [name]="salesSubmenuOpen() ? 'ChevronDown' : 'ChevronRight'" class="nav-icon nav-chevron"></lucide-icon>
+            </button>
+            @if (salesSubmenuOpen()) {
+              <a routerLink="/sales" routerLinkActive="active-link" class="nav-link nav-subsublink" (click)="closeMobileMenu()">
+                <lucide-icon name="ShoppingCart" class="nav-icon"></lucide-icon>
+                <span class="nav-text">{{ 'NAV.ALL_SALES' | translate }}</span>
+              </a>
+              <a routerLink="/accounts-receivable" routerLinkActive="active-link" class="nav-link nav-subsublink" (click)="closeMobileMenu()">
+                <lucide-icon name="Banknote" class="nav-icon"></lucide-icon>
+                <span class="nav-text">{{ 'NAV.ACCOUNTS_RECEIVABLE' | translate }}</span>
+              </a>
+            }
+          </ng-container>
+
+          <ng-container *ngxPermissionsOnly="['purchases:view']">
+            <button type="button" class="nav-link nav-sublink" (click)="togglePurchasesSubmenu()" [attr.aria-expanded]="purchasesSubmenuOpen()">
+              <lucide-icon name="PackagePlus" class="nav-icon"></lucide-icon>
+              <span class="nav-text">{{ 'NAV.PURCHASES' | translate }}</span>
+              <lucide-icon [name]="purchasesSubmenuOpen() ? 'ChevronDown' : 'ChevronRight'" class="nav-icon nav-chevron"></lucide-icon>
+            </button>
+            @if (purchasesSubmenuOpen()) {
+              <a routerLink="/purchases" routerLinkActive="active-link" class="nav-link nav-subsublink" (click)="closeMobileMenu()">
+                <lucide-icon name="PackagePlus" class="nav-icon"></lucide-icon>
+                <span class="nav-text">{{ 'NAV.ALL_PURCHASES' | translate }}</span>
+              </a>
+              <a routerLink="/accounts-payable" routerLinkActive="active-link" class="nav-link nav-subsublink" (click)="closeMobileMenu()">
+                <lucide-icon name="CreditCard" class="nav-icon"></lucide-icon>
+                <span class="nav-text">{{ 'NAV.ACCOUNTS_PAYABLE' | translate }}</span>
+              </a>
+            }
+          </ng-container>
+
+          <ng-container *ngxPermissionsOnly="['transfers:view']">
+            <a routerLink="/transfers" routerLinkActive="active-link" class="nav-link nav-sublink" (click)="closeMobileMenu()">
+              <lucide-icon name="ArrowLeftRight" class="nav-icon"></lucide-icon>
+              <span class="nav-text">{{ 'NAV.TRANSFERS' | translate }}</span>
+            </a>
+          </ng-container>
+
+          <ng-container *ngxPermissionsOnly="['outflows:view']">
+            <a routerLink="/outflows" routerLinkActive="active-link" class="nav-link nav-sublink" (click)="closeMobileMenu()">
+              <lucide-icon name="PackageMinus" class="nav-icon"></lucide-icon>
+              <span class="nav-text">{{ 'NAV.OUTFLOWS' | translate }}</span>
+            </a>
+          </ng-container>
+
+          <ng-container *ngxPermissionsOnly="['loans:view']">
+            <a routerLink="/loans" routerLinkActive="active-link" class="nav-link nav-sublink" (click)="closeMobileMenu()">
+              <lucide-icon name="HandCoins" class="nav-icon"></lucide-icon>
+              <span class="nav-text">{{ 'NAV.LOANS' | translate }}</span>
+            </a>
+          </ng-container>
+        }
+      } @else {
+        <ng-container *ngxPermissionsOnly="['sales:view', 'purchases:view', 'transfers:view', 'outflows:view', 'loans:view']">
+          <button
+            type="button"
+            class="nav-link"
+            [matMenuTriggerFor]="commercialMenu"
+            [matTooltip]="!isMobileMenuOpen() ? ('NAV.COMMERCIAL' | translate) : ''"
+            matTooltipPosition="right">
+            <lucide-icon name="Building2" class="nav-icon"></lucide-icon>
+          </button>
+
+          <mat-menu #commercialMenu="matMenu">
+            <ng-container *ngxPermissionsOnly="['sales:view']">
+              <button mat-menu-item [matMenuTriggerFor]="salesFlyout">
+                <lucide-icon name="ShoppingCart" class="flyout-icon"></lucide-icon>
+                {{ 'NAV.SALES' | translate }}
+              </button>
+            </ng-container>
+            <ng-container *ngxPermissionsOnly="['purchases:view']">
+              <button mat-menu-item [matMenuTriggerFor]="purchasesFlyout">
+                <lucide-icon name="PackagePlus" class="flyout-icon"></lucide-icon>
+                {{ 'NAV.PURCHASES' | translate }}
+              </button>
+            </ng-container>
+            <ng-container *ngxPermissionsOnly="['transfers:view']">
+              <a mat-menu-item routerLink="/transfers" (click)="closeMobileMenu()">
+                <lucide-icon name="ArrowLeftRight" class="flyout-icon"></lucide-icon>
+                {{ 'NAV.TRANSFERS' | translate }}
+              </a>
+            </ng-container>
+            <ng-container *ngxPermissionsOnly="['outflows:view']">
+              <a mat-menu-item routerLink="/outflows" (click)="closeMobileMenu()">
+                <lucide-icon name="PackageMinus" class="flyout-icon"></lucide-icon>
+                {{ 'NAV.OUTFLOWS' | translate }}
+              </a>
+            </ng-container>
+            <ng-container *ngxPermissionsOnly="['loans:view']">
+              <a mat-menu-item routerLink="/loans" (click)="closeMobileMenu()">
+                <lucide-icon name="HandCoins" class="flyout-icon"></lucide-icon>
+                {{ 'NAV.LOANS' | translate }}
+              </a>
+            </ng-container>
+          </mat-menu>
+
+          <mat-menu #salesFlyout="matMenu">
+            <a mat-menu-item routerLink="/sales" (click)="closeMobileMenu()">
+              <lucide-icon name="ShoppingCart" class="flyout-icon"></lucide-icon>
+              {{ 'NAV.ALL_SALES' | translate }}
+            </a>
+            <a mat-menu-item routerLink="/accounts-receivable" (click)="closeMobileMenu()">
+              <lucide-icon name="Banknote" class="flyout-icon"></lucide-icon>
+              {{ 'NAV.ACCOUNTS_RECEIVABLE' | translate }}
+            </a>
+          </mat-menu>
+
+          <mat-menu #purchasesFlyout="matMenu">
+            <a mat-menu-item routerLink="/purchases" (click)="closeMobileMenu()">
+              <lucide-icon name="PackagePlus" class="flyout-icon"></lucide-icon>
+              {{ 'NAV.ALL_PURCHASES' | translate }}
+            </a>
+            <a mat-menu-item routerLink="/accounts-payable" (click)="closeMobileMenu()">
+              <lucide-icon name="CreditCard" class="flyout-icon"></lucide-icon>
+              {{ 'NAV.ACCOUNTS_PAYABLE' | translate }}
+            </a>
+          </mat-menu>
+        </ng-container>
+      }
 
       <ng-container *ngxPermissionsOnly="['discharges:view']">
         <a
@@ -225,36 +357,6 @@ import { PermissionsService } from '../../../services/permissions.service';
         </a>
       </ng-container>
 
-      <ng-container *ngxPermissionsOnly="['outflows:view']">
-        <a
-          routerLink="/outflows"
-          routerLinkActive="active-link"
-          class="nav-link"
-          (click)="closeMobileMenu()"
-          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.OUTFLOWS' | translate) : ''"
-          matTooltipPosition="right">
-          <lucide-icon name="PackageMinus" class="nav-icon"></lucide-icon>
-          @if (showExpandedContent()) {
-            <span class="nav-text">{{ 'NAV.OUTFLOWS' | translate }}</span>
-          }
-        </a>
-      </ng-container>
-
-      <ng-container *ngxPermissionsOnly="['sales:view']">
-        <a
-          routerLink="/sales"
-          routerLinkActive="active-link"
-          class="nav-link"
-          (click)="closeMobileMenu()"
-          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SALES' | translate) : ''"
-          matTooltipPosition="right">
-          <lucide-icon name="ShoppingCart" class="nav-icon"></lucide-icon>
-          @if (showExpandedContent()) {
-            <span class="nav-text">{{ 'NAV.SALES' | translate }}</span>
-          }
-        </a>
-      </ng-container>
-
       <ng-container *ngxPermissionsOnly="['stocktake:view']">
         <a
           routerLink="/stock-take"
@@ -266,6 +368,21 @@ import { PermissionsService } from '../../../services/permissions.service';
           <lucide-icon name="ClipboardCheck" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
             <span class="nav-text">{{ 'NAV.STOCK_TAKE' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['transactions:view']">
+        <a
+          routerLink="/transactions"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.TRANSACTIONS' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Receipt" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.TRANSACTIONS' | translate }}</span>
           }
         </a>
       </ng-container>
@@ -429,6 +546,7 @@ export class Navigation {
   private authService = inject(AuthService);
   private sidebarService = inject(SidebarService);
   private themeService = inject(ThemeService);
+  private router = inject(Router);
   permissions = inject(PermissionsService);
   private isBrowser: boolean;
 
@@ -442,9 +560,25 @@ export class Navigation {
   private mobileMenuOpen = signal<boolean>(false);
   isMobileMenuOpen = computed(() => this.mobileMenuOpen());
 
+  // Commercial group (expanded sidebar only — collapsed mode uses a mat-menu flyout instead).
+  // In-memory only, same as SidebarService.isCollapsed: no persistence across reloads.
+  commercialOpen = signal(true);
+  salesSubmenuOpen = signal(false);
+  purchasesSubmenuOpen = signal(false);
+
   constructor() {
     const platformId = inject(PLATFORM_ID);
     this.isBrowser = isPlatformBrowser(platformId);
+
+    // Open the matching submenu when landing directly on one of its pages,
+    // so the sidebar isn't fully collapsed with nothing highlighted.
+    const url = this.router.url;
+    if (url.startsWith('/sales') || url.startsWith('/accounts-receivable')) {
+      this.salesSubmenuOpen.set(true);
+    }
+    if (url.startsWith('/purchases') || url.startsWith('/accounts-payable')) {
+      this.purchasesSubmenuOpen.set(true);
+    }
 
     // Effect to manage body scroll lock when mobile menu is open
     effect(() => {
@@ -481,6 +615,19 @@ export class Navigation {
   // Mobile menu methods
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update(v => !v);
+  }
+
+  // Commercial group toggles (arrow functions aren't allowed in template expressions)
+  toggleCommercial(): void {
+    this.commercialOpen.update(v => !v);
+  }
+
+  toggleSalesSubmenu(): void {
+    this.salesSubmenuOpen.update(v => !v);
+  }
+
+  togglePurchasesSubmenu(): void {
+    this.purchasesSubmenuOpen.update(v => !v);
   }
 
   closeMobileMenu(): void {

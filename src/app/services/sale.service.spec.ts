@@ -4,23 +4,29 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { SaleService } from './sale.service';
 import { NotificationService } from './notification.service';
 import { CustomerType, Sale, SaleStatus } from '../interfaces/sale.interface';
+import { PaymentCondition } from '../interfaces/purchase-invoice.interface';
 import { environment } from '../../environments/environment';
 import { provideTestBedDefaults } from '../../testing/test-providers';
 
 const sale = (overrides: Partial<Sale> = {}): Sale => ({
   id: 's1',
-  name: null,
+  quoteNumber: null,
   warehouseId: 'w1',
   customerName: null,
   customerType: CustomerType.RETAIL,
+  clientId: null,
+  paymentCondition: PaymentCondition.CASH,
   currency: 'USD',
   totalAmount: 10,
+  taxPercent: null,
+  taxAmount: 0,
   status: SaleStatus.ACTIVE,
   notes: null,
   createdById: 'u1',
   cancelledById: null,
   cancelledAt: null,
   cancellationReason: null,
+  number: null,
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
   items: [],
@@ -33,9 +39,12 @@ describe('SaleService', () => {
   let service: SaleService;
   let backend: HttpTestingController;
 
+  const page = (data: Sale[]) => ({ data, meta: { total: data.length, page: 1, limit: 100, totalPages: 1 } });
+  const emptyStats = { total: 0, active: 0, draft: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} };
+
   const load = (...sales: Sale[]): void => {
     service.loadSales();
-    backend.expectOne((r) => r.url === url()).flush({ data: sales });
+    backend.expectOne((r) => r.url === url()).flush(page(sales));
   };
 
   beforeEach(() => {
@@ -49,23 +58,41 @@ describe('SaleService', () => {
     backend = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => backend.verify());
+  afterEach(() => {
+    // Every load and every change also refreshes the counters
+    backend.match(url('/stats')).forEach((r) => r.flush(emptyStats));
+    backend.verify();
+  });
 
   it('has the notification service show the errors of its requests', () => {
     expect(TestBed.inject(NotificationService).reportErrors).toHaveBeenCalledOnceWith(service.error);
   });
 
   describe('loadSales', () => {
-    it('asks for at most 200 sales and keeps what comes back', () => {
+    it('walks every page the API hands out and keeps all of it', () => {
       service.loadSales();
 
-      const request = backend.expectOne((r) => r.url === url());
-      expect(request.request.params.get('limit')).toBe('200');
+      const first = backend.expectOne((r) => r.url === url() && r.params.get('page') === '1');
+      expect(first.request.params.get('limit')).toBe('100');
+      expect(first.request.params.has('onlyWithBalance')).toBeFalse();
       expect(service.loading()).toBeTrue();
-      request.flush({ data: [sale({ id: 'a' }), sale({ id: 'b' })] });
+      first.flush({ data: [sale({ id: 'a' })], meta: { total: 2, page: 1, limit: 100, totalPages: 2 } });
+      backend
+        .expectOne((r) => r.url === url() && r.params.get('page') === '2')
+        .flush({ data: [sale({ id: 'b' })], meta: { total: 2, page: 2, limit: 100, totalPages: 2 } });
 
       expect(service.sales().map((s) => s.id)).toEqual(['a', 'b']);
       expect(service.loading()).toBeFalse();
+    });
+
+    it('asks only for sales with a balance for accounts receivable, and keeps asking that on refresh', () => {
+      service.loadSales(true);
+      const request = backend.expectOne((r) => r.url === url());
+      expect(request.request.params.get('onlyWithBalance')).toBe('true');
+      request.flush(page([]));
+
+      service.refresh();
+      expect(backend.expectOne((r) => r.url === url()).request.params.get('onlyWithBalance')).toBe('true');
     });
 
     it('records an error and shows no sales when the load fails', () => {
@@ -80,49 +107,27 @@ describe('SaleService', () => {
   });
 
   describe('stats', () => {
-    it('counts active and cancelled sales apart', () => {
-      load(
-        sale({ id: '1' }),
-        sale({ id: '2' }),
-        sale({ id: '3', status: SaleStatus.CANCELLED })
-      );
+    it('comes from the API, counted over every sale and not just the loaded ones', () => {
+      const counted = { total: 250, active: 200, draft: 30, cancelled: 20, byCustomerType: { RETAIL: 200 }, revenueByCurrency: { USD: 1150 } };
+      load(sale({ id: '1' }));
 
-      expect(service.stats()).toEqual(jasmine.objectContaining({ total: 3, active: 2, cancelled: 1 }));
+      backend.expectOne(url('/stats')).flush(counted);
+
+      expect(service.stats()).toEqual(counted);
     });
 
-    it('counts active sales per customer type', () => {
-      load(
-        sale({ id: '1', customerType: CustomerType.RETAIL }),
-        sale({ id: '2', customerType: CustomerType.RETAIL }),
-        sale({ id: '3', customerType: CustomerType.WHOLESALE }),
-        sale({ id: '4', customerType: CustomerType.DISTRIBUTOR, status: SaleStatus.CANCELLED })
-      );
-
-      expect(service.stats().byCustomerType).toEqual({ RETAIL: 2, WHOLESALE: 1 });
-    });
-
-    it('adds up the revenue of active sales per currency and ignores cancelled ones', () => {
-      load(
-        sale({ id: '1', currency: 'USD', totalAmount: 100 }),
-        sale({ id: '2', currency: 'USD', totalAmount: 50.5 }),
-        sale({ id: '3', currency: 'HNL', totalAmount: 2500 }),
-        sale({ id: '4', currency: 'USD', totalAmount: 999, status: SaleStatus.CANCELLED })
-      );
-
-      expect(service.stats().revenueByCurrency).toEqual({ USD: 150.5, HNL: 2500 });
-    });
-
-    it('does not let floating point drift show up in the revenue', () => {
-      load(sale({ id: '1', totalAmount: 0.1 }), sale({ id: '2', totalAmount: 0.2 }));
-
-      // 0.1 + 0.2 is 0.30000000000000004 in floating point
-      expect(service.stats().revenueByCurrency['USD']).toBe(0.3);
-    });
-
-    it('is empty when there are no sales', () => {
+    it('starts empty and stays so when the API fails', () => {
       load();
+      backend.expectOne(url('/stats')).flush(null, { status: 500, statusText: 'Server Error' });
 
-      expect(service.stats()).toEqual({ total: 0, active: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} });
+      expect(service.stats()).toEqual(emptyStats);
+    });
+
+    it('is asked again after a change', () => {
+      service.cancel('s1').subscribe();
+      backend.expectOne(url('/s1/cancel')).flush(sale({ status: SaleStatus.CANCELLED }));
+
+      expect(backend.match(url('/stats')).length).toBe(1);
     });
   });
 
@@ -180,6 +185,53 @@ describe('SaleService', () => {
       backend.expectOne(url('/a/cancel')).flush(null, { status: 409, statusText: 'Conflict' });
 
       expect(service.sales()[0].status).toBe(SaleStatus.ACTIVE);
+      expect(service.error()).toBeTruthy();
+    });
+  });
+
+  describe('update', () => {
+    it('PATCHes the sale and replaces it in the list', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT }));
+
+      service.update('a', { notes: 'Changed' }).subscribe();
+      const request = backend.expectOne(url('/a'));
+      expect(request.request.method).toBe('PATCH');
+      expect(request.request.body).toEqual({ notes: 'Changed' });
+      request.flush(sale({ id: 'a', status: SaleStatus.DRAFT, notes: 'Changed' }));
+
+      expect(service.sales()[0].notes).toBe('Changed');
+    });
+
+    it('leaves the sale as it was when the API refuses', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT, notes: null }));
+
+      service.update('a', { notes: 'Changed' }).subscribe();
+      backend.expectOne(url('/a')).flush(null, { status: 400, statusText: 'Bad Request' });
+
+      expect(service.sales()[0].notes).toBeNull();
+      expect(service.error()).toBeTruthy();
+    });
+  });
+
+  describe('confirm', () => {
+    it('PATCHes the confirm endpoint and replaces the sale with the numbered, active one', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT }));
+
+      service.confirm('a').subscribe();
+      const request = backend.expectOne(url('/a/confirm'));
+      expect(request.request.method).toBe('PATCH');
+      request.flush(sale({ id: 'a', status: SaleStatus.ACTIVE, number: 'V-0001' }));
+
+      expect(service.sales()[0]).toEqual(jasmine.objectContaining({ status: SaleStatus.ACTIVE, number: 'V-0001' }));
+    });
+
+    it('leaves the sale as it was when the API refuses', () => {
+      load(sale({ id: 'a', status: SaleStatus.DRAFT }));
+
+      service.confirm('a').subscribe();
+      backend.expectOne(url('/a/confirm')).flush(null, { status: 400, statusText: 'Bad Request' });
+
+      expect(service.sales()[0].status).toBe(SaleStatus.DRAFT);
       expect(service.error()).toBeTruthy();
     });
   });

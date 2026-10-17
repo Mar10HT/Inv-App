@@ -65,6 +65,7 @@ import {
   PackageMinus,
   Warehouse,
   Truck,
+  Contact,
   Tag,
   Tags,
   Barcode,
@@ -75,6 +76,7 @@ import {
   DollarSign,
   Banknote,
   ShoppingCart,
+  Landmark,
 
   // Charts & Analytics
   BarChart2,
@@ -261,6 +263,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   PackageMinus,
   Warehouse,
   Truck,
+  Contact,
   Tag,
   Tags,
   Barcode,
@@ -271,6 +274,7 @@ export const APP_ICONS: Record<string, LucideIconData> = {
   DollarSign,
   Banknote,
   ShoppingCart,
+  Landmark,
 
   // Charts & Analytics
   BarChart2,

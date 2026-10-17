@@ -1,5 +1,5 @@
 import type jsPDF from 'jspdf';
-import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
+import { ReportTransaction, TransactionType } from '../../interfaces/transaction.interface';
 
 /**
  * Drawing helpers shared by the PDF reports. This is plain jsPDF drawing code, kept apart from
@@ -140,7 +140,7 @@ export abstract class PdfDrawingBase {
     }
   }
 
-  protected calculateStats(transactions: Transaction[]): {
+  protected calculateStats(transactions: ReportTransaction[]): {
     total: number;
     inCount: number;
     outCount: number;
@@ -200,7 +200,7 @@ export abstract class PdfDrawingBase {
 
   protected drawTransactionCard(
     doc: jsPDF,
-    tx: Transaction,
+    tx: ReportTransaction,
     yPos: number,
     pageWidth: number,
     index: number

@@ -7,6 +7,7 @@ import { SidebarService } from './services/sidebar.service';
 import { CommandPaletteService } from './services/command-palette.service';
 import { CsrfService } from './services/csrf.service';
 import { LoggerService } from './services/logger.service';
+import { savedLanguage } from './shared/app-language';
 
 @Component({
   selector: 'app-root',
@@ -63,12 +64,8 @@ export class App implements OnInit {
     // Set default language
     this.translate.setDefaultLang('en');
 
-    // Use saved language or detect from browser
-    const savedLang = localStorage.getItem('language');
-    const browserLang = this.translate.getBrowserLang();
-    const langToUse = savedLang || (browserLang?.match(/es|en/) ? browserLang : 'en');
-
-    this.translate.use(langToUse);
+    // A first visit (e.g. the login page) starts in Spanish, not the browser's language.
+    this.translate.use(savedLanguage());
 
     // Initialize theme from localStorage
     const savedTheme = localStorage.getItem('theme') || 'dark';

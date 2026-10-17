@@ -1,5 +1,4 @@
 import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -13,9 +12,12 @@ import { DischargeRequest, DischargeRequestStatus } from '../../../interfaces/di
 import { ConfirmService } from '../../../services/confirm.service';
 import { Spinner } from '../../shared/spinner/spinner';
 import { StatCard } from '../../shared/stat-card/stat-card';
+import { provideTranslatedPaginator } from '../../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-discharge-list',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -24,7 +26,7 @@ import { StatCard } from '../../shared/stat-card/stat-card';
     MatPaginatorModule,
     NgxPermissionsModule,
     TranslateModule,
-    DatePipe,
+    AppDatePipe,
     Spinner,
     StatCard,
   ],
@@ -136,7 +138,7 @@ import { StatCard } from '../../shared/stat-card/stat-card';
                         <span class="text-foreground">{{ request.warehouseName }}</span>
                       </div>
                     </td>
-                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | date:'mediumDate' }}</td>
+                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | appDate:'mediumDate' }}</td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                         {{ getStatusLabel(request.status) }}
@@ -161,7 +163,7 @@ import { StatCard } from '../../shared/stat-card/stat-card';
                           }
                         </ng-container>
                         @if (request.status === Status.COMPLETED) {
-                          <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.resolvedAt | date:'mediumDate' }}</span>
+                          <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.resolvedAt | appDate:'mediumDate' }}</span>
                         }
                         @if (request.status === Status.REJECTED) {
                           <span class="text-red-400 text-sm truncate max-w-[150px]" [title]="request.rejectedReason || ''">
@@ -209,7 +211,7 @@ import { StatCard } from '../../shared/stat-card/stat-card';
                   </div>
                   <div>
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
-                    <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
+                    <p class="text-foreground">{{ request.createdAt | appDate:'mediumDate' }}</p>
                   </div>
                 </div>
                 <ng-container *ngxPermissionsOnly="['discharges:manage']">

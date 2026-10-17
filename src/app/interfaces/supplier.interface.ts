@@ -4,6 +4,9 @@ export interface Supplier {
   location?: string;
   phone?: string;
   email?: string;
+  code?: string;
+  rtn?: string;
+  isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,6 +16,9 @@ export interface CreateSupplierDto {
   location: string;
   phone?: string;
   email?: string;
+  code?: string;
+  rtn?: string;
+  isActive?: boolean;
 }
 
 export interface UpdateSupplierDto {
@@ -20,4 +26,7 @@ export interface UpdateSupplierDto {
   location?: string;
   phone?: string;
   email?: string;
+  code?: string;
+  rtn?: string;
+  isActive?: boolean;
 }

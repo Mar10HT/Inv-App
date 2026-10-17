@@ -36,20 +36,6 @@ export interface TransferFormResult {
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'TRANSFERS.NEW_REQUEST_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
-          <!-- Transfer name -->
-          <div>
-            <label for="transfer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.NAME' | translate }}</label>
-            <input
-              type="text"
-              id="transfer-name"
-              [ngModel]="selectedName()"
-              (ngModelChange)="selectedName.set($event)"
-              maxlength="120"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              [placeholder]="'TRANSFERS.NAME_PLACEHOLDER' | translate"
-            />
-          </div>
-
           <!-- Source Warehouse -->
           <div>
             <label for="transfer-source" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'TRANSFERS.SOURCE' | translate }} *</label>
@@ -159,7 +145,7 @@ export interface TransferFormResult {
           </button>
           <button
             (click)="createRequest()"
-            [disabled]="!canCreateRequest()"
+            [disabled]="!canCreateRequest() || submitting()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all">
             {{ 'TRANSFERS.CREATE_REQUEST' | translate }}
           </button>
@@ -181,7 +167,6 @@ export class TransferFormDialog {
   created = output<TransferFormResult>();
 
   // Form signals
-  selectedName = signal('');
   selectedSourceWarehouseId = signal('');
   selectedDestWarehouseId = signal('');
   selectedNotes = signal('');
@@ -251,16 +236,20 @@ export class TransferFormDialog {
            this.selectedSourceWarehouseId() !== this.selectedDestWarehouseId();
   }
 
+  // Set while the request is in flight, so a second click can't create a duplicate
+  submitting = signal(false);
+
   createRequest(): void {
-    if (!this.canCreateRequest()) return;
+    if (!this.canCreateRequest() || this.submitting()) return;
+    this.submitting.set(true);
 
     this.transferService.createRequest({
-      name: this.selectedName().trim() || undefined,
       sourceWarehouseId: this.selectedSourceWarehouseId(),
       destinationWarehouseId: this.selectedDestWarehouseId(),
       items: this.requestItems().filter(i => i.inventoryItemId),
       notes: this.selectedNotes() || undefined
     }).subscribe((result) => {
+      this.submitting.set(false);
       if (result) {
         this.notifications.success('TRANSFERS.REQUEST_CREATED');
         this.created.emit({ success: true });

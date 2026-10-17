@@ -101,16 +101,24 @@ import { CrudDialogResult } from '../shared/crud-dialog';
           <table class="w-full" [attr.aria-label]="'SUPPLIER.TITLE' | translate">
             <thead>
               <tr class="bg-[var(--color-surface)]">
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'SUPPLIER.CODE' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[200px]">{{ 'SUPPLIER.NAME' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider min-w-[200px]">{{ 'SUPPLIER.LOCATION' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'SUPPLIER.RTN' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'SUPPLIER.PHONE' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'SUPPLIER.EMAIL' | translate }}</th>
+                <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'SUPPLIER.ACTIVE' | translate }}</th>
                 <th class="text-left px-6 py-4 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase tracking-wider">{{ 'COMMON.ACTIONS' | translate }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[var(--color-border-subtle)]">
               @for (supplier of suppliers(); track trackByFn($index, supplier)) {
                 <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
+                  <!-- Code Column -->
+                  <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-[var(--color-on-surface-variant)]">{{ supplier.code || '-' }}</span>
+                  </td>
+
                   <!-- Name Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
@@ -131,6 +139,11 @@ import { CrudDialogResult } from '../shared/crud-dialog';
                     </div>
                   </td>
 
+                  <!-- RTN Column -->
+                  <td class="px-6 py-4">
+                    <span class="text-[var(--color-on-surface-variant)]">{{ supplier.rtn || '-' }}</span>
+                  </td>
+
                   <!-- Phone Column -->
                   <td class="px-6 py-4">
                     <span class="text-[var(--color-on-surface-variant)]">{{ supplier.phone || '-' }}</span>
@@ -139,6 +152,15 @@ import { CrudDialogResult } from '../shared/crud-dialog';
                   <!-- Email Column -->
                   <td class="px-6 py-4">
                     <span class="text-[var(--color-on-surface-variant)]">{{ supplier.email || '-' }}</span>
+                  </td>
+
+                  <!-- Active Column -->
+                  <td class="px-6 py-4">
+                    @if (supplier.isActive) {
+                      <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-success-bg)] text-[var(--color-status-success)]">{{ 'SUPPLIER.ACTIVE' | translate }}</span>
+                    } @else {
+                      <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-error-bg)] text-[var(--color-status-error)]">{{ 'SUPPLIER.INACTIVE' | translate }}</span>
+                    }
                   </td>
 
                   <!-- Actions Column -->
@@ -182,6 +204,11 @@ import { CrudDialogResult } from '../shared/crud-dialog';
 
                 <!-- Supplier Info -->
                 <h3 class="font-semibold text-foreground text-sm mb-1 truncate">{{ supplier.name }}</h3>
+                @if (supplier.code) {
+                  <div class="flex items-center gap-1 text-[var(--color-on-surface-variant)] text-xs truncate mb-1">
+                    <span class="font-mono truncate">{{ supplier.code }}</span>
+                  </div>
+                }
                 @if (supplier.location) {
                   <div class="flex items-center gap-1 text-[var(--color-on-surface-variant)] text-xs truncate mb-1">
                     <lucide-icon name="MapPin" class="!w-3 !h-3 flex-shrink-0"></lucide-icon>
@@ -287,8 +314,10 @@ export class Suppliers implements OnInit {
       maxWidth: '95vw',
       panelClass: 'item-detail-dialog',
       data: buildSupplierDialogData(
+        // createFn is never invoked in edit mode (see CrudDialog.onSubmit); pointed at
+        // update so a future reader isn't misled into thinking it creates a duplicate.
         'edit',
-        (data) => this.supplierService.create(data),
+        (data) => this.supplierService.update(supplier.id, data),
         (id, data) => this.supplierService.update(id, data),
         supplier,
       )

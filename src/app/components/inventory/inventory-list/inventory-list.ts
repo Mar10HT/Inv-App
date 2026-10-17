@@ -24,9 +24,12 @@ import { ImportDialog } from '../../import/import-dialog';
 import { SkeletonCardComponent } from '../../shared/skeleton/skeleton-card';
 import { SkeletonTableComponent } from '../../shared/skeleton/skeleton-table';
 import { localDateKey } from '../../../utils/date.utils';
+import { provideTranslatedPaginator } from '../../../shared/translated-paginator-intl';
+import { dateFormatterFor } from '../../../shared/app-language';
 
 @Component({
   selector: 'app-inventory-list',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -620,16 +623,10 @@ export class InventoryList implements OnInit {
     return this.translate.instant(statusKey);
   }
 
-  // Memoized date formatter - created once, reused for all items
-  private readonly dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
+  // In the language currently shown; formatters are cached per language
   formatDate(date: Date | string): string {
     const d = typeof date === 'string' ? new Date(date) : date;
-    return this.dateFormatter.format(d);
+    return dateFormatterFor(this.translate.getCurrentLang(), { month: 'short', day: 'numeric', year: 'numeric' }).format(d);
   }
 
   // Add new item

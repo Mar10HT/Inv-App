@@ -1,22 +1,28 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 
 import { SalesComponent } from './sales';
 import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { PermissionsService } from '../../services/permissions.service';
 import { CustomerType, Sale, SaleStats, SaleStatus } from '../../interfaces/sale.interface';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { warehouse } from '../../../testing/report-fixtures';
 
 const sale = (overrides: Partial<Sale> = {}): Sale =>
   ({
     id: 'sale-1234567890',
-    name: 'Order 1',
+    number: null,
+    quoteNumber: null,
     warehouseId: 'w1',
     status: SaleStatus.ACTIVE,
     customerType: CustomerType.RETAIL,
@@ -24,7 +30,7 @@ const sale = (overrides: Partial<Sale> = {}): Sale =>
     ...overrides
   }) as unknown as Sale;
 
-const emptyStats: SaleStats = { total: 0, active: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} };
+const emptyStats: SaleStats = { total: 0, active: 0, draft: 0, cancelled: 0, byCustomerType: {}, revenueByCurrency: {} };
 
 describe('SalesComponent', () => {
   let fixture: ComponentFixture<SalesComponent>;
@@ -34,6 +40,9 @@ describe('SalesComponent', () => {
   let saleService: jasmine.SpyObj<SaleService>;
   let warehouses: jasmine.SpyObj<WarehouseService>;
   let inventory: jasmine.SpyObj<InventoryService>;
+  let clients: jasmine.SpyObj<ClientService>;
+  let fiscalConfig: jasmine.SpyObj<FiscalConfigService>;
+  let permissions: jasmine.SpyObj<PermissionsService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
   let notifications: jasmine.SpyObj<NotificationService>;
 
@@ -42,15 +51,26 @@ describe('SalesComponent', () => {
     stats = signal(emptyStats);
     saleService = jasmine.createSpyObj<SaleService>(
       'SaleService',
-      ['loadSales', 'refresh', 'cancel', 'downloadPdf'],
+      ['loadSales', 'refresh', 'cancel', 'downloadPdf', 'confirm', 'update'],
       { sales, stats, loading: signal(false), error: signal(null) } as never
     );
     saleService.cancel.and.returnValue(of(sale()));
+    saleService.confirm.and.returnValue(of(sale()));
     warehouses = jasmine.createSpyObj<WarehouseService>('WarehouseService', ['getAll'], {
       warehouses: signal([warehouse('w1', 'Main'), warehouse('w2', 'Backup')])
     } as never);
     warehouses.getAll.and.returnValue(of([]));
     inventory = jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']);
+    clients = jasmine.createSpyObj<ClientService>('ClientService', ['getAll'], { clients: signal([]) } as never);
+    clients.getAll.and.returnValue(of([]));
+    fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
+      'FiscalConfigService',
+      ['get'],
+      { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
+    );
+    fiscalConfig.get.and.returnValue(of(null));
+    permissions = jasmine.createSpyObj<PermissionsService>('PermissionsService', ['hasPermission']);
+    permissions.hasPermission.and.returnValue(true);
     confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']);
     confirm.ask.and.returnValue(of(true));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']);
@@ -61,7 +81,10 @@ describe('SalesComponent', () => {
         ...provideTestBedDefaults(),
         { provide: SaleService, useValue: saleService },
         { provide: WarehouseService, useValue: warehouses },
+        { provide: ClientService, useValue: clients },
         { provide: InventoryService, useValue: inventory },
+        { provide: FiscalConfigService, useValue: fiscalConfig },
+        { provide: PermissionsService, useValue: permissions },
         { provide: ConfirmService, useValue: confirm },
         { provide: NotificationService, useValue: notifications }
       ]
@@ -73,15 +96,36 @@ describe('SalesComponent', () => {
   });
 
   describe('loading', () => {
-    it('asks for the sales, the warehouses and the items when it opens', () => {
+    it('asks for the sales, the warehouses, the clients, the fiscal config and the items when it opens', () => {
       expect(saleService.loadSales).toHaveBeenCalledTimes(1);
       expect(warehouses.getAll).toHaveBeenCalledTimes(1);
+      expect(clients.getAll).toHaveBeenCalledTimes(1);
+      expect(fiscalConfig.get).toHaveBeenCalledTimes(1);
       expect(inventory.loadItems).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not ask for the fiscal config when the user cannot create, since only the form uses it', async () => {
+      fiscalConfig.get.calls.reset();
+      permissions.hasPermission.and.returnValue(false);
+
+      TestBed.createComponent(SalesComponent).detectChanges();
+
+      expect(permissions.hasPermission).toHaveBeenCalledWith('sales:create');
+      expect(fiscalConfig.get).not.toHaveBeenCalled();
     });
 
     it('tells the user when the warehouses fail to load', () => {
       const failure = new Error('boom');
       warehouses.getAll.and.returnValue(throwError(() => failure));
+
+      TestBed.createComponent(SalesComponent).detectChanges();
+
+      expect(notifications.handleError).toHaveBeenCalledWith(failure as never);
+    });
+
+    it('tells the user when the clients fail to load', () => {
+      const failure = new Error('boom');
+      clients.getAll.and.returnValue(throwError(() => failure));
 
       TestBed.createComponent(SalesComponent).detectChanges();
 
@@ -143,6 +187,102 @@ describe('SalesComponent', () => {
       expect(component.showFormDialog()).toBeTrue();
       expect(saleService.refresh).not.toHaveBeenCalled();
     });
+
+    it('opens a direct sale in "sale" mode with no entity to edit', () => {
+      component.openCreateDialog();
+
+      expect(component.dialogMode()).toBe('sale');
+      expect(component.editingSale()).toBeNull();
+    });
+
+    it('opens a quotation in "quotation" mode with no entity to edit', () => {
+      component.openQuotationDialog();
+
+      expect(component.dialogMode()).toBe('quotation');
+      expect(component.editingSale()).toBeNull();
+    });
+
+    it('opens an existing draft for editing in "quotation" mode', () => {
+      const draft = sale({ id: 'd1', status: SaleStatus.DRAFT });
+
+      component.editSale(draft);
+
+      expect(component.showFormDialog()).toBeTrue();
+      expect(component.dialogMode()).toBe('quotation');
+      expect(component.editingSale()).toBe(draft);
+    });
+
+    it('clears the editing sale when the dialog closes', () => {
+      component.editSale(sale({ id: 'd1' }));
+
+      component.closeFormDialog();
+
+      expect(component.editingSale()).toBeNull();
+    });
+  });
+
+  describe('payment dialog', () => {
+    it('opens with the sale to pay and closes clearing it', () => {
+      const target = sale({ id: 'a' });
+
+      component.openPaymentDialog(target);
+      expect(component.showPaymentDialog()).toBeTrue();
+      expect(component.payingSale()).toBe(target);
+
+      component.closePaymentDialog();
+      expect(component.showPaymentDialog()).toBeFalse();
+      expect(component.payingSale()).toBeNull();
+    });
+
+    it('refreshes the sales list when a payment is recorded', () => {
+      component.onPaymentRecorded();
+
+      expect(saleService.refresh).toHaveBeenCalledTimes(1);
+    });
+
+    it('builds the minimal payment document from the sale', () => {
+      const target = sale({ id: 'a', totalAmount: 100, taxAmount: 15, currency: 'HNL' });
+
+      expect(component.toPaymentDocument(target)).toEqual({
+        id: 'a',
+        totalAmount: 100,
+        taxAmount: 15,
+        currency: 'HNL',
+        documentType: 'sale',
+      });
+    });
+  });
+
+  describe('status label/class', () => {
+    it('gives every status its own class, falling back for an unknown one', () => {
+      expect(component.getStatusClass(SaleStatus.DRAFT)).toContain('info');
+      expect(component.getStatusClass(SaleStatus.ACTIVE)).toContain('success');
+      expect(component.getStatusClass(SaleStatus.CANCELLED)).toContain('error');
+    });
+  });
+
+  describe('confirmSale', () => {
+    it('asks the user to confirm, naming the sale, then confirms it', () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('en', { SALES: { CONFIRM_CONFIRM_MESSAGE: 'Confirm {{name}}?' } });
+      translate.use('en');
+
+      component.confirmSale(sale({ id: 'd1', quoteNumber: 'COT-0001' }));
+
+      expect(confirm.ask.calls.mostRecent().args[0]).toEqual(
+        jasmine.objectContaining({ type: 'warning', message: 'Confirm COT-0001?' })
+      );
+      expect(saleService.confirm).toHaveBeenCalledOnceWith('d1');
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CONFIRM_SUCCESS');
+    });
+
+    it('confirms nothing when the user does not confirm', () => {
+      confirm.ask.and.returnValue(of(false));
+
+      component.confirmSale(sale({ id: 'd1' }));
+
+      expect(saleService.confirm).not.toHaveBeenCalled();
+    });
   });
 
   describe('numbers and labels', () => {
@@ -151,9 +291,20 @@ describe('SalesComponent', () => {
       expect(component.totalQty(sale({ items: [] }))).toBe(0);
     });
 
+    it('customerLabel prefers the linked client over the free-text name, and falls back to a dash', () => {
+      expect(component.customerLabel(sale({ client: { id: 'c1', name: 'Ferretería El Progreso' }, customerName: 'Juan' } as never))).toBe('Ferretería El Progreso');
+      expect(component.customerLabel(sale({ client: null, customerName: 'Juan' } as never))).toBe('Juan');
+      expect(component.customerLabel(sale({ client: null, customerName: null } as never))).toBe('—');
+    });
+
     it('formats money with the currency and two decimals, and a missing amount as zero', () => {
       expect(component.formatMoney(12.5, 'USD')).toBe('USD 12.50');
       expect(component.formatMoney(undefined as unknown as number, 'HNL')).toBe('HNL 0.00');
+    });
+
+    it('shows the grand total with tax as the amount of a sale', () => {
+      expect(component.grandTotal(sale({ totalAmount: 100, taxAmount: 15 } as never))).toBe(115);
+      expect(component.grandTotal(sale({ totalAmount: 100, taxAmount: null } as never))).toBe(100);
     });
 
     it('shows a dash when there is no revenue', () => {
@@ -167,6 +318,18 @@ describe('SalesComponent', () => {
     });
   });
 
+  it('shows no balance owed on a cancelled sale', () => {
+    sales.set([
+      sale({ id: 'x', status: SaleStatus.CANCELLED, currency: 'USD', totalAmount: 10, taxAmount: 0, balance: 7 } as never),
+      sale({ id: 'y', status: SaleStatus.ACTIVE, currency: 'USD', totalAmount: 20, taxAmount: 0, balance: 9 } as never)
+    ]);
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).not.toContain('USD 7.00');
+    expect(text).toContain('USD 9.00');
+  });
+
   it('downloads the pdf of a sale by its id', () => {
     component.downloadPdf(sale({ id: 'a' }));
 
@@ -174,17 +337,17 @@ describe('SalesComponent', () => {
   });
 
   describe('cancel', () => {
-    it('asks the user to confirm, naming the sale, or its short id when it has no name', () => {
+    it('asks the user to confirm, naming the sale by its number, or its short id when it has none', () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation('en', { SALES: { CONFIRM_CANCEL_MESSAGE: 'Cancel {{name}}?' } });
       translate.use('en');
 
-      component.cancel(sale({ name: 'Order 1' }));
+      component.cancel(sale({ number: 'V-0001' }));
       expect(confirm.ask.calls.mostRecent().args[0]).toEqual(
-        jasmine.objectContaining({ type: 'warning', title: 'SALES.CONFIRM_CANCEL_TITLE', message: 'Cancel Order 1?' })
+        jasmine.objectContaining({ type: 'warning', title: 'SALES.CONFIRM_CANCEL_TITLE', message: 'Cancel V-0001?' })
       );
 
-      component.cancel(sale({ name: undefined, id: 'sale-1234567890' }));
+      component.cancel(sale({ number: null, quoteNumber: null, id: 'sale-1234567890' }));
       expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel sale-123?');
     });
 
@@ -193,6 +356,23 @@ describe('SalesComponent', () => {
 
       expect(saleService.cancel).toHaveBeenCalledOnceWith('a');
       expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CANCEL_SUCCESS');
+    });
+
+    it('refuses up front, with the amount paid, a sale that has payments, without asking', () => {
+      component.cancel(sale({ totalAmount: 100, taxAmount: 15, balance: 75, currency: 'HNL' } as never));
+
+      expect(notifications.error).toHaveBeenCalledOnceWith('API_ERRORS.SALE_HAS_ACTIVE_PAYMENTS', {
+        interpolateParams: { amount: '40.00', currency: 'HNL' }
+      });
+      expect(confirm.ask).not.toHaveBeenCalled();
+      expect(saleService.cancel).not.toHaveBeenCalled();
+    });
+
+    it('asks as usual for a sale with nothing paid, or whose balance did not come in the list', () => {
+      component.cancel(sale({ totalAmount: 100, taxAmount: 15, balance: 115 } as never));
+      component.cancel(sale({ totalAmount: 100, taxAmount: 15 } as never));
+
+      expect(confirm.ask).toHaveBeenCalledTimes(2);
     });
 
     it('cancels nothing when the user does not confirm', () => {
@@ -212,5 +392,84 @@ describe('SalesComponent', () => {
       expect(notifications.success).not.toHaveBeenCalled();
       expect(notifications.error).not.toHaveBeenCalled();
     });
+
+    it('uses the draft-specific confirm message and success notice for a DRAFT, since nothing is restored', () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('en', { SALES: { CONFIRM_CANCEL_DRAFT_MESSAGE: 'Cancel quote {{name}}?' } });
+      translate.use('en');
+
+      component.cancel(sale({ id: 'd1', quoteNumber: 'COT-0001', status: SaleStatus.DRAFT }));
+
+      expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel quote COT-0001?');
+      expect(saleService.cancel).toHaveBeenCalledOnceWith('d1');
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CANCEL_DRAFT_SUCCESS');
+    });
+  });
+});
+
+describe('SalesComponent — accounts receivable view (route data: onlyWithBalance)', () => {
+  let fixture: ComponentFixture<SalesComponent>;
+  let component: SalesComponent;
+  let sales: ReturnType<typeof signal<Sale[]>>;
+
+  beforeEach(async () => {
+    sales = signal([
+      sale({ id: 'a', status: SaleStatus.ACTIVE, balance: 50 } as never),
+      sale({ id: 'b', status: SaleStatus.ACTIVE, balance: 0 } as never),
+      sale({ id: 'c', status: SaleStatus.DRAFT, balance: 50 } as never),
+    ]);
+    const saleService = jasmine.createSpyObj<SaleService>(
+      'SaleService',
+      ['loadSales', 'refresh', 'cancel', 'downloadPdf', 'confirm', 'update'],
+      { sales, stats: signal(emptyStats), loading: signal(false), error: signal(null) } as never
+    );
+    const warehouses = jasmine.createSpyObj<WarehouseService>('WarehouseService', ['getAll'], {
+      warehouses: signal([])
+    } as never);
+    warehouses.getAll.and.returnValue(of([]));
+    const clients = jasmine.createSpyObj<ClientService>('ClientService', ['getAll'], { clients: signal([]) } as never);
+    clients.getAll.and.returnValue(of([]));
+    const fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
+      'FiscalConfigService',
+      ['get'],
+      { config: signal<FiscalConfig | null>(null), loading: signal(false), error: signal(null) } as never
+    );
+    fiscalConfig.get.and.returnValue(of(null));
+
+    await TestBed.configureTestingModule({
+      imports: [SalesComponent],
+      providers: [
+        ...provideTestBedDefaults(),
+        { provide: SaleService, useValue: saleService },
+        { provide: WarehouseService, useValue: warehouses },
+        { provide: ClientService, useValue: clients },
+        { provide: InventoryService, useValue: jasmine.createSpyObj<InventoryService>('InventoryService', ['loadItems']) },
+        { provide: FiscalConfigService, useValue: fiscalConfig },
+        { provide: ConfirmService, useValue: jasmine.createSpyObj<ConfirmService>('ConfirmService', ['ask']) },
+        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'handleError']) },
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { onlyWithBalance: true } } } }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SalesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('flags isReceivablesView from the route data', () => {
+    expect(component.isReceivablesView).toBeTrue();
+  });
+
+  it('shows the Accounts Receivable copy instead of the Sales one', () => {
+    const title = fixture.nativeElement.querySelector('h1').textContent;
+    expect(title).toContain('ACCOUNTS_RECEIVABLE.TITLE');
+  });
+
+  it('only keeps ACTIVE sales with an outstanding balance', () => {
+    expect(component.filtered().map((s) => s.id)).toEqual(['a']);
+  });
+
+  it('asks the service only for the sales with a balance', () => {
+    expect(TestBed.inject(SaleService).loadSales).toHaveBeenCalledOnceWith(true);
   });
 });

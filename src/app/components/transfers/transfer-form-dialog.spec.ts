@@ -172,16 +172,14 @@ describe('TransferFormDialog', () => {
       expect(transfers.createRequest).not.toHaveBeenCalled();
     });
 
-    it('sends the request, trimming the name and leaving out blank notes', () => {
+    it('sends the request, leaving out blank notes (no reference: transfers are numbered by the server)', () => {
       readyToSubmit();
-      component.selectedName.set('  Screens  ');
       component.selectedNotes.set('');
       component.updateItemQuantity(0, 2);
 
       component.createRequest();
 
       expect(transfers.createRequest).toHaveBeenCalledOnceWith({
-        name: 'Screens',
         sourceWarehouseId: 'w1',
         destinationWarehouseId: 'w2',
         items: [{ inventoryItemId: 'laptop', quantity: 2 }],
@@ -189,14 +187,13 @@ describe('TransferFormDialog', () => {
       });
     });
 
-    it('sends the notes when there are some, and no name when it is blank', () => {
+    it('sends the notes when there are some', () => {
       readyToSubmit();
-      component.selectedName.set('   ');
       component.selectedNotes.set('Urgent');
 
       component.createRequest();
 
-      expect(transfers.createRequest.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({ name: undefined, notes: 'Urgent' }));
+      expect(transfers.createRequest.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({ notes: 'Urgent' }));
     });
 
     it('tells the user and reports the request once it was created', () => {

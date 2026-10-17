@@ -40,20 +40,6 @@ export interface LoanFormResult {
           <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'LOANS.NEW_LOAN_DESC' | translate }}</p>
         </div>
         <div class="p-6 space-y-4">
-          <!-- Loan name -->
-          <div>
-            <label for="loan-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.NAME' | translate }}</label>
-            <input
-              id="loan-name"
-              type="text"
-              [ngModel]="selectedName()"
-              (ngModelChange)="selectedName.set($event)"
-              maxlength="120"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              [placeholder]="'LOANS.NAME_PLACEHOLDER' | translate"
-            />
-          </div>
-
           <!-- Source Warehouse Select -->
           <div>
             <label for="loan-source-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">{{ 'LOANS.SOURCE_WAREHOUSE' | translate }} *</label>
@@ -187,7 +173,7 @@ export interface LoanFormResult {
           </button>
           <button
             (click)="createLoan()"
-            [disabled]="!canCreateLoan()"
+            [disabled]="!canCreateLoan() || submitting()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all">
             {{ 'LOANS.CREATE_LOAN' | translate }}
           </button>
@@ -209,7 +195,6 @@ export class LoanFormDialog {
   created = output<LoanFormResult>();
 
   // Form signals
-  selectedName = signal('');
   selectedSourceWarehouseId = signal('');
   selectedDestWarehouseId = signal('');
   selectedDueDate = signal('');
@@ -308,15 +293,18 @@ export class LoanFormDialog {
            this.selectedSourceWarehouseId() !== this.selectedDestWarehouseId();
   }
 
+  // Set while the request is in flight, so a second click can't create a duplicate
+  submitting = signal(false);
+
   createLoan(): void {
-    if (!this.canCreateLoan()) return;
+    if (!this.canCreateLoan() || this.submitting()) return;
+    this.submitting.set(true);
 
     const items = this.loanItems().filter((item) => item.inventoryItemId);
     const generalNotes = this.selectedNotes() || undefined;
 
     this.loanService
       .createLoan({
-        name: this.selectedName().trim() || undefined,
         items: items.map((i) => ({
           inventoryItemId: i.inventoryItemId,
           quantity: i.quantity,
@@ -328,6 +316,7 @@ export class LoanFormDialog {
         notes: generalNotes,
       })
       .subscribe((result) => {
+        this.submitting.set(false);
         if (result) {
           this.notifications.success('LOANS.LOAN_CREATED');
           this.created.emit({ success: true, count: items.length });

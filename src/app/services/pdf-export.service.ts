@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import type jsPDF from 'jspdf';
-import { Transaction, TransactionType } from '../interfaces/transaction.interface';
+import { ReportTransaction, TransactionType } from '../interfaces/transaction.interface';
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
 import { PdfDrawingBase } from './pdf/pdf-drawing.base';
 import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../utils/money.utils';
@@ -15,7 +15,7 @@ interface JsPDFWithAutoTable extends jsPDF {
 }
 
 interface TransactionPDFOptions {
-  transactions: Transaction[];
+  transactions: ReportTransaction[];
   title?: string;
   dateRange?: { from?: string; to?: string };
   typeFilter?: string;

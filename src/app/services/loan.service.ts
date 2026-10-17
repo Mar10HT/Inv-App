@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { downloadStyledXLSX } from '../utils/xlsx.utils';
 import { Observable, tap, map, catchError, of, Subject, Subscription, finalize } from 'rxjs';
@@ -13,16 +13,15 @@ import {
   LoanWithQr,
   RawLoan,
 } from '../interfaces/loan.interface';
-import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { WebSocketService } from './websocket.service';
 import { transformLoan } from '../utils/loan.utils';
 import { triggerBlobDownload } from '../utils/download.utils';
 import { RequestTracker, trackRequest } from '../utils/track-request';
+import { fetchAllPages } from '../utils/fetch-all-pages';
 import { localDateKey } from '../utils/date.utils';
 
-const MAX_LOANS_LIMIT = 200;
 
 @Injectable({
   providedIn: 'root'
@@ -137,10 +136,8 @@ export class LoanService implements OnDestroy {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    const params = new HttpParams().set('limit', String(MAX_LOANS_LIMIT));
-
-    this.loadLoansSubscription = this.http.get<PaginatedResponse<RawLoan>>(this.apiUrl, { params }).pipe(
-      map(response => response.data.map((loan) => transformLoan(loan))),
+    this.loadLoansSubscription = fetchAllPages<RawLoan>(this.http, this.apiUrl).pipe(
+      map((loans) => loans.map((loan) => transformLoan(loan))),
       catchError(err => {
         this.logger.error('Error loading loans', err);
         this.errorSignal.set(err.message || this.translate.instant('LOANS.LOADING_ERROR'));

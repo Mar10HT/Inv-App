@@ -70,6 +70,11 @@ export const routes: Routes = [
     canActivate: [permissionGuard('suppliers:view')]
   },
   {
+    path: 'clients',
+    loadComponent: () => import('./components/clients/clients').then(m => m.Clients),
+    canActivate: [permissionGuard('clients:view')]
+  },
+  {
     path: 'categories',
     loadComponent: () => import('./components/categories/categories').then(m => m.Categories),
     canActivate: [permissionGuard('categories:view')]
@@ -148,9 +153,26 @@ export const routes: Routes = [
     canActivate: [permissionGuard('outflows:view')]
   },
   {
+    path: 'purchases',
+    loadComponent: () => import('./components/purchases/purchases').then(m => m.PurchasesComponent),
+    canActivate: [permissionGuard('purchases:view')]
+  },
+  {
     path: 'sales',
     loadComponent: () => import('./components/sales/sales').then(m => m.SalesComponent),
     canActivate: [permissionGuard('sales:view')]
+  },
+  {
+    path: 'accounts-receivable',
+    loadComponent: () => import('./components/sales/sales').then(m => m.SalesComponent),
+    canActivate: [permissionGuard('sales:view')],
+    data: { onlyWithBalance: true }
+  },
+  {
+    path: 'accounts-payable',
+    loadComponent: () => import('./components/purchases/purchases').then(m => m.PurchasesComponent),
+    canActivate: [permissionGuard('purchases:view')],
+    data: { onlyWithBalance: true }
   },
   {
     path: 'discharges/:id',

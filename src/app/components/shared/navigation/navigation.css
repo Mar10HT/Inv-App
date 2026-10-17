@@ -99,6 +99,21 @@
 .sidebar.collapsed .nav-link { justify-content: center; padding: 10px; }
 .nav-link:hover { background-color: var(--nav-hover-bg, rgba(255, 255, 255, 0.05)); }
 
+/* <button class="nav-link"> (the Commercial/Sales/Purchases toggles): undo default button styling */
+button.nav-link {
+  width: 100%;
+  background: none;
+  border: none;
+  font: inherit;
+  text-align: left;
+}
+
+/* Submenu rows of the Commercial group (expanded sidebar only) */
+.nav-link.nav-sublink { padding-left: 44px; }
+.nav-link.nav-subsublink { padding-left: 68px; font-size: 13px; }
+.nav-link .nav-text { flex: 1; }
+.nav-chevron { width: 14px !important; height: 14px !important; min-width: 14px; flex: none; }
+
 /* Active State - translucent primary bg */
 .nav-link.active-link { background-color: var(--nav-active-bg, rgba(77, 124, 111, 0.15)); }
 
@@ -218,3 +233,14 @@
 .sidebar-top::-webkit-scrollbar-track { background: transparent; }
 .sidebar-top::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 4px; }
 .sidebar-top::-webkit-scrollbar-thumb:hover { background-color: var(--surface-elevated); }
+
+/* Icons in the collapsed-sidebar Commercial flyout. Sized and spaced on the
+   host only: lucide copies the host's classes onto its inner <svg>, so a
+   global utility like mr-2 would also shrink the svg inside its box. This
+   component-scoped rule never reaches the generated svg. */
+.flyout-icon {
+  width: 18px !important;
+  height: 18px !important;
+  margin-right: 10px;
+  color: var(--on-surface-variant);
+}

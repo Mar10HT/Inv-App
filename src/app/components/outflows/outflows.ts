@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -27,6 +26,7 @@ import {
 import { ConfirmService } from '../../services/confirm.service';
 import { OutflowFormDialog, OutflowFormResult } from './outflow-form-dialog';
 import { StatCard } from '../shared/stat-card/stat-card';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-outflows',
@@ -34,7 +34,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    DatePipe,
+    AppDatePipe,
     LucideAngularModule,
     TranslateModule,
     NgxPermissionsModule,
@@ -136,7 +136,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
             <table class="w-full">
               <thead class="bg-[var(--color-surface)] border-b border-theme">
                 <tr class="text-left text-xs uppercase tracking-wider text-[var(--color-on-surface-variant)]">
-                  <th class="px-4 py-3">{{ 'OUTFLOWS.COL_NAME' | translate }}</th>
+                  <th class="px-4 py-3">{{ 'OUTFLOWS.COL_NUMBER' | translate }}</th>
                   <th class="px-4 py-3">{{ 'OUTFLOWS.COL_WAREHOUSE' | translate }}</th>
                   <th class="px-4 py-3">{{ 'OUTFLOWS.COL_REASON' | translate }}</th>
                   <th class="px-4 py-3 text-right">{{ 'OUTFLOWS.COL_ITEMS' | translate }}</th>
@@ -149,7 +149,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
                 @for (outflow of filtered(); track outflow.id) {
                   <tr class="border-t border-theme hover:bg-[var(--color-surface)] transition-colors">
                     <td class="px-4 py-3 text-foreground">
-                      <div class="font-medium">{{ outflow.name || ('OUTFLOWS.UNNAMED' | translate) }}</div>
+                      <div class="font-medium font-mono">{{ outflow.number || '—' }}</div>
                       @if (outflow.notes) {
                         <div class="text-xs text-[var(--color-on-surface-variant)] truncate max-w-xs" [title]="outflow.notes">
                           {{ outflow.notes }}
@@ -179,7 +179,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
                       }
                     </td>
                     <td class="px-4 py-3 text-[var(--color-on-surface-variant)] text-sm">
-                      {{ outflow.createdAt | date:'medium' }}
+                      {{ outflow.createdAt | appDate:'medium' }}
                     </td>
                     <td class="px-4 py-3">
                       <div class="flex items-center justify-end gap-2">
@@ -215,8 +215,8 @@ import { StatCard } from '../shared/stat-card/stat-card';
               <div class="bg-surface-variant border border-theme rounded-xl p-4">
                 <div class="flex items-start justify-between gap-3 mb-2">
                   <div class="min-w-0">
-                    <div class="font-medium text-foreground truncate">
-                      {{ outflow.name || ('OUTFLOWS.UNNAMED' | translate) }}
+                    <div class="font-medium font-mono text-foreground truncate">
+                      {{ outflow.number || '—' }}
                     </div>
                     <div class="text-xs text-[var(--color-on-surface-variant)]">
                       {{ outflow.warehouse?.name }} · {{ 'OUTFLOWS.REASONS.' + outflow.reason | translate }}
@@ -237,7 +237,7 @@ import { StatCard } from '../shared/stat-card/stat-card';
                     {{ totalQty(outflow) }} ({{ outflow.items.length }} {{ 'OUTFLOWS.COL_ITEMS' | translate }})
                   </span>
                   <span class="text-[var(--color-on-surface-variant)] text-xs">
-                    {{ outflow.createdAt | date:'short' }}
+                    {{ outflow.createdAt | appDate:'short' }}
                   </span>
                 </div>
                 <div class="flex items-center gap-2 mt-3">
@@ -351,7 +351,7 @@ export class OutflowsComponent implements OnInit {
       .ask({
         title: this.translate.instant('OUTFLOWS.CONFIRM_CANCEL_TITLE'),
         message: this.translate.instant('OUTFLOWS.CONFIRM_CANCEL_MESSAGE', {
-          name: outflow.name || outflow.id.slice(0, 8),
+          name: outflow.number || outflow.id.slice(0, 8),
         }),
         confirmText: this.translate.instant('OUTFLOWS.CANCEL_OUTFLOW'),
         type: 'warning',

@@ -4,6 +4,7 @@ import { CdkDragPlaceholder, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { Transaction, TransactionType } from '../../../../interfaces/transaction.interface';
+import { AppDatePipe } from '../../../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-dashboard-transactions',
@@ -11,6 +12,7 @@ import { Transaction, TransactionType } from '../../../../interfaces/transaction
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
+    AppDatePipe,
     CdkDragPlaceholder,
     CdkDragHandle,
     LucideAngularModule,
@@ -57,7 +59,7 @@ import { Transaction, TransactionType } from '../../../../interfaces/transaction
                 </p>
               </div>
               <div class="text-right">
-                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ tx.date | date:'MMM d, h:mm a' }}</p>
+                <p class="text-xs text-[var(--color-on-surface-variant)]">{{ tx.date | appDate:'MMM d, h:mm a' }}</p>
               </div>
             </div>
           </div>

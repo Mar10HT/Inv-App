@@ -21,7 +21,8 @@ export interface LoanItem {
 
 export interface Loan {
   id: string;
-  name?: string;
+  // Automatic correlative, e.g. PRE-0001
+  number?: string;
   // Items belonging to this loan
   items: LoanItem[];
   // Source warehouse (who lends)
@@ -62,7 +63,6 @@ export interface CreateLoanItemDto {
 }
 
 export interface CreateLoanDto {
-  name?: string;
   items: CreateLoanItemDto[];
   sourceWarehouseId: string;
   destinationWarehouseId: string;
@@ -97,7 +97,7 @@ export interface RawLoanItem {
 
 export interface RawLoan {
   id: string;
-  name?: string | null;
+  number?: string | null;
   items: RawLoanItem[];
   sourceWarehouseId: string;
   sourceWarehouse?: { name: string };

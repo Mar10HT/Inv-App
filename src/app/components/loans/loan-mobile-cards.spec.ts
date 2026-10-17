@@ -91,10 +91,10 @@ describe('LoanMobileCards', () => {
       expect(el.textContent).toContain('LOANS.STATUS.SENT');
     });
 
-    it('uses the loan name as the title and moves the item summary below it', async () => {
-      await render([loan({ name: 'Field kit' })]);
+    it('uses the loan number as the title and moves the item summary below it', async () => {
+      await render([loan({ number: 'PRE-0007' })]);
 
-      expect(el.querySelector('.p-4 p.font-medium')?.textContent).toContain('Field kit');
+      expect(el.querySelector('.p-4 p.font-medium')?.textContent).toContain('PRE-0007');
       expect(el.textContent).toContain('Laptop ×2');
     });
 
@@ -102,6 +102,15 @@ describe('LoanMobileCards', () => {
       await render([loan()]);
 
       expect(el.querySelector('.p-4 p.font-medium')?.textContent).toContain('Laptop ×2');
+    });
+
+    it('shows the due date as the day it was set, not a day earlier from a timezone shift', async () => {
+      // A bare ISO date (no time) parses as UTC midnight; rendering it without
+      // forcing the UTC timezone would roll back a day in a negative-offset zone.
+      await render([loan({ dueDate: new Date('2027-03-01') })]);
+
+      expect(el.textContent).toContain('Mar 1, 2027');
+      expect(el.textContent).not.toContain('Feb 28, 2027');
     });
   });
 

@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 
 export interface ScheduledReport {
   id: string;
-  reportType: 'INVENTORY' | 'LOW_STOCK' | 'TRANSACTIONS' | 'LOANS' | 'TRANSFERS' | 'STOCK_TAKES' | 'DISCHARGES';
+  reportType: 'INVENTORY' | 'LOW_STOCK' | 'TRANSACTIONS' | 'LOANS' | 'TRANSFERS' | 'STOCK_TAKES' | 'DISCHARGES' | 'OUTFLOWS';
   frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY';
   recipientEmails: string;
   warehouseId?: string;

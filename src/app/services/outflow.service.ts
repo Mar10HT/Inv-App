@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, catchError, finalize, map, of, tap } from 'rxjs';
+import { Observable, catchError, finalize, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   CancelOutflowDto,
@@ -10,13 +10,12 @@ import {
   OutflowStats,
   OutflowStatus,
 } from '../interfaces/outflow.interface';
-import { PaginatedResponse } from '../interfaces/common.interface';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { triggerBlobDownload } from '../utils/download.utils';
 import { RequestTracker, trackRequest } from '../utils/track-request';
+import { fetchAllPages } from '../utils/fetch-all-pages';
 
-const MAX_OUTFLOWS_LIMIT = 200;
 
 @Injectable({ providedIn: 'root' })
 export class OutflowService {
@@ -64,11 +63,8 @@ export class OutflowService {
   loadOutflows(): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-    const params = new HttpParams().set('limit', String(MAX_OUTFLOWS_LIMIT));
-    this.http
-      .get<PaginatedResponse<Outflow>>(this.apiUrl, { params })
+    fetchAllPages<Outflow>(this.http, this.apiUrl)
       .pipe(
-        map((res) => res.data),
         catchError((err) => {
           this.logger.error('Error loading outflows', err);
           this.errorSignal.set(

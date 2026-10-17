@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -19,9 +19,12 @@ import { LoanMobileCards } from './loan-mobile-cards';
 import { ConfirmService } from '../../services/confirm.service';
 import { LoanFormDialog, LoanFormResult } from './loan-form-dialog';
 import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
+import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-loans',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -33,7 +36,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
     LoanFormDialog,
     LoanQrDialog,
     LoanScanDialog,
-    DatePipe,
+    AppDatePipe,
     LoanStatsCards,
     LoanMobileCards
   ],
@@ -147,8 +150,8 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                   <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
-                        <p class="text-foreground font-medium">{{ loan.name || summarize(loan) }}</p>
-                        @if (loan.name) {
+                        <p class="text-foreground font-medium">{{ loan.number || summarize(loan) }}</p>
+                        @if (loan.number) {
                           <p class="text-[var(--color-on-surface-variant)] text-sm">{{ summarize(loan) }}</p>
                         } @else if (loan.items.length > 1) {
                           <p class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.items.length }} {{ 'TRANSACTION.ITEMS' | translate }}</p>
@@ -171,7 +174,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                       </div>
                     </td>
                     <td class="px-6 py-4">
-                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | date:'mediumDate' }}</span>
+                      <span [class]="getDueDateClass(loan)">{{ loan.dueDate | appDate:'mediumDate':'UTC' }}</span>
                     </td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(loan.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
@@ -271,7 +274,7 @@ import { LoanQrDialog, LoanScanDialog, ScanQrResult } from './loan-qr-dialog';
                             </ng-container>
                           }
                           @case (LoanStatus.RETURNED) {
-                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | date:'mediumDate' }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ loan.returnDate | appDate:'mediumDate' }}</span>
                           }
                           @case (LoanStatus.CANCELLED) {
                             <span class="text-[var(--color-on-surface-variant)] text-sm">-</span>
@@ -420,7 +423,7 @@ export class LoansComponent implements OnInit {
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       loans = loans.filter(loan =>
-        (loan.name?.toLowerCase().includes(query) ?? false) ||
+        (loan.number?.toLowerCase().includes(query) ?? false) ||
         loan.sourceWarehouseName.toLowerCase().includes(query) ||
         loan.destinationWarehouseName.toLowerCase().includes(query) ||
         loan.items.some(i =>

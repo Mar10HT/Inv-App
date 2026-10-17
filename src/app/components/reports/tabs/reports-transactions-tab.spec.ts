@@ -2,14 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportsTransactionsTab } from './reports-transactions-tab';
 import { TransactionStats } from '../reports.types';
-import { Transaction, TransactionType } from '../../../interfaces/transaction.interface';
+import { TransactionType } from '../../../interfaces/transaction.interface';
 import { formatDateTime } from '../reports.format';
 import { provideTestBedDefaults } from '../../../../testing/test-providers';
 import { tx } from '../../../../testing/report-fixtures';
 
 const stats: TransactionStats = { total: 7, inCount: 4, outCount: 2, transferCount: 1, totalItems: 9 };
 
-const sample: Transaction[] = [
+const sample = [
   tx({
     id: 'in',
     type: TransactionType.IN,
@@ -37,9 +37,14 @@ describe('ReportsTransactionsTab', () => {
     fixture.detectChanges();
   };
 
+  // Collapses every kind of whitespace: newer ICU builds put narrow no-break
+  // spaces in formatted times ("06:00\u202fa. m."), and the cells are compared
+  // against formatDateTime() output normalized the same way.
+  const squash = (text: string): string => text.replace(/\s+/g, ' ').trim();
+
   const rows = (): string[][] =>
     Array.from(el.querySelectorAll('tbody tr')).map((tr) =>
-      Array.from(tr.querySelectorAll('td')).map((td) => td.textContent?.replace(/\s+/g, ' ').trim() ?? '')
+      Array.from(tr.querySelectorAll('td')).map((td) => squash(td.textContent ?? ''))
     );
 
   const button = (label: string): HTMLButtonElement | undefined =>
@@ -74,12 +79,22 @@ describe('ReportsTransactionsTab', () => {
       expect(counters).toEqual(['7', '4', '2', '1']);
     });
 
-    it('shows one row per transaction with date, type, warehouses, user and item count', () => {
+    it('shows one row per movement with date, type, document, warehouses, user and item count', () => {
       render();
 
       const [inRow, outRow] = rows();
-      expect(inRow).toEqual([formatDateTime(sample[0].date), 'IN', '-', 'Main', 'Ana', '1']);
-      expect(outRow).toEqual([formatDateTime(sample[1].date), 'OUT', 'Backup', '-', 'bob@x.com', '2']);
+      expect(inRow).toEqual([squash(formatDateTime(sample[0].date)), 'TRANSACTIONS.TYPE.IN', 'REPORTS.MOVEMENT_ORIGIN.TRANSACTION', '-', 'Main', 'Ana', '1']);
+      expect(outRow).toEqual([squash(formatDateTime(sample[1].date)), 'TRANSACTIONS.TYPE.OUT', 'REPORTS.MOVEMENT_ORIGIN.TRANSACTION', 'Backup', '-', 'bob@x.com', '2']);
+    });
+
+    it('names the document a movement came from, and marks a cancellation', () => {
+      render({
+        transactions: [
+          tx({ id: 'sale', type: TransactionType.IN, origin: 'SALE', reference: 'V-0007', cancellation: true, items: [] })
+        ]
+      });
+
+      expect(rows()[0][2]).toBe('REPORTS.MOVEMENT_ORIGIN.SALE V-0007 (REPORTS.CANCELLATION)');
     });
 
     it('shows an empty message when there are no transactions', () => {

@@ -7,19 +7,68 @@ import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
-import { CustomerType, Sale } from '../../interfaces/sale.interface';
+import { CustomerType, Sale, SaleStatus } from '../../interfaces/sale.interface';
+import { PaymentCondition } from '../../interfaces/purchase-invoice.interface';
 import { InventoryItemInterface } from '../../interfaces/inventory-item.interface';
+import { Client } from '../../interfaces/client.interface';
+import { ClientService } from '../../services/client.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, warehouse } from '../../../testing/report-fixtures';
+
+const client = (overrides: Partial<Client> = {}): Client =>
+  ({
+    id: 'c1',
+    code: 'CLI-001',
+    name: 'Acme Corp',
+    paymentCondition: PaymentCondition.CREDIT,
+    isActive: true,
+    ...overrides
+  }) as unknown as Client;
+
+const draftSale = (overrides: Partial<Sale> = {}): Sale =>
+  ({
+    id: 'draft-1',
+    quoteNumber: 'COT-0001',
+    warehouseId: 'w1',
+    customerName: 'Acme',
+    customerType: CustomerType.RETAIL,
+    currency: 'HNL',
+    totalAmount: 900,
+    taxPercent: 15,
+    taxAmount: 135,
+    status: SaleStatus.DRAFT,
+    notes: 'draft notes',
+    number: null,
+    items: [
+      { id: 'si1', inventoryItemId: 'laptop', quantity: 1, unitPrice: 900, lineTotal: 900, taxPercent: null, taxAmount: 135, currency: 'HNL', itemName: 'Laptop', serviceTag: null, notes: null },
+    ],
+    ...overrides
+  }) as unknown as Sale;
 
 describe('SaleFormDialog', () => {
   let fixture: ComponentFixture<SaleFormDialog>;
   let component: SaleFormDialog;
   let stock: ReturnType<typeof signal<InventoryItemInterface[]>>;
+  let clients: ReturnType<typeof signal<Client[]>>;
+  let fiscalConfig: ReturnType<typeof signal<FiscalConfig | null>>;
   let sales: jasmine.SpyObj<SaleService>;
   let notifications: jasmine.SpyObj<NotificationService>;
   let closed: jasmine.Spy;
   let created: jasmine.Spy;
+
+  const setup = async (inputs: { mode?: 'sale' | 'quotation'; sale?: Sale | null } = {}): Promise<void> => {
+    fixture = TestBed.createComponent(SaleFormDialog);
+    component = fixture.componentInstance;
+    if (inputs.mode !== undefined) fixture.componentRef.setInput('mode', inputs.mode);
+    if (inputs.sale !== undefined) fixture.componentRef.setInput('sale', inputs.sale);
+    closed = jasmine.createSpy('closed');
+    created = jasmine.createSpy('created');
+    component.closed.subscribe(closed);
+    component.created.subscribe(created);
+    fixture.detectChanges();
+  };
 
   beforeEach(async () => {
     stock = signal([
@@ -28,8 +77,11 @@ describe('SaleFormDialog', () => {
       item({ id: 'sold-out', warehouseId: 'w1', quantity: 0, price: 5 }),
       item({ id: 'elsewhere', warehouseId: 'w2', quantity: 3, price: 7 })
     ]);
-    sales = jasmine.createSpyObj<SaleService>('SaleService', ['create']);
+    clients = signal([client({ id: 'c1', paymentCondition: PaymentCondition.CREDIT })]);
+    fiscalConfig = signal<FiscalConfig | null>(null);
+    sales = jasmine.createSpyObj<SaleService>('SaleService', ['create', 'update']);
     sales.create.and.returnValue(of({ id: 'sale-1' } as Sale));
+    sales.update.and.returnValue(of({ id: 'draft-1' } as Sale));
     notifications = jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error']);
 
     await TestBed.configureTestingModule({
@@ -39,17 +91,13 @@ describe('SaleFormDialog', () => {
         { provide: SaleService, useValue: sales },
         { provide: WarehouseService, useValue: { warehouses: signal([warehouse('w1', 'Main'), warehouse('w2', 'Backup')]) } },
         { provide: InventoryService, useValue: { items: stock } },
+        { provide: ClientService, useValue: { clients } },
+        { provide: FiscalConfigService, useValue: { config: fiscalConfig } },
         { provide: NotificationService, useValue: notifications }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SaleFormDialog);
-    component = fixture.componentInstance;
-    closed = jasmine.createSpy('closed');
-    created = jasmine.createSpy('created');
-    component.closed.subscribe(closed);
-    component.created.subscribe(created);
-    fixture.detectChanges();
+    await setup();
   });
 
   /** A form that can be submitted: a warehouse, a customer type and one laptop. */
@@ -59,6 +107,71 @@ describe('SaleFormDialog', () => {
     component.addItem();
     component.updateItemId(0, 'laptop');
   };
+
+  describe('the tax percent default', () => {
+    it('is undefined for a new sale when no fiscal config is loaded', () => {
+      expect(component.taxPercent()).toBeUndefined();
+    });
+
+    it('is suggested from the fiscal config ISV% for a new sale', async () => {
+      fiscalConfig.set({ isvPercent: 18 } as FiscalConfig);
+
+      await setup();
+
+      expect(component.taxPercent()).toBe(18);
+    });
+
+    it('is applied when the fiscal config arrives after the dialog opened', () => {
+      fiscalConfig.set({ isvPercent: 15, currency: 'HNL' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBe(15);
+      expect(component.currency()).toBe('HNL');
+    });
+
+    it('does not overwrite what the user already picked when the fiscal config arrives late', () => {
+      component.setTaxPercent(0);
+      component.setCurrency('USD');
+
+      fiscalConfig.set({ isvPercent: 15, currency: 'HNL' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBe(0);
+      expect(component.currency()).toBe('USD');
+    });
+
+    it('does not overwrite the values of a quotation being edited when the fiscal config arrives late', async () => {
+      await setup({ sale: draftSale() });
+
+      fiscalConfig.set({ isvPercent: 18, currency: 'USD' } as FiscalConfig);
+      TestBed.tick();
+
+      expect(component.taxPercent()).toBe(15);
+      expect(component.currency()).toBe('HNL');
+    });
+  });
+
+  describe('the currency default', () => {
+    it('is USD for a new sale when no fiscal config is loaded', () => {
+      expect(component.currency()).toBe('USD');
+    });
+
+    it('follows the fiscal config currency for a new sale', async () => {
+      fiscalConfig.set({ currency: 'HNL' } as FiscalConfig);
+
+      await setup();
+
+      expect(component.currency()).toBe('HNL');
+    });
+
+    it('keeps the currency of a quotation being edited', async () => {
+      fiscalConfig.set({ currency: 'USD' } as FiscalConfig);
+
+      await setup({ sale: draftSale({ currency: 'HNL' }) });
+
+      expect(component.currency()).toBe('HNL');
+    });
+  });
 
   describe('the items that can be sold', () => {
     it('are none until a warehouse is chosen', () => {
@@ -280,6 +393,55 @@ describe('SaleFormDialog', () => {
     });
   });
 
+  describe('client selection', () => {
+    it('prefills the payment condition from the chosen client', () => {
+      component.onClientChange('c1');
+
+      expect(component.clientId()).toBe('c1');
+      expect(component.paymentCondition()).toBe(PaymentCondition.CREDIT);
+    });
+
+    it('stays editable after the prefill: the seller can still override it', () => {
+      component.onClientChange('c1');
+
+      component.paymentCondition.set(PaymentCondition.CASH);
+
+      expect(component.paymentCondition()).toBe(PaymentCondition.CASH);
+    });
+
+    it('does nothing to the payment condition when no client matches the id', () => {
+      component.paymentCondition.set(PaymentCondition.CREDIT);
+
+      component.onClientChange('unknown');
+
+      expect(component.clientId()).toBe('unknown');
+      expect(component.paymentCondition()).toBe(PaymentCondition.CREDIT);
+    });
+
+    it('asks for a name only once the walk-in option is picked', async () => {
+      const nameInput = (): HTMLInputElement | null => fixture.nativeElement.querySelector('#sale-customer-name');
+      expect(nameInput()).toBeNull();
+
+      component.onClientChange(component.walkInOption);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(nameInput()).not.toBeNull();
+      expect(component.clientSelection()).toBe(component.walkInOption);
+    });
+
+    it('drops the typed walk-in name when a registered client is picked instead', () => {
+      component.onClientChange(component.walkInOption);
+      component.customerName.set('Juan');
+
+      component.onClientChange('c1');
+
+      expect(component.walkIn()).toBeFalse();
+      expect(component.customerName()).toBe('');
+      expect(component.clientSelection()).toBe('c1');
+    });
+  });
+
   describe('submit', () => {
     it('sends nothing while the form cannot be submitted', () => {
       component.submit();
@@ -289,7 +451,6 @@ describe('SaleFormDialog', () => {
 
     it('sends the sale, trimming the text and leaving out what is blank', () => {
       readyToSubmit();
-      component.name.set('  Order 1  ');
       component.customerName.set('   ');
       component.notes.set(' fragile ');
       component.currency.set('HNL');
@@ -299,14 +460,40 @@ describe('SaleFormDialog', () => {
       component.submit();
 
       expect(sales.create).toHaveBeenCalledOnceWith({
-        name: 'Order 1',
         warehouseId: 'w1',
         customerName: undefined,
         customerType: CustomerType.RETAIL,
+        clientId: undefined,
+        paymentCondition: PaymentCondition.CASH,
         currency: 'HNL',
         notes: 'fragile',
-        items: [{ inventoryItemId: 'laptop', quantity: 2, unitPrice: 900, notes: 'gift' }]
+        taxPercent: undefined,
+        asDraft: undefined,
+        items: [{ inventoryItemId: 'laptop', quantity: 2, unitPrice: 900, notes: 'gift', taxPercent: undefined }]
       });
+    });
+
+    it('includes the chosen client and its payment condition in the DTO', () => {
+      readyToSubmit();
+      component.onClientChange('c1');
+
+      component.submit();
+
+      expect(sales.create).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({ clientId: 'c1', paymentCondition: PaymentCondition.CREDIT })
+      );
+    });
+
+    it('sends a walk-in customer by name, with no client', () => {
+      readyToSubmit();
+      component.onClientChange(component.walkInOption);
+      component.customerName.set('  Juan Pérez  ');
+
+      component.submit();
+
+      expect(sales.create).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({ customerName: 'Juan Pérez', clientId: undefined })
+      );
     });
 
     it('tells the user and reports the sale once it was created', () => {
@@ -352,6 +539,123 @@ describe('SaleFormDialog', () => {
 
       expect(sales.create).toHaveBeenCalledTimes(1);
       expect(component.submitting()).toBeTrue();
+    });
+  });
+
+  describe('quotation mode', () => {
+    it('does not cap availableItems to in-stock items', async () => {
+      await setup({ mode: 'quotation' });
+      component.onWarehouseChange('w1');
+
+      expect(component.availableItems().map((i) => i.id)).toEqual(['laptop', 'mouse', 'sold-out']);
+    });
+
+    it('does not block canSubmit on a quantity over the available stock', async () => {
+      await setup({ mode: 'quotation' });
+      readyToSubmit();
+      component.updateItemQuantity(0, 999);
+
+      expect(component.canSubmit()).toBeTrue();
+    });
+
+    it('still requires a warehouse, a customer type and an item', async () => {
+      await setup({ mode: 'quotation' });
+
+      expect(component.canSubmit()).toBeFalse();
+    });
+
+    it('submits asDraft:true and reports a quotation-specific success message', async () => {
+      await setup({ mode: 'quotation' });
+      readyToSubmit();
+
+      component.submit();
+
+      expect(sales.create).toHaveBeenCalledOnceWith(jasmine.objectContaining({ asDraft: true }));
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.CREATE_QUOTATION_SUCCESS');
+    });
+  });
+
+  describe('editing an existing draft', () => {
+    it('prefills every field from the given sale', async () => {
+      await setup({ sale: draftSale() });
+
+      expect(component.warehouseId()).toBe('w1');
+      expect(component.customerName()).toBe('Acme');
+      // No client record, only a typed name: it reopens as a walk-in
+      expect(component.walkIn()).toBeTrue();
+      expect(component.customerType()).toBe(CustomerType.RETAIL);
+      expect(component.currency()).toBe('HNL');
+      expect(component.notes()).toBe('draft notes');
+      expect(component.taxPercent()).toBe(15);
+      expect(component.items()).toEqual([
+        { inventoryItemId: 'laptop', quantity: 1, unitPrice: 900, notes: '', taxPercent: undefined }
+      ]);
+    });
+
+    it('is in editing mode, not add mode', async () => {
+      await setup({ sale: draftSale() });
+
+      expect(component.isEditing()).toBeTrue();
+    });
+
+    it('submits via update(), not create(), keyed by the sale id', async () => {
+      await setup({ sale: draftSale() });
+
+      component.submit();
+
+      expect(sales.update).toHaveBeenCalledOnceWith('draft-1', jasmine.objectContaining({ warehouseId: 'w1', notes: 'draft notes' }));
+      expect(sales.create).not.toHaveBeenCalled();
+      expect(notifications.success).toHaveBeenCalledOnceWith('SALES.UPDATE_SUCCESS');
+    });
+
+    it('sends what was cleared as null, so the edit removes it instead of keeping the old value', async () => {
+      await setup({ sale: draftSale() });
+      component.notes.set('  ');
+      component.setTaxPercent('');
+
+      component.submit();
+
+      expect(sales.update).toHaveBeenCalledOnceWith(
+        'draft-1',
+        jasmine.objectContaining({ notes: null, taxPercent: null, clientId: null })
+      );
+    });
+
+    it('does not cap quantity to stock either, same as any quotation', async () => {
+      await setup({ sale: draftSale() });
+
+      component.updateItemQuantity(0, 999);
+
+      expect(component.canSubmit()).toBeTrue();
+    });
+  });
+
+  describe('tax', () => {
+    it('a line with no explicit taxPercent inherits the ticket one', () => {
+      component.taxPercent.set(15);
+      const line = { inventoryItemId: 'x', quantity: 1, unitPrice: 100, notes: '' };
+
+      expect(component.lineTax(line)).toBe(15);
+    });
+
+    it('an explicit line taxPercent, including 0, overrides the ticket one', () => {
+      component.taxPercent.set(15);
+      const exempt = { inventoryItemId: 'x', quantity: 1, unitPrice: 100, notes: '', taxPercent: 0 };
+
+      expect(component.lineTax(exempt)).toBe(0);
+    });
+
+    it('taxTotal and grandTotal add up every line', () => {
+      component.onWarehouseChange('w1');
+      component.taxPercent.set(15);
+      component.addItem();
+      component.updateItemId(0, 'laptop'); // 900, taxed at 15% => 135
+      component.addItem();
+      component.updateItemId(1, 'mouse'); // 20, explicit 0% => exempt
+      component.updateItemTaxPercent(1, 0);
+
+      expect(component.taxTotal()).toBe(135);
+      expect(component.grandTotal()).toBe(900 + 20 + 135);
     });
   });
 

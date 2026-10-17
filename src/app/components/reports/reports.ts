@@ -1,4 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
 import { downloadStyledXLSX, XlsxRow } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -8,7 +10,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { PdfExportService } from '../../services/pdf-export.service';
 import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
-import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
+import { StockMovement, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
 import { addMoney, MoneyByCurrency, totalOf } from '../../utils/money.utils';
 import { localDateKey, parseDate } from '../../utils/date.utils';
@@ -20,6 +22,7 @@ import { ReportsTransactionsTab } from './tabs/reports-transactions-tab';
 import { ReportsTrendsTab } from './tabs/reports-trends-tab';
 import { ReportsValueTab } from './tabs/reports-value-tab';
 import { Spinner } from '../shared/spinner/spinner';
+import { localeFor } from '../../shared/app-language';
 
 @Component({
   selector: 'app-reports',
@@ -231,9 +234,20 @@ export class Reports implements OnInit {
   private translate = inject(TranslateService);
   private pdfExportService = inject(PdfExportService);
   private notifications = inject(NotificationService);
+  private route = inject(ActivatedRoute);
+
+  /** Values accepted in ?tab=, in tab order (e.g. the alert bell links to ?tab=status). */
+  private static readonly TAB_IDS = ['value', 'transactions', 'status', 'assignments', 'trends', 'downloads'];
 
   // Tab state
   activeTab = signal<number>(0);
+
+  constructor() {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const index = Reports.TAB_IDS.indexOf(params.get('tab') ?? '');
+      if (index >= 0) this.activeTab.set(index);
+    });
+  }
 
   // Loading states
   loading = signal<boolean>(true);
@@ -259,7 +273,8 @@ export class Reports implements OnInit {
 
   // Data signals
   allItems = signal<InventoryItemInterface[]>([]);
-  allTransactions = signal<Transaction[]>([]);
+  /** Every stock movement: manual transactions and those from sales, purchases, outflows, transfers, stock takes and discharges. */
+  allTransactions = signal<StockMovement[]>([]);
   selectedCurrency = signal<ReportCurrency>('USD');
 
   // Transaction filters
@@ -516,8 +531,8 @@ export class Reports implements OnInit {
       }
     });
 
-    // Load transactions
-    this.transactionService.getAll().subscribe({
+    // Load every stock movement, not only the manual transactions
+    this.transactionService.getMovements().subscribe({
       next: (transactions) => {
         this.allTransactions.set(transactions);
         this.transactionsLoading.set(false);
@@ -583,15 +598,25 @@ export class Reports implements OnInit {
     }));
   }
 
+  /** "Venta V-0001", "Compra COM-0003 (cancelación)", "Transacción manual"... */
+  private originLabel(movement: StockMovement): string {
+    const parts = [this.translate.instant(`REPORTS.MOVEMENT_ORIGIN.${movement.origin}`)];
+    if (movement.reference) parts.push(movement.reference);
+    const label = parts.join(' ');
+    return movement.cancellation ? `${label} (${this.translate.instant('REPORTS.CANCELLATION')})` : label;
+  }
+
   async exportTransactions(): Promise<void> {
     const t = (key: string) => this.translate.instant(key);
+    const locale = localeFor(this.translate.getCurrentLang());
     const rows: XlsxRow[] = [];
 
     for (const tx of this.filteredTransactions()) {
       for (const item of tx.items) {
         rows.push({
-          [t('REPORTS.TABLE.DATE')]:               formatDateTime(tx.date),
+          [t('REPORTS.TABLE.DATE')]:               formatDateTime(tx.date, locale),
           [t('REPORTS.TABLE.TYPE')]:               t(`TRANSACTIONS.TYPE.${tx.type}`),
+          [t('REPORTS.TABLE.ORIGIN')]:             this.originLabel(tx),
           [t('TRANSACTION.SOURCE_WAREHOUSE')]:     tx.sourceWarehouse?.name || '',
           [t('TRANSACTION.DEST_WAREHOUSE')]:       tx.destinationWarehouse?.name || '',
           [t('REPORTS.TABLE.USER')]:               tx.user?.name || tx.user?.email || '',
@@ -608,7 +633,7 @@ export class Reports implements OnInit {
       sheetName:   'Transactions',
       filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
       headerColor: '60A5FA',
-      colWidths:   [18, 12, 22, 22, 20, 30, 12, 8, 30, 30],
+      colWidths:   [18, 12, 26, 22, 22, 20, 30, 12, 8, 30, 30],
     }));
   }
 
@@ -638,6 +663,7 @@ export class Reports implements OnInit {
   async exportAssignments(): Promise<void> {
     const warehouses = this.inventoryService.warehouses();
     const t = (key: string) => this.translate.instant(key);
+    const locale = localeFor(this.translate.getCurrentLang());
 
     const rows = this.scopedItems()
       .filter(item => item.itemType === ItemType.UNIQUE)
@@ -649,7 +675,7 @@ export class Reports implements OnInit {
         [t('REPORTS.PDF.WAREHOUSE')]:           warehouses.find(w => w.id === item.warehouseId)?.name || '',
         [t('REPORTS.CSV.ASSIGNED_TO')]:         item.assignedToUser?.name || '',
         [t('REPORTS.PDF.EMAIL')]:               item.assignedToUser?.email || '',
-        [t('REPORTS.CSV.ASSIGNMENT_DATE')]:     item.assignedAt ? formatDate(item.assignedAt) : '',
+        [t('REPORTS.CSV.ASSIGNMENT_DATE')]:     item.assignedAt ? formatDate(item.assignedAt, locale) : '',
         [t('REPORTS.CSV.ASSIGNMENT_STATUS')]:   item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED'),
       }));
 

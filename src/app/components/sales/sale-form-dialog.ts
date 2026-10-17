@@ -2,12 +2,16 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
+  effect,
   ElementRef,
   HostListener,
   inject,
+  input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -17,18 +21,28 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SaleService } from '../../services/sale.service';
 import { WarehouseService } from '../../services/warehouse.service';
+import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import {
   CreateSaleDto,
   CustomerType,
+  Sale,
+  UpdateSaleDto,
 } from '../../interfaces/sale.interface';
+import { PaymentCondition } from '../../interfaces/purchase-invoice.interface';
+
+// Round to 2 decimals to avoid floating point noise, same rounding as the backend.
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 interface SaleItemEntry {
   inventoryItemId: string;
   quantity: number;
   unitPrice: number;
   notes: string;
+  // undefined inherits the ticket's taxPercent; an explicit value (including 0) overrides it.
+  taxPercent?: number;
 }
 
 export interface SaleFormResult {
@@ -42,6 +56,11 @@ const CUSTOMER_TYPES: CustomerType[] = [
 ];
 
 const CURRENCIES = ['USD', 'HNL'];
+
+const PAYMENT_CONDITIONS: PaymentCondition[] = [
+  PaymentCondition.CASH,
+  PaymentCondition.CREDIT,
+];
 
 @Component({
   selector: 'app-sale-form-dialog',
@@ -63,30 +82,19 @@ const CURRENCIES = ['USD', 'HNL'];
       >
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="sale-form-dialog-title" class="text-xl font-semibold text-foreground">
-            {{ 'SALES.NEW_SALE' | translate }}
+            {{ (isEditing() ? 'SALES.EDIT_QUOTATION' : isQuotation() ? 'SALES.NEW_QUOTATION' : 'SALES.NEW_SALE') | translate }}
+            @if (sale()?.quoteNumber; as quoteNumber) {
+              <span class="font-mono text-base text-[var(--color-on-surface-variant)]">{{ quoteNumber }}</span>
+            }
           </h2>
-          <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">
-            {{ 'SALES.NEW_SALE_DESC' | translate }}
-          </p>
+          @if (!isEditing()) {
+            <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">
+              {{ (isQuotation() ? 'SALES.NEW_QUOTATION_DESC' : 'SALES.NEW_SALE_DESC') | translate }}
+            </p>
+          }
         </div>
 
         <div class="p-6 space-y-4">
-          <!-- Name -->
-          <div>
-            <label for="sale-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
-              {{ 'SALES.NAME' | translate }}
-            </label>
-            <input
-              id="sale-name"
-              type="text"
-              [ngModel]="name()"
-              (ngModelChange)="name.set($event)"
-              maxlength="120"
-              [placeholder]="'SALES.NAME_PLACEHOLDER' | translate"
-              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-
           <!-- Warehouse -->
           <div>
             <label for="sale-warehouse" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -105,21 +113,24 @@ const CURRENCIES = ['USD', 'HNL'];
             </select>
           </div>
 
-          <!-- Customer name + type -->
+          <!-- Client (a registered one, or a walk-in typed by name) + type -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label for="sale-customer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
-                {{ 'SALES.CUSTOMER_NAME' | translate }}
+              <label for="sale-client" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.CLIENT' | translate }}
               </label>
-              <input
-                id="sale-customer-name"
-                type="text"
-                [ngModel]="customerName()"
-                (ngModelChange)="customerName.set($event)"
-                maxlength="120"
-                [placeholder]="'SALES.CUSTOMER_NAME_PLACEHOLDER' | translate"
+              <select
+                id="sale-client"
+                [ngModel]="clientSelection()"
+                (ngModelChange)="onClientChange($event)"
                 class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
-              />
+              >
+                <option value="">{{ 'SALES.SELECT_CLIENT' | translate }}</option>
+                @for (c of clients(); track c.id) {
+                  <option [value]="c.id">{{ c.name }}</option>
+                }
+                <option [value]="walkInOption">{{ 'SALES.WALK_IN_CLIENT' | translate }}</option>
+              </select>
             </div>
             <div>
               <label for="sale-customer-type" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -139,6 +150,42 @@ const CURRENCIES = ['USD', 'HNL'];
             </div>
           </div>
 
+          @if (walkIn()) {
+            <div>
+              <label for="sale-customer-name" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.CUSTOMER_NAME' | translate }}
+              </label>
+              <input
+                id="sale-customer-name"
+                type="text"
+                [ngModel]="customerName()"
+                (ngModelChange)="customerName.set($event)"
+                maxlength="120"
+                [placeholder]="'SALES.CUSTOMER_NAME_PLACEHOLDER' | translate"
+                class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+              />
+            </div>
+          }
+
+          <!-- Payment condition -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="sale-payment-condition" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+                {{ 'SALES.PAYMENT_CONDITION' | translate }}
+              </label>
+              <select
+                id="sale-payment-condition"
+                [ngModel]="paymentCondition()"
+                (ngModelChange)="paymentCondition.set($event)"
+                class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+              >
+                @for (pc of paymentConditions; track pc) {
+                  <option [value]="pc">{{ 'SALES.PAYMENT_CONDITIONS.' + pc | translate }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
           <!-- Currency -->
           <div>
             <label for="sale-currency" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
@@ -147,13 +194,31 @@ const CURRENCIES = ['USD', 'HNL'];
             <select
               id="sale-currency"
               [ngModel]="currency()"
-              (ngModelChange)="currency.set($event)"
+              (ngModelChange)="setCurrency($event)"
               class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
             >
               @for (cur of currencies; track cur) {
                 <option [value]="cur">{{ cur }}</option>
               }
             </select>
+          </div>
+
+          <!-- Tax percent (ticket-level default; a line can override it) -->
+          <div>
+            <label for="sale-tax-percent" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">
+              {{ 'SALES.TAX_PERCENT' | translate }}
+            </label>
+            <input
+              id="sale-tax-percent"
+              type="number"
+              [ngModel]="taxPercent()"
+              (ngModelChange)="setTaxPercent($event)"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="0"
+              class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+            />
           </div>
 
           <!-- Notes -->
@@ -237,6 +302,19 @@ const CURRENCIES = ['USD', 'HNL'];
                           class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                         />
+                        <div class="w-20">
+                          <input
+                            type="number"
+                            [ngModel]="item.taxPercent"
+                            (ngModelChange)="updateItemTaxPercent(i, $event)"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            [placeholder]="'SALES.TAX_PERCENT' | translate"
+                            [title]="'SALES.TAX_PERCENT' | translate"
+                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          />
+                        </div>
                       </div>
                       <div class="text-right text-xs text-[var(--color-on-surface-variant)]">
                         {{ 'SALES.SUBTOTAL' | translate }}: {{ currency() }} {{ lineTotal(item).toFixed(2) }}
@@ -264,13 +342,25 @@ const CURRENCIES = ['USD', 'HNL'];
 
           <!-- Total -->
           @if (items().length > 0) {
-            <div class="flex items-center justify-between border-t border-theme pt-4">
-              <span class="text-sm font-medium text-[var(--color-on-surface-variant)]">
-                {{ 'SALES.TOTAL' | translate }}
-              </span>
-              <span class="text-xl font-bold text-foreground">
-                {{ currency() }} {{ total().toFixed(2) }}
-              </span>
+            <div class="border-t border-theme pt-4 space-y-1">
+              @if (taxTotal() > 0) {
+                <div class="flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+                  <span>{{ 'SALES.SUBTOTAL' | translate }}</span>
+                  <span>{{ currency() }} {{ total().toFixed(2) }}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+                  <span>{{ 'SALES.TAX_AMOUNT' | translate }}</span>
+                  <span>{{ currency() }} {{ taxTotal().toFixed(2) }}</span>
+                </div>
+              }
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-[var(--color-on-surface-variant)]">
+                  {{ taxTotal() > 0 ? ('SALES.GRAND_TOTAL' | translate) : ('SALES.TOTAL' | translate) }}
+                </span>
+                <span class="text-xl font-bold text-foreground">
+                  {{ currency() }} {{ grandTotal().toFixed(2) }}
+                </span>
+              </div>
             </div>
           }
         </div>
@@ -287,23 +377,87 @@ const CURRENCIES = ['USD', 'HNL'];
             [disabled]="!canSubmit() || submitting()"
             class="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-[var(--color-surface-elevated)] disabled:text-[var(--color-on-surface-variant)] text-white px-6 py-2 rounded-lg transition-all"
           >
-            {{ 'SALES.CREATE' | translate }}
+            {{ (isQuotation() ? 'COMMON.SAVE' : 'SALES.CREATE') | translate }}
           </button>
         </div>
       </div>
     </div>
   `,
 })
-export class SaleFormDialog implements AfterViewInit {
+export class SaleFormDialog implements AfterViewInit, OnInit {
   private saleService = inject(SaleService);
   private warehouseService = inject(WarehouseService);
+  private clientService = inject(ClientService);
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
+  private fiscalConfigService = inject(FiscalConfigService);
+
+  // Suggested defaults from Fiscal Config's ISV% and currency — always
+  // editable, never forced (see the `taxPercent` comment on the Sale
+  // interface). The settings row may still be loading when the dialog opens,
+  // so they are applied when it arrives, unless the user already picked their
+  // own or an existing sale filled them.
+  private fiscalTouched = false;
+  private fiscalDefaults = effect(() => {
+    const fiscal = this.fiscalConfigService.config();
+    if (!fiscal) return;
+    untracked(() => {
+      if (this.fiscalTouched || this.sale()) return;
+      this.fiscalTouched = true;
+      this.taxPercent.set(fiscal.isvPercent);
+      if (fiscal.currency) this.currency.set(fiscal.currency);
+    });
+  });
+
+  setCurrency(value: string): void {
+    this.fiscalTouched = true;
+    this.currency.set(value);
+  }
+
+  setTaxPercent(value: number | ''): void {
+    this.fiscalTouched = true;
+    this.taxPercent.set(value === '' ? undefined : value);
+  }
 
   private dialogEl = viewChild<ElementRef<HTMLElement>>('dialogEl');
 
+  mode = input<'sale' | 'quotation'>('sale');
+  sale = input<Sale | null>(null);
+
   closed = output<void>();
   created = output<SaleFormResult>();
+
+  isQuotation = computed(() => this.mode() === 'quotation');
+  isEditing = computed(() => this.sale() !== null);
+  // A sale reachable from this dialog's edit mode is always a DRAFT (confirm/
+  // cancel are separate actions elsewhere, never this form) — so editing one
+  // gets the same relaxed stock cap as a brand new quotation, regardless of
+  // whether the caller also set mode to 'quotation'.
+  private relaxesStockCap = computed(() => this.isQuotation() || this.isEditing());
+
+  ngOnInit(): void {
+    const existing = this.sale();
+    if (!existing) return;
+    this.fiscalTouched = true;
+    this.warehouseId.set(existing.warehouseId);
+    this.customerName.set(existing.customerName ?? '');
+    this.walkIn.set(!existing.clientId && !!existing.customerName);
+    this.customerType.set(existing.customerType);
+    this.clientId.set(existing.clientId ?? '');
+    this.paymentCondition.set(existing.paymentCondition);
+    this.currency.set(existing.currency);
+    this.notes.set(existing.notes ?? '');
+    this.taxPercent.set(existing.taxPercent ?? undefined);
+    this.items.set(
+      existing.items.map((it) => ({
+        inventoryItemId: it.inventoryItemId,
+        quantity: it.quantity,
+        unitPrice: it.unitPrice,
+        notes: it.notes ?? '',
+        taxPercent: it.taxPercent ?? undefined,
+      })),
+    );
+  }
 
   ngAfterViewInit(): void {
     queueMicrotask(() => this.dialogEl()?.nativeElement.focus());
@@ -316,22 +470,34 @@ export class SaleFormDialog implements AfterViewInit {
 
   readonly customerTypes = CUSTOMER_TYPES;
   readonly currencies = CURRENCIES;
+  readonly paymentConditions = PAYMENT_CONDITIONS;
 
-  name = signal('');
   warehouseId = signal('');
   customerName = signal('');
   customerType = signal<CustomerType | ''>('');
+  clientId = signal('');
+  // A walk-in customer has no Client record: their name is typed instead.
+  walkIn = signal(false);
+  readonly walkInOption = '__walk_in__';
+  clientSelection = computed(() => this.clientId() || (this.walkIn() ? this.walkInOption : ''));
+  paymentCondition = signal<PaymentCondition>(PaymentCondition.CASH);
   currency = signal('USD');
   notes = signal('');
+  taxPercent = signal<number | undefined>(undefined);
   items = signal<SaleItemEntry[]>([]);
   submitting = signal(false);
 
   warehouses = computed(() => this.warehouseService.warehouses());
+  clients = computed(() => this.clientService.clients());
 
+  // A quotation reserves nothing, so it can reference an item regardless of
+  // current stock — only a direct sale (or confirming a quotation, which
+  // re-checks stock server-side) needs the quantity-on-hand filter/cap.
   availableItems = computed(() => {
     const wh = this.warehouseId();
     const all = this.inventoryService.items();
     if (!wh) return [];
+    if (this.relaxesStockCap()) return all.filter((item) => item.warehouseId === wh);
     return all.filter((item) => item.warehouseId === wh && item.quantity > 0);
   });
 
@@ -339,16 +505,23 @@ export class SaleFormDialog implements AfterViewInit {
     this.items().reduce((sum, it) => sum + this.lineTotal(it), 0),
   );
 
+  taxTotal = computed(() =>
+    round2(this.items().reduce((sum, it) => sum + this.lineTax(it), 0)),
+  );
+
+  grandTotal = computed(() => round2(this.total() + this.taxTotal()));
+
   canSubmit = computed(() => {
     if (!this.warehouseId() || !this.customerType()) return false;
     const list = this.items();
     if (list.length === 0) return false;
+    const relaxed = this.relaxesStockCap();
     return list.every(
       (it) =>
         !!it.inventoryItemId &&
         Number.isFinite(it.quantity) &&
         it.quantity > 0 &&
-        it.quantity <= this.getAvailable(it.inventoryItemId) &&
+        (relaxed || it.quantity <= this.getAvailable(it.inventoryItemId)) &&
         Number.isFinite(it.unitPrice) &&
         it.unitPrice >= 0,
     );
@@ -360,6 +533,11 @@ export class SaleFormDialog implements AfterViewInit {
     return Math.round(qty * price * 100) / 100;
   }
 
+  lineTax(item: SaleItemEntry): number {
+    const pct = item.taxPercent ?? this.taxPercent() ?? 0;
+    return round2((this.lineTotal(item) * pct) / 100);
+  }
+
   close(): void {
     this.closed.emit();
   }
@@ -368,6 +546,23 @@ export class SaleFormDialog implements AfterViewInit {
     this.warehouseId.set(id);
     // Clear items because they were scoped to the previous warehouse
     this.items.set([]);
+  }
+
+  // Prefill, same "suggestion the seller can override" pattern as
+  // updateItemId's unit-price prefill — never enforced server-side.
+  onClientChange(id: string): void {
+    if (id === this.walkInOption) {
+      this.walkIn.set(true);
+      this.clientId.set('');
+      return;
+    }
+    this.walkIn.set(false);
+    this.customerName.set('');
+    this.clientId.set(id);
+    const client = this.clients().find((c) => c.id === id);
+    if (client) {
+      this.paymentCondition.set(client.paymentCondition);
+    }
   }
 
   addItem(): void {
@@ -418,6 +613,17 @@ export class SaleFormDialog implements AfterViewInit {
     });
   }
 
+  updateItemTaxPercent(index: number, taxPercent: number | ''): void {
+    this.items.update((list) => {
+      const next = [...list];
+      next[index] = {
+        ...next[index],
+        taxPercent: taxPercent === '' ? undefined : taxPercent,
+      };
+      return next;
+    });
+  }
+
   removeItem(index: number): void {
     this.items.update((list) => list.filter((_, i) => i !== index));
   }
@@ -440,25 +646,58 @@ export class SaleFormDialog implements AfterViewInit {
     if (!this.canSubmit() || this.submitting()) return;
     this.submitting.set(true);
 
-    const dto: CreateSaleDto = {
-      name: this.name().trim() || undefined,
+    const items = this.items().map((it) => ({
+      inventoryItemId: it.inventoryItemId,
+      quantity: it.quantity,
+      unitPrice: Number(it.unitPrice) || 0,
+      notes: it.notes?.trim() || undefined,
+      taxPercent: it.taxPercent,
+    }));
+    const common = {
       warehouseId: this.warehouseId(),
-      customerName: this.customerName().trim() || undefined,
+      customerName: this.walkIn() ? this.customerName().trim() || undefined : undefined,
       customerType: this.customerType() as CustomerType,
+      clientId: this.walkIn() ? undefined : this.clientId() || undefined,
+      paymentCondition: this.paymentCondition(),
       currency: this.currency(),
       notes: this.notes().trim() || undefined,
-      items: this.items().map((it) => ({
-        inventoryItemId: it.inventoryItemId,
-        quantity: it.quantity,
-        unitPrice: Number(it.unitPrice) || 0,
-        notes: it.notes?.trim() || undefined,
-      })),
+      taxPercent: this.taxPercent(),
     };
 
+    const existing = this.sale();
+    if (existing) {
+      const dto: UpdateSaleDto = {
+        ...common,
+        customerName: common.customerName ?? null,
+        clientId: common.clientId ?? null,
+        notes: common.notes ?? null,
+        taxPercent: common.taxPercent ?? null,
+        items,
+      };
+      this.saleService.update(existing.id, dto).subscribe((result) => {
+        this.submitting.set(false);
+        if (result) {
+          this.notifications.success('SALES.UPDATE_SUCCESS');
+          this.created.emit({ success: true });
+        }
+        // A null answer is a failed request: SaleService already showed the reason (reportErrors)
+      });
+      return;
+    }
+
+    const dto: CreateSaleDto = {
+      ...common,
+      items,
+      // Omitted (not false) when not a quotation, so a direct sale's payload
+      // is byte-for-byte what it always was.
+      asDraft: this.isQuotation() ? true : undefined,
+    };
     this.saleService.create(dto).subscribe((result) => {
       this.submitting.set(false);
       if (result) {
-        this.notifications.success('SALES.CREATE_SUCCESS');
+        this.notifications.success(
+          this.isQuotation() ? 'SALES.CREATE_QUOTATION_SUCCESS' : 'SALES.CREATE_SUCCESS',
+        );
         this.created.emit({ success: true });
       }
       // A null answer is a failed request: SaleService already showed the reason (reportErrors)

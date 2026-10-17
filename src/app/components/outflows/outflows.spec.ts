@@ -16,7 +16,7 @@ import { warehouse } from '../../../testing/report-fixtures';
 const outflow = (overrides: Partial<Outflow> = {}): Outflow =>
   ({
     id: 'outflow-1234567890',
-    name: 'Broken screens',
+    number: 'SAL-0001',
     warehouseId: 'w1',
     status: OutflowStatus.ACTIVE,
     reason: OutflowReason.DAMAGED,
@@ -158,17 +158,17 @@ describe('OutflowsComponent', () => {
   });
 
   describe('cancel', () => {
-    it('asks the user to confirm, naming the outflow, or its short id when it has no name', () => {
+    it('asks the user to confirm, naming the outflow by its number, or its short id when it has none', () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation('en', { OUTFLOWS: { CONFIRM_CANCEL_MESSAGE: 'Cancel {{name}}?' } });
       translate.use('en');
 
-      component.cancel(outflow({ name: 'Broken screens' }));
+      component.cancel(outflow({ number: 'SAL-0003' }));
       expect(confirm.ask.calls.mostRecent().args[0]).toEqual(
-        jasmine.objectContaining({ type: 'warning', title: 'OUTFLOWS.CONFIRM_CANCEL_TITLE', message: 'Cancel Broken screens?' })
+        jasmine.objectContaining({ type: 'warning', title: 'OUTFLOWS.CONFIRM_CANCEL_TITLE', message: 'Cancel SAL-0003?' })
       );
 
-      component.cancel(outflow({ name: null, id: 'outflow-1234567890' }));
+      component.cancel(outflow({ number: null, id: 'outflow-1234567890' }));
       expect(confirm.ask.calls.mostRecent().args[0].message).toBe('Cancel outflow-?');
     });
 

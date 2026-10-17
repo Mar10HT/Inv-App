@@ -134,6 +134,18 @@ textarea:not([class*="mat-"]):focus-visible {
     border: 1px solid var(--color-border) !important;
 }
 
+/* Material Menu (Commercial flyout in the collapsed sidebar).
+   The Material theme doesn't emit --mat-sys-surface-container, which the menu
+   uses for its background, so the panel rendered transparent over the page. */
+.mat-mdc-menu-panel {
+    --mat-menu-container-color: var(--color-surface-elevated);
+    --mat-menu-item-label-text-color: var(--color-on-surface);
+    --mat-menu-item-icon-color: var(--color-on-surface);
+    --mat-menu-container-shape: 12px;
+    background-color: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+}
+
 /* Custom Snackbar Container */
 .custom-snackbar-container {
     margin: 24px !important;
@@ -165,6 +177,9 @@ textarea:not([class*="mat-"]):focus-visible {
 /* Paginator Styles */
 .mat-mdc-paginator {
     --mat-paginator-container-background-color: transparent;
+    /* the app's body size; Material's default is 12px */
+    --mat-paginator-container-text-size: 0.875rem;
+    --mat-paginator-select-trigger-text-size: 0.875rem;
     --mat-paginator-container-text-color: var(--color-on-surface-variant);
     --mat-paginator-enabled-icon-color: var(--color-on-surface-variant);
     --mat-paginator-disabled-icon-color: var(--color-border);

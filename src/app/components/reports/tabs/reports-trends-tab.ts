@@ -7,6 +7,7 @@ import { parseDate } from '../../../utils/date.utils';
 import { formatDate } from '../reports.format';
 import { TrendPoint } from '../reports.types';
 import { Spinner } from '../../shared/spinner/spinner';
+import { localeFor } from '../../../shared/app-language';
 
 @Component({
   selector: 'app-reports-trends-tab',
@@ -90,7 +91,10 @@ export class ReportsTrendsTab {
   trends = input.required<TrendPoint[]>();
   loading = input(false);
 
-  formatDate = formatDate;
+  /** In the language currently shown. */
+  formatDate(date: Date | string): string {
+    return formatDate(date, localeFor(this.translate.getCurrentLang()));
+  }
 
   trendChartOptions = computed(() => {
     const trends = this.trends();

@@ -180,6 +180,7 @@ describe('Profile actions', () => {
     it('formatDate writes a date in full in the language of the app, from a Date or a string', () => {
       expect(component.formatDate(undefined)).toBe('');
 
+      TestBed.inject(TranslateService).use('en');
       expect(component.formatDate(new Date(2026, 8, 24))).toBe('September 24, 2026');
       expect(component.formatDate('2026-09-24T12:00:00')).toBe('September 24, 2026');
 

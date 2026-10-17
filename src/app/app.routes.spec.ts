@@ -130,6 +130,7 @@ const PERMISSIONS: Record<string, string[]> = {
   'inventory/edit/:id': ['inventory:view', 'inventory:edit'],
   warehouses: ['warehouse:view'],
   suppliers: ['suppliers:view'],
+  clients: ['clients:view'],
   categories: ['categories:view'],
   settings: ['settings:view'],
   users: ['users:view'],
@@ -144,7 +145,10 @@ const PERMISSIONS: Record<string, string[]> = {
   'stock-take': ['stocktake:view'],
   discharges: ['discharges:view'],
   outflows: ['outflows:view'],
+  purchases: ['purchases:view'],
   sales: ['sales:view'],
+  'accounts-receivable': ['sales:view'],
+  'accounts-payable': ['purchases:view'],
   'discharges/:id': ['discharges:view']
 };
 

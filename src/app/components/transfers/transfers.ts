@@ -1,7 +1,6 @@
 import { Component, computed, signal, inject, OnInit, ChangeDetectionStrategy, effect, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -17,9 +16,12 @@ import { ConfirmService } from '../../services/confirm.service';
 import { TransferStatsCards } from './transfer-stats';
 import { TransferFormDialog, TransferFormResult } from './transfer-form-dialog';
 import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRejectDialog, TransferRejectResult } from './transfer-qr-dialog';
+import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
+import { AppDatePipe } from '../../shared/app-date.pipe';
 
 @Component({
   selector: 'app-transfers',
+  providers: [provideTranslatedPaginator()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -32,7 +34,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
     TransferQrDialog,
     TransferScanDialog,
     TransferRejectDialog,
-    DatePipe,
+    AppDatePipe,
     TransferStatsCards
   ],
   template: `
@@ -143,9 +145,9 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                   <tr class="hover:bg-[var(--color-surface-variant)] transition-colors">
                     <td class="px-6 py-4">
                       <div>
-                        <p class="text-foreground font-medium">{{ request.name || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
+                        <p class="text-foreground font-medium">{{ request.number || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
                         <p class="text-[var(--color-on-surface-variant)] text-sm truncate max-w-xs">
-                          @if (request.name) {
+                          @if (request.number) {
                             {{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }} · {{ getItemsPreview(request) }}
                           } @else {
                             {{ getItemsPreview(request) }}
@@ -166,7 +168,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                       </div>
                     </td>
                     <td class="px-6 py-4 text-foreground">{{ request.requestedByName }}</td>
-                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | date:'mediumDate' }}</td>
+                    <td class="px-6 py-4 text-foreground">{{ request.createdAt | appDate:'mediumDate' }}</td>
                     <td class="px-6 py-4">
                       <span [class]="getStatusClass(request.status)" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
                         {{ getStatusLabel(request.status) }}
@@ -231,7 +233,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                             </ng-container>
                           }
                           @case (Status.COMPLETED) {
-                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | date:'mediumDate' }}</span>
+                            <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.receivedAt | appDate:'mediumDate' }}</span>
                           }
                           @case (Status.REJECTED) {
                             <span class="text-[var(--color-status-error)] text-sm truncate max-w-[150px]" [title]="request.rejectedReason">
@@ -264,9 +266,9 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
               <div class="p-4">
                 <div class="flex justify-between items-start mb-3">
                   <div>
-                    <p class="text-foreground font-medium">{{ request.name || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
+                    <p class="text-foreground font-medium">{{ request.number || (request.items.length + ' ' + ('TRANSFERS.ITEMS_COUNT' | translate)) }}</p>
                     <p class="text-[var(--color-on-surface-variant)] text-sm">
-                      @if (request.name) {
+                      @if (request.number) {
                         {{ request.items.length }} {{ 'TRANSFERS.ITEMS_COUNT' | translate }} · {{ getItemsPreview(request) }}
                       } @else {
                         {{ getItemsPreview(request) }}
@@ -288,7 +290,7 @@ import { TransferQrDialog, TransferScanDialog, TransferScanQrResult, TransferRej
                   </div>
                   <div>
                     <p class="text-[var(--color-on-surface-variant)]">{{ 'COMMON.DATE' | translate }}</p>
-                    <p class="text-foreground">{{ request.createdAt | date:'mediumDate' }}</p>
+                    <p class="text-foreground">{{ request.createdAt | appDate:'mediumDate' }}</p>
                   </div>
                 </div>
                 <!-- PDF download — always available -->
@@ -495,6 +497,7 @@ export class TransfersComponent implements OnInit {
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       requests = requests.filter(req =>
+        (req.number?.toLowerCase().includes(query) ?? false) ||
         req.sourceWarehouseName.toLowerCase().includes(query) ||
         req.destinationWarehouseName.toLowerCase().includes(query) ||
         req.requestedByName.toLowerCase().includes(query) ||

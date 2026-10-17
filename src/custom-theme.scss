@@ -24,19 +24,53 @@ $custom-error: (
   on-base: #ffffff
 );
 
+// mat.theme() needs full tonal palettes; given the maps above it emitted no
+// --mat-sys-* color or typography tokens at all, so Material components that
+// read them (menus, dialogs, snackbars, tooltips) rendered with no background.
+// A built-in palette generates the full token set, then the tokens that set
+// the look are pointed at the app's own variables, which already switch
+// between the dark and light themes.
 html {
+  color-scheme: dark;
   @include mat.theme((
     color: (
-      primary: $custom-primary,
-      secondary: $custom-secondary,
-      tertiary: $custom-tertiary,
-      error: $custom-error,
-      surface: #0a0a0a,      // Near pure black
-      on-surface: #cbd5e1,   // Slate 300
+      primary: mat.$cyan-palette,
+      tertiary: mat.$blue-palette,
       theme-type: dark
+    ),
+    typography: (
+      plain-family: ('Outfit', 'Helvetica Neue', sans-serif),
+      brand-family: ('Outfit', 'Helvetica Neue', sans-serif),
     ),
     density: 0
   ));
+  @include mat.theme-overrides((
+    primary: var(--primary),
+    on-primary: var(--primary-on),
+    primary-container: var(--primary-container),
+    on-primary-container: var(--primary-on-container),
+    secondary: var(--secondary),
+    on-secondary: var(--secondary-on),
+    tertiary: var(--tertiary),
+    on-tertiary: var(--tertiary-on),
+    error: var(--error),
+    surface: var(--surface),
+    on-surface: var(--on-surface),
+    on-surface-variant: var(--on-surface-variant),
+    surface-container-lowest: var(--surface),
+    surface-container-low: var(--surface-variant),
+    surface-container: var(--surface-container),
+    surface-container-high: var(--surface-elevated),
+    surface-container-highest: var(--surface-elevated),
+    outline: var(--border),
+    outline-variant: var(--border-subtle),
+    inverse-surface: var(--on-surface),
+    inverse-on-surface: var(--surface)
+  ));
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 // Dark theme (default)

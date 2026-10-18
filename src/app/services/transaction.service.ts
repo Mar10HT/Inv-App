@@ -1,9 +1,16 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
-import { Transaction, CreateTransactionDto, StockMovement } from '../interfaces/transaction.interface';
+import {
+  Transaction,
+  CreateTransactionDto,
+  StockMovement,
+  MovementFilters,
+  MovementSummary,
+} from '../interfaces/transaction.interface';
 import { PaginatedResponse } from '../interfaces/common.interface';
 import { environment } from '../../environments/environment';
+import { fetchAllPages } from '../utils/fetch-all-pages';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +26,28 @@ export class TransactionService {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  /** Every stock movement across modules, newest first (Reports' Transactions and Trends tabs). */
-  getMovements(): Observable<StockMovement[]> {
-    return this.http.get<StockMovement[]>(`${environment.apiUrl}/reports/movements`);
+  private movementsUrl = `${environment.apiUrl}/reports/movements`;
+
+  /**
+   * One page of the stock movements across modules, newest first, plus the
+   * totals of the whole period (Reports' Transactions tab). Without dates the
+   * API returns the last 90 days.
+   */
+  getMovements(
+    filters: MovementFilters,
+    page: number,
+    limit: number,
+  ): Observable<PaginatedResponse<StockMovement> & { summary: MovementSummary }> {
+    const params = movementParams(filters).set('page', page).set('limit', limit);
+    return this.http.get<PaginatedResponse<StockMovement> & { summary: MovementSummary }>(
+      this.movementsUrl,
+      { params },
+    );
+  }
+
+  /** Every movement of the period, page by page (Trends and the exports). */
+  getAllMovements(filters: MovementFilters): Observable<StockMovement[]> {
+    return fetchAllPages<StockMovement>(this.http, this.movementsUrl, movementParams(filters));
   }
 
   getAll(page = 1, limit = 50): Observable<Transaction[]> {
@@ -88,4 +114,13 @@ export class TransactionService {
       })
     );
   }
+}
+
+/** Only the filters that are set: an empty one would narrow to nothing. */
+function movementParams(filters: MovementFilters): HttpParams {
+  let params = new HttpParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) params = params.set(key, value);
+  }
+  return params;
 }

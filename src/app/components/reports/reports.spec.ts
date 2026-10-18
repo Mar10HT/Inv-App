@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Provider, signal, Type } from '@angular/core';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { defer, NEVER, of, throwError } from 'rxjs';
+import { defer, map, NEVER, Observable, of, throwError } from 'rxjs';
 import type { WorkBook } from 'xlsx-js-style';
 
 import { Reports } from './reports';
@@ -20,7 +20,8 @@ import {
   InventoryStatus,
   ItemType
 } from '../../interfaces/inventory-item.interface';
-import { Transaction, TransactionType } from '../../interfaces/transaction.interface';
+import { MovementFilters, Transaction, TransactionType } from '../../interfaces/transaction.interface';
+import { localDateKey } from '../../utils/date.utils';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, supplier, tx, warehouse } from '../../../testing/report-fixtures';
 
@@ -39,9 +40,30 @@ const atNow = <T>(read: () => T): T => {
   }
 };
 
+/** What the API counts for the period: the totals the tab's cards show. */
+const summarize = (list: Transaction[]) => ({
+  total: list.length,
+  inCount: list.filter((t) => t.type === TransactionType.IN).length,
+  outCount: list.filter((t) => t.type === TransactionType.OUT).length,
+  transferCount: list.filter((t) => t.type === TransactionType.TRANSFER).length,
+  totalItems: list.reduce((sum, t) => sum + t.items.length, 0)
+});
+
+/** `YYYY-MM-DD`, `days` days before today, counted the way the component does. */
+const daysAgoKey = (days: number): string => {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return localDateKey(date);
+};
+/** The default "from" date: the period is the last 90 days. */
+const ninetyDaysFrom = (): string => daysAgoKey(89);
+
 describe('Reports', () => {
   let fixture: ComponentFixture<Reports>;
   let component: Reports;
+  /** Every page the component asked the API for, and every "all of it" (trends, exports). */
+  let pageRequests: { filters: MovementFilters; page: number; limit: number }[];
+  let allRequests: MovementFilters[];
 
   const warehouses = [warehouse('w1', 'Main'), warehouse('w2', 'Backup')];
   const suppliers = [supplier('s1', 'Acme')];
@@ -53,6 +75,8 @@ describe('Reports', () => {
     transactionsSource = of(transactions),
     extraProviders: Provider[] = []
   ): Promise<void> => {
+    pageRequests = [];
+    allRequests = [];
     await TestBed.configureTestingModule({
       imports: [Reports],
       providers: [
@@ -65,7 +89,26 @@ describe('Reports', () => {
             getItemsObservable: () => itemsSource
           }
         },
-        { provide: TransactionService, useValue: { getMovements: () => transactionsSource } },
+        {
+          provide: TransactionService,
+          useValue: {
+            // The fake API hands back the given movements as the page asked for
+            getMovements: (filters: MovementFilters, page: number, limit: number) => {
+              pageRequests.push({ filters, page, limit });
+              return (transactionsSource as Observable<Transaction[]>).pipe(
+                map((list) => ({
+                  data: list,
+                  meta: { total: list.length, page, limit, totalPages: Math.ceil(list.length / limit) },
+                  summary: summarize(list)
+                }))
+              );
+            },
+            getAllMovements: (filters: MovementFilters) => {
+              allRequests.push(filters);
+              return transactionsSource;
+            }
+          }
+        },
         ...extraProviders
       ]
     }).compileComponents();
@@ -97,7 +140,7 @@ describe('Reports', () => {
       await setup([item({ id: 'a' })], [tx({ id: 'x' })]);
 
       expect(component.allItems().map((i) => i.id)).toEqual(['a']);
-      expect(component.allTransactions().map((t) => t.id)).toEqual(['x']);
+      expect(component.movementsPage().map((t) => t.id)).toEqual(['x']);
       expect(component.loading()).toBe(false);
       expect(component.transactionsLoading()).toBe(false);
     });
@@ -300,84 +343,91 @@ describe('Reports', () => {
 
   describe('transactions report', () => {
     const txs = [
-      tx({ id: 'in', type: TransactionType.IN, date: new Date('2026-01-15T12:00:00Z'), items: [{ id: '1', inventoryItemId: 'a', quantity: 1 }] }),
-      tx({ id: 'out', type: TransactionType.OUT, date: new Date('2026-01-15T12:00:00Z'), items: [{ id: '2', inventoryItemId: 'a', quantity: 1 }, { id: '3', inventoryItemId: 'b', quantity: 1 }] }),
-      tx({ id: 'old', type: TransactionType.TRANSFER, date: new Date('2026-01-05T12:00:00Z') }),
-      tx({ id: 'new', type: TransactionType.TRANSFER, date: new Date('2026-01-25T12:00:00Z') })
+      tx({ id: 'in', type: TransactionType.IN, items: [{ id: '1', inventoryItemId: 'a', quantity: 1 }] }),
+      tx({ id: 'out', type: TransactionType.OUT, items: [{ id: '2', inventoryItemId: 'a', quantity: 1 }, { id: '3', inventoryItemId: 'b', quantity: 1 }] }),
+      tx({ id: 'move', type: TransactionType.TRANSFER })
     ];
 
-    it('returns every transaction when no filter is set', async () => {
+    /** Lets the effects that ask the API run after a filter changes. */
+    const settle = (): void => fixture.detectChanges();
+
+    it('asks for the first page of the last 90 days in every warehouse, and shows it', async () => {
       await setup([], txs);
 
-      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['in', 'out', 'old', 'new']);
-    });
-
-    it('filters by type', async () => {
-      await setup([], txs);
-
-      component.onTransactionTypeChange('OUT');
-
-      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['out']);
-    });
-
-    it('filters by date range', async () => {
-      await setup([], txs);
-
-      component.onDateFromChange('2026-01-10');
-      component.onDateToChange('2026-01-20');
-
-      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['in', 'out']);
-    });
-
-    it('keeps the first day and the whole last day of the range, in local time', async () => {
-      await setup([], [
-        tx({ id: 'before', date: new Date(2026, 0, 9, 23, 0) }),
-        tx({ id: 'first', date: new Date(2026, 0, 10, 0, 30) }),
-        tx({ id: 'last', date: new Date(2026, 0, 20, 22, 0) }),
-        tx({ id: 'edge', date: new Date(2026, 0, 20, 23, 59, 59, 500) }),
-        tx({ id: 'after', date: new Date(2026, 0, 21, 0, 30) })
+      expect(pageRequests).toEqual([
+        { filters: { warehouseId: undefined, from: ninetyDaysFrom(), to: undefined, type: undefined }, page: 1, limit: 25 }
       ]);
-
-      component.onDateFromChange('2026-01-10');
-      component.onDateToChange('2026-01-20');
-
-      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['first', 'last', 'edge']);
+      expect(component.dateFrom()).toBe(ninetyDaysFrom());
+      expect(component.movementsPage().map((t) => t.id)).toEqual(['in', 'out', 'move']);
     });
 
-    it('resets every filter with clearTransactionFilters', async () => {
-      await setup([], txs);
-      component.onTransactionTypeChange('OUT');
-      component.onDateFromChange('2026-01-10');
-      component.onDateToChange('2026-01-20');
-
-      component.clearTransactionFilters();
-
-      expect(component.filteredTransactions()).toHaveSize(4);
-      expect(component.transactionTypeFilter()).toBe('ALL');
-    });
-
-    it('scopes to the selected warehouse on the source or the destination side', async () => {
-      await setup([], [
-        tx({ id: 'src', sourceWarehouseId: 'w1' }),
-        tx({ id: 'dst', destinationWarehouseId: 'w1' }),
-        tx({ id: 'other', sourceWarehouseId: 'w2' })
-      ]);
-
-      component.selectedWarehouseId.set('w1');
-
-      expect(component.filteredTransactions().map((t) => t.id)).toEqual(['src', 'dst']);
-    });
-
-    it('counts totals per type and the number of transaction items', async () => {
+    it('shows the totals the API counted for the whole period', async () => {
       await setup([], txs);
 
       expect(component.transactionStats()).toEqual({
-        total: 4,
+        total: 3,
         inCount: 1,
         outCount: 1,
-        transferCount: 2,
+        transferCount: 1,
         totalItems: 3
       });
+    });
+
+    it('asks again from the first page with the type, dates and warehouse chosen', async () => {
+      await setup([], txs);
+      component.onPageChange({ pageIndex: 2, pageSize: 25, length: 100 });
+      settle();
+
+      component.onTransactionTypeChange('OUT');
+      component.onDateFromChange('2026-01-10');
+      component.onDateToChange('2026-01-20');
+      component.selectWarehouse('w1');
+      settle();
+
+      expect(pageRequests[pageRequests.length - 1]).toEqual({
+        filters: { warehouseId: 'w1', from: '2026-01-10', to: '2026-01-20', type: 'OUT' },
+        page: 1,
+        limit: 25
+      });
+    });
+
+    it('asks for the page and the size the paginator picks', async () => {
+      await setup([], txs);
+
+      component.onPageChange({ pageIndex: 3, pageSize: 50, length: 500 });
+      settle();
+
+      expect(pageRequests[pageRequests.length - 1]).toEqual(jasmine.objectContaining({ page: 4, limit: 50 }));
+    });
+
+    it('goes back to the last 90 days and every type with clearTransactionFilters', async () => {
+      await setup([], txs);
+      component.onTransactionTypeChange('OUT');
+      component.onDateFromChange('2026-01-10');
+      component.onDateToChange('2026-01-20');
+      expect(component.transactionFiltersChanged()).toBe(true);
+
+      component.clearTransactionFilters();
+      settle();
+
+      expect(component.transactionFiltersChanged()).toBe(false);
+      expect(pageRequests[pageRequests.length - 1].filters).toEqual({
+        warehouseId: undefined,
+        from: ninetyDaysFrom(),
+        to: undefined,
+        type: undefined
+      });
+    });
+
+    it('exports every movement the filters select, not only the page on screen', async () => {
+      await setup([], txs);
+      component.onTransactionTypeChange('OUT');
+      settle();
+      allRequests = [];
+
+      await component.exportTransactionsPDF();
+
+      expect(allRequests).toEqual([jasmine.objectContaining({ type: 'OUT', from: ninetyDaysFrom() })]);
     });
   });
 
@@ -477,6 +527,14 @@ describe('Reports', () => {
       expect(trends[29]).toEqual(jasmine.objectContaining({ in: 2, out: 0, transfer: 0 }));
       expect(trends[24]).toEqual(jasmine.objectContaining({ in: 0, out: 1, transfer: 1 }));
       expect(trends.reduce((sum, t) => sum + t.in + t.out + t.transfer, 0)).toBe(4);
+    });
+
+    it('asks for the last 30 days of the selected warehouse', async () => {
+      await setup([]);
+      component.selectWarehouse('w2');
+      fixture.detectChanges();
+
+      expect(allRequests[allRequests.length - 1]).toEqual({ warehouseId: 'w2', from: daysAgoKey(29) });
     });
 
     it('puts a transaction on the local day it happened, right after and right before midnight', async () => {
@@ -627,7 +685,7 @@ describe('Reports', () => {
 
       const tab = child(ReportsTransactionsTab);
       expect(tab.loading()).toBe(false);
-      expect(tab.transactions()).toEqual(component.filteredTransactions());
+      expect(tab.transactions()).toEqual(component.movementsPage());
       expect(tab.stats()).toEqual(component.transactionStats());
 
       spyOn(component, 'exportTransactions');

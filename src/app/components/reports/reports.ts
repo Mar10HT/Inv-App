@@ -1,6 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, computed, effect, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PageEvent } from '@angular/material/paginator';
+import { firstValueFrom } from 'rxjs';
 import { LucideAngularModule } from 'lucide-angular';
 import { downloadStyledXLSX, XlsxRow } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -10,10 +12,10 @@ import { TransactionService } from '../../services/transaction.service';
 import { PdfExportService } from '../../services/pdf-export.service';
 import { NotificationService } from '../../services/notification.service';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
-import { StockMovement, TransactionType } from '../../interfaces/transaction.interface';
-import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TrendPoint, ValueSummary } from './reports.types';
+import { MovementFilters, StockMovement, TransactionType } from '../../interfaces/transaction.interface';
+import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TransactionStats, TrendPoint, ValueSummary } from './reports.types';
 import { addMoney, MoneyByCurrency, totalOf } from '../../utils/money.utils';
-import { localDateKey, parseDate } from '../../utils/date.utils';
+import { localDateKey } from '../../utils/date.utils';
 import { formatDate, formatDateTime } from './reports.format';
 import { ReportsAssignmentsTab } from './tabs/reports-assignments-tab';
 import { ReportsDownloadsTab } from './tabs/reports-downloads-tab';
@@ -64,7 +66,7 @@ import { localeFor } from '../../shared/app-language';
         <select
           id="reports-warehouse-filter"
           [value]="selectedWarehouseId()"
-          (change)="selectedWarehouseId.set($any($event.target).value)"
+          (change)="selectWarehouse($any($event.target).value)"
           class="select-chevron w-full rounded-lg border px-3 py-2 text-sm focus:outline-none transition-colors"
           style="background-color: var(--color-surface-variant); border-color: var(--color-border); color: var(--color-on-surface);">
           <option value="">{{ 'REPORTS.ALL_WAREHOUSES' | translate }}</option>
@@ -76,7 +78,7 @@ import { localeFor } from '../../shared/app-language';
       @if (selectedWarehouseId()) {
         <button
           type="button"
-          (click)="selectedWarehouseId.set('')"
+          (click)="selectWarehouse('')"
           class="text-xs px-3 py-2 rounded-lg border transition-colors"
           style="border-color: var(--color-border); color: var(--color-on-surface-variant);">
           {{ 'COMMON.CLEAR' | translate }}
@@ -186,7 +188,12 @@ import { localeFor } from '../../shared/app-language';
           [dateTo]="dateTo()"
           [typeFilter]="transactionTypeFilter()"
           [stats]="transactionStats()"
-          [transactions]="filteredTransactions()"
+          [transactions]="movementsPage()"
+          [total]="transactionStats().total"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [canClear]="transactionFiltersChanged()"
+          (pageChange)="onPageChange($event)"
           (dateFromChange)="onDateFromChange($event)"
           (dateToChange)="onDateToChange($event)"
           (typeFilterChange)="onTransactionTypeChange($event)"
@@ -247,6 +254,42 @@ export class Reports implements OnInit {
       const index = Reports.TAB_IDS.indexOf(params.get('tab') ?? '');
       if (index >= 0) this.activeTab.set(index);
     });
+
+    // The Transactions tab's page: asked again whenever a filter or the page
+    // changes; a request still running for the previous filters is dropped
+    effect((onCleanup) => {
+      this.reload();
+      const filters = this.movementFilters();
+      const page = this.pageIndex() + 1;
+      const limit = this.pageSize();
+      this.transactionsLoading.set(true);
+      this.transactionsError.set(false);
+      const request = this.transactionService.getMovements(filters, page, limit).subscribe({
+        next: (result) => {
+          this.movementsPage.set(result.data);
+          this.transactionStats.set(result.summary);
+          this.transactionsLoading.set(false);
+        },
+        error: () => {
+          this.transactionsError.set(true);
+          this.transactionsLoading.set(false);
+        },
+      });
+      onCleanup(() => request.unsubscribe());
+    });
+
+    // Trends: the last 30 days of the selected warehouse
+    effect((onCleanup) => {
+      this.reload();
+      const warehouseId = this.selectedWarehouseId() || undefined;
+      const request = this.transactionService
+        .getAllMovements({ warehouseId, from: Reports.daysAgo(29) })
+        .subscribe({
+          next: (movements) => this.trendMovements.set(movements),
+          error: () => this.transactionsError.set(true),
+        });
+      onCleanup(() => request.unsubscribe());
+    });
   }
 
   // Loading states
@@ -273,12 +316,25 @@ export class Reports implements OnInit {
 
   // Data signals
   allItems = signal<InventoryItemInterface[]>([]);
-  /** Every stock movement: manual transactions and those from sales, purchases, outflows, transfers, stock takes and discharges. */
-  allTransactions = signal<StockMovement[]>([]);
+  /**
+   * Stock movements (manual transactions and those from sales, purchases,
+   * outflows, transfers and stock takes) come from the API a page at a time,
+   * for the period in the date filters: the Transactions tab shows one page
+   * and the period's totals, Trends reads the last 30 days.
+   */
+  movementsPage = signal<StockMovement[]>([]);
+  transactionStats = signal<TransactionStats>({ total: 0, inCount: 0, outCount: 0, transferCount: 0, totalItems: 0 });
+  private trendMovements = signal<StockMovement[]>([]);
+  pageIndex = signal(0);
+  pageSize = signal(25);
+  /** Bumped by Retry: the movement loads read it, so they run again. */
+  private reload = signal(0);
   selectedCurrency = signal<ReportCurrency>('USD');
 
-  // Transaction filters
-  dateFrom = signal<string>('');
+  // Transaction filters. The period starts as the last 90 days, the API's
+  // default too, so the inputs show what the table holds.
+  private readonly defaultDateFrom = Reports.daysAgo(89);
+  dateFrom = signal<string>(this.defaultDateFrom);
   dateTo = signal<string>('');
   transactionTypeFilter = signal<string>('ALL');
 
@@ -292,16 +348,6 @@ export class Reports implements OnInit {
     const wh = this.selectedWarehouseId();
     const items = this.allItems();
     return wh ? items.filter((i) => i.warehouseId === wh) : items;
-  });
-
-  /** Transactions scoped to the currently selected warehouse on source OR destination side. */
-  private scopedTransactions = computed(() => {
-    const wh = this.selectedWarehouseId();
-    const transactions = this.allTransactions();
-    if (!wh) return transactions;
-    return transactions.filter(
-      (t) => t.sourceWarehouseId === wh || t.destinationWarehouseId === wh,
-    );
   });
 
   // ============ VALUE REPORT COMPUTED ============
@@ -390,39 +436,27 @@ export class Reports implements OnInit {
   });
 
   // ============ TRANSACTIONS REPORT COMPUTED ============
-  filteredTransactions = computed(() => {
-    let transactions = this.scopedTransactions();
-    const typeFilter = this.transactionTypeFilter();
-    const from = this.dateFrom();
-    const to = this.dateTo();
-
-    if (typeFilter !== 'ALL') {
-      transactions = transactions.filter(t => t.type === typeFilter);
-    }
-
-    if (from) {
-      const fromDate = parseDate(from);
-      transactions = transactions.filter(t => new Date(t.date) >= fromDate);
-    }
-
-    if (to) {
-      const toDate = parseDate(to);
-      toDate.setHours(23, 59, 59, 999);
-      transactions = transactions.filter(t => new Date(t.date) <= toDate);
-    }
-
-    return transactions;
+  /** What the API is asked for: the global warehouse and the tab's filters. */
+  private movementFilters = computed((): MovementFilters => {
+    const type = this.transactionTypeFilter();
+    return {
+      warehouseId: this.selectedWarehouseId() || undefined,
+      from: this.dateFrom() || undefined,
+      to: this.dateTo() || undefined,
+      type: type === 'ALL' ? undefined : (type as MovementFilters['type']),
+    };
   });
 
-  transactionStats = computed(() => {
-    const transactions = this.filteredTransactions();
-    const inCount = transactions.filter(t => t.type === TransactionType.IN).length;
-    const outCount = transactions.filter(t => t.type === TransactionType.OUT).length;
-    const transferCount = transactions.filter(t => t.type === TransactionType.TRANSFER).length;
-    const totalItems = transactions.reduce((sum, t) => sum + t.items.length, 0);
+  transactionFiltersChanged = computed(
+    () => this.dateFrom() !== this.defaultDateFrom || !!this.dateTo() || this.transactionTypeFilter() !== 'ALL',
+  );
 
-    return { total: transactions.length, inCount, outCount, transferCount, totalItems };
-  });
+  /** `YYYY-MM-DD`, `days` days before today. */
+  private static daysAgo(days: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return localDateKey(date);
+  }
 
   // ============ STATUS REPORT COMPUTED ============
   statusSummary = computed((): StatusSummary[] => {
@@ -484,7 +518,7 @@ export class Reports implements OnInit {
 
   // ============ TRENDS COMPUTED ============
   transactionTrends = computed((): TrendPoint[] => {
-    const transactions = this.scopedTransactions();
+    const transactions = this.trendMovements();
     const map = new Map<string, TrendPoint>();
 
     // Get last 30 days
@@ -515,9 +549,7 @@ export class Reports implements OnInit {
 
   protected loadData(): void {
     this.loading.set(true);
-    this.transactionsLoading.set(true);
     this.itemsError.set(false);
-    this.transactionsError.set(false);
 
     // Load items
     this.inventoryService.getItemsObservable().subscribe({
@@ -531,17 +563,8 @@ export class Reports implements OnInit {
       }
     });
 
-    // Load every stock movement, not only the manual transactions
-    this.transactionService.getMovements().subscribe({
-      next: (transactions) => {
-        this.allTransactions.set(transactions);
-        this.transactionsLoading.set(false);
-      },
-      error: () => {
-        this.transactionsError.set(true);
-        this.transactionsLoading.set(false);
-      }
-    });
+    // The movements load on their own (constructor); Retry asks for them again
+    this.reload.update((n) => n + 1);
   }
 
   onTabChange(index: number): void {
@@ -552,22 +575,42 @@ export class Reports implements OnInit {
     this.selectedCurrency.set(currency);
   }
 
+  // A new filter starts back on the first page
   onDateFromChange(date: string): void {
     this.dateFrom.set(date);
+    this.pageIndex.set(0);
   }
 
   onDateToChange(date: string): void {
     this.dateTo.set(date);
+    this.pageIndex.set(0);
   }
 
   onTransactionTypeChange(type: string): void {
     this.transactionTypeFilter.set(type);
+    this.pageIndex.set(0);
+  }
+
+  selectWarehouse(id: string): void {
+    this.selectedWarehouseId.set(id);
+    this.pageIndex.set(0);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   clearTransactionFilters(): void {
-    this.dateFrom.set('');
+    this.dateFrom.set(this.defaultDateFrom);
     this.dateTo.set('');
     this.transactionTypeFilter.set('ALL');
+    this.pageIndex.set(0);
+  }
+
+  /** Every movement the filters select, not only the page on screen, for the exports. */
+  private allFilteredMovements(): Promise<StockMovement[]> {
+    return firstValueFrom(this.transactionService.getAllMovements(this.movementFilters()));
   }
 
   async exportReport(): Promise<void> {
@@ -607,11 +650,23 @@ export class Reports implements OnInit {
   }
 
   async exportTransactions(): Promise<void> {
+    await this.notifications.guardExport(async () => {
+      const movements = await this.allFilteredMovements();
+      await downloadStyledXLSX(this.transactionRows(movements), {
+        sheetName:   'Transactions',
+        filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
+        headerColor: '60A5FA',
+        colWidths:   [18, 12, 26, 22, 22, 20, 30, 12, 8, 30, 30],
+      });
+    });
+  }
+
+  private transactionRows(movements: StockMovement[]): XlsxRow[] {
     const t = (key: string) => this.translate.instant(key);
     const locale = localeFor(this.translate.getCurrentLang());
     const rows: XlsxRow[] = [];
 
-    for (const tx of this.filteredTransactions()) {
+    for (const tx of movements) {
       for (const item of tx.items) {
         rows.push({
           [t('REPORTS.TABLE.DATE')]:               formatDateTime(tx.date, locale),
@@ -629,12 +684,7 @@ export class Reports implements OnInit {
       }
     }
 
-    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
-      sheetName:   'Transactions',
-      filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
-      headerColor: '60A5FA',
-      colWidths:   [18, 12, 26, 22, 22, 20, 30, 12, 8, 30, 30],
-    }));
+    return rows;
   }
 
   async exportStatusReport(): Promise<void> {
@@ -688,9 +738,8 @@ export class Reports implements OnInit {
   }
 
   async exportTransactionsPDF(): Promise<void> {
-    const transactions = this.filteredTransactions();
-    await this.notifications.guardExport(() => this.pdfExportService.exportTransactionsToPDF({
-      transactions,
+    await this.notifications.guardExport(async () => this.pdfExportService.exportTransactionsToPDF({
+      transactions: await this.allFilteredMovements(),
       title: this.translate.instant('REPORTS.PDF.TITLE'),
       dateRange: {
         from: this.dateFrom() || undefined,

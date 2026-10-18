@@ -1626,6 +1626,7 @@
     "PURCHASE_INVOICE_HAS_ACTIVE_PAYMENTS": "Esta compra tiene pagos registrados por {{amount}} {{currency}}. Anúlalos primero y después cancela la compra.",
     "CREDIT_LIMIT_CURRENCY_MISMATCH": "El límite de crédito de este cliente está en {{limitCurrency}}; no se puede dar crédito en {{saleCurrency}}. Cambia la moneda de la venta o véndele de contado.",
     "CAI_RANGE_IN_USE": "Ya se emitieron facturas con este rango, así que su número inicial no se puede cambiar.",
-    "CAI_RANGE_BELOW_ISSUED": "El número final no puede quedar por debajo de la última factura emitida ({{lastIssued}})."
+    "CAI_RANGE_BELOW_ISSUED": "El número final no puede quedar por debajo de la última factura emitida ({{lastIssued}}).",
+    "INVALID_DATE_RANGE": "La fecha inicial no puede ser posterior a la final."
   }
 }

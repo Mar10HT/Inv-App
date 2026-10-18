@@ -158,23 +158,34 @@ describe('ReportsTransactionsTab', () => {
       expect(type).toHaveBeenCalledOnceWith('TRANSFER');
     });
 
-    it('hides the clear button until a filter is active', () => {
+    it('shows the clear button only when the parent says the filters changed', () => {
       render();
       expect(button('COMMON.CLEAR')).toBeUndefined();
 
-      fixture.componentRef.setInput('typeFilter', 'IN');
+      fixture.componentRef.setInput('canClear', true);
       fixture.detectChanges();
       expect(button('COMMON.CLEAR')).toBeDefined();
     });
 
-    it('shows the clear button for a date filter and emits filtersCleared', () => {
-      render({ dateFrom: '2026-01-10' });
+    it('emits filtersCleared from the clear button', () => {
+      render({ canClear: true });
       const cleared = jasmine.createSpy('cleared');
       component.filtersCleared.subscribe(cleared);
 
       button('COMMON.CLEAR')?.click();
 
       expect(cleared).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('pages', () => {
+    it('shows a paginator only when the period has more movements than a page', () => {
+      render({ total: 25, pageSize: 25 });
+      expect(fixture.nativeElement.querySelector('mat-paginator')).toBeNull();
+
+      fixture.componentRef.setInput('total', 26);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('mat-paginator')).not.toBeNull();
     });
   });
 

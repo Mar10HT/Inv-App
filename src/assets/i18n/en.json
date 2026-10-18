@@ -1626,6 +1626,7 @@
     "PURCHASE_INVOICE_HAS_ACTIVE_PAYMENTS": "This purchase has {{amount}} {{currency}} in recorded payments. Void them first, then cancel the purchase.",
     "CREDIT_LIMIT_CURRENCY_MISMATCH": "This client's credit limit is in {{limitCurrency}}, so credit can't be given in {{saleCurrency}}. Change the sale's currency or sell for cash.",
     "CAI_RANGE_IN_USE": "Invoices were already issued from this range, so its starting number can't change.",
-    "CAI_RANGE_BELOW_ISSUED": "The ending number can't be below the last invoice issued ({{lastIssued}})."
+    "CAI_RANGE_BELOW_ISSUED": "The ending number can't be below the last invoice issued ({{lastIssued}}).",
+    "INVALID_DATE_RANGE": "The start date can't be after the end date."
   }
 }

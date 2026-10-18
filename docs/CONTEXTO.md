@@ -35,6 +35,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-18 | Inv-App-API / Inv-App | rama `fix/stock-take-concurrency` | Conteo físico con lock y revalidación; movimientos paginados y por período |
 | 2026-10-16 | Inv-App-API / Inv-App | `aa80d8e` `24bdef1` / `add19cc` | Revisión de los PRs: listados limitados a las bodegas del usuario, edición de cotizaciones, crédito por moneda, CAI (fin del día en Honduras, rangos), estadísticas del servidor con impuesto, listas completas (el API corta en 100), cancelar con pagos bloqueado, guardas de doble envío |
 | 2026-10-16 | Inv-App-API | `657c51a` | Concurrencia: no se vende de más ni se procesa dos veces un documento (decremento condicional y lock de la fila); test de integración con Postgres en CI |
 | 2026-10-16 | Inv-App-API | `31a0588` | `migrate-document-numbers.sql` funciona en base vacía, en la de `main` y en una ya migrada |

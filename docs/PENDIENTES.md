@@ -49,8 +49,9 @@ Los dos PRs se aprobaron el 2026-10-16 con estas condiciones y seguimientos (com
 - [x] **Frontend**: CI en verde y los flujos principales funcionando contra el API actualizado (verificado en local con Playwright).
 
 **Seguimientos**
-- [ ] **Conteo físico: lock y concurrencia.** Al completar un conteo, bloquear la fila y volver a validar el estado (igual que ventas, compras y transferencias), con tests de concurrencia contra Postgres.
-- [ ] **`GET /reports/movements`: paginación y filtros por fecha.** Hoy no tiene límite de cantidad.
+- [x] **Conteo físico: lock y concurrencia.** Completar, cancelar, recontar e iniciar un conteo bloquean la fila (o la bodega) y revalidan el estado dentro de la transacción. Test de integración contra Postgres con las cuatro carreras (rama `fix/stock-take-concurrency`).
+- [ ] **Decisión pendiente: ajuste del conteo.** Al completar con "aplicar ajustes" el stock se reemplaza por lo contado, así que una venta o salida hecha entre el conteo y el completado se pierde. Alternativa: aplicar solo la diferencia del conteo.
+- [x] **`GET /reports/movements`: paginación y filtros por fecha.** Acepta `from`, `to`, `type`, `page` y `limit`; sin fechas devuelve los últimos 90 días. La pestaña Transacciones pagina desde el servidor, Tendencias pide 30 días y las exportaciones traen todo el período (misma rama).
 - [ ] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: migración de los datos y validación de los cálculos.
 - [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
 

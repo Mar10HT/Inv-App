@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -625,8 +626,8 @@ export class StockTakeComponent implements OnInit {
           this.applyFilters();
           this.openDetail(created);
         },
-        error: () => {
-          this.notifications.error('STOCK_TAKE.CREATE_ERROR');
+        error: (err: HttpErrorResponse) => {
+          this.reportError(err, 'STOCK_TAKE.CREATE_ERROR');
         },
       });
   }
@@ -681,14 +682,26 @@ export class StockTakeComponent implements OnInit {
           this.savingItem.set(null);
           this.notifications.success('STOCK_TAKE.DETAIL.COUNT_SAVED');
         },
-        error: () => {
+        error: (err: HttpErrorResponse) => {
           this.savingItem.set(null);
-          this.notifications.error('STOCK_TAKE.DETAIL.COUNT_ERROR');
+          this.reportError(err, 'STOCK_TAKE.DETAIL.COUNT_ERROR');
         },
       });
   }
 
   // ==================== Complete / Cancel ====================
+
+  /**
+   * The API's reason when it gave one (already translated by the error
+   * interceptor: "the count of X would go below zero"...), else `fallbackKey`.
+   */
+  private reportError(err: HttpErrorResponse, fallbackKey: string): void {
+    if (err?.error?.message) {
+      this.notifications.handleError(err);
+    } else {
+      this.notifications.error(fallbackKey);
+    }
+  }
 
   completeStockTake(): void {
     this.showCompleteDialog = true;
@@ -708,8 +721,8 @@ export class StockTakeComponent implements OnInit {
         this.closeCompleteDialog();
         this.notifications.success('STOCK_TAKE.COMPLETE.SUCCESS');
       },
-      error: () => {
-        this.notifications.error('STOCK_TAKE.COMPLETE.ERROR');
+      error: (err: HttpErrorResponse) => {
+        this.reportError(err, 'STOCK_TAKE.COMPLETE.ERROR');
       },
     });
   }
@@ -731,8 +744,8 @@ export class StockTakeComponent implements OnInit {
             this.selectedStockTake.set(updated);
             this.notifications.success('STOCK_TAKE.CANCEL.SUCCESS');
           },
-          error: () => {
-            this.notifications.error('STOCK_TAKE.CANCEL.ERROR');
+          error: (err: HttpErrorResponse) => {
+            this.reportError(err, 'STOCK_TAKE.CANCEL.ERROR');
           },
         });
       }

@@ -1399,7 +1399,7 @@
       "TITLE": "Completar Conteo",
       "MESSAGE": "¿Completar este conteo? Esta acción no se puede deshacer.",
       "APPLY_INVENTORY": "Aplicar cambios al inventario",
-      "APPLY_HINT": "Ajustar las cantidades del inventario a los valores contados",
+      "APPLY_HINT": "Sumar o restar al inventario la diferencia que encontró el conteo; las ventas y salidas hechas mientras tanto se conservan",
       "SUCCESS": "Conteo completado exitosamente",
       "ERROR": "Error al completar el conteo"
     },
@@ -1627,6 +1627,7 @@
     "CREDIT_LIMIT_CURRENCY_MISMATCH": "El límite de crédito de este cliente está en {{limitCurrency}}; no se puede dar crédito en {{saleCurrency}}. Cambia la moneda de la venta o véndele de contado.",
     "CAI_RANGE_IN_USE": "Ya se emitieron facturas con este rango, así que su número inicial no se puede cambiar.",
     "CAI_RANGE_BELOW_ISSUED": "El número final no puede quedar por debajo de la última factura emitida ({{lastIssued}}).",
-    "INVALID_DATE_RANGE": "La fecha inicial no puede ser posterior a la final."
+    "INVALID_DATE_RANGE": "La fecha inicial no puede ser posterior a la final.",
+    "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "No se puede aplicar el conteo de {{item}}: restar {{toRemove}} lo dejaría por debajo de cero (en stock: {{available}})."
   }
 }

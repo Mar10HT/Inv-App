@@ -1399,7 +1399,7 @@
       "TITLE": "Complete Stock Take",
       "MESSAGE": "Complete this stock take? This action cannot be undone.",
       "APPLY_INVENTORY": "Apply changes to inventory",
-      "APPLY_HINT": "Adjust inventory quantities to match the counted values",
+      "APPLY_HINT": "Add or remove the difference the count found; sales and outflows made in the meantime are kept",
       "SUCCESS": "Stock take completed successfully",
       "ERROR": "Error completing stock take"
     },
@@ -1627,6 +1627,7 @@
     "CREDIT_LIMIT_CURRENCY_MISMATCH": "This client's credit limit is in {{limitCurrency}}, so credit can't be given in {{saleCurrency}}. Change the sale's currency or sell for cash.",
     "CAI_RANGE_IN_USE": "Invoices were already issued from this range, so its starting number can't change.",
     "CAI_RANGE_BELOW_ISSUED": "The ending number can't be below the last invoice issued ({{lastIssued}}).",
-    "INVALID_DATE_RANGE": "The start date can't be after the end date."
+    "INVALID_DATE_RANGE": "The start date can't be after the end date.",
+    "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "The count of {{item}} can't be applied: removing {{toRemove}} would take it below zero (in stock: {{available}})."
   }
 }

@@ -2,7 +2,60 @@
 
 Lista de problemas encontrados al probar la app y escribir el Manual de Usuario. Todo se verificó en la app corriendo (frontend `Inv-App` y backend `Inv-App-API`, rama `feat/purchase-invoices`).
 
-Última actualización: 2026-10-13.
+Última actualización: 2026-10-31.
+
+## Plan de lo que sigue (2026-10-31)
+
+Abiertos y en verde: [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency`: locks de conteos y préstamos, ajuste del conteo por diferencia, movimientos paginados). Se despliega primero el API: cambió la forma de la respuesta de `/reports/movements`. Sin migraciones.
+
+Orden sugerido después de ese merge: **1** (Excel), **2** (`Decimal`, en dos PRs), **3** cuando el usuario defina el formato, **4** después del despliegue. Tamaños estimados midiendo el código el 2026-10-31.
+
+| # | Pendiente | Tamaño | Riesgo | Depende de |
+|---|---|---|---|---|
+| 1 | Excel "Transacciones" lee todos los movimientos | Chico-medio: 4–6 archivos del API, ~250 líneas | Bajo | Nada (no toca el formato) |
+| 2 | Montos `Float` → `Decimal`/`NUMERIC` | Grande: ~25 archivos del API, +800–1200 líneas; frontend 0–20 archivos según la opción | Alto | Nada |
+| 3 | Formato de PDFs y exportaciones | Grande, sin estimar | Medio | Decisión del usuario |
+| 4 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
+| 5 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
+
+### 1. Excel "Transacciones" con todos los movimientos
+
+Descargas y Reportes Programados (`ReportsService.generateTransactionsReport`, `ScheduledReportsService` caso `TRANSACTIONS`) siguen leyendo solo la tabla `transactions`. Pasarían a usar `StockMovementsService.findAll` con período y bodega, y a agregar las columnas Documento y Origen. El estilo del archivo no cambia (eso es el punto 3).
+
+KPIs de merge:
+- Para el mismo período y bodega, el Excel tiene las mismas filas que la pestaña Transacciones.
+- El reporte programado de Transacciones se genera y se envía.
+- Tests: ventas, compras, cancelaciones, transferencias y conteos aparecen en el Excel.
+
+### 2. Montos en `Decimal`
+
+19 campos en 8 modelos: `InventoryItem.price`, `OutflowItem.unitPrice`, `Sale.totalAmount/taxPercent/taxAmount`, `SaleItem.unitPrice/lineTotal/taxPercent/taxAmount`, `FiscalConfig.isvPercent`, `PurchaseInvoice.totalAmount/taxPercent/taxAmount`, `PurchaseInvoiceItem.unitPrice/lineTotal/taxPercent/taxAmount`, `Payment.amount`, `Client.creditLimit`.
+
+- API: los dos schemas, un script de migración (`ALTER COLUMN ... TYPE numeric(14,2)` para montos, `numeric(5,2)` para porcentajes, corrido por `railway:migrate` antes del `db push` como `migrate-document-numbers.sql`), los cálculos (subtotales, ISV, saldos, crédito, estadísticas), los PDFs de comprobantes y los tests.
+- Frontend, a decidir: **A (recomendada)** el API sigue devolviendo números en el JSON y el redondeo exacto queda en el servidor, el frontend casi no cambia; **B** el API devuelve strings y se ajustan ~20 archivos.
+- Partirlo en dos PRs: (a) schema, migración y cálculos del API; (b) PDFs y frontend si hace falta.
+
+KPIs de merge:
+- Migración sin pérdida: misma cantidad de filas y mismas sumas por tabla antes y después, probada en base vacía y en una copia de producción; `db push` en sync sin `--accept-data-loss`.
+- Tests con fracciones: 0.1 + 0.2, ISV 15% de 33.33, pagos parciales que dejan saldo 0.00 exacto, límite de crédito en el borde.
+- El mismo total en API, pantalla y PDF para una venta y una compra de prueba.
+
+### 3. Formato de PDFs y exportaciones
+
+Bloqueado hasta que el usuario defina formato fijo (instalaciones de clientes) y personalizable (producción). Hoy: `pdf-receipts.service.ts` (~880 líneas, API) y `pdf-export.service.ts` (~560, frontend). Los KPIs salen de esa definición. Detalle en "Formato de reportes y documentos exportables", abajo.
+
+### 4. Manual
+
+Después del despliegue: lista en la sección "Alertas", abajo.
+
+### KPIs comunes a todo PR
+
+- CI verde en los dos repos: lint, unitarios con cobertura sobre los mínimos, integración contra Postgres, build.
+- Si toca concurrencia o datos: test de integración que falla con el código anterior y pasa con el nuevo.
+- Verificado en la app corriendo, no solo con tests.
+- Si cambia el schema: migración probada en base vacía y con datos.
+- Tamaño: hasta ~15 archivos por repo sin contar tests.
+- `docs/PENDIENTES.md` y `docs/CONTEXTO.md` actualizados.
 
 ## Alertas: resuelto el 2026-10-13
 
@@ -22,6 +75,10 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
     - Transacciones aparece en el menú lateral; Reportes > Transacciones y Tendencias muestran todos los movimientos, con la columna Documento.
     - Reportes Programados: se puede programar Salidas.
     - El login y las fechas salen en español.
+    - Reportes > Transacciones: paginador, período por defecto de 90 días y exportaciones de todo el período; Tendencias muestra 30 días.
+    - Conteo Físico: "Aplicar cambios" suma o resta la diferencia y conserva lo vendido mientras tanto; los errores dicen el motivo.
+    - Ventas y Compras: no se pueden cancelar con pagos registrados (hay que anularlos primero).
+    - Clientes: Moneda del Límite de crédito.
 
 ## Revisión de los PRs a producción: resuelto el 2026-10-16
 
@@ -49,8 +106,10 @@ Los dos PRs se aprobaron el 2026-10-16 con estas condiciones y seguimientos (com
 - [x] **Frontend**: CI en verde y los flujos principales funcionando contra el API actualizado (verificado en local con Playwright).
 
 **Seguimientos**
-- [ ] **Conteo físico: lock y concurrencia.** Al completar un conteo, bloquear la fila y volver a validar el estado (igual que ventas, compras y transferencias), con tests de concurrencia contra Postgres.
-- [ ] **`GET /reports/movements`: paginación y filtros por fecha.** Hoy no tiene límite de cantidad.
+- [x] **Conteo físico: lock y concurrencia.** Completar, cancelar, recontar e iniciar un conteo bloquean la fila (o la bodega) y revalidan el estado dentro de la transacción. Test de integración contra Postgres con las cuatro carreras (rama `fix/stock-take-concurrency`).
+- [x] **Ajuste del conteo por diferencia** (decisión del usuario, 2026-10-21). Cada ítem guarda el stock del sistema al momento de contarlo, y al completar se suma o resta solo la diferencia: lo vendido o recibido mientras tanto se conserva. Si la diferencia dejaría el stock bajo cero, no se aplica nada (`STOCK_TAKE_ADJUSTMENT_BELOW_ZERO`, con el mensaje traducido en pantalla).
+- [x] **Préstamos: lock en cada cambio de estado.** Enviar, iniciar devolución, confirmar recepción o devolución (con QR o manual) y cancelar bloquean el préstamo. La devolución sin QR (`PATCH /loans/:id/return`) ya no acepta préstamos cancelados ni sin enviar. Test de integración con las carreras.
+- [x] **`GET /reports/movements`: paginación y filtros por fecha.** Acepta `from`, `to`, `type`, `page` y `limit`; sin fechas devuelve los últimos 90 días. La pestaña Transacciones pagina desde el servidor, Tendencias pide 30 días y las exportaciones traen todo el período (misma rama).
 - [ ] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: migración de los datos y validación de los cálculos.
 - [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
 
@@ -99,7 +158,7 @@ Decisiones del usuario: borrar los roles duplicados; numeración automática en 
 
 - [ ] **Después de desplegar el API**: correr `railway run npm run seed:rbac` una vez para borrar los roles duplicados de producción.
 - [ ] **Al desplegar el API**: `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push` (numera lo existente, mueve las referencias y crea los índices únicos). Probado sobre una copia de la base local con los mismos pasos.
-- [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. Unificarlo cuando se defina el formato de reportes.
-- [ ] (sin prioridad) **Conteos físicos anteriores a este cambio** no aparecen en Transacciones/Tendencias: no se guardaba si se aplicaron los ajustes.
+- [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. La fuente se puede unificar ya (punto 1 del plan); el estilo del archivo espera al formato.
+- [x] ~~Conteos físicos anteriores a este cambio no aparecen en Transacciones/Tendencias~~: no aplica, producción arranca con una base nueva.
 - [x] **Cambiar de idioma**: resuelto. Las fechas siguen el idioma al instante (pipe `appDate` en lugar de `date`; Inventario y Reportes también). Quedan fuera las exportaciones de Transferencias y Auditoría, que entran en el trabajo de formato.
 - [x] **Errores sin código**: resuelto. La validación de formularios llega con el código `VALIDATION_FAILED` y muestra un mensaje genérico traducido. Un error sin código o sin traducción muestra el texto del servidor y deja un aviso en consola. Un test del API falla si se lanza una excepción 400/409/422 sin `apiError(...)`, y otro del frontend falla si es/en no traducen los mismos códigos.

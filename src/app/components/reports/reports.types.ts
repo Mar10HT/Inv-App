@@ -1,3 +1,4 @@
+import { MovementSummary } from '../../interfaces/transaction.interface';
 import { InventoryItemInterface, InventoryStatus } from '../../interfaces/inventory-item.interface';
 import { MoneyByCurrency } from '../../utils/money.utils';
 
@@ -25,13 +26,7 @@ export interface AssignmentSummary {
   items: InventoryItemInterface[];
 }
 
-export interface TransactionStats {
-  total: number;
-  inCount: number;
-  outCount: number;
-  transferCount: number;
-  totalItems: number;
-}
+export type TransactionStats = MovementSummary;
 
 export interface TrendPoint {
   date: string;

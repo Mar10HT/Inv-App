@@ -75,6 +75,24 @@ export interface StockMovement extends ReportTransaction {
   cancellation: boolean;
 }
 
+/** Counts over every movement of the period asked for, not only the page returned. */
+export interface MovementSummary {
+  total: number;
+  inCount: number;
+  outCount: number;
+  transferCount: number;
+  /** Item lines across all of them. */
+  totalItems: number;
+}
+
+/** Narrows /reports/movements; dates are `YYYY-MM-DD`, days in Honduras. */
+export interface MovementFilters {
+  warehouseId?: string;
+  from?: string;
+  to?: string;
+  type?: 'IN' | 'OUT' | 'TRANSFER';
+}
+
 export interface CreateTransactionItemDto {
   inventoryItemId: string;
   quantity: number;

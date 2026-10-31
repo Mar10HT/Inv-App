@@ -1,17 +1,20 @@
 import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StockMovement, TransactionType } from '../../../interfaces/transaction.interface';
 import { formatDateTime } from '../reports.format';
 import { TransactionStats } from '../reports.types';
 import { Spinner } from '../../shared/spinner/spinner';
 import { localeFor } from '../../../shared/app-language';
+import { provideTranslatedPaginator } from '../../../shared/translated-paginator-intl';
 
 @Component({
   selector: 'app-reports-transactions-tab',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule, TranslateModule, Spinner],
+  imports: [LucideAngularModule, TranslateModule, Spinner, MatPaginatorModule],
+  providers: [provideTranslatedPaginator()],
   template: `
     @if (loading()) {
       <div class="flex items-center justify-center py-12">
@@ -43,7 +46,7 @@ import { localeFor } from '../../../shared/app-language';
             <option value="OUT">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</option>
             <option value="TRANSFER">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</option>
           </select>
-          @if (dateFrom() || dateTo() || typeFilter() !== 'ALL') {
+          @if (canClear()) {
             <button
               (click)="filtersCleared.emit()"
               class="text-[var(--color-on-surface-variant)] hover:text-foreground transition-colors flex items-center gap-1">
@@ -184,6 +187,21 @@ import { localeFor } from '../../../shared/app-language';
             }
           </div>
         </div>
+
+        <!-- The API sends one page of the period at a time -->
+        @if (total() > pageSize()) {
+          <div class="border-t border-theme px-4 py-2">
+            <mat-paginator
+              [length]="total()"
+              [pageIndex]="pageIndex()"
+              [pageSize]="pageSize()"
+              [pageSizeOptions]="[25, 50, 100]"
+              (page)="pageChange.emit($event)"
+              showFirstLastButtons
+              class="!bg-transparent">
+            </mat-paginator>
+          </div>
+        }
       </div>
     }
   `,
@@ -194,7 +212,14 @@ export class ReportsTransactionsTab {
   dateTo = input('');
   typeFilter = input('ALL');
   stats = input.required<TransactionStats>();
+  /** The page shown. */
   transactions = input.required<StockMovement[]>();
+  /** Movements in the whole period, for the paginator. */
+  total = input(0);
+  pageIndex = input(0);
+  pageSize = input(25);
+  /** Whether the filters differ from the default period. */
+  canClear = input(false);
 
   dateFromChange = output<string>();
   dateToChange = output<string>();
@@ -202,6 +227,7 @@ export class ReportsTransactionsTab {
   filtersCleared = output<void>();
   csvRequested = output<void>();
   pdfRequested = output<void>();
+  pageChange = output<PageEvent>();
 
   private translate = inject(TranslateService);
 

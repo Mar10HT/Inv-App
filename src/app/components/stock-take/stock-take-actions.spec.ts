@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 
 import { StockTakeComponent } from './stock-take';
@@ -375,6 +376,20 @@ describe('StockTakeComponent actions', () => {
       expect(notifications.error).toHaveBeenCalledOnceWith('STOCK_TAKE.COMPLETE.ERROR');
       expect(component.showCompleteDialog).toBeTrue();
       expect(component.selectedStockTake()?.status).toBe(StockTakeStatus.IN_PROGRESS);
+    });
+
+    it("shows the API's reason when it gave one, e.g. a shortage that would leave the stock below zero", () => {
+      const refused = new HttpErrorResponse({
+        status: 400,
+        error: { code: 'STOCK_TAKE_ADJUSTMENT_BELOW_ZERO', message: 'No se puede aplicar el conteo de Mouse' }
+      });
+      service.complete.and.returnValue(throwError(() => refused));
+      component.completeStockTake();
+
+      component.onCompleteConfirmed(true);
+
+      expect(notifications.handleError).toHaveBeenCalledOnceWith(refused);
+      expect(notifications.error).not.toHaveBeenCalled();
     });
   });
 

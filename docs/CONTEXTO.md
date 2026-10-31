@@ -108,10 +108,12 @@ railway run npm run seed:rbac    # cada vez que se necesite
 
 ## Próximos pasos
 
-PRs abiertos: [Mar10HT/Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41) y [Mar10HT/Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), los dos desde `feat/purchase-invoices` hacia `main`. Las revisiones técnicas del usuario y de los agentes quedaron atendidas (ver PENDIENTES.md, "Revisión de los PRs").
+Estado al 2026-10-31: [Mar10HT/Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41) y [Mar10HT/Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17) mergeados. Abiertos y en verde, esperando el merge del usuario: [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency` en los dos repos). Se despliega primero el API.
 
-1. Pushear los arreglos de la revisión (pendiente de confirmación del usuario), esperar el CI en verde y avisar al usuario para que haga el merge.
-2. Después del merge, un PR por cada seguimiento de la revisión: lock y concurrencia al completar conteos físicos; paginación y filtros por fecha en `GET /reports/movements`; montos de `Float` a `Decimal`. Antes de desplegar, verificar las migraciones contra staging o una copia de producción (ver PENDIENTES.md).
-3. Formato de reportes y PDFs: pospuesto; el usuario está definiendo formato fijo para instalaciones de clientes y personalizable en producción (incluye unificar el Excel de Transacciones con los movimientos).
-4. Cuando todo esto llegue a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
-5. Pendientes menores anotados en PENDIENTES.md.
+El plan con tamaños, riesgos y KPIs de merge de cada pendiente está al principio de `PENDIENTES.md` ("Plan de lo que sigue"). En corto:
+
+1. Excel "Transacciones" lee todos los movimientos (chico, sin depender del formato).
+2. Montos de `Float` a `Decimal`, en dos PRs (grande; decidir si el JSON sigue en números).
+3. Formato de reportes y PDFs: espera la decisión del usuario (fijo para clientes, personalizable en producción).
+4. Al llegar a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
+5. Despliegue: verificar `railway:migrate` contra staging o una copia de producción; correr `railway run npm run seed:rbac` una vez.

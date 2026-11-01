@@ -6,45 +6,33 @@ Lista de problemas encontrados al probar la app y escribir el Manual de Usuario.
 
 ## Plan de lo que sigue (2026-10-31)
 
-Abiertos y en verde: [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency`: locks de conteos y préstamos, ajuste del conteo por diferencia, movimientos paginados). Se despliega primero el API: cambió la forma de la respuesta de `/reports/movements`. Sin migraciones.
+[Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency`) ya están mergeados a `main` en los dos repos.
 
-Orden sugerido después de ese merge: **1** (Excel), **2** (`Decimal`, en dos PRs), **3** cuando el usuario defina el formato, **4** después del despliegue. Tamaños estimados midiendo el código el 2026-10-31.
+El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md).
+
+Orden sugerido con lo que queda: **1** (Excel), **2** sigue en curso, **3** después del despliegue. Tamaños estimados midiendo el código el 2026-10-31.
 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
 | 1 | Excel "Transacciones" lee todos los movimientos | Chico-medio: 4–6 archivos del API, ~250 líneas | Bajo | Nada (no toca el formato) |
-| 2 | Montos `Float` → `Decimal`/`NUMERIC` | Grande: ~25 archivos del API, +800–1200 líneas; frontend 0–20 archivos según la opción | Alto | Nada |
-| 3 | Formato de PDFs y exportaciones | Grande, sin estimar | Medio | Decisión del usuario |
-| 4 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
-| 5 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
+| 2 | Formato de PDFs y exportaciones | Grande, sin estimar | Medio | En progreso, rama `olanchonet` |
+| 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
+| 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
 
 ### 1. Excel "Transacciones" con todos los movimientos
 
-Descargas y Reportes Programados (`ReportsService.generateTransactionsReport`, `ScheduledReportsService` caso `TRANSACTIONS`) siguen leyendo solo la tabla `transactions`. Pasarían a usar `StockMovementsService.findAll` con período y bodega, y a agregar las columnas Documento y Origen. El estilo del archivo no cambia (eso es el punto 3).
+Descargas y Reportes Programados (`ReportsService.generateTransactionsReport`, `ScheduledReportsService` caso `TRANSACTIONS`) siguen leyendo solo la tabla `transactions`. Pasarían a usar `StockMovementsService.findAll` con período y bodega, y a agregar las columnas Documento y Origen. El estilo del archivo no cambia (eso es el punto 2).
 
 KPIs de merge:
 - Para el mismo período y bodega, el Excel tiene las mismas filas que la pestaña Transacciones.
 - El reporte programado de Transacciones se genera y se envía.
 - Tests: ventas, compras, cancelaciones, transferencias y conteos aparecen en el Excel.
 
-### 2. Montos en `Decimal`
+### 2. Formato de PDFs y exportaciones
 
-19 campos en 8 modelos: `InventoryItem.price`, `OutflowItem.unitPrice`, `Sale.totalAmount/taxPercent/taxAmount`, `SaleItem.unitPrice/lineTotal/taxPercent/taxAmount`, `FiscalConfig.isvPercent`, `PurchaseInvoice.totalAmount/taxPercent/taxAmount`, `PurchaseInvoiceItem.unitPrice/lineTotal/taxPercent/taxAmount`, `Payment.amount`, `Client.creditLimit`.
+En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan detallado). Hoy: `pdf-receipts.service.ts` (~880 líneas, API) y `pdf-export.service.ts` (~560, frontend). Detalle de lo que falta en "Formato de reportes y documentos exportables", abajo.
 
-- API: los dos schemas, un script de migración (`ALTER COLUMN ... TYPE numeric(14,2)` para montos, `numeric(5,2)` para porcentajes, corrido por `railway:migrate` antes del `db push` como `migrate-document-numbers.sql`), los cálculos (subtotales, ISV, saldos, crédito, estadísticas), los PDFs de comprobantes y los tests.
-- Frontend, a decidir: **A (recomendada)** el API sigue devolviendo números en el JSON y el redondeo exacto queda en el servidor, el frontend casi no cambia; **B** el API devuelve strings y se ajustan ~20 archivos.
-- Partirlo en dos PRs: (a) schema, migración y cálculos del API; (b) PDFs y frontend si hace falta.
-
-KPIs de merge:
-- Migración sin pérdida: misma cantidad de filas y mismas sumas por tabla antes y después, probada en base vacía y en una copia de producción; `db push` en sync sin `--accept-data-loss`.
-- Tests con fracciones: 0.1 + 0.2, ISV 15% de 33.33, pagos parciales que dejan saldo 0.00 exacto, límite de crédito en el borde.
-- El mismo total en API, pantalla y PDF para una venta y una compra de prueba.
-
-### 3. Formato de PDFs y exportaciones
-
-Bloqueado hasta que el usuario defina formato fijo (instalaciones de clientes) y personalizable (producción). Hoy: `pdf-receipts.service.ts` (~880 líneas, API) y `pdf-export.service.ts` (~560, frontend). Los KPIs salen de esa definición. Detalle en "Formato de reportes y documentos exportables", abajo.
-
-### 4. Manual
+### 3. Manual
 
 Después del despliegue: lista en la sección "Alertas", abajo.
 
@@ -56,6 +44,20 @@ Después del despliegue: lista en la sección "Alertas", abajo.
 - Si cambia el schema: migración probada en base vacía y con datos.
 - Tamaño: hasta ~15 archivos por repo sin contar tests.
 - `docs/PENDIENTES.md` y `docs/CONTEXTO.md` actualizados.
+
+## Montos en Decimal: resuelto el 2026-10-31
+
+Rama `feat/decimal-amounts-api` (Inv-App-API), 8 commits, sin PR abierto todavía. No tocó el frontend: se tomó la opción A (el API sigue devolviendo números en el JSON, el redondeo exacto queda en el servidor).
+
+19 campos en 8 modelos (`InventoryItem.price`, `OutflowItem.unitPrice`, `Sale.totalAmount/taxPercent/taxAmount`, `SaleItem.unitPrice/lineTotal/taxPercent/taxAmount`, `FiscalConfig.isvPercent`, `PurchaseInvoice.totalAmount/taxPercent/taxAmount`, `PurchaseInvoiceItem.unitPrice/lineTotal/taxPercent/taxAmount`, `Payment.amount`, `Client.creditLimit`) pasaron de `Float` a `Decimal` (`numeric(14,2)` montos, `numeric(5,2)` porcentajes) en los dos schemas.
+
+- [x] **El bug de fondo que motivó el cambio**: dos `$queryRaw` (saldo de pagos en `payments.service.ts`, límite de crédito en `sales.service.ts`) estaban tipados a mano como `number`, pero iban a recibir `Prisma.Decimal` en runtime. Sumar `Decimal + Decimal` con `+` concatena texto en vez de sumar: el saldo habría quedado en `NaN`, y `monto > NaN` es siempre falso, así que se podría haber registrado un pago de cualquier monto sin control de saldo real. Corregido con un helper compartido (`src/common/money.ts`: `round2`/`toNumber`/`sum`) usado en todo punto donde se lee un monto de Prisma.
+- [x] **Script de migración** (`migrate-decimal-amounts.sql`), idempotente, encadenado en `railway:migrate` después de `migrate-document-numbers.sql` y antes del `db push`. Probado en base vacía, con datos y ya migrada; verificado contra la base local real (conteos y sumas idénticos antes/después, `prisma migrate diff` vacío).
+- [x] **Interceptor global** que convierte cualquier `Prisma.Decimal` a número en las respuestas (`Decimal.toJSON()` por defecto devuelve string, que habría roto la decisión de seguir devolviendo números).
+- [x] **Audit log**: hallazgo del security review, no estaba en el plan original. `AuditService.log()` guardaba los montos como string por el mismo motivo (`JSON.stringify` sobre un `Decimal` crudo). Corregido reusando el interceptor.
+- [x] **PDF de comprobantes**: `pdf-receipts.service.ts` recalculaba `unitPrice * cantidad` para el subtotal de cada línea en vez de usar el `lineTotal` ya guardado; ahora usa el valor persistido para Venta/Compra.
+- [x] Tests con fracciones: 0.1 + 0.2, ISV 15% de 33.33, pago parcial que deja saldo 0.00 exacto, límite de crédito en el borde, más un caso de 100 líneas que sí distingue `Float` de `Decimal` (el 0.1+0.2 ya pasaba antes por el redondeo existente).
+- [ ] **Pendiente antes de mergear**: correr el chequeo de Fase 0 (filas con más de 2 decimales reales, no solo ruido de `Float`) contra una copia de producción. El usuario lo prueba directamente en producción, no en esta sesión.
 
 ## Alertas: resuelto el 2026-10-13
 
@@ -110,12 +112,12 @@ Los dos PRs se aprobaron el 2026-10-16 con estas condiciones y seguimientos (com
 - [x] **Ajuste del conteo por diferencia** (decisión del usuario, 2026-10-21). Cada ítem guarda el stock del sistema al momento de contarlo, y al completar se suma o resta solo la diferencia: lo vendido o recibido mientras tanto se conserva. Si la diferencia dejaría el stock bajo cero, no se aplica nada (`STOCK_TAKE_ADJUSTMENT_BELOW_ZERO`, con el mensaje traducido en pantalla).
 - [x] **Préstamos: lock en cada cambio de estado.** Enviar, iniciar devolución, confirmar recepción o devolución (con QR o manual) y cancelar bloquean el préstamo. La devolución sin QR (`PATCH /loans/:id/return`) ya no acepta préstamos cancelados ni sin enviar. Test de integración con las carreras.
 - [x] **`GET /reports/movements`: paginación y filtros por fecha.** Acepta `from`, `to`, `type`, `page` y `limit`; sin fechas devuelve los últimos 90 días. La pestaña Transacciones pagina desde el servidor, Tendencias pide 30 días y las exportaciones traen todo el período (misma rama).
-- [ ] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: migración de los datos y validación de los cálculos.
+- [x] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: resuelto el 2026-10-31, ver "Montos en Decimal: resuelto el 2026-10-31" arriba.
 - [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
 
 ## Formato de reportes y documentos exportables
 
-Pospuesto por el usuario: hay que definir cómo dejar un formato fijo para instalaciones cerradas en servidores de un cliente y uno personalizable en producción.
+En progreso desde el 2026-10-31: el usuario aprobó una plantilla (olanchonet) y el trabajo está en la rama `olanchonet` de los dos repos. Detalle del plan, hallazgos y decisiones en CONTEXTO.md. Sigue pendiente definir el formato personalizable para otras instalaciones (esta plantilla es específica de Olancho Net).
 
 Falta cambiar el formato de los documentos que genera la app. Hasta que eso esté hecho, el manual no lleva capturas de ellos (los menciona sin imagen).
 

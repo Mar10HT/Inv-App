@@ -2,25 +2,26 @@
 
 Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada tarea. La lista de tareas está en [`PENDIENTES.md`](./PENDIENTES.md); este archivo explica el proyecto, lo hecho, las decisiones tomadas y cómo trabajar.
 
-Última actualización: 2026-10-13.
+Última actualización: 2026-10-31.
 
 ## El proyecto
 
-**Obsid** es el sistema de inventario de Olancho Net (Honduras). Dos repos:
+**Obsid** es el sistema de inventario de Olancho Net (Honduras). Dos repos. `main` ya tiene el menú Comercial, Compras, Pagos y Cuentas por Cobrar/Pagar (PR #41/#17) y los locks de conteos/préstamos (PR #42/#18), todos mergeados.
 
-| Repo | Stack | Rama de trabajo |
+| Repo | Stack | Ramas activas |
 | --- | --- | --- |
-| `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `feat/purchase-invoices` |
-| `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `feat/purchase-invoices` |
+| `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `olanchonet` (formato de PDFs/reportes) |
+| `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `feat/decimal-amounts-api` (listo, sin PR), `olanchonet` (en progreso) |
 
-`feat/purchase-invoices` va 8 commits delante de `main` en el frontend: el menú Comercial, Compras, Pagos y Cuentas por Cobrar/Pagar existen solo ahí. Este archivo y `PENDIENTES.md` viven en `docs/` de `feat/purchase-invoices` (la rama `claude/obsidian-pendings-context-pn3gf8` ya se mergeó ahí).
+`feat/purchase-invoices` ya se mergeó a `main` en los dos repos (no existe más como rama activa). Este archivo y `PENDIENTES.md` viven en `docs/` de `main` desde entonces.
 
 ## Decisiones del usuario (respetarlas)
 
-- **Commits directo en `feat/purchase-invoices`** en ambos repos. Dentro del loop de pendientes el usuario autorizó pushear sin preguntar, siempre con tests, lint y build en verde; fuera del loop, pedir confirmación antes de cada push.
-- Trabajar los pendientes en orden de prioridad; lo que necesite una decisión de diseño se pregunta antes de tocar código.
-- **Formato de reportes y PDFs**: todavía no está definido. No agregar capturas de comprobantes ni reportes exportables al manual hasta que el usuario lo defina.
-- **Revisión de los PRs a producción (2026-10-16)**: cancelar una venta o compra con pagos activos se bloquea (primero se anulan los pagos); el límite de crédito está en la moneda del cliente (`Client.creditLimitCurrency`) y una venta a crédito en otra moneda se rechaza; pasar los montos de `Float` a `Decimal` va en un PR aparte, después; producción arranca con una base nueva, así que los datos legados (numerar ventas viejas, compras seriadas, códigos borrados) no importan. El usuario hace el merge de los PRs.
+- Trabajar los pendientes en orden de prioridad (de más a menos riesgo cuando hay varios en paralelo); lo que necesite una decisión de diseño se pregunta antes de tocar código. Cada pendiente va en su propia rama con el nombre del pendiente (o del cliente, si es algo específico de una instalación, como `olanchonet`), para no mezclar trabajo que no se afecta entre sí.
+- Fuera de un loop con autorización explícita, pedir confirmación antes de cada `git push` aunque ya se haya dicho "pushear por cada feature" antes.
+- **Formato de reportes y PDFs**: el usuario aprobó una plantilla (ver "Formato de PDFs: olanchonet", abajo) y el trabajo está en curso en la rama `olanchonet`. Sigue sin definir el formato personalizable para otras instalaciones distintas de Olancho Net.
+- **Montos en `Decimal`**: resuelto el 2026-10-31 en `feat/decimal-amounts-api` (API). El API sigue devolviendo números en el JSON (no strings); no hizo falta tocar el frontend.
+- **Revisión de los PRs a producción (2026-10-16)**: cancelar una venta o compra con pagos activos se bloquea (primero se anulan los pagos); el límite de crédito está en la moneda del cliente (`Client.creditLimitCurrency`) y una venta a crédito en otra moneda se rechaza; producción arranca con una base nueva, así que los datos legados (numerar ventas viejas, compras seriadas, códigos borrados) no importan. El usuario hace el merge de los PRs.
 - **Manual de usuario**: solo vista de administrador, trato de **usted**, sin guiones largos (—), recuadros "Importante" solo para avisos que evitan errores del usuario. Los bugs internos van a `PENDIENTES.md`, no al manual.
 
 ## Manual de Usuario
@@ -31,10 +32,29 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 - Imágenes: se suben con la herramienta Artifact (`publish` con `asset: true` sobre la URL del doc), se registra un blob en el doc (`create` object `blob`) y se insertan como `![alt](blob/<id>)`.
 - Las capturas nuevas usan datos de prueba (bodegas "Bodega Principal/Norte/Sur/Atlántida"); las 18 primeras salieron de la base local del usuario.
 
+## Formato de PDFs: olanchonet
+
+Plantilla aprobada por el usuario: `C:\Users\mherr\OneDrive\Desktop\Propuestas Plantillas Reportes\5 - Recomendada (completa y formal)\plantilla.html` (8 documentos de ejemplo: Transacciones, Valor de Inventario, Estado, Asignaciones, y recibos de Venta, Salida, Préstamo, Transferencia). Decisiones ya tomadas:
+
+- **Sin motor nuevo**: se sigue con `pdfkit` (API) y `jspdf` (frontend), traduciendo el lenguaje visual de la plantilla a un kit de componentes reutilizables en cada librería. Nada de Puppeteer ni HTML→PDF.
+- **Recibo de Compra** (no está en la plantilla): se extrapola del de Venta, cambiando rótulos a Compra/Proveedor.
+
+Hallazgos del agente que investigó antes de planear (no asumir que ya están resueltos, son el punto de partida):
+- "Reporte de Asignaciones" ya existe como feature (no es un hueco): `pdf-export.service.ts` `exportAssignmentsReportToPDF`.
+- Hay un PDF de Inventario huérfano en el API (`ReportsService.generateInventoryPdf`, `GET /reports/inventory/pdf`) sin ningún caller del frontend, y con un bug propio (`$` hardcodeado ignorando la moneda del ítem). A decidir: borrarlo o migrarlo al kit nuevo.
+- El logo de Olancho Net no está en ningún repo (`Inv-App/brand/` es la marca Obsid, no Olancho Net). Hay que traerlo y rasterizarlo (ni PDFKit ni jsPDF leen SVG).
+- `FiscalConfig` ya tiene RTN/dirección/teléfono/email: no hace falta migración de schema para el header.
+- `GET /fiscal-config` hoy da 403 a un usuario con solo `reports:export`/`reports:view`: hay que agregar esos permisos al decorador para que los reportes puedan mostrar los datos fiscales.
+- El Reporte de Transacciones del frontend hoy dibuja una tarjeta por transacción con notas; la plantilla lo muestra como tabla plana de 5 columnas. Pasar a tabla pierde las notas por transacción/ítem: decisión explícita del usuario pendiente, no es consecuencia obvia de "seguir la plantilla".
+- Excel/XLSX queda fuera de esta rama (ya están centralizados, la plantilla no define nada de grilla, y chocaría con el pendiente 1 de Excel "Transacciones").
+
 ## Hecho en esta sesión
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-10-31 | Inv-App-API | `671d5fd` `d4fbc2e` `d1e041d` `b09e10b` `10a26e5` `bf12a79` `1ec3196` `0202634` (rama `feat/decimal-amounts-api`) | Montos `Float` → `Decimal` en 19 campos: helper `money.ts`, interceptor global, los dos schemas + script de migración SQL, el fix del bug de saldo `NaN`, el fix del audit log, el PDF usando `lineTotal`/`totalAmount` guardados, docs de Prisma corregidos |
+| 2026-10-31 | Inv-App / Inv-App-API | rama `olanchonet` (creada, sin commits de código todavía) | Plantilla de PDFs/reportes de Olancho Net aprobada; investigación y plan completo (ver "Formato de PDFs: olanchonet", arriba) |
+| 2026-10-31 | Inv-App / Inv-App-API | (merge en GitHub) | [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) mergeados a `main` |
 | 2026-10-18 | Inv-App-API / Inv-App | rama `fix/stock-take-concurrency` | Conteo físico con lock, revalidación y ajuste por diferencia; préstamos con lock; movimientos paginados y por período |
 | 2026-10-16 | Inv-App-API / Inv-App | `aa80d8e` `24bdef1` / `add19cc` | Revisión de los PRs: listados limitados a las bodegas del usuario, edición de cotizaciones, crédito por moneda, CAI (fin del día en Honduras, rangos), estadísticas del servidor con impuesto, listas completas (el API corta en 100), cancelar con pagos bloqueado, guardas de doble envío |
 | 2026-10-16 | Inv-App-API | `657c51a` | Concurrencia: no se vende de más ni se procesa dos veces un documento (decremento condicional y lock de la fila); test de integración con Postgres en CI |
@@ -103,17 +123,17 @@ railway run npm run seed:rbac    # cada vez que se necesite
 - **Fechas en plantillas**: usar `| appDate` (mismos argumentos que `date`), no `| date`.
 - **Fechas a la API**: conviene mandar ISO completo (`2027-06-30T00:00:00.000Z`). Rangos CAI y vencimiento de Inventario ya aceptan fecha sola; otros campos no se revisaron.
 - **Tests del frontend**: Karma necesita una config temporal con `ChromeHeadless` + `--no-sandbox` y `CHROME_BIN=/opt/pw-browsers/chromium`. La suite completa pasa (1507).
-- **Tests del backend**: `npx jest` (477), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene ~170 errores que ya existían; el build usa SWC.
+- **Tests del backend**: `npx jest` (540 en `feat/decimal-amounts-api`, 477 en `main`), `npx eslint "src/**/*.ts"` (queda 1 aviso viejo en `inventory.service.ts`), `npm run build`. `tsc --noEmit` tiene 179 errores preexistentes (no relacionados a Decimal, confirmado comparando contra `main`); el build usa SWC y no los atrapa, así que no alcanza con que `jest`/`build` pasen para confirmar que un cambio de tipos está bien: correr `tsc --noEmit` aparte.
 - **No usar** `pkill -f "node dist/main.js"` dentro de un comando que contenga ese texto: se mata a sí mismo. Usar `pkill -f "^node dist/main.js"` o el PID.
 
 ## Próximos pasos
 
-Estado al 2026-10-31: [Mar10HT/Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41) y [Mar10HT/Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17) mergeados. Abiertos y en verde, esperando el merge del usuario: [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency` en los dos repos). Se despliega primero el API.
+Estado al 2026-10-31: los 4 PRs de producción ([Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41), [Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), [Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18), [Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42)) ya están mergeados. `feat/decimal-amounts-api` (API) está lista, verificada y commiteada, sin PR abierto todavía: falta que el usuario corra el chequeo de la Fase 0 contra una copia de producción (filas con más de 2 decimales reales) antes de abrir el PR. La rama `olanchonet` tiene el plan listo pero sin código todavía.
 
 El plan con tamaños, riesgos y KPIs de merge de cada pendiente está al principio de `PENDIENTES.md` ("Plan de lo que sigue"). En corto:
 
-1. Excel "Transacciones" lee todos los movimientos (chico, sin depender del formato).
-2. Montos de `Float` a `Decimal`, en dos PRs (grande; decidir si el JSON sigue en números).
-3. Formato de reportes y PDFs: espera la decisión del usuario (fijo para clientes, personalizable en producción).
+1. Abrir el PR de `feat/decimal-amounts-api` una vez verificada la Fase 0 contra producción.
+2. Excel "Transacciones" lee todos los movimientos (chico, sin depender del formato).
+3. Formato de reportes y PDFs (rama `olanchonet`): empezar por el Fase 0 de esa rama (logo, tipografías, correlativo de reportes, decisión sobre el Reporte de Transacciones) antes de tocar código.
 4. Al llegar a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
-5. Despliegue: verificar `railway:migrate` contra staging o una copia de producción; correr `railway run npm run seed:rbac` una vez.
+5. Despliegue: verificar `railway:migrate` contra staging o una copia de producción (incluye ahora el script de Decimal); correr `railway run npm run seed:rbac` una vez.

@@ -38,14 +38,17 @@ Plantilla aprobada por el usuario: `C:\Users\mherr\OneDrive\Desktop\Propuestas P
 
 - **Sin motor nuevo**: se sigue con `pdfkit` (API) y `jspdf` (frontend), traduciendo el lenguaje visual de la plantilla a un kit de componentes reutilizables en cada librería. Nada de Puppeteer ni HTML→PDF.
 - **Recibo de Compra** (no está en la plantilla): se extrapola del de Venta, cambiando rótulos a Compra/Proveedor.
+- **Tipografías**: nativas, `Times-Bold`/`times` para el h1 serif y `Courier-Bold`/`courier` para el número del docbox. Nada de embeber Georgia/JetBrains Mono (cero bytes nuevos, el frontend ya tiene el presupuesto de bundle ajustado).
+- **Nº de documento en los 4 reportes** (Transacciones, Valor, Estado, Asignaciones): se quita del docbox. Sin correlativo de reportes nuevo, queda solo fecha y usuario. La `Ref.` del footer también se quita por el mismo motivo (no hay de dónde derivarla).
+- **Reporte de Transacciones**: pasa a tabla plana de 5 columnas (Fecha/Tipo/Producto/Cantidad/Usuario), igual que la plantilla. Se pierden las notas por transacción/ítem **en el PDF únicamente**; siguen visibles en la pantalla de la app.
+- **Color accent de la plantilla** (`#3a5f54`): se agrega como token nuevo en `colors.css` (fidelidad al mock), no se reusa `--color-primary-container`.
+- **Logo**: ya está en los dos repos (`Inv-App-API/src/pdf-receipts/assets/olanchonet-logo.png`, `Inv-App/public/brand/olanchonet-logo.png`), pero es un **placeholder**: el SVG original tenía un bulto/pellizco real en los dos círculos del ícono (confirmado con zoom, no era un artefacto de renderizado); se corrigió ajustando esa parte del trazo a un círculo real por regresión, pero el usuario va a conseguir el PNG oficial del diseño fuente por separado. Reemplazar el archivo (mismo path) cuando lo tenga, sin tocar código.
 
 Hallazgos del agente que investigó antes de planear (no asumir que ya están resueltos, son el punto de partida):
 - "Reporte de Asignaciones" ya existe como feature (no es un hueco): `pdf-export.service.ts` `exportAssignmentsReportToPDF`.
 - Hay un PDF de Inventario huérfano en el API (`ReportsService.generateInventoryPdf`, `GET /reports/inventory/pdf`) sin ningún caller del frontend, y con un bug propio (`$` hardcodeado ignorando la moneda del ítem). A decidir: borrarlo o migrarlo al kit nuevo.
-- El logo de Olancho Net no está en ningún repo (`Inv-App/brand/` es la marca Obsid, no Olancho Net). Hay que traerlo y rasterizarlo (ni PDFKit ni jsPDF leen SVG).
 - `FiscalConfig` ya tiene RTN/dirección/teléfono/email: no hace falta migración de schema para el header.
 - `GET /fiscal-config` hoy da 403 a un usuario con solo `reports:export`/`reports:view`: hay que agregar esos permisos al decorador para que los reportes puedan mostrar los datos fiscales.
-- El Reporte de Transacciones del frontend hoy dibuja una tarjeta por transacción con notas; la plantilla lo muestra como tabla plana de 5 columnas. Pasar a tabla pierde las notas por transacción/ítem: decisión explícita del usuario pendiente, no es consecuencia obvia de "seguir la plantilla".
 - Excel/XLSX queda fuera de esta rama (ya están centralizados, la plantilla no define nada de grilla, y chocaría con el pendiente 1 de Excel "Transacciones").
 
 ## Hecho en esta sesión

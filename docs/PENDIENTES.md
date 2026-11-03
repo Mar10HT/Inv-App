@@ -39,17 +39,17 @@ En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan de
 
 Después del despliegue: lista en la sección "Alertas", abajo.
 
-### 5. Catálogo de Servicios para cotizaciones
+### 5. Catálogo de Servicios para cotizaciones — diseño aprobado, listo para implementar
 
-El cliente preguntó si se pueden cotizar servicios (instalación, soporte, etc.), no solo productos de inventario. Hoy no se puede: `SaleItem.inventoryItemId` es obligatorio y apunta a `InventoryItem`, que exige bodega y maneja stock — un servicio no tiene ninguna de las dos cosas.
+El cliente preguntó si se pueden cotizar servicios (instalación, soporte, etc.), no solo productos de inventario. Mario pidió **las dos cosas combinadas**: un catálogo de Servicios reusable (nombre + precio sugerido guardado) *y* la posibilidad de agregar una línea de servicio suelta directo en la cotización, sin pasar por el catálogo, cuando no amerite crear una entrada fija.
 
-Dos caminos posibles, sin decidir todavía cuál:
-- **A. Línea de servicio suelta**: `inventoryItemId` nullable en `SaleItem` + un campo de descripción libre, sin catálogo reusable ni reportes por servicio. Cambio chico.
-- **B. Catálogo de Servicios aparte**: tabla `Service` nueva (nombre, descripción, precio sugerido, categoría) + `SaleItem` con `inventoryItemId` y `serviceId` ambos nullable (exactamente uno de los dos). Incluye un módulo CRUD de servicios y reportes que no traten un servicio como inventario físico.
+Plan completo (schema, archivos por tocar en los dos repos, secuencia de commits, verificación) ya escrito y confirmado por Mario: `C:\Users\mherr\.claude\plans\rustling-cuddling-meerkat.md`. Decisiones ya cerradas, no volver a preguntar:
+- `SaleItem.inventoryItemId` pasa a opcional; nuevo `serviceId` opcional (FK a `Service`); una línea sin ninguno de los dos es una línea suelta con `itemName` escrito a mano. Validado en `SalesService`, no en la base de datos (mismo patrón que el XOR de `Payment`).
+- **Sin campo `kind` discriminador** en el DTO: las tres variantes ya se distinguen solas por qué IDs vienen seteados.
+- **`Service` sin campo `Activo`**: igual de mínimo que `Category` hoy. Un servicio usado en una venta no se puede borrar (protegido por `onDelete: Restrict`, igual que Proveedor/Categoría).
+- El módulo backend de Servicios se copia casi textual de `categories/` (usa `BaseRepository`, CRUD + audit gratis); el frontend copia `categories/` + reusa `CrudDialog`; el toggle Producto/Servicio en el formulario de Ventas copia el patrón `kind: BULK/UNIQUE` que ya existe en `purchase-invoice-form-dialog.ts` (Compras).
 
-En los dos casos el flujo de cotización (Sale en estado DRAFT) no cambia nada — lo hereda gratis.
-
-Recomendación: empezar con A salvo que el cliente de verdad necesite precios fijos por servicio y reportes de qué servicio se vende más, ahí conviene B.
+Siguiente sesión: ejecutar el plan tal cual está escrito, en el orden de commits que ya define (1. módulo Servicios backend con TDD, 2. módulo Servicios frontend, 3. cambio de schema en `SaleItem` + los 8 puntos de `sales.service.ts` que asumen `inventoryItemId` siempre presente — incluye un fix en `cancel()` que no estaba en el pedido original pero rompe si no se toca, 4. toggle de UI en `sale-form-dialog.ts`).
 
 ### 6. Rediseño del Historial de Cambios (Auditoría)
 
@@ -98,19 +98,21 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
 - [x] **"Ver todas" llevaba al Historial de Cambios.** Ahora abre Reportes en la pestaña Estado.
 - [x] **Ítems Únicos marcados como stock bajo (1/1).** Eran 13 en la base de prueba; el Dashboard bajó de 39 a 26 ítems con stock bajo.
 - [x] Las alertas de ítems eliminados ahora se resuelven solas.
-- [ ] **Actualizar el Manual de Usuario cuando estos arreglos lleguen a producción**:
-    - "Alertas de stock" y la pregunta frecuente de la campana: ya no esperan 6 horas, se generan al mover stock.
-    - Transacciones manuales: el recuadro "Importante" y la pregunta "Registré una transacción por error" dicen que borrar no devuelve el stock; ahora sí lo devuelve.
-    - Compras: quitar el recuadro "Importante" que pide revisar la Moneda (ya arranca en la de la Configuración Fiscal).
-    - Ventas, Préstamos, Transferencias y Salidas: ya no hay campo Referencia; cada documento se numera solo (PRE-, TRA-, SAL-, COT-). "Notas" ahora es "Comentarios". Actualizar capturas de formularios y listas.
-    - Ventas: un solo campo Cliente con la opción "Cliente ocasional".
-    - Transacciones aparece en el menú lateral; Reportes > Transacciones y Tendencias muestran todos los movimientos, con la columna Documento.
-    - Reportes Programados: se puede programar Salidas.
-    - El login y las fechas salen en español.
-    - Reportes > Transacciones: paginador, período por defecto de 90 días y exportaciones de todo el período; Tendencias muestra 30 días.
-    - Conteo Físico: "Aplicar cambios" suma o resta la diferencia y conserva lo vendido mientras tanto; los errores dicen el motivo.
-    - Ventas y Compras: no se pueden cancelar con pagos registrados (hay que anularlos primero).
-    - Clientes: Moneda del Límite de crédito.
+- [ ] **Actualizar el Manual de Usuario** — ya no es una lista de supuestos: cada punto se verificó leyendo el contenido real del manual (https://claude.ai/artifact/V18oMooHpYnxuGH9M3ySmT, última edición real 2026-10-13) el 2026-11-03. 10 puntos confirmados genuinamente desactualizados, con la frase exacta que hay que corregir:
+    - **Alertas "cada 6 horas"**: aparece 2 veces (sección Alertas + FAQ) — ya se generan al mover stock, no cada 6 horas.
+    - **Borrar transacción "no devuelve el stock"**: aparece 2 veces (recuadro Importante + FAQ) — está al revés, ahora sí lo devuelve.
+    - **Compras "el formulario empieza en USD aunque su Configuración Fiscal use HNL"**: recuadro Importante desactualizado, ya arranca en la moneda de la Configuración Fiscal.
+    - **Ventas, paso "Escriba una Referencia (opcional)"**: ese campo no existe más; falta mencionar la numeración automática (COT-/V-).
+    - **"Cliente ocasional"**: 0 menciones en todo el documento.
+    - **Transacciones "No aparece en el menú: ábrala con Ctrl+K"** y un recuadro que dice que Reportes > Transacciones/Tendencias "solo muestran lo que se registra a mano... las ventas, compras, transferencias, salidas, préstamos y conteos no aparecen ahí" — las dos cosas cambiaron, es el hallazgo más grave de los 10.
+    - **"El reporte de Salidas no se puede programar"**: ya se puede.
+    - **Conteo Físico "para que el stock quede igual a lo contado"**: ahora solo aplica la diferencia, conserva ventas/recepciones intermedias.
+    - **Cancelar con pagos registrados**: no está documentado en ningún lado (ni en "Cancelar una venta" ni en la FAQ).
+    - **Moneda del Límite de Crédito**: el paso de agregar cliente no menciona elegir moneda para el límite.
+
+    Ya están bien (no hace falta tocarlos): Tendencias dice correctamente "últimos 30 días"; el comprobante de Venta/Compra ya menciona el botón "Descargar PDF". No se revisó a fondo (bajo riesgo): login/fechas en español, paginador de 90 días en Transacciones.
+
+    Pendiente aparte, ahora sí posible: agregar al manual las capturas del nuevo formato de PDF de comprobantes y reportes (ya está listo, ver "Formato de reportes y documentos exportables" abajo).
 
 ## Revisión de los PRs a producción: resuelto el 2026-10-16
 

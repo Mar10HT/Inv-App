@@ -8,25 +8,25 @@ Lista de problemas encontrados al probar la app y escribir el Manual de Usuario.
 
 [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency`) ya están mergeados a `main` en los dos repos.
 
-El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md).
+El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md). Al 2026-11-03, los puntos 1 (Excel) y la mayor parte del 2 (comprobantes y reportes PDF) ya están resueltos — solo queda de 2 la revisión de Exportaciones/Descargas CSV, sin alcance definido todavía.
 
-Orden sugerido con lo que queda: **1** (Excel), **2** sigue en curso, **3** después del despliegue. Tamaños estimados midiendo el código el 2026-10-31.
+Orden sugerido con lo que queda: **3** después del despliegue, **5/6/7** sin empezar (nuevos del 2026-11-03).
 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
-| 1 | Excel "Transacciones" lee todos los movimientos | Chico-medio: 4–6 archivos del API, ~250 líneas | Bajo | Nada (no toca el formato) |
-| 2 | Formato de PDFs y exportaciones | Grande, sin estimar | Medio | En progreso, rama `olanchonet` |
+| 1 | ~~Excel "Transacciones" lee todos los movimientos~~ | — | — | Resuelto, ver abajo |
+| 2 | Formato de PDFs y exportaciones | Reducido a solo Exportaciones/Descargas CSV | Bajo | Comprobantes y reportes PDF resueltos |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
 | 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
 | 5 | Catálogo de Servicios para cotizaciones | Sin estimar, depende de la opción elegida | Medio (toca schema) | Nada, pero falta decidir el alcance |
 | 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
 | 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
 
-### 1. Excel "Transacciones" con todos los movimientos
+### 1. Excel "Transacciones" con todos los movimientos — resuelto
 
-Descargas y Reportes Programados (`ReportsService.generateTransactionsReport`, `ScheduledReportsService` caso `TRANSACTIONS`) siguen leyendo solo la tabla `transactions`. Pasarían a usar `StockMovementsService.findAll` con período y bodega, y a agregar las columnas Documento y Origen. El estilo del archivo no cambia (eso es el punto 2).
+Verificado el 2026-11-03: ya estaba hecho desde el commit `cc4240c` (`feat/excel-transactions-movements`, mergeado). `generateTransactionsReport` lee de `StockMovementsService.findAll` (con columnas Documento y Origen), no de la tabla `transactions`, y lo mismo usa `ScheduledReportsService` para el caso `TRANSACTIONS` (llama al mismo método). Test dedicado (`reports.service.spec.ts`) cubre los 3 KPIs de abajo explícitamente: "lists a sale, a purchase, a cancellation, a transfer and an applied stock take as rows". Suite completa verificada hoy: 32/32 passing.
 
-KPIs de merge:
+KPIs de merge (los tres, ya cumplidos):
 - Para el mismo período y bodega, el Excel tiene las mismas filas que la pestaña Transacciones.
 - El reporte programado de Transacciones se genera y se envía.
 - Tests: ventas, compras, cancelaciones, transferencias y conteos aparecen en el Excel.
@@ -151,11 +151,11 @@ En progreso desde el 2026-10-31: el usuario aprobó una plantilla (olanchonet) y
 
 Falta cambiar el formato de los documentos que genera la app. Hasta que eso esté hecho, el manual no lleva capturas de ellos (los menciona sin imagen).
 
-- [ ] **Comprobantes PDF** de Ventas, Compras, Transferencias, Préstamos y Salidas: definir el formato final. Lo que se vio al probarlos:
-    - El **Estado** sale en inglés (`ACTIVE`, `APPROVED`).
-    - El comprobante de venta **no trae los datos fiscales de la empresa** (RTN, dirección, teléfono de la Configuración Fiscal).
+- [x] **Comprobantes PDF** de Ventas, Compras, Transferencias, Préstamos y Salidas: resuelto, verificado en `pdf-receipts.service.ts` el 2026-11-03.
+    - ~~El **Estado** sale en inglés (`ACTIVE`, `APPROVED`)~~: ya traduce por `t.statuses[ctx.status]` (línea 514), con el comentario de código confirmando que fue un fix anterior a esta sesión.
+    - ~~El comprobante de venta **no trae los datos fiscales de la empresa**~~: `render()` carga `fiscalConfig` y lo pasa a `buildHeaderData()` para los 5 tipos de documento, no solo Venta (línea 1016).
     - ~~El comprobante de transferencia muestra el ID interno~~: ahora muestra su número (TRA-0001), igual que préstamos y salidas.
-- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): revisar el formato junto con los comprobantes.
+- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): sin revisar todavía — alcance más amplio y sin definir, no se tocó en esta sesión.
 - [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
 

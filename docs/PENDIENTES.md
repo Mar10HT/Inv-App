@@ -18,6 +18,8 @@ Orden sugerido con lo que queda: **1** (Excel), **2** sigue en curso, **3** desp
 | 2 | Formato de PDFs y exportaciones | Grande, sin estimar | Medio | En progreso, rama `olanchonet` |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
 | 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
+| 5 | Catálogo de Servicios para cotizaciones | Sin estimar, depende de la opción elegida | Medio (toca schema) | Nada, pero falta decidir el alcance |
+| 6 | Revisión de UI móvil (overflow horizontal) | Sin estimar, cobertura completa (~20 pantallas) | Medio (bug real, no solo estética) | Nada |
 
 ### 1. Excel "Transacciones" con todos los movimientos
 
@@ -35,6 +37,26 @@ En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan de
 ### 3. Manual
 
 Después del despliegue: lista en la sección "Alertas", abajo.
+
+### 5. Catálogo de Servicios para cotizaciones
+
+El cliente preguntó si se pueden cotizar servicios (instalación, soporte, etc.), no solo productos de inventario. Hoy no se puede: `SaleItem.inventoryItemId` es obligatorio y apunta a `InventoryItem`, que exige bodega y maneja stock — un servicio no tiene ninguna de las dos cosas.
+
+Dos caminos posibles, sin decidir todavía cuál:
+- **A. Línea de servicio suelta**: `inventoryItemId` nullable en `SaleItem` + un campo de descripción libre, sin catálogo reusable ni reportes por servicio. Cambio chico.
+- **B. Catálogo de Servicios aparte**: tabla `Service` nueva (nombre, descripción, precio sugerido, categoría) + `SaleItem` con `inventoryItemId` y `serviceId` ambos nullable (exactamente uno de los dos). Incluye un módulo CRUD de servicios y reportes que no traten un servicio como inventario físico.
+
+En los dos casos el flujo de cotización (Sale en estado DRAFT) no cambia nada — lo hereda gratis.
+
+Recomendación: empezar con A salvo que el cliente de verdad necesite precios fijos por servicio y reportes de qué servicio se vende más, ahí conviene B.
+
+### 6. Revisión de UI móvil (overflow horizontal)
+
+Mario mandó 3 capturas reales de `obsid.olanchonet.com` en un iPhone 13 Pro Max (Safari, 2026-11-03): en Ventas y en el Dashboard, las tarjetas de estadísticas (grid de 2 columnas) y los filtros se cortan contra el borde derecho de la pantalla en vez de apilarse o achicarse al ancho del viewport — "todas las pantallas están así" (palabras de Mario, no es solo esas dos). El sidebar (menú hamburguesa) sí se ve bien contenido.
+
+Esto es un hallazgo **nuevo y distinto** del bug de mobile en Dashboard que se investigó el 2026-10-06 y resultó falso positivo (ver [[obsid_design_consistency_audit]] en memoria): aquel era sobre gráficos que no renderizaban en una captura full-page sintética; esto es overflow horizontal real, confirmado en un dispositivo físico. Tampoco está cubierto por esa auditoría — ahí mismo quedó anotado que mobile solo se probó a fondo en Dashboard e Inventory (~2 de 20 pantallas) y tablet no se probó nada.
+
+Alcance sugerido al ejecutar: cobertura completa de las ~20 rutas de primer nivel (ver lista en la auditoría de diseño de octubre), en viewport real de iPhone (390–430px) y tablet (~768px), no una muestra. Buscar la causa raíz (probablemente un grid/flex sin `min-width: 0` o un ancho fijo que no respeta el contenedor) antes de parchar pantalla por pantalla.
 
 ### KPIs comunes a todo PR
 

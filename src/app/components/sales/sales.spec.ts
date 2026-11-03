@@ -336,6 +336,14 @@ describe('SalesComponent', () => {
     expect(saleService.downloadPdf).toHaveBeenCalledOnceWith('a');
   });
 
+  it('shows a Download PDF button for a DRAFT quotation, same as for a confirmed sale', () => {
+    sales.set([sale({ id: 'd1', status: SaleStatus.DRAFT, quoteNumber: 'COT-0001' })]);
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('SALES.DOWNLOAD_PDF');
+  });
+
   describe('cancel', () => {
     it('asks the user to confirm, naming the sale by its number, or its short id when it has none', () => {
       const translate = TestBed.inject(TranslateService);

@@ -2,7 +2,7 @@
 
 Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada tarea. La lista de tareas está en [`PENDIENTES.md`](./PENDIENTES.md); este archivo explica el proyecto, lo hecho, las decisiones tomadas y cómo trabajar.
 
-Última actualización: 2026-10-31.
+Última actualización: 2026-11-03.
 
 ## El proyecto
 
@@ -56,6 +56,9 @@ Hallazgos del agente que investigó antes de planear (no asumir que ya están re
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-11-03 | Inv-App | `a2f6d2f` `1ca4cf6` | **Incidente de producción resuelto**: login roto en `obsid.olanchonet.com` por dos causas — Postgres de `olanchonet` sin Serverless activado (ciclo de reinicios, resuelto activándolo) y el proxy apuntando al backend de Railway equivocado (`inv-app-api-production` de `main` en vez de `inv-app-production-1eb0` de `olanchonet`). Fix: `/api/*` proxeado mismo-origen vía `vercel.json` al dominio correcto. Postmortem completo con línea de tiempo y diagrama de decisiones: https://claude.ai/artifact/KktzGnpkCFZCpj96EnyqzM |
+| 2026-11-02 | Inv-App-API | `6a4863f` | `GET /fiscal-config` ahora acepta `reports:view`/`reports:export` (daba 403 a un usuario de solo reportes); el header de los reportes PDF necesita RTN/dirección/teléfono |
+| 2026-11-02 | Inv-App | `5471614` | Kit de componentes jsPDF (`services/pdf/report-components.ts`, espeja `receipt-components.ts` del backend) + cargador de logo con degradación a `null`; reporte de **Transacciones** migrado a la plantilla olanchonet (unidades `pt`, página LETTER); `reports.ts` conectado a `FiscalConfigService`/`AuthService` para el header fiscal. Valor/Estado/Asignaciones quedan para la próxima fase |
 | 2026-10-31 | Inv-App-API | `671d5fd` `d4fbc2e` `d1e041d` `b09e10b` `10a26e5` `bf12a79` `1ec3196` `0202634` (rama `feat/decimal-amounts-api`) | Montos `Float` → `Decimal` en 19 campos: helper `money.ts`, interceptor global, los dos schemas + script de migración SQL, el fix del bug de saldo `NaN`, el fix del audit log, el PDF usando `lineTotal`/`totalAmount` guardados, docs de Prisma corregidos |
 | 2026-10-31 | Inv-App / Inv-App-API | rama `olanchonet` (creada, sin commits de código todavía) | Plantilla de PDFs/reportes de Olancho Net aprobada; investigación y plan completo (ver "Formato de PDFs: olanchonet", arriba) |
 | 2026-10-31 | Inv-App / Inv-App-API | (merge en GitHub) | [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) mergeados a `main` |
@@ -132,7 +135,7 @@ railway run npm run seed:rbac    # cada vez que se necesite
 
 ## Próximos pasos
 
-Estado al 2026-10-31: los 4 PRs de producción ([Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41), [Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), [Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18), [Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42)) ya están mergeados. `feat/decimal-amounts-api` (API) está lista, verificada y commiteada, sin PR abierto todavía: falta que el usuario corra el chequeo de la Fase 0 contra una copia de producción (filas con más de 2 decimales reales) antes de abrir el PR. La rama `olanchonet` tiene el plan listo pero sin código todavía.
+Estado al 2026-11-03: los 4 PRs de producción ([Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41), [Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), [Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18), [Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42)) ya están mergeados. `feat/decimal-amounts-api` (API) está lista, verificada y commiteada, sin PR abierto todavía: falta que el usuario corra el chequeo de la Fase 0 contra una copia de producción (filas con más de 2 decimales reales) antes de abrir el PR. La rama `olanchonet` (backend, comprobantes) está terminada; en el frontend, el reporte de Transacciones ya tiene la plantilla nueva y falta migrar Valor/Estado/Asignaciones con el mismo kit (`services/pdf/report-components.ts`). Producción de olanchonet (`obsid.olanchonet.com`) ya está en pie y con login funcionando — ver el incidente del 2026-11-03 arriba. Pendiente de ese incidente: portear a `main` el fix del timeout del health check de Inv-App-API (`c56719b`, solo se aplicó en `olanchonet` por ser un incidente activo) y confirmar que no hubo pérdida real de datos en el Postgres de `olanchonet` (un `initdb` completo apareció en su log esa madrugada, sin explicación confirmada).
 
 El plan con tamaños, riesgos y KPIs de merge de cada pendiente está al principio de `PENDIENTES.md` ("Plan de lo que sigue"). En corto:
 

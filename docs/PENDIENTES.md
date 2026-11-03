@@ -19,6 +19,8 @@ Orden sugerido con lo que queda: **1** (Excel), **2** sigue en curso, **3** desp
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
 | 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
 | 5 | Catálogo de Servicios para cotizaciones | Sin estimar, depende de la opción elegida | Medio (toca schema) | Nada, pero falta decidir el alcance |
+| 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
+| 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
 
 ### 1. Excel "Transacciones" con todos los movimientos
 
@@ -48,6 +50,21 @@ Dos caminos posibles, sin decidir todavía cuál:
 En los dos casos el flujo de cotización (Sale en estado DRAFT) no cambia nada — lo hereda gratis.
 
 Recomendación: empezar con A salvo que el cliente de verdad necesite precios fijos por servicio y reportes de qué servicio se vende más, ahí conviene B.
+
+### 6. Rediseño del Historial de Cambios (Auditoría)
+
+Mario dijo que la pantalla de Auditoría (`audit-log.ts`) es complicada de entender hoy: el bloque "Cambios" de cada entrada muestra el nombre del campo y los valores tal como los guarda la base (`unitPrice: 53.7 → 60`, `status: ACTIVE → DRAFT`), sin traducir ni formatear, y los campos que son IDs (bodega, usuario asignado, cliente) muestran el cuid interno en vez de un nombre.
+
+Diseño aprobado por Mario (mockups: https://claude.ai/artifact/Cuz4EdGJTwqDWzV67E2mVA):
+- **En la lista**: cada entrada se resume en una sola oración en lenguaje natural (ej. "Mario Herrera cambió el precio de Headset HyperX Cloud II de L 53.70 a L 60.00"), no la lista de campo→valor de hoy.
+- **Al hacer clic**: se abre un modal con el detalle completo — ahí sí la lista campo por campo, pero con el nombre del campo traducido (diccionario nuevo `AUDIT.FIELD.*`, mismo patrón que `AUDIT.ACTION.*`/`AUDIT.ENTITY.*`) y los IDs resueltos a nombres en vez del cuid crudo.
+- **Filtros**: tiene que poder filtrarse para sacar solo un tipo de evento, ej. "solo las transacciones". El filtro por entidad ya existe en el código (`selectedEntity`, incluye `Transaction`) — falta confirmar si alcanza tal cual o si Mario quiere algo más específico (¿por tipo de transacción, no solo por entidad?).
+
+Pendiente de resolver antes de implementar: de dónde sale el nombre resuelto de una referencia (bodega, usuario, cliente) — si el backend lo guarda como snapshot al momento del log (como ya hace `SaleItem.itemName`) o si el frontend lo busca en listas que ya tiene cargadas. Y cómo se arma la oración de la Opción C para cada tipo de evento (no es automático, hay que escribirla por caso).
+
+### 7. Mover Reportes Programados de Configuración a Reportes
+
+Hoy la función de Reportes Programados vive dentro de la pantalla de Configuración; Mario pidió moverla a la sección de Reportes, donde tiene más sentido por cercanía temática (ahí ya están las pestañas de Valor/Estado/Asignaciones/Transacciones/Tendencias/Descargas). Es un cambio de navegación, no de lógica — no se tocó nada todavía.
 
 ### KPIs comunes a todo PR
 

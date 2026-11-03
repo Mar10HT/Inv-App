@@ -241,6 +241,32 @@ describe('report-components', () => {
 
       expect(y).toBe(150);
     });
+
+    it('uses a custom header color and skips the accent rule when one is given', () => {
+      const doc = createFakeDoc();
+      doc.lastAutoTable = { finalY: 80 };
+      const runAutoTable = jasmine.createSpy('autoTable');
+
+      drawTable(
+        asDoc(doc),
+        runAutoTable as unknown as typeof import('jspdf-autotable').default,
+        [{ key: 'item', header: 'Ítem' }],
+        [{ item: 'Router' }],
+        50,
+        562,
+        120,
+        { fill: [239, 68, 68], text: [255, 255, 255] },
+      );
+
+      const opts = runAutoTable.calls.argsFor(0)[1] as {
+        headStyles: { fillColor: unknown; textColor: unknown };
+        didDrawCell?: (data: unknown) => void;
+      };
+      expect(opts.headStyles.fillColor).toEqual([239, 68, 68]);
+      expect(opts.headStyles.textColor).toEqual([255, 255, 255]);
+      // No accent rule on top of a table that's already carrying its own semantic color.
+      expect(opts.didDrawCell).toBeUndefined();
+    });
   });
 
   describe('drawTotals', () => {

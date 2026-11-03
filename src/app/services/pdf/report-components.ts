@@ -1,6 +1,6 @@
 import type jsPDF from 'jspdf';
 import type autoTable from 'jspdf-autotable';
-import type { CellHookData } from 'jspdf-autotable';
+import type { CellHookData, Color } from 'jspdf-autotable';
 
 /**
  * Drawing primitives for the olanchonet report layout, ported in spirit (not
@@ -83,7 +83,23 @@ const SPACING = {
   totalsGrandPaddingTop: 7.5,
   sectionLabelMarginBottom: 6,
   footerPaddingTop: 9,
+  footerReserve: 80,
 } as const;
+
+/**
+ * Starts a new page when `y` is too close to the footer to fit another section,
+ * keeping a section's heading from landing alone at the bottom of a page with
+ * its table on the next one. Returns the y to draw at (unchanged, or the top
+ * margin after a page break).
+ */
+export function ensurePageRoom(doc: jsPDF, y: number): number {
+  const bottomLimit = doc.internal.pageSize.getHeight() - PAGE_MARGIN - SPACING.footerReserve;
+  if (y > bottomLimit) {
+    doc.addPage();
+    return PAGE_MARGIN;
+  }
+  return y;
+}
 
 /** The template's sheet-card border + 4pt accent top bar. Call once per page. */
 export function drawSheetFrame(doc: jsPDF): void {
@@ -299,6 +315,12 @@ interface JsPDFWithAutoTable extends jsPDF {
  * height, which autoTable already does well (see Decision 1 in the plan this
  * ported). Column widths are left to autoTable's own content-based sizing,
  * not fixed, so neither column overflows if a translation runs longer.
+ *
+ * `headerColors` is an escape hatch for the handful of tables that keep their
+ * existing semantic header color (red/amber for Estado's out-of-stock/low-stock,
+ * gray for Asignaciones' unassigned — user decision: fidelity to the template
+ * everywhere else, but these three colors stay). When given, the accent rule is
+ * skipped too — a green accent line over a red header reads as a mistake, not a feature.
  */
 export function drawTable(
   doc: jsPDF,
@@ -308,6 +330,7 @@ export function drawTable(
   left: number,
   right: number,
   top: number,
+  headerColors?: { fill: Color; text: Color },
 ): number {
   const pageWidth = doc.internal.pageSize.getWidth();
 
@@ -328,22 +351,24 @@ export function drawTable(
       overflow: 'linebreak',
     },
     headStyles: {
-      fillColor: SOFT,
-      textColor: TEXT_DIM,
+      fillColor: headerColors?.fill ?? SOFT,
+      textColor: headerColors?.text ?? TEXT_DIM,
       fontStyle: 'bold',
       fontSize: FONT.tableHeader,
       cellPadding: { top: SPACING.thPaddingV, bottom: SPACING.thPaddingV, left: SPACING.tdPaddingH, right: SPACING.tdPaddingH },
       lineColor: RULE,
       lineWidth: RULE_WIDTH,
     },
-    didDrawCell: (data: CellHookData) => {
-      if (data.section === 'head' && data.row.index === 0) {
-        const cellDoc = data.doc as unknown as jsPDF;
-        cellDoc.setLineWidth(THICK_RULE_WIDTH);
-        cellDoc.setDrawColor(ACCENT);
-        cellDoc.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y);
-      }
-    },
+    ...(headerColors ? {} : {
+      didDrawCell: (data: CellHookData) => {
+        if (data.section === 'head' && data.row.index === 0) {
+          const cellDoc = data.doc as unknown as jsPDF;
+          cellDoc.setLineWidth(THICK_RULE_WIDTH);
+          cellDoc.setDrawColor(ACCENT);
+          cellDoc.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y);
+        }
+      },
+    }),
   });
 
   return (doc as JsPDFWithAutoTable).lastAutoTable.finalY;

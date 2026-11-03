@@ -126,7 +126,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
     - El comprobante de venta **no trae los datos fiscales de la empresa** (RTN, dirección, teléfono de la Configuración Fiscal).
     - ~~El comprobante de transferencia muestra el ID interno~~: ahora muestra su número (TRA-0001), igual que préstamos y salidas.
 - [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): revisar el formato junto con los comprobantes.
-- [ ] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): kit de componentes jsPDF creado (`services/pdf/report-components.ts`, espeja `receipt-components.ts` del backend). **Transacciones** ya migrado a la plantilla (2026-11-02). Faltan **Valor de Inventario, Estado y Asignaciones** (siguen con el layout viejo de tarjetas/autoTable genérico, funcional pero sin el rediseño).
+- [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
 
 ## Bugs

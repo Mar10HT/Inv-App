@@ -764,34 +764,40 @@ export class Reports implements OnInit {
 
   async exportValueReportPDF(): Promise<void> {
     const currency = this.selectedCurrency();
-    await this.notifications.guardExport(() => this.pdfExportService.exportValueReportToPDF({
+    await this.notifications.guardExport(async () => this.pdfExportService.exportValueReportToPDF({
       currency: currency === 'ALL' ? 'USD' : currency,
       totalValue: this.totalValue(),
       totalItems: this.totalItemsCount(),
       valueByCategory: this.valueByCategory(),
       valueByWarehouse: this.valueByWarehouse(),
       valueBySupplier: this.valueBySupplier(),
-      topItems: this.topItems()
+      topItems: this.topItems(),
+      fiscal: await this.fiscalForPdf(),
+      userName: this.authService.currentUser()?.name ?? this.authService.currentUser()?.email
     }));
   }
 
   async exportStatusReportPDF(): Promise<void> {
-    await this.notifications.guardExport(() => this.pdfExportService.exportStatusReportToPDF({
+    await this.notifications.guardExport(async () => this.pdfExportService.exportStatusReportToPDF({
       inStockCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_STOCK)?.count || 0,
       lowStockCount: this.statusSummary().find(s => s.status === InventoryStatus.LOW_STOCK)?.count || 0,
       outOfStockCount: this.statusSummary().find(s => s.status === InventoryStatus.OUT_OF_STOCK)?.count || 0,
       inUseCount: this.statusSummary().find(s => s.status === InventoryStatus.IN_USE)?.count || 0,
       lowStockItems: this.lowStockItems(),
-      outOfStockItems: this.outOfStockItems()
+      outOfStockItems: this.outOfStockItems(),
+      fiscal: await this.fiscalForPdf(),
+      userName: this.authService.currentUser()?.name ?? this.authService.currentUser()?.email
     }));
   }
 
   async exportAssignmentsReportPDF(): Promise<void> {
     const totalUniqueItems = this.assignedItems().length + this.unassignedUniqueItems().length;
-    await this.notifications.guardExport(() => this.pdfExportService.exportAssignmentsReportToPDF({
+    await this.notifications.guardExport(async () => this.pdfExportService.exportAssignmentsReportToPDF({
       totalUniqueItems,
       assignedCount: this.assignedItems().length,
       unassignedCount: this.unassignedUniqueItems().length,
+      fiscal: await this.fiscalForPdf(),
+      userName: this.authService.currentUser()?.name ?? this.authService.currentUser()?.email,
       assignmentsByUser: this.assignmentsByUser(),
       unassignedItems: this.unassignedUniqueItems()
     }));

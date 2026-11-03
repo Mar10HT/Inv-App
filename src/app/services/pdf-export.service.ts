@@ -1,21 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import type jsPDF from 'jspdf';
 import { ReportTransaction, TransactionType } from '../interfaces/transaction.interface';
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
 import { FiscalConfig } from '../interfaces/fiscal-config.interface';
 import { PdfDrawingBase } from './pdf/pdf-drawing.base';
-import { drawEmptyState, drawHeader, drawScope, drawTable, drawTitle, PAGE_MARGIN, ScopePair, stampFrameAndFooter } from './pdf/report-components';
+import { drawEmptyState, drawHeader, drawScope, drawSectionLabel, drawTable, drawTitle, drawTotals, ensurePageRoom, PAGE_MARGIN, ScopePair, stampFrameAndFooter, TotalsRow } from './pdf/report-components';
 import { loadReportLogo } from './pdf/report-logo';
 import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../utils/money.utils';
 import { localDateKey } from '../utils/date.utils';
-
-/** jsPDF instance augmented with the `lastAutoTable` property that jspdf-autotable
- * attaches at runtime after each `autoTable()` call. The jspdf-autotable type
- * definitions don't expose this on the `jsPDF` type, so we extend it locally. */
-interface JsPDFWithAutoTable extends jsPDF {
-  lastAutoTable: { finalY: number };
-}
 
 interface TransactionPDFOptions {
   transactions: ReportTransaction[];
@@ -48,6 +40,8 @@ interface ValueReportPDFOptions {
   valueByWarehouse: { label: string; value: MoneyByCurrency; count: number }[];
   valueBySupplier: { label: string; value: MoneyByCurrency; count: number }[];
   topItems: (InventoryItemInterface & { totalValue: number })[];
+  fiscal?: FiscalConfig | null;
+  userName?: string;
 }
 
 interface StatusReportPDFOptions {
@@ -57,6 +51,8 @@ interface StatusReportPDFOptions {
   inUseCount?: number;
   lowStockItems: InventoryItemInterface[];
   outOfStockItems: InventoryItemInterface[];
+  fiscal?: FiscalConfig | null;
+  userName?: string;
 }
 
 interface AssignmentsReportPDFOptions {
@@ -70,6 +66,8 @@ interface AssignmentsReportPDFOptions {
     items: InventoryItemInterface[];
   }[];
   unassignedItems: InventoryItemInterface[];
+  fiscal?: FiscalConfig | null;
+  userName?: string;
 }
 
 @Injectable({
@@ -166,147 +164,82 @@ export class PdfExportService extends PdfDrawingBase {
   // ============ VALUE REPORT PDF ============
   async exportValueReportToPDF(options: ValueReportPDFOptions): Promise<void> {
     const { jsPDF, autoTable } = await this.loadPdfLibs();
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    let yPos = 20;
-
-    // Header
-    doc.setFillColor(...this.HEADER_BG);
-    doc.rect(0, 0, pageWidth, 40, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.PDF.VALUE_TITLE'), 15, 25);
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+    const { fiscal, userName } = options;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const left = PAGE_MARGIN;
+    const right = doc.internal.pageSize.getWidth() - PAGE_MARGIN;
     const locale = this.translate.currentLang === 'en' ? 'en-US' : 'es-HN';
-    const currentDate = new Date().toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+
+    const logoDataUrl = await loadReportLogo();
+
+    let y = drawHeader(doc, {
+      logoDataUrl,
+      rtn: fiscal?.rtn ?? null,
+      addressLine: buildFiscalAddressLine(fiscal),
+      docLabel: this.t('REPORTS.PDF.DOC_LABEL'),
+      dateLine: formatReportDateTime(new Date(), locale),
+      userLine: userName ?? '',
+    }, left, right, PAGE_MARGIN);
+
+    y = drawTitle(doc, this.t('REPORTS.PDF.VALUE_TITLE'), this.t('REPORTS.PDF.SUBTITLE_VALUE'), left, right, y);
+
     const currencyLabel = options.currency === 'ALL' ? this.t('REPORTS.ALL_CURRENCIES') : options.currency;
-    doc.text(`${this.t('REPORTS.PDF.GENERATED')}: ${currentDate} | ${this.t('REPORTS.PDF.CURRENCY')}: ${currencyLabel}`, 15, 33);
+    y = drawScope(doc, [
+      { label: this.t('REPORTS.PDF.CURRENCY'), value: currencyLabel },
+      { label: this.t('REPORTS.TOTAL_ITEMS'), value: options.totalItems.toString() },
+    ], left, right, y);
 
-    yPos = 50;
+    const valueColumns = [
+      { key: 'name', header: this.t('REPORTS.TABLE.NAME') },
+      { key: 'items', header: this.t('REPORTS.TABLE.ITEMS'), align: 'center' as const },
+      { key: 'value', header: this.t('REPORTS.TABLE.VALUE'), align: 'right' as const },
+    ];
+    const valueRows = (list: { label: string; value: MoneyByCurrency; count: number }[]) =>
+      list.map((item) => ({ name: item.label, items: item.count.toString(), value: formatMoneyByCurrency(item.value) }));
 
-    // Summary cards
-    this.drawValueSummaryCards(doc, {
-      totalValue: formatMoneyByCurrency(options.totalValue),
-      totalItems: options.totalItems.toString(),
-      categories: options.valueByCategory.length.toString(),
-      warehouses: options.valueByWarehouse.length.toString()
-    }, yPos, pageWidth);
-    yPos += 35;
+    y = ensurePageRoom(doc, y);
+    y = drawSectionLabel(doc, this.t('REPORTS.BY_CATEGORY'), left, y);
+    y = drawTable(doc, autoTable, valueColumns, valueRows(options.valueByCategory), left, right, y) + 20;
 
-    // Value by Category
-    doc.setTextColor(...this.TEXT_DARK);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.BY_CATEGORY'), 15, yPos);
-    yPos += 5;
+    y = ensurePageRoom(doc, y);
+    y = drawSectionLabel(doc, this.t('REPORTS.BY_WAREHOUSE'), left, y);
+    y = drawTable(doc, autoTable, valueColumns, valueRows(options.valueByWarehouse), left, right, y) + 20;
 
-    autoTable(doc, {
-      startY: yPos,
-      head: [[this.t('REPORTS.TABLE.NAME'), this.t('REPORTS.TABLE.ITEMS'), this.t('REPORTS.TABLE.VALUE')]],
-      body: options.valueByCategory.map(item => [
-        item.label,
-        item.count.toString(),
-        formatMoneyByCurrency(item.value)
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
-      margin: { left: 15, right: 15 },
-      tableWidth: (pageWidth - 30) / 2 - 5
-    });
+    y = ensurePageRoom(doc, y);
+    y = drawSectionLabel(doc, this.t('REPORTS.BY_SUPPLIER'), left, y);
+    y = drawTable(doc, autoTable, valueColumns, valueRows(options.valueBySupplier), left, right, y) + 20;
 
-    // Value by Warehouse (right column)
-    const leftTableHeight = (doc as JsPDFWithAutoTable).lastAutoTable.finalY - yPos;
+    y = ensurePageRoom(doc, y);
+    y = drawSectionLabel(doc, this.t('REPORTS.TOP_ITEMS'), left, y);
+    y = drawTable(doc, autoTable, [
+      { key: 'idx', header: '#', align: 'center' },
+      { key: 'item', header: this.t('REPORTS.TABLE.ITEM') },
+      { key: 'category', header: this.t('REPORTS.TABLE.CATEGORY') },
+      { key: 'qty', header: this.t('REPORTS.TABLE.QTY'), align: 'center' },
+      { key: 'unit', header: this.t('REPORTS.TABLE.UNIT_PRICE'), align: 'right' },
+      { key: 'total', header: this.t('REPORTS.TABLE.TOTAL'), align: 'right' },
+    ], options.topItems.map((item, idx) => ({
+      idx: (idx + 1).toString(),
+      item: item.name,
+      category: item.category,
+      qty: item.quantity.toString(),
+      unit: formatMoney(item.price || 0, item.currency),
+      total: formatMoney(item.totalValue, item.currency),
+    })), left, right, y) + 10;
 
-    autoTable(doc, {
-      startY: yPos,
-      head: [[this.t('REPORTS.TABLE.NAME'), this.t('REPORTS.TABLE.ITEMS'), this.t('REPORTS.TABLE.VALUE')]],
-      body: options.valueByWarehouse.map(item => [
-        item.label,
-        item.count.toString(),
-        formatMoneyByCurrency(item.value)
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
-      margin: { left: pageWidth / 2 + 2.5, right: 15 },
-      tableWidth: (pageWidth - 30) / 2 - 5
-    });
+    y = ensurePageRoom(doc, y);
+    const totalsRows: TotalsRow[] = [
+      { label: this.t('REPORTS.TOTAL_VALUE'), value: formatMoneyByCurrency(options.totalValue), grand: true },
+    ];
+    drawTotals(doc, totalsRows, left, right, y);
 
-    yPos = Math.max((doc as JsPDFWithAutoTable).lastAutoTable.finalY, yPos + leftTableHeight) + 10;
-
-    // Check for new page
-    if (yPos > 200) {
-      doc.addPage();
-      yPos = 20;
-    }
-
-    // Value by Supplier
-    doc.setTextColor(...this.TEXT_DARK);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.BY_SUPPLIER'), 15, yPos);
-    yPos += 5;
-
-    autoTable(doc, {
-      startY: yPos,
-      head: [[this.t('REPORTS.TABLE.NAME'), this.t('REPORTS.TABLE.ITEMS'), this.t('REPORTS.TABLE.VALUE')]],
-      body: options.valueBySupplier.map(item => [
-        item.label,
-        item.count.toString(),
-        formatMoneyByCurrency(item.value)
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
-      margin: { left: 15, right: 15 }
-    });
-
-    yPos = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
-
-    // Check for new page
-    if (yPos > 180) {
-      doc.addPage();
-      yPos = 20;
-    }
-
-    // Top Items
-    doc.setTextColor(...this.TEXT_DARK);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.TOP_ITEMS'), 15, yPos);
-    yPos += 5;
-
-    autoTable(doc, {
-      startY: yPos,
-      head: [[
-        '#',
-        this.t('REPORTS.TABLE.ITEM'),
-        this.t('REPORTS.TABLE.CATEGORY'),
-        this.t('REPORTS.TABLE.QTY'),
-        this.t('REPORTS.TABLE.UNIT_PRICE'),
-        this.t('REPORTS.TABLE.TOTAL')
-      ]],
-      body: options.topItems.map((item, idx) => [
-        (idx + 1).toString(),
-        item.name,
-        item.category,
-        item.quantity.toString(),
-        formatMoney(item.price || 0, item.currency),
-        formatMoney(item.totalValue, item.currency)
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
-      margin: { left: 15, right: 15 }
-    });
-
-    // Footer
-    this.addFooter(doc);
+    stampFrameAndFooter(
+      doc,
+      this.t('REPORTS.PDF.LEGAL'),
+      (page, total) => `${this.t('REPORTS.PDF.PAGE')} ${page} ${this.t('REPORTS.PDF.OF')} ${total}`,
+      left,
+      right,
+    );
 
     doc.save(`value-report-${options.currency}-${localDateKey(new Date())}.pdf`);
   }
@@ -314,107 +247,75 @@ export class PdfExportService extends PdfDrawingBase {
   // ============ STATUS REPORT PDF ============
   async exportStatusReportToPDF(options: StatusReportPDFOptions): Promise<void> {
     const { jsPDF, autoTable } = await this.loadPdfLibs();
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    let yPos = 20;
-
-    // Header
-    doc.setFillColor(...this.HEADER_BG);
-    doc.rect(0, 0, pageWidth, 40, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.PDF.STATUS_TITLE'), 15, 25);
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+    const { fiscal, userName } = options;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const left = PAGE_MARGIN;
+    const right = doc.internal.pageSize.getWidth() - PAGE_MARGIN;
     const locale = this.translate.currentLang === 'en' ? 'en-US' : 'es-HN';
-    const currentDate = new Date().toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    doc.text(`${this.t('REPORTS.PDF.GENERATED')}: ${currentDate}`, 15, 33);
 
-    yPos = 50;
+    const logoDataUrl = await loadReportLogo();
 
-    // Status summary cards
-    this.drawStatusSummaryCards(doc, {
-      inStock: options.inStockCount,
-      lowStock: options.lowStockCount,
-      outOfStock: options.outOfStockCount
-    }, yPos, pageWidth);
-    yPos += 35;
+    let y = drawHeader(doc, {
+      logoDataUrl,
+      rtn: fiscal?.rtn ?? null,
+      addressLine: buildFiscalAddressLine(fiscal),
+      docLabel: this.t('REPORTS.PDF.DOC_LABEL'),
+      dateLine: formatReportDateTime(new Date(), locale),
+      userLine: userName ?? '',
+    }, left, right, PAGE_MARGIN);
 
-    // Out of Stock Items
+    y = drawTitle(doc, this.t('REPORTS.PDF.STATUS_TITLE'), this.t('REPORTS.PDF.SUBTITLE_STATUS'), left, right, y);
+
+    y = drawScope(doc, [
+      { label: this.t('STATUS.IN_STOCK'), value: options.inStockCount.toString() },
+      { label: this.t('STATUS.LOW_STOCK'), value: options.lowStockCount.toString() },
+      { label: this.t('STATUS.OUT_OF_STOCK'), value: options.outOfStockCount.toString() },
+    ], left, right, y);
+
+    // Decision: these two tables keep their existing semantic header colors
+    // (red/amber) instead of the template's uniform soft header — the color
+    // itself is what flags severity at a glance in this report.
     if (options.outOfStockItems.length > 0) {
-      doc.setTextColor(239, 68, 68);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${this.t('REPORTS.OUT_OF_STOCK_ITEMS')} (${options.outOfStockItems.length})`, 15, yPos);
-      yPos += 5;
-
-      autoTable(doc, {
-        startY: yPos,
-        head: [[
-          this.t('REPORTS.TABLE.ITEM'),
-          this.t('REPORTS.TABLE.CATEGORY'),
-          this.t('REPORTS.PDF.WAREHOUSE'),
-          this.t('REPORTS.PDF.MIN_QTY')
-        ]],
-        body: options.outOfStockItems.map(item => [
-          item.name,
-          item.category,
-          item.warehouse?.name || '-',
-          item.minQuantity.toString()
-        ]),
-        theme: 'striped',
-        headStyles: { fillColor: [239, 68, 68], textColor: [255, 255, 255] },
-        margin: { left: 15, right: 15 }
-      });
-
-      yPos = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
+      y = ensurePageRoom(doc, y);
+      y = drawSectionLabel(doc, `${this.t('REPORTS.OUT_OF_STOCK_ITEMS')} (${options.outOfStockItems.length})`, left, y);
+      y = drawTable(doc, autoTable, [
+        { key: 'item', header: this.t('REPORTS.TABLE.ITEM') },
+        { key: 'category', header: this.t('REPORTS.TABLE.CATEGORY') },
+        { key: 'warehouse', header: this.t('REPORTS.PDF.WAREHOUSE') },
+        { key: 'minQty', header: this.t('REPORTS.PDF.MIN_QTY'), align: 'center' },
+      ], options.outOfStockItems.map((item) => ({
+        item: item.name,
+        category: item.category,
+        warehouse: item.warehouse?.name || '-',
+        minQty: item.minQuantity.toString(),
+      })), left, right, y, { fill: [239, 68, 68], text: [255, 255, 255] }) + 20;
     }
 
-    // Check for new page
-    if (yPos > 200) {
-      doc.addPage();
-      yPos = 20;
-    }
-
-    // Low Stock Items
     if (options.lowStockItems.length > 0) {
-      doc.setTextColor(245, 158, 11);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${this.t('REPORTS.LOW_STOCK_ITEMS')} (${options.lowStockItems.length})`, 15, yPos);
-      yPos += 5;
-
-      autoTable(doc, {
-        startY: yPos,
-        head: [[
-          this.t('REPORTS.TABLE.ITEM'),
-          this.t('REPORTS.TABLE.CATEGORY'),
-          this.t('REPORTS.PDF.CURRENT_QTY'),
-          this.t('REPORTS.PDF.MIN_QTY'),
-          this.t('REPORTS.PDF.WAREHOUSE')
-        ]],
-        body: options.lowStockItems.map(item => [
-          item.name,
-          item.category,
-          item.quantity.toString(),
-          item.minQuantity.toString(),
-          item.warehouse?.name || '-'
-        ]),
-        theme: 'striped',
-        headStyles: { fillColor: [245, 158, 11], textColor: [255, 255, 255] },
-        margin: { left: 15, right: 15 }
-      });
+      y = ensurePageRoom(doc, y);
+      y = drawSectionLabel(doc, `${this.t('REPORTS.LOW_STOCK_ITEMS')} (${options.lowStockItems.length})`, left, y);
+      drawTable(doc, autoTable, [
+        { key: 'item', header: this.t('REPORTS.TABLE.ITEM') },
+        { key: 'category', header: this.t('REPORTS.TABLE.CATEGORY') },
+        { key: 'qty', header: this.t('REPORTS.PDF.CURRENT_QTY'), align: 'center' },
+        { key: 'minQty', header: this.t('REPORTS.PDF.MIN_QTY'), align: 'center' },
+        { key: 'warehouse', header: this.t('REPORTS.PDF.WAREHOUSE') },
+      ], options.lowStockItems.map((item) => ({
+        item: item.name,
+        category: item.category,
+        qty: item.quantity.toString(),
+        minQty: item.minQuantity.toString(),
+        warehouse: item.warehouse?.name || '-',
+      })), left, right, y, { fill: [245, 158, 11], text: [255, 255, 255] });
     }
 
-    // Footer
-    this.addFooter(doc);
+    stampFrameAndFooter(
+      doc,
+      this.t('REPORTS.PDF.LEGAL'),
+      (page, total) => `${this.t('REPORTS.PDF.PAGE')} ${page} ${this.t('REPORTS.PDF.OF')} ${total}`,
+      left,
+      right,
+    );
 
     doc.save(`status-report-${localDateKey(new Date())}.pdf`);
   }
@@ -422,113 +323,75 @@ export class PdfExportService extends PdfDrawingBase {
   // ============ ASSIGNMENTS REPORT PDF ============
   async exportAssignmentsReportToPDF(options: AssignmentsReportPDFOptions): Promise<void> {
     const { jsPDF, autoTable } = await this.loadPdfLibs();
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    let yPos = 20;
-
-    // Header
-    doc.setFillColor(...this.HEADER_BG);
-    doc.rect(0, 0, pageWidth, 40, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.PDF.ASSIGNMENTS_TITLE'), 15, 25);
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+    const { fiscal, userName } = options;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const left = PAGE_MARGIN;
+    const right = doc.internal.pageSize.getWidth() - PAGE_MARGIN;
     const locale = this.translate.currentLang === 'en' ? 'en-US' : 'es-HN';
-    const currentDate = new Date().toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    doc.text(`${this.t('REPORTS.PDF.GENERATED')}: ${currentDate}`, 15, 33);
 
-    yPos = 50;
+    const logoDataUrl = await loadReportLogo();
 
-    // Summary cards
-    this.drawAssignmentSummaryCards(doc, {
-      total: options.totalUniqueItems,
-      assigned: options.assignedCount,
-      unassigned: options.unassignedCount
-    }, yPos, pageWidth);
-    yPos += 35;
+    let y = drawHeader(doc, {
+      logoDataUrl,
+      rtn: fiscal?.rtn ?? null,
+      addressLine: buildFiscalAddressLine(fiscal),
+      docLabel: this.t('REPORTS.PDF.DOC_LABEL'),
+      dateLine: formatReportDateTime(new Date(), locale),
+      userLine: userName ?? '',
+    }, left, right, PAGE_MARGIN);
 
-    // Assignments by User
-    doc.setTextColor(...this.TEXT_DARK);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.ASSIGNMENTS_BY_USER'), 15, yPos);
-    yPos += 5;
+    y = drawTitle(doc, this.t('REPORTS.PDF.ASSIGNMENTS_TITLE'), this.t('REPORTS.PDF.SUBTITLE_ASSIGNMENTS'), left, right, y);
+
+    y = drawScope(doc, [
+      { label: this.t('REPORTS.PDF.TOTAL_ITEMS'), value: options.totalUniqueItems.toString() },
+      { label: this.t('REPORTS.PDF.ASSIGNED_ITEMS'), value: options.assignedCount.toString() },
+      { label: this.t('REPORTS.UNASSIGNED_ITEMS'), value: options.unassignedCount.toString() },
+    ], left, right, y);
+
+    y = drawSectionLabel(doc, this.t('REPORTS.ASSIGNMENTS_BY_USER'), left, y);
 
     if (options.assignmentsByUser.length > 0) {
-      autoTable(doc, {
-        startY: yPos,
-        head: [[
-          this.t('REPORTS.PDF.USER'),
-          this.t('REPORTS.PDF.EMAIL'),
-          this.t('REPORTS.PDF.ITEMS_COUNT'),
-          this.t('REPORTS.PDF.ASSIGNED_ITEMS')
-        ]],
-        body: options.assignmentsByUser.map(user => [
-          user.userName,
-          user.userEmail,
-          user.itemCount.toString(),
-          user.items.slice(0, 3).map(i => i.name).join(', ') + (user.items.length > 3 ? ` +${user.items.length - 3}` : '')
-        ]),
-        theme: 'striped',
-        headStyles: { fillColor: this.PRIMARY_COLOR, textColor: [255, 255, 255] },
-        margin: { left: 15, right: 15 },
-        columnStyles: {
-          3: { cellWidth: 60 }
-        }
-      });
-
-      yPos = (doc as JsPDFWithAutoTable).lastAutoTable.finalY + 10;
+      y = drawTable(doc, autoTable, [
+        { key: 'user', header: this.t('REPORTS.PDF.USER') },
+        { key: 'email', header: this.t('REPORTS.PDF.EMAIL') },
+        { key: 'count', header: this.t('REPORTS.PDF.ITEMS_COUNT'), align: 'center' },
+        { key: 'items', header: this.t('REPORTS.PDF.ASSIGNED_ITEMS') },
+      ], options.assignmentsByUser.map((user) => ({
+        user: user.userName,
+        email: user.userEmail,
+        count: user.itemCount.toString(),
+        items: user.items.slice(0, 3).map((i) => i.name).join(', ') + (user.items.length > 3 ? ` +${user.items.length - 3}` : ''),
+      })), left, right, y) + 20;
     } else {
-      doc.setTextColor(...this.TEXT_LIGHT);
-      doc.setFontSize(10);
-      doc.text(this.t('REPORTS.NO_ASSIGNMENTS'), 15, yPos + 5);
-      yPos += 15;
+      y = drawEmptyState(doc, this.t('REPORTS.NO_ASSIGNMENTS'), left, right, y);
     }
 
-    // Check for new page
-    if (yPos > 200 && options.unassignedItems.length > 0) {
-      doc.addPage();
-      yPos = 20;
-    }
-
-    // Unassigned Items
+    // Decision: this table keeps its existing gray header instead of the
+    // template's accent header — it flags "unassigned" as a neutral/warning
+    // state, distinct from the accent used for assigned data.
     if (options.unassignedItems.length > 0) {
-      doc.setTextColor(...this.TEXT_DARK);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${this.t('REPORTS.UNASSIGNED_ITEMS')} (${options.unassignedItems.length})`, 15, yPos);
-      yPos += 5;
-
-      autoTable(doc, {
-        startY: yPos,
-        head: [[
-          this.t('REPORTS.TABLE.ITEM'),
-          this.t('REPORTS.PDF.SERVICE_TAG'),
-          this.t('REPORTS.PDF.SERIAL_NUMBER'),
-          this.t('REPORTS.PDF.WAREHOUSE')
-        ]],
-        body: options.unassignedItems.map(item => [
-          item.name,
-          item.serviceTag || '-',
-          item.serialNumber || '-',
-          item.warehouse?.name || '-'
-        ]),
-        theme: 'striped',
-        headStyles: { fillColor: [100, 116, 139], textColor: [255, 255, 255] },
-        margin: { left: 15, right: 15 }
-      });
+      y = ensurePageRoom(doc, y);
+      y = drawSectionLabel(doc, `${this.t('REPORTS.UNASSIGNED_ITEMS')} (${options.unassignedItems.length})`, left, y);
+      drawTable(doc, autoTable, [
+        { key: 'item', header: this.t('REPORTS.TABLE.ITEM') },
+        { key: 'serviceTag', header: this.t('REPORTS.PDF.SERVICE_TAG') },
+        { key: 'serialNumber', header: this.t('REPORTS.PDF.SERIAL_NUMBER') },
+        { key: 'warehouse', header: this.t('REPORTS.PDF.WAREHOUSE') },
+      ], options.unassignedItems.map((item) => ({
+        item: item.name,
+        serviceTag: item.serviceTag || '-',
+        serialNumber: item.serialNumber || '-',
+        warehouse: item.warehouse?.name || '-',
+      })), left, right, y, { fill: [100, 116, 139], text: [255, 255, 255] });
     }
 
-    // Footer
-    this.addFooter(doc);
+    stampFrameAndFooter(
+      doc,
+      this.t('REPORTS.PDF.LEGAL'),
+      (page, total) => `${this.t('REPORTS.PDF.PAGE')} ${page} ${this.t('REPORTS.PDF.OF')} ${total}`,
+      left,
+      right,
+    );
 
     doc.save(`assignments-report-${localDateKey(new Date())}.pdf`);
   }

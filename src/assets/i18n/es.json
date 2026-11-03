@@ -390,7 +390,7 @@
       "CONFIRM_PASSWORD": "Confirmar contraseña",
       "CONFIRM_PASSWORD_PLACEHOLDER": "Repite la contraseña",
       "SUBMIT": "Guardar Contraseña",
-      "PASSWORD_RULES": "Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo (@$!%*?&).",
+      "PASSWORD_RULES": "Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo (@$!%*?&.).",
       "PASSWORDS_MISMATCH": "Las contraseñas no coinciden",
       "SUCCESS": "Contraseña actualizada para {{name}}",
       "SELF_NOT_ALLOWED": "Para cambiar tu propia contraseña usa tu perfil."
@@ -559,8 +559,8 @@
     "PASSWORD_UPPERCASE": "Debe contener al menos una letra mayúscula",
     "PASSWORD_LOWERCASE": "Debe contener al menos una letra minúscula",
     "PASSWORD_NUMBER": "Debe contener al menos un número",
-    "PASSWORD_SPECIAL": "Debe contener al menos un carácter especial (@$!%*?&)",
-    "PASSWORD_INVALID_CHARS": "Solo se permiten letras, números y estos símbolos: @$!%*?&"
+    "PASSWORD_SPECIAL": "Debe contener al menos un carácter especial (@$!%*?&.)",
+    "PASSWORD_INVALID_CHARS": "Solo se permiten letras, números y estos símbolos: @$!%*?&."
   },
   "SETTINGS": {
     "SUBTITLE": "Personaliza las preferencias de tu aplicación",
@@ -708,7 +708,7 @@
       "SUBTITLE": "Ingresa tu nueva contraseña a continuación.",
       "NEW_PASSWORD": "Nueva Contraseña",
       "NEW_PASSWORD_PLACEHOLDER": "Ingresa nueva contraseña",
-      "PASSWORD_RULES": "Mínimo 8 caracteres, con una mayúscula, una minúscula, un número y un símbolo (@$!%*?&).",
+      "PASSWORD_RULES": "Mínimo 8 caracteres, con una mayúscula, una minúscula, un número y un símbolo (@$!%*?&.).",
       "CONFIRM_PASSWORD": "Confirmar Contraseña",
       "CONFIRM_PASSWORD_PLACEHOLDER": "Confirma tu nueva contraseña",
       "SUBMIT": "Restablecer Contraseña",

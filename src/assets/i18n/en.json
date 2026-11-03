@@ -390,7 +390,7 @@
       "CONFIRM_PASSWORD": "Confirm password",
       "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat the password",
       "SUBMIT": "Save Password",
-      "PASSWORD_RULES": "At least 8 characters, with uppercase, lowercase, number and symbol (@$!%*?&).",
+      "PASSWORD_RULES": "At least 8 characters, with uppercase, lowercase, number and symbol (@$!%*?&.).",
       "PASSWORDS_MISMATCH": "Passwords do not match",
       "SUCCESS": "Password updated for {{name}}",
       "SELF_NOT_ALLOWED": "To change your own password, use your profile."
@@ -559,8 +559,8 @@
     "PASSWORD_UPPERCASE": "Must contain at least one uppercase letter",
     "PASSWORD_LOWERCASE": "Must contain at least one lowercase letter",
     "PASSWORD_NUMBER": "Must contain at least one number",
-    "PASSWORD_SPECIAL": "Must contain at least one special character (@$!%*?&)",
-    "PASSWORD_INVALID_CHARS": "Only letters, numbers and these symbols are allowed: @$!%*?&"
+    "PASSWORD_SPECIAL": "Must contain at least one special character (@$!%*?&.)",
+    "PASSWORD_INVALID_CHARS": "Only letters, numbers and these symbols are allowed: @$!%*?&."
   },
   "SETTINGS": {
     "SUBTITLE": "Customize your application preferences",
@@ -708,7 +708,7 @@
       "SUBTITLE": "Enter your new password below.",
       "NEW_PASSWORD": "New Password",
       "NEW_PASSWORD_PLACEHOLDER": "Enter new password",
-      "PASSWORD_RULES": "At least 8 characters, with an uppercase, a lowercase, a number and a symbol (@$!%*?&).",
+      "PASSWORD_RULES": "At least 8 characters, with an uppercase, a lowercase, a number and a symbol (@$!%*?&.).",
       "CONFIRM_PASSWORD": "Confirm Password",
       "CONFIRM_PASSWORD_PLACEHOLDER": "Confirm your new password",
       "SUBMIT": "Reset Password",

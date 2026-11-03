@@ -26,6 +26,10 @@ describe('password.validators', () => {
       expect(errorsFor('Abcdef1#')).toEqual(['invalidChars', 'special']);
     });
 
+    it('accepts a period as a special character', () => {
+      expect(strongPasswordRules(new FormControl('Abcdef1.'))).toBeNull();
+    });
+
     it('does not flag the length of an empty value, required covers it', () => {
       expect(errorsFor('')).not.toContain('minLength');
     });
@@ -35,6 +39,7 @@ describe('password.validators', () => {
     const samples = [
       'Abcdef1@',
       'Abcdefg1$',
+      'Abcdefg1.',
       'abcdefg1@',
       'ABCDEFG1@',
       'Abcdefgh@',

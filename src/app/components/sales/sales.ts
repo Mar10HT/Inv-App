@@ -230,6 +230,13 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                                 <lucide-icon name="Pencil" class="!w-4 !h-4"></lucide-icon>
                               </button>
                             </ng-container>
+                            <button
+                              (click)="downloadPdf(sale)"
+                              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-theme bg-[var(--color-surface)] text-[var(--color-on-surface-variant)] hover:text-foreground hover:border-[var(--color-primary)] text-xs font-medium transition-colors"
+                            >
+                              <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
+                              <span>{{ 'SALES.DOWNLOAD_PDF' | translate }}</span>
+                            </button>
                             <ng-container *ngxPermissionsOnly="['sales:confirm']">
                               <button
                                 (click)="confirmSale(sale)"
@@ -347,6 +354,13 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                           {{ 'COMMON.EDIT' | translate }}
                         </button>
                       </ng-container>
+                      <button
+                        (click)="downloadPdf(sale)"
+                        class="flex-1 py-2 rounded-lg bg-[var(--color-surface)] border border-theme text-sm text-foreground flex items-center justify-center gap-1"
+                      >
+                        <lucide-icon name="FileDown" class="!w-4 !h-4"></lucide-icon>
+                        {{ 'SALES.DOWNLOAD_PDF' | translate }}
+                      </button>
                       <ng-container *ngxPermissionsOnly="['sales:confirm']">
                         <button
                           (click)="confirmSale(sale)"

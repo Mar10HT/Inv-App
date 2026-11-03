@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://inv-app-api-production.up.railway.app/api/:path*"
+      "destination": "https://inv-app-production-1eb0.up.railway.app/api/:path*"
     },
     {
       "source": "/(.*)",

@@ -9,7 +9,7 @@ export const environment = {
   // The WebSocket connection stays a direct cross-origin connection to Railway: Vercel's
   // rewrites don't reliably proxy a persistent WebSocket upgrade, so this one keeps the
   // real backend URL rather than deriving it from apiUrl like before.
-  wsUrl: 'https://inv-app-api-production.up.railway.app',
+  wsUrl: 'https://inv-app-production-1eb0.up.railway.app',
   // Sentry DSN for error tracking. Empty until a real Sentry project is provisioned.
   // e.g. "https://xxx@xxx.ingest.sentry.io/xxx"
   sentryDsn: ''

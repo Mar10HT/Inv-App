@@ -31,9 +31,7 @@ export class WebSocketService implements OnDestroy {
     // a second socket would be created and left behind with its listeners, doubling every event.
     if (this.socket) return;
 
-    const baseUrl = environment.apiUrl.replace('/api', '');
-
-    this.socket = this.socketIo(`${baseUrl}/ws`, {
+    this.socket = this.socketIo(`${environment.wsUrl}/ws`, {
       withCredentials: true,
       transports: ['websocket', 'polling'],
       reconnection: true,

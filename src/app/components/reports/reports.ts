@@ -11,6 +11,9 @@ import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
 import { PdfExportService } from '../../services/pdf-export.service';
 import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
 import { InventoryItemInterface, InventoryStatus, ItemType } from '../../interfaces/inventory-item.interface';
 import { MovementFilters, StockMovement, TransactionType } from '../../interfaces/transaction.interface';
 import { AssignmentSummary, ReportCurrency, StatusSummary, TopItem, TransactionStats, TrendPoint, ValueSummary } from './reports.types';
@@ -242,6 +245,8 @@ export class Reports implements OnInit {
   private pdfExportService = inject(PdfExportService);
   private notifications = inject(NotificationService);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private fiscalConfigService = inject(FiscalConfigService);
 
   /** Values accepted in ?tab=, in tab order (e.g. the alert bell links to ?tab=status). */
   private static readonly TAB_IDS = ['value', 'transactions', 'status', 'assignments', 'trends', 'downloads'];
@@ -737,15 +742,23 @@ export class Reports implements OnInit {
     }));
   }
 
+  /** Reads the cached fiscal config signal if already loaded, otherwise fetches it once.
+   *  Report PDF headers show the company's RTN/address/phone (Decision: olanchonet
+   *  template), but it isn't worth an eager GET for users who never export a report. */
+  private async fiscalForPdf(): Promise<FiscalConfig | null> {
+    return this.fiscalConfigService.config() ?? await firstValueFrom(this.fiscalConfigService.get());
+  }
+
   async exportTransactionsPDF(): Promise<void> {
     await this.notifications.guardExport(async () => this.pdfExportService.exportTransactionsToPDF({
       transactions: await this.allFilteredMovements(),
-      title: this.translate.instant('REPORTS.PDF.TITLE'),
       dateRange: {
         from: this.dateFrom() || undefined,
         to: this.dateTo() || undefined
       },
-      typeFilter: this.transactionTypeFilter()
+      typeFilter: this.transactionTypeFilter(),
+      fiscal: await this.fiscalForPdf(),
+      userName: this.authService.currentUser()?.name ?? this.authService.currentUser()?.email
     }));
   }
 

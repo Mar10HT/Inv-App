@@ -43,6 +43,12 @@
   --color-accent: #4d7c6f;
   --color-accent-foreground: #ffffff;
 
+  /* Olancho Net report/PDF brand accent — fixed, not theme-dependent (same value in
+     both themes, declared once here). Mirrors ACCENT in
+     src/app/services/pdf/report-components.ts; jsPDF can't read CSS variables, so
+     keep the two in sync by hand if the brand color ever changes. */
+  --color-report-accent: #3a5f54;
+
   /* Borders */
   --color-border: #3a3a3a;
   --color-border-subtle: #2a2a2a;

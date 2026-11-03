@@ -3,7 +3,10 @@ import { TranslateService } from '@ngx-translate/core';
 import type jsPDF from 'jspdf';
 import { ReportTransaction, TransactionType } from '../interfaces/transaction.interface';
 import { InventoryItemInterface } from '../interfaces/inventory-item.interface';
+import { FiscalConfig } from '../interfaces/fiscal-config.interface';
 import { PdfDrawingBase } from './pdf/pdf-drawing.base';
+import { drawEmptyState, drawHeader, drawScope, drawTable, drawTitle, PAGE_MARGIN, ScopePair, stampFrameAndFooter } from './pdf/report-components';
+import { loadReportLogo } from './pdf/report-logo';
 import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../utils/money.utils';
 import { localDateKey } from '../utils/date.utils';
 
@@ -16,9 +19,25 @@ interface JsPDFWithAutoTable extends jsPDF {
 
 interface TransactionPDFOptions {
   transactions: ReportTransaction[];
-  title?: string;
   dateRange?: { from?: string; to?: string };
   typeFilter?: string;
+  fiscal?: FiscalConfig | null;
+  userName?: string;
+}
+
+/** Matches the backend's fix (pdf-receipts.service.ts fmtDateTime): Node's ICU data
+ *  inserts a narrow space before "m." in es-HN's a.m./p.m. — collapse it so the two
+ *  repos' PDFs show the same format. */
+function formatReportDateTime(date: Date, locale: string): string {
+  return date
+    .toLocaleString(locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: '2-digit' })
+    .replace(/\s(?=m\.)/i, '');
+}
+
+/** Same join the backend's buildHeaderData() uses for the fiscal address block. */
+function buildFiscalAddressLine(fiscal: FiscalConfig | null | undefined): string | null {
+  if (!fiscal) return null;
+  return [fiscal.address, fiscal.fiscalPhone, fiscal.fiscalEmail].filter(Boolean).join(' · ') || null;
 }
 
 interface ValueReportPDFOptions {
@@ -78,115 +97,70 @@ export class PdfExportService extends PdfDrawingBase {
   }
 
   async exportTransactionsToPDF(options: TransactionPDFOptions): Promise<void> {
-    const { jsPDF } = await this.loadPdfLibs();
-    const { transactions, title, dateRange, typeFilter } = options;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    let yPos = 20;
-
-    // Header with logo area
-    doc.setFillColor(...this.HEADER_BG);
-    doc.rect(0, 0, pageWidth, 40, 'F');
-
-    // Title
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title || this.t('REPORTS.PDF.TITLE'), 15, 25);
-
-    // Subtitle with date
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+    const { jsPDF, autoTable } = await this.loadPdfLibs();
+    const { transactions, dateRange, typeFilter, fiscal, userName } = options;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+    const left = PAGE_MARGIN;
+    const right = doc.internal.pageSize.getWidth() - PAGE_MARGIN;
     const locale = this.translate.currentLang === 'en' ? 'en-US' : 'es-HN';
-    const currentDate = new Date().toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-    doc.text(`${this.t('REPORTS.PDF.GENERATED')}: ${currentDate}`, 15, 33);
 
-    yPos = 50;
+    const logoDataUrl = await loadReportLogo();
 
-    // Filters applied section
-    if (dateRange?.from || dateRange?.to || (typeFilter && typeFilter !== 'ALL')) {
-      doc.setTextColor(...this.TEXT_DARK);
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${this.t('REPORTS.PDF.FILTERS_APPLIED')}:`, 15, yPos);
-      yPos += 6;
+    let y = drawHeader(doc, {
+      logoDataUrl,
+      rtn: fiscal?.rtn ?? null,
+      addressLine: buildFiscalAddressLine(fiscal),
+      docLabel: this.t('REPORTS.PDF.DOC_LABEL'),
+      dateLine: formatReportDateTime(new Date(), locale),
+      userLine: userName ?? '',
+    }, left, right, PAGE_MARGIN);
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(...this.TEXT_LIGHT);
+    y = drawTitle(doc, this.t('REPORTS.PDF.TITLE'), this.t('REPORTS.PDF.SUBTITLE_TRANSACTIONS'), left, right, y);
 
-      if (dateRange?.from) {
-        doc.text(`${this.t('REPORTS.PDF.FROM')}: ${dateRange.from}`, 15, yPos);
-        yPos += 5;
-      }
-      if (dateRange?.to) {
-        doc.text(`${this.t('REPORTS.PDF.TO')}: ${dateRange.to}`, 15, yPos);
-        yPos += 5;
-      }
-      if (typeFilter && typeFilter !== 'ALL') {
-        doc.text(`${this.t('REPORTS.PDF.TYPE')}: ${this.getTransactionTypeName(typeFilter as TransactionType)}`, 15, yPos);
-        yPos += 5;
-      }
-      yPos += 5;
+    const scopePairs: ScopePair[] = [];
+    if (dateRange?.from) scopePairs.push({ label: this.t('REPORTS.PDF.FROM'), value: dateRange.from });
+    if (dateRange?.to) scopePairs.push({ label: this.t('REPORTS.PDF.TO'), value: dateRange.to });
+    if (typeFilter && typeFilter !== 'ALL') {
+      scopePairs.push({ label: this.t('REPORTS.PDF.TYPE'), value: this.getTransactionTypeName(typeFilter as TransactionType) });
+    }
+    if (scopePairs.length > 0) {
+      y = drawScope(doc, scopePairs, left, right, y);
     }
 
-    // Summary statistics
-    const stats = this.calculateStats(transactions);
-    this.drawSummaryCards(doc, stats, yPos, pageWidth);
-    yPos += 35;
-
-    // Transactions detail
-    doc.setTextColor(...this.TEXT_DARK);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text(this.t('REPORTS.PDF.TRANSACTIONS_DETAIL'), 15, yPos);
-    yPos += 8;
-
-    // Table with transactions
     if (transactions.length > 0) {
-      for (let i = 0; i < transactions.length; i++) {
-        const tx = transactions[i];
-
-        // Check if we need a new page
-        if (yPos > 250) {
-          doc.addPage();
-          yPos = 20;
-        }
-
-        // Transaction card
-        yPos = this.drawTransactionCard(doc, tx, yPos, pageWidth, i + 1);
-        yPos += 5;
-      }
-    } else {
-      doc.setTextColor(...this.TEXT_LIGHT);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'italic');
-      doc.text(this.t('REPORTS.PDF.NO_TRANSACTIONS'), pageWidth / 2, yPos + 10, { align: 'center' });
-    }
-
-    // Footer on each page
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(...this.TEXT_LIGHT);
-      doc.text(
-        `${this.t('REPORTS.PDF.PAGE')} ${i} ${this.t('REPORTS.PDF.OF')} ${pageCount} | INV-APP`,
-        pageWidth / 2,
-        doc.internal.pageSize.getHeight() - 10,
-        { align: 'center' }
+      // One row per item line, not per transaction: a transaction with N items
+      // becomes N rows sharing the same date/type/user (Decision: Transactions
+      // becomes a flat 5-column table, losing per-transaction/item notes in the
+      // PDF only — they stay visible on screen).
+      const rows = transactions.flatMap((tx) =>
+        tx.items.map((item) => ({
+          date: formatReportDateTime(new Date(tx.date), locale),
+          type: this.getTransactionTypeName(tx.type),
+          item: item.inventoryItem?.name ?? this.t('REPORTS.PDF.UNKNOWN_ITEM'),
+          qty: String(item.quantity),
+          user: tx.user?.name || tx.user?.email || 'N/A',
+        }))
       );
+      drawTable(doc, autoTable, [
+        { key: 'date', header: this.t('REPORTS.TABLE.DATE') },
+        { key: 'type', header: this.t('REPORTS.TABLE.TYPE') },
+        { key: 'item', header: this.t('REPORTS.TABLE.ITEM') },
+        { key: 'qty', header: this.t('REPORTS.TABLE.QTY'), align: 'center' },
+        { key: 'user', header: this.t('REPORTS.TABLE.USER') },
+      ], rows, left, right, y);
+    } else {
+      drawEmptyState(doc, this.t('REPORTS.PDF.NO_TRANSACTIONS'), left, right, y + 10);
     }
 
-    // Generate filename
-    const filename = `transactions-${localDateKey(new Date())}.pdf`;
-    doc.save(filename);
+    stampFrameAndFooter(
+      doc,
+      this.t('REPORTS.PDF.LEGAL'),
+      (page, total) => `${this.t('REPORTS.PDF.PAGE')} ${page} ${this.t('REPORTS.PDF.OF')} ${total}`,
+      left,
+      right,
+    );
+
+    doc.save(`transactions-${localDateKey(new Date())}.pdf`);
   }
 
   // ============ VALUE REPORT PDF ============

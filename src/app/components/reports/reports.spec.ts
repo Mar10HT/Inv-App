@@ -14,6 +14,7 @@ import { ReportsTrendsTab } from './tabs/reports-trends-tab';
 import { ReportsValueTab } from './tabs/reports-value-tab';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { TransactionService } from '../../services/transaction.service';
+import { FiscalConfigService } from '../../services/fiscal-config.service';
 import {
   Currency,
   InventoryItemInterface,
@@ -109,6 +110,10 @@ describe('Reports', () => {
             }
           }
         },
+        // exportTransactionsPDF() reads this for the report PDF's fiscal header; without a
+        // stub, config() stays null and get() fires a real HTTP request that HttpTestingController
+        // never auto-flushes, hanging any test that awaits an export past jasmine's 5s timeout.
+        { provide: FiscalConfigService, useValue: { config: signal(null), get: () => of(null) } },
         ...extraProviders
       ]
     }).compileComponents();

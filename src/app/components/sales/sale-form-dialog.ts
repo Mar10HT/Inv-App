@@ -14,6 +14,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { LucideAngularModule } from 'lucide-angular';
@@ -25,6 +26,7 @@ import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { ServiceCatalogService } from '../../services/service-catalog.service';
 import {
   CreateSaleDto,
   CustomerType,
@@ -36,8 +38,19 @@ import { PaymentCondition } from '../../interfaces/purchase-invoice.interface';
 // Round to 2 decimals to avoid floating point noise, same rounding as the backend.
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
+/**
+ * What a line sells: an inventory item (takes stock), a service from the
+ * catalog, or anything else typed by name (neither takes stock).
+ */
+export type SaleLineKind = 'PRODUCT' | 'SERVICE' | 'OTHER';
+
+const LINE_KINDS: SaleLineKind[] = ['PRODUCT', 'SERVICE', 'OTHER'];
+
 interface SaleItemEntry {
+  kind: SaleLineKind;
   inventoryItemId: string;
+  serviceId: string;
+  itemName: string;
   quantity: number;
   unitPrice: number;
   notes: string;
@@ -65,7 +78,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
 @Component({
   selector: 'app-sale-form-dialog',
   standalone: true,
-  imports: [FormsModule, A11yModule, LucideAngularModule, TranslateModule],
+  imports: [NgClass, FormsModule, A11yModule, LucideAngularModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -257,28 +270,77 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                 <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
                   <div class="flex items-start gap-3">
                     <div class="flex-1 min-w-0 space-y-3">
-                      <select
-                        [ngModel]="item.inventoryItemId"
-                        (ngModelChange)="updateItemId(i, $event)"
-                        class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
-                      >
-                        <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
-                        @for (invItem of availableItems(); track invItem.id) {
-                          <option
-                            [value]="invItem.id"
-                            [disabled]="isAlreadySelected(invItem.id, i)"
+                      <!-- Kind toggle -->
+                      <div class="flex gap-1 bg-[var(--color-surface-variant)] rounded-lg p-0.5">
+                        @for (kind of lineKinds; track kind) {
+                          <button
+                            type="button"
+                            (click)="updateItemKind(i, kind)"
+                            [attr.aria-pressed]="item.kind === kind"
+                            class="flex-1 rounded-md py-1.5 text-xs font-medium transition-colors"
+                            [ngClass]="item.kind === kind
+                              ? 'bg-[var(--color-primary)] text-white'
+                              : 'text-[var(--color-on-surface-variant)]'"
                           >
-                            {{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})
-                          </option>
+                            {{ 'SALES.LINE_KIND.' + kind | translate }}
+                          </button>
                         }
-                      </select>
+                      </div>
+
+                      @switch (item.kind) {
+                        @case ('PRODUCT') {
+                          <select
+                            [ngModel]="item.inventoryItemId"
+                            (ngModelChange)="updateItemId(i, $event)"
+                            [attr.aria-label]="'SALES.LINE_KIND.PRODUCT' | translate"
+                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+                          >
+                            <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
+                            @for (invItem of availableItems(); track invItem.id) {
+                              <option
+                                [value]="invItem.id"
+                                [disabled]="isAlreadySelected(invItem.id, i)"
+                              >
+                                {{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})
+                              </option>
+                            }
+                          </select>
+                        }
+                        @case ('SERVICE') {
+                          <select
+                            [ngModel]="item.serviceId"
+                            (ngModelChange)="updateItemService(i, $event)"
+                            [attr.aria-label]="'SALES.LINE_KIND.SERVICE' | translate"
+                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+                          >
+                            <option value="">{{ 'SALES.SELECT_SERVICE' | translate }}</option>
+                            @for (svc of services(); track svc.id) {
+                              <option [value]="svc.id">{{ svc.name }}</option>
+                            }
+                          </select>
+                          @if (services().length === 0) {
+                            <p class="text-xs text-[var(--color-on-surface-variant)]">{{ 'SALES.NO_SERVICES' | translate }}</p>
+                          }
+                        }
+                        @case ('OTHER') {
+                          <input
+                            type="text"
+                            [ngModel]="item.itemName"
+                            (ngModelChange)="updateItemName(i, $event)"
+                            maxlength="200"
+                            [attr.aria-label]="'SALES.LINE_NAME' | translate"
+                            [placeholder]="'SALES.LINE_NAME_PLACEHOLDER' | translate"
+                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          />
+                        }
+                      }
                       <div class="flex gap-3">
                         <div class="w-24">
                           <input
                             type="number"
                             [ngModel]="item.quantity"
                             (ngModelChange)="updateItemQuantity(i, $event)"
-                            [max]="getAvailable(item.inventoryItemId)"
+                            [max]="item.kind === 'PRODUCT' ? getAvailable(item.inventoryItemId) : null"
                             min="1"
                             class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
@@ -391,6 +453,7 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   private inventoryService = inject(InventoryService);
   private notifications = inject(NotificationService);
   private fiscalConfigService = inject(FiscalConfigService);
+  private serviceCatalog = inject(ServiceCatalogService);
 
   // Suggested defaults from Fiscal Config's ISV% and currency — always
   // editable, never forced (see the `taxPercent` comment on the Sale
@@ -450,7 +513,10 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     this.taxPercent.set(existing.taxPercent ?? undefined);
     this.items.set(
       existing.items.map((it) => ({
-        inventoryItemId: it.inventoryItemId,
+        kind: it.inventoryItemId ? 'PRODUCT' : it.serviceId ? 'SERVICE' : 'OTHER',
+        inventoryItemId: it.inventoryItemId ?? '',
+        serviceId: it.serviceId ?? '',
+        itemName: it.itemName ?? '',
         quantity: it.quantity,
         unitPrice: it.unitPrice,
         notes: it.notes ?? '',
@@ -471,6 +537,7 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   readonly customerTypes = CUSTOMER_TYPES;
   readonly currencies = CURRENCIES;
   readonly paymentConditions = PAYMENT_CONDITIONS;
+  readonly lineKinds = LINE_KINDS;
 
   warehouseId = signal('');
   customerName = signal('');
@@ -489,6 +556,7 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
 
   warehouses = computed(() => this.warehouseService.warehouses());
   clients = computed(() => this.clientService.clients());
+  services = computed(() => this.serviceCatalog.services());
 
   // A quotation reserves nothing, so it can reference an item regardless of
   // current stock — only a direct sale (or confirming a quotation, which
@@ -518,14 +586,23 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     const relaxed = this.relaxesStockCap();
     return list.every(
       (it) =>
-        !!it.inventoryItemId &&
+        this.lineChosen(it) &&
         Number.isFinite(it.quantity) &&
         it.quantity > 0 &&
-        (relaxed || it.quantity <= this.getAvailable(it.inventoryItemId)) &&
+        (relaxed ||
+          it.kind !== 'PRODUCT' ||
+          it.quantity <= this.getAvailable(it.inventoryItemId)) &&
         Number.isFinite(it.unitPrice) &&
         it.unitPrice >= 0,
     );
   });
+
+  /** The line says what it sells: an item, a service, or a typed name. */
+  private lineChosen(item: SaleItemEntry): boolean {
+    if (item.kind === 'PRODUCT') return !!item.inventoryItemId;
+    if (item.kind === 'SERVICE') return !!item.serviceId;
+    return !!item.itemName.trim();
+  }
 
   lineTotal(item: SaleItemEntry): number {
     const qty = Number(item.quantity) || 0;
@@ -568,7 +645,15 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
   addItem(): void {
     this.items.update((list) => [
       ...list,
-      { inventoryItemId: '', quantity: 1, unitPrice: 0, notes: '' },
+      {
+        kind: 'PRODUCT',
+        inventoryItemId: '',
+        serviceId: '',
+        itemName: '',
+        quantity: 1,
+        unitPrice: 0,
+        notes: '',
+      },
     ]);
   }
 
@@ -585,6 +670,48 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
         inventoryItemId: id,
         unitPrice: keepPrice ? current.unitPrice : suggested,
       };
+      return next;
+    });
+  }
+
+  /** Switching what a line sells starts it over: the old choice and its suggested price no longer apply. */
+  updateItemKind(index: number, kind: SaleLineKind): void {
+    this.items.update((list) => {
+      const current = list[index];
+      if (current.kind === kind) return list;
+      const next = [...list];
+      next[index] = {
+        ...current,
+        kind,
+        inventoryItemId: '',
+        serviceId: '',
+        itemName: '',
+        unitPrice: 0,
+      };
+      return next;
+    });
+  }
+
+  // Same suggested-price prefill as updateItemId: the seller can override it.
+  updateItemService(index: number, id: string): void {
+    const suggested = this.services().find((svc) => svc.id === id)?.price ?? 0;
+    this.items.update((list) => {
+      const next = [...list];
+      const current = next[index];
+      const keepPrice = current.unitPrice && current.serviceId === id;
+      next[index] = {
+        ...current,
+        serviceId: id,
+        unitPrice: keepPrice ? current.unitPrice : suggested,
+      };
+      return next;
+    });
+  }
+
+  updateItemName(index: number, itemName: string): void {
+    this.items.update((list) => {
+      const next = [...list];
+      next[index] = { ...next[index], itemName };
       return next;
     });
   }
@@ -630,7 +757,8 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
 
   isAlreadySelected(id: string, currentIndex: number): boolean {
     return this.items().some(
-      (it, i) => i !== currentIndex && it.inventoryItemId === id,
+      (it, i) =>
+        i !== currentIndex && it.kind === 'PRODUCT' && it.inventoryItemId === id,
     );
   }
 
@@ -647,7 +775,11 @@ export class SaleFormDialog implements AfterViewInit, OnInit {
     this.submitting.set(true);
 
     const items = this.items().map((it) => ({
-      inventoryItemId: it.inventoryItemId,
+      ...(it.kind === 'PRODUCT'
+        ? { inventoryItemId: it.inventoryItemId }
+        : it.kind === 'SERVICE'
+          ? { serviceId: it.serviceId }
+          : { itemName: it.itemName.trim() }),
       quantity: it.quantity,
       unitPrice: Number(it.unitPrice) || 0,
       notes: it.notes?.trim() || undefined,

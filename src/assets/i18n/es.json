@@ -1267,7 +1267,16 @@
       "WHOLESALE": "Mayorista",
       "DISTRIBUTOR": "Distribuidor",
       "RETAIL": "Cliente final"
-    }
+    },
+    "LINE_KIND": {
+      "PRODUCT": "Producto",
+      "SERVICE": "Servicio",
+      "OTHER": "Otro"
+    },
+    "SELECT_SERVICE": "Seleccionar servicio",
+    "NO_SERVICES": "Todavía no hay servicios. Agrégalos en Servicios.",
+    "LINE_NAME": "Descripción",
+    "LINE_NAME_PLACEHOLDER": "Qué se cobra, p. ej. Viáticos"
   },
   "PAYMENTS": {
     "TITLE": "Pagos",
@@ -1654,6 +1663,8 @@
     "CAI_RANGE_BELOW_ISSUED": "El número final no puede quedar por debajo de la última factura emitida ({{lastIssued}}).",
     "INVALID_DATE_RANGE": "La fecha inicial no puede ser posterior a la final.",
     "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "No se puede aplicar el conteo de {{item}}: restar {{toRemove}} lo dejaría por debajo de cero (en stock: {{available}}).",
-    "SERVICE_IN_USE": "\"{{name}}\" está en una venta o cotización y no se puede eliminar."
+    "SERVICE_IN_USE": "\"{{name}}\" está en una venta o cotización y no se puede eliminar.",
+    "SALE_LINE_AMBIGUOUS": "Una línea es un producto o un servicio, no los dos.",
+    "SALE_LINE_NAME_REQUIRED": "Escribe qué se cobra en las líneas que no son producto ni servicio."
   }
 }

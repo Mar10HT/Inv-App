@@ -28,7 +28,8 @@
     "SETTINGS": "Configuración",
     "PROFILE": "Perfil",
     "LOGOUT": "Cerrar Sesión",
-    "ADMIN": "Administración"
+    "ADMIN": "Administración",
+    "SERVICES": "Servicios"
   },
   "COMMON": {
     "SAVE": "Guardar",
@@ -352,6 +353,25 @@
       "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
     }
   },
+  "SERVICE": {
+    "TITLE": "Servicios",
+    "SUBTITLE": "Servicios que puedes cotizar y vender junto a los productos (instalación, soporte...)",
+    "ADD": "Agregar Servicio",
+    "EDIT": "Editar Servicio",
+    "NAME": "Nombre",
+    "DESCRIPTION": "Descripción",
+    "PRICE": "Precio sugerido",
+    "CURRENCY": "Moneda",
+    "NO_PRICE": "Sin precio sugerido",
+    "TOTAL": "Total de Servicios",
+    "LIST": "Lista de Servicios",
+    "NO_SERVICES": "No hay servicios todavía",
+    "NO_SERVICES_DESC": "Agrega los servicios que cotizas seguido para elegirlos en las ventas",
+    "DELETE_CONFIRM": {
+      "TITLE": "Eliminar Servicio",
+      "MESSAGE": "¿Estás seguro de eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    }
+  },
   "USER": {
     "TITLE": "Usuarios",
     "SUBTITLE": "Administra cuentas de usuario y permisos",
@@ -500,7 +520,11 @@
       "auth:admin": "Realizar operaciones privilegiadas de autenticación (restablecer contraseñas, enlaces de administrador)",
       "payments:view": "Ver pagos de ventas y compras",
       "payments:create": "Registrar pagos de ventas y compras",
-      "payments:cancel": "Anular pagos registrados"
+      "payments:cancel": "Anular pagos registrados",
+      "services:view": "Ver el catálogo de servicios",
+      "services:create": "Crear servicios",
+      "services:edit": "Editar servicios",
+      "services:delete": "Eliminar servicios"
     },
     "DELETE_CONFIRM": {
       "TITLE": "Eliminar Rol",
@@ -666,7 +690,8 @@
       "CLIENT": "Cliente",
       "USER": "Usuario",
       "TRANSACTION": "Transacción",
-      "ROLE": "Rol"
+      "ROLE": "Rol",
+      "SERVICE": "Servicio"
     }
   },
   "LOGIN": {
@@ -1628,6 +1653,7 @@
     "CAI_RANGE_IN_USE": "Ya se emitieron facturas con este rango, así que su número inicial no se puede cambiar.",
     "CAI_RANGE_BELOW_ISSUED": "El número final no puede quedar por debajo de la última factura emitida ({{lastIssued}}).",
     "INVALID_DATE_RANGE": "La fecha inicial no puede ser posterior a la final.",
-    "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "No se puede aplicar el conteo de {{item}}: restar {{toRemove}} lo dejaría por debajo de cero (en stock: {{available}})."
+    "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "No se puede aplicar el conteo de {{item}}: restar {{toRemove}} lo dejaría por debajo de cero (en stock: {{available}}).",
+    "SERVICE_IN_USE": "\"{{name}}\" está en una venta o cotización y no se puede eliminar."
   }
 }

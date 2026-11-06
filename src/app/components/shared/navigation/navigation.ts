@@ -114,7 +114,7 @@ import { PermissionsService } from '../../../services/permissions.service';
       </ng-container>
 
       <!-- INVENTORY Section -->
-      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'clients:view', 'discharges:view', 'stocktake:view', 'transactions:view']">
+      <ng-container *ngxPermissionsOnly="['inventory:view', 'warehouse:view', 'categories:view', 'suppliers:view', 'clients:view', 'services:view', 'discharges:view', 'stocktake:view', 'transactions:view']">
         @if (showExpandedContent()) {
           <div class="nav-group-label">{{ 'NAV.INVENTORY' | translate }}</div>
         } @else {
@@ -193,6 +193,21 @@ import { PermissionsService } from '../../../services/permissions.service';
           <lucide-icon name="Contact" class="nav-icon"></lucide-icon>
           @if (showExpandedContent()) {
             <span class="nav-text">{{ 'NAV.CLIENTS' | translate }}</span>
+          }
+        </a>
+      </ng-container>
+
+      <ng-container *ngxPermissionsOnly="['services:view']">
+        <a
+          routerLink="/services"
+          routerLinkActive="active-link"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+          [matTooltip]="isCollapsed() && !isMobileMenuOpen() ? ('NAV.SERVICES' | translate) : ''"
+          matTooltipPosition="right">
+          <lucide-icon name="Wrench" class="nav-icon"></lucide-icon>
+          @if (showExpandedContent()) {
+            <span class="nav-text">{{ 'NAV.SERVICES' | translate }}</span>
           }
         </a>
       </ng-container>

@@ -2,7 +2,7 @@
 
 Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada tarea. La lista de tareas está en [`PENDIENTES.md`](./PENDIENTES.md); este archivo explica el proyecto, lo hecho, las decisiones tomadas y cómo trabajar.
 
-Última actualización: 2026-10-31.
+Última actualización: 2026-11-06.
 
 ## El proyecto
 
@@ -10,8 +10,8 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Repo | Stack | Ramas activas |
 | --- | --- | --- |
-| `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `olanchonet` (formato de PDFs/reportes) |
-| `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `feat/decimal-amounts-api` (listo, sin PR), `olanchonet` (en progreso) |
+| `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `olanchonet` (formato de PDFs/reportes), `feat/services-catalog` (lista, sin PR) |
+| `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `olanchonet` (en progreso), `feat/services-catalog` (lista, sin PR) |
 
 `feat/purchase-invoices` ya se mergeó a `main` en los dos repos (no existe más como rama activa). Este archivo y `PENDIENTES.md` viven en `docs/` de `main` desde entonces.
 
@@ -39,20 +39,31 @@ Plantilla aprobada por el usuario: `C:\Users\mherr\OneDrive\Desktop\Propuestas P
 
 - **Sin motor nuevo**: se sigue con `pdfkit` (API) y `jspdf` (frontend), traduciendo el lenguaje visual de la plantilla a un kit de componentes reutilizables en cada librería. Nada de Puppeteer ni HTML→PDF.
 - **Recibo de Compra** (no está en la plantilla): se extrapola del de Venta, cambiando rótulos a Compra/Proveedor.
+- **Tipografías**: nativas, `Times-Bold`/`times` para el h1 serif y `Courier-Bold`/`courier` para el número del docbox. Nada de embeber Georgia/JetBrains Mono (cero bytes nuevos, el frontend ya tiene el presupuesto de bundle ajustado).
+- **Nº de documento en los 4 reportes** (Transacciones, Valor, Estado, Asignaciones): se quita del docbox. Sin correlativo de reportes nuevo, queda solo fecha y usuario. La `Ref.` del footer también se quita por el mismo motivo (no hay de dónde derivarla).
+- **Reporte de Transacciones**: pasa a tabla plana de 5 columnas (Fecha/Tipo/Producto/Cantidad/Usuario), igual que la plantilla. Se pierden las notas por transacción/ítem **en el PDF únicamente**; siguen visibles en la pantalla de la app.
+- **Color accent de la plantilla** (`#3a5f54`): se agrega como token nuevo en `colors.css` (fidelidad al mock), no se reusa `--color-primary-container`.
+- **Logo**: ya está en los dos repos (`Inv-App-API/src/pdf-receipts/assets/olanchonet-logo.png`, `Inv-App/public/brand/olanchonet-logo.png`), pero es un **placeholder**: el SVG original tenía un bulto/pellizco real en los dos círculos del ícono (confirmado con zoom, no era un artefacto de renderizado); se corrigió ajustando esa parte del trazo a un círculo real por regresión, pero el usuario va a conseguir el PNG oficial del diseño fuente por separado. Reemplazar el archivo (mismo path) cuando lo tenga, sin tocar código.
 
 Hallazgos del agente que investigó antes de planear (no asumir que ya están resueltos, son el punto de partida):
 - "Reporte de Asignaciones" ya existe como feature (no es un hueco): `pdf-export.service.ts` `exportAssignmentsReportToPDF`.
 - Hay un PDF de Inventario huérfano en el API (`ReportsService.generateInventoryPdf`, `GET /reports/inventory/pdf`) sin ningún caller del frontend, y con un bug propio (`$` hardcodeado ignorando la moneda del ítem). A decidir: borrarlo o migrarlo al kit nuevo.
-- El logo de Olancho Net no está en ningún repo (`Inv-App/brand/` es la marca Obsid, no Olancho Net). Hay que traerlo y rasterizarlo (ni PDFKit ni jsPDF leen SVG).
 - `FiscalConfig` ya tiene RTN/dirección/teléfono/email: no hace falta migración de schema para el header.
 - `GET /fiscal-config` hoy da 403 a un usuario con solo `reports:export`/`reports:view`: hay que agregar esos permisos al decorador para que los reportes puedan mostrar los datos fiscales.
-- El Reporte de Transacciones del frontend hoy dibuja una tarjeta por transacción con notas; la plantilla lo muestra como tabla plana de 5 columnas. Pasar a tabla pierde las notas por transacción/ítem: decisión explícita del usuario pendiente, no es consecuencia obvia de "seguir la plantilla".
 - Excel/XLSX queda fuera de esta rama (ya están centralizados, la plantilla no define nada de grilla, y chocaría con el pendiente 1 de Excel "Transacciones").
 
 ## Hecho en esta sesión
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-11-06 | Inv-App-API / Inv-App | `7ef7a87` `80ab619` / `b01d9cb` `58362f6` (rama `feat/services-catalog`, sin pushear) | **Catálogo de Servicios**: pantalla y API de Servicios; las líneas de una venta o cotización pueden ser producto, servicio del catálogo o una descripción escrita a mano, y solo los productos tocan stock. Ver `PENDIENTES.md` #5 |
+| 2026-11-03 | Inv-App | `35bf9f3` `289f62f` `007ef2d` `4f6a99e` (sin pushear, esperando confirmación) | **Pendientes verificados contra el código real, no asumidos**: Excel "Transacciones" y el formato de comprobantes PDF (estado traducido, datos fiscales) ya estaban resueltos de antes — se cerraron en `PENDIENTES.md` con la evidencia. El overflow horizontal móvil reportado en el iPhone de Mario resultó ser caché vieja de Safari (se arregló con hard-refresh), no un bug — retirado. Se agregaron como pendientes nuevos: rediseño del Historial de Cambios (mockups aprobados: https://claude.ai/artifact/Cuz4EdGJTwqDWzV67E2mVA) y mover Reportes Programados a la sección Reportes. También confirmado pendiente de verdad: Exportaciones/Descargas de Reportes (`workbook.creator` sigue diciendo "Obsid", paleta de colores no alineada a la plantilla) |
+| 2026-11-03 | Inv-App | `0851a04` (main) / `8b73113` (merge a olanchonet) | Botón "Descargar PDF" agregado a las cotizaciones (antes solo ventas confirmadas podían descargar el comprobante) — el backend ya lo soportaba, era un hueco del frontend. Va en `main` por ser genérico |
+| 2026-11-03 | Inv-App-API | `591d8ab` | Pie de página del comprobante de Venta/Cotización dice "Olancho Net" en vez de "Obsid" — específico de esta instalación, queda solo en `olanchonet` |
+| 2026-11-03 | Inv-App | `d63d274` | **Fase 2 y 3 del formato de PDFs**: reportes de **Valor de Inventario, Estado y Asignaciones** migrados al kit `report-components.ts` (mismo trabajo que Transacciones en Fase 1). `drawTable()` ganó un override `headerColors` para los 3 headers que mantienen su color semántico (rojo/ámbar en Estado, gris en Asignaciones) en vez del header suave de la plantilla. Fase 3: podado el código muerto de `pdf-drawing.base.ts` (tarjetas, footer viejo, `calculateStats`, `getTypeColor`) ya que los 4 reportes dejaron de usarlo — solo queda `getTransactionTypeName`. Verificado: `tsc --noEmit` limpio, lint limpio, suite completa (1542/1542), build de prod sin regresión de tamaño (1.03 MB igual que el baseline), y verificación visual de los 4 PDFs con datos de muestra |
+| 2026-11-03 | Inv-App | `a2f6d2f` `1ca4cf6` | **Incidente de producción resuelto**: login roto en `obsid.olanchonet.com` por dos causas — Postgres de `olanchonet` sin Serverless activado (ciclo de reinicios, resuelto activándolo) y el proxy apuntando al backend de Railway equivocado (`inv-app-api-production` de `main` en vez de `inv-app-production-1eb0` de `olanchonet`). Fix: `/api/*` proxeado mismo-origen vía `vercel.json` al dominio correcto. Postmortem completo con línea de tiempo y diagrama de decisiones: https://claude.ai/artifact/KktzGnpkCFZCpj96EnyqzM |
+| 2026-11-02 | Inv-App-API | `6a4863f` | `GET /fiscal-config` ahora acepta `reports:view`/`reports:export` (daba 403 a un usuario de solo reportes); el header de los reportes PDF necesita RTN/dirección/teléfono |
+| 2026-11-02 | Inv-App | `5471614` | Kit de componentes jsPDF (`services/pdf/report-components.ts`, espeja `receipt-components.ts` del backend) + cargador de logo con degradación a `null`; reporte de **Transacciones** migrado a la plantilla olanchonet (unidades `pt`, página LETTER); `reports.ts` conectado a `FiscalConfigService`/`AuthService` para el header fiscal. Valor/Estado/Asignaciones quedan para la próxima fase |
 | 2026-10-31 | Inv-App-API | `671d5fd` `d4fbc2e` `d1e041d` `b09e10b` `10a26e5` `bf12a79` `1ec3196` `0202634` (rama `feat/decimal-amounts-api`) | Montos `Float` → `Decimal` en 19 campos: helper `money.ts`, interceptor global, los dos schemas + script de migración SQL, el fix del bug de saldo `NaN`, el fix del audit log, el PDF usando `lineTotal`/`totalAmount` guardados, docs de Prisma corregidos |
 | 2026-10-31 | Inv-App / Inv-App-API | rama `olanchonet` (creada, sin commits de código todavía) | Plantilla de PDFs/reportes de Olancho Net aprobada; investigación y plan completo (ver "Formato de PDFs: olanchonet", arriba) |
 | 2026-10-31 | Inv-App / Inv-App-API | (merge en GitHub) | [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) mergeados a `main` |
@@ -129,12 +140,13 @@ railway run npm run seed:rbac    # cada vez que se necesite
 
 ## Próximos pasos
 
-Estado al 2026-10-31: los 4 PRs de producción ([Inv-App#41](https://github.com/Mar10HT/Inv-App/pull/41), [Inv-App-API#17](https://github.com/Mar10HT/Inv-App-API/pull/17), [Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18), [Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42)) ya están mergeados. `feat/decimal-amounts-api` (API) está lista, verificada y commiteada, sin PR abierto todavía: falta que el usuario corra el chequeo de la Fase 0 contra una copia de producción (filas con más de 2 decimales reales) antes de abrir el PR. La rama `olanchonet` tiene el plan listo pero sin código todavía.
+Estado al 2026-11-06: el Catálogo de Servicios está terminado en `feat/services-catalog` (los dos repos), commiteado y sin pushear. En `main` ya están mergeados también [Mar10HT/Inv-App-API#19](https://github.com/Mar10HT/Inv-App-API/pull/19) (Decimal), #20 (Excel de Transacciones desde movimientos), #21 (PDF de inventario huérfano borrado) y [Mar10HT/Inv-App#43](https://github.com/Mar10HT/Inv-App/pull/43) (`navigation.css`). Los commits de docs del 2026-11-03 ya están pusheados en `olanchonet`.
 
-El plan con tamaños, riesgos y KPIs de merge de cada pendiente está al principio de `PENDIENTES.md` ("Plan de lo que sigue"). En corto:
+Decisiones del 2026-11-06: no hace falta revisar el Postgres de `olanchonet` (no había datos cuando pasó el incidente) y el fix del health check (`c56719b`) no se portea a `main` por ahora.
 
-1. Abrir el PR de `feat/decimal-amounts-api` una vez verificada la Fase 0 contra producción.
-2. Excel "Transacciones" lee todos los movimientos (chico, sin depender del formato).
-3. Formato de reportes y PDFs (rama `olanchonet`): empezar por el Fase 0 de esa rama (logo, tipografías, correlativo de reportes, decisión sobre el Reporte de Transacciones) antes de tocar código.
-4. Al llegar a producción: actualizar el manual (lista en PENDIENTES.md, sección Alertas).
-5. Despliegue: verificar `railway:migrate` contra staging o una copia de producción (incluye ahora el script de Decimal); correr `railway run npm run seed:rbac` una vez.
+**Para retomar, en este orden:**
+
+1. Pushear `feat/services-catalog` en los dos repos (con confirmación) y abrir los PRs si Mario los pide. Después del merge: merge de `main` hacia `olanchonet` en los dos repos, y en producción `railway run npm run seed:rbac` para los permisos `services:*`.
+2. **Exportaciones y Descargas de Reportes** (`workbook.creator` sigue en "Obsid", paleta de colores no alineada a la plantilla): confirmado pendiente de verdad, sin alcance definido todavía.
+3. Rediseño del Historial de Cambios (Auditoría) y mover Reportes Programados a Reportes: diseño aprobado para el primero (ver `PENDIENTES.md` #6), el segundo es solo navegación.
+4. Actualizar el Manual de Usuario: 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas. Agregar Servicios cuando llegue a producción.

@@ -14,6 +14,8 @@ import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
 import { FiscalConfig } from '../../interfaces/fiscal-config.interface';
+import { ServiceCatalogService } from '../../services/service-catalog.service';
+import { Service } from '../../interfaces/service.interface';
 import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { item, warehouse } from '../../../testing/report-fixtures';
 
@@ -93,6 +95,15 @@ describe('SaleFormDialog', () => {
         { provide: InventoryService, useValue: { items: stock } },
         { provide: ClientService, useValue: { clients } },
         { provide: FiscalConfigService, useValue: { config: fiscalConfig } },
+        {
+          provide: ServiceCatalogService,
+          useValue: {
+            services: signal([
+              { id: 'install', name: 'Instalación', price: 850, currency: 'HNL' },
+              { id: 'visit', name: 'Visita técnica', price: null, currency: 'HNL' }
+            ] as Service[])
+          }
+        },
         { provide: NotificationService, useValue: notifications }
       ]
     }).compileComponents();
@@ -210,8 +221,8 @@ describe('SaleFormDialog', () => {
       component.addItem();
 
       expect(component.items()).toEqual([
-        { inventoryItemId: '', quantity: 1, unitPrice: 0, notes: '' },
-        { inventoryItemId: '', quantity: 1, unitPrice: 0, notes: '' }
+        { kind: 'PRODUCT', inventoryItemId: '', serviceId: '', itemName: '', quantity: 1, unitPrice: 0, notes: '' },
+        { kind: 'PRODUCT', inventoryItemId: '', serviceId: '', itemName: '', quantity: 1, unitPrice: 0, notes: '' }
       ]);
     });
 
@@ -308,7 +319,7 @@ describe('SaleFormDialog', () => {
   });
 
   describe('money', () => {
-    const line = (quantity: number, unitPrice: number) => ({ inventoryItemId: 'x', quantity, unitPrice, notes: '' });
+    const line = (quantity: number, unitPrice: number) => ({ kind: 'PRODUCT' as const, inventoryItemId: 'x', serviceId: '', itemName: '', quantity, unitPrice, notes: '' });
 
     it('lineTotal is the quantity times the price, rounded to cents', () => {
       expect(component.lineTotal(line(3, 0.1))).toBe(0.3);
@@ -575,6 +586,122 @@ describe('SaleFormDialog', () => {
     });
   });
 
+  describe('services and other lines', () => {
+    beforeEach(() => {
+      component.onWarehouseChange('w1');
+      component.customerType.set(CustomerType.RETAIL);
+      component.addItem();
+    });
+
+    it('a line starts as a product', () => {
+      expect(component.items()[0].kind).toBe('PRODUCT');
+    });
+
+    it('choosing a service suggests its price, and one without a price suggests zero', () => {
+      component.updateItemKind(0, 'SERVICE');
+      component.updateItemService(0, 'install');
+      expect(component.items()[0].unitPrice).toBe(850);
+
+      component.updateItemService(0, 'visit');
+      expect(component.items()[0].unitPrice).toBe(0);
+    });
+
+    it('switching the kind starts the line over', () => {
+      component.updateItemId(0, 'laptop');
+
+      component.updateItemKind(0, 'SERVICE');
+
+      expect(component.items()[0]).toEqual(
+        jasmine.objectContaining({ kind: 'SERVICE', inventoryItemId: '', unitPrice: 0 })
+      );
+    });
+
+    it('picking the kind it already is keeps the line', () => {
+      component.updateItemId(0, 'laptop');
+
+      component.updateItemKind(0, 'PRODUCT');
+
+      expect(component.items()[0].inventoryItemId).toBe('laptop');
+    });
+
+    it('needs a service chosen, or a name typed, to submit', () => {
+      component.updateItemKind(0, 'SERVICE');
+      expect(component.canSubmit()).toBeFalse();
+      component.updateItemService(0, 'install');
+      expect(component.canSubmit()).toBeTrue();
+
+      component.updateItemKind(0, 'OTHER');
+      component.updateItemName(0, '   ');
+      expect(component.canSubmit()).toBeFalse();
+      component.updateItemName(0, 'Viáticos');
+      expect(component.canSubmit()).toBeTrue();
+    });
+
+    it('does not cap a service by any stock, even in a direct sale', () => {
+      component.updateItemKind(0, 'SERVICE');
+      component.updateItemService(0, 'install');
+      component.updateItemQuantity(0, 1000);
+
+      expect(component.canSubmit()).toBeTrue();
+    });
+
+    it('a service does not block an item from being picked', () => {
+      component.updateItemKind(0, 'SERVICE');
+      component.updateItemService(0, 'install');
+
+      expect(component.isAlreadySelected('install', 1)).toBeFalse();
+    });
+
+    it('sends each line by what it sells', () => {
+      component.updateItemId(0, 'laptop');
+      component.addItem();
+      component.updateItemKind(1, 'SERVICE');
+      component.updateItemService(1, 'install');
+      component.addItem();
+      component.updateItemKind(2, 'OTHER');
+      component.updateItemName(2, '  Viáticos ');
+      component.updateItemPrice(2, 50);
+
+      component.submit();
+
+      const dto = sales.create.calls.mostRecent().args[0];
+      expect(dto.items).toEqual([
+        { inventoryItemId: 'laptop', quantity: 1, unitPrice: 900, notes: undefined, taxPercent: undefined },
+        { serviceId: 'install', quantity: 1, unitPrice: 850, notes: undefined, taxPercent: undefined },
+        { itemName: 'Viáticos', quantity: 1, unitPrice: 50, notes: undefined, taxPercent: undefined }
+      ]);
+    });
+
+    it('shows the kind toggle and the service picker on the line', () => {
+      component.updateItemKind(0, 'SERVICE');
+      fixture.detectChanges();
+
+      const el: HTMLElement = fixture.nativeElement;
+      const pressed = el.querySelector('button[aria-pressed="true"]');
+      expect(pressed?.textContent).toContain('SALES.LINE_KIND.SERVICE');
+      const options = Array.from(el.querySelectorAll('select[aria-label="SALES.LINE_KIND.SERVICE"] option')).map(
+        (o) => o.textContent?.trim()
+      );
+      expect(options).toEqual(['SALES.SELECT_SERVICE', 'Instalación', 'Visita técnica']);
+    });
+
+    it('reopens a quotation with each line as what it sells', async () => {
+      await setup({
+        sale: draftSale({
+          items: [
+            { id: 'a', inventoryItemId: null, serviceId: 'install', itemName: 'Instalación', quantity: 1, unitPrice: 850 },
+            { id: 'b', inventoryItemId: null, serviceId: null, itemName: 'Viáticos', quantity: 1, unitPrice: 50 }
+          ] as Sale['items']
+        })
+      });
+
+      expect(component.items().map((it) => [it.kind, it.serviceId, it.itemName])).toEqual([
+        ['SERVICE', 'install', 'Instalación'],
+        ['OTHER', '', 'Viáticos']
+      ]);
+    });
+  });
+
   describe('editing an existing draft', () => {
     it('prefills every field from the given sale', async () => {
       await setup({ sale: draftSale() });
@@ -588,7 +715,7 @@ describe('SaleFormDialog', () => {
       expect(component.notes()).toBe('draft notes');
       expect(component.taxPercent()).toBe(15);
       expect(component.items()).toEqual([
-        { inventoryItemId: 'laptop', quantity: 1, unitPrice: 900, notes: '', taxPercent: undefined }
+        { kind: 'PRODUCT', inventoryItemId: 'laptop', serviceId: '', itemName: 'Laptop', quantity: 1, unitPrice: 900, notes: '', taxPercent: undefined }
       ]);
     });
 
@@ -633,14 +760,14 @@ describe('SaleFormDialog', () => {
   describe('tax', () => {
     it('a line with no explicit taxPercent inherits the ticket one', () => {
       component.taxPercent.set(15);
-      const line = { inventoryItemId: 'x', quantity: 1, unitPrice: 100, notes: '' };
+      const line = { kind: 'PRODUCT' as const, inventoryItemId: 'x', serviceId: '', itemName: '', quantity: 1, unitPrice: 100, notes: '' };
 
       expect(component.lineTax(line)).toBe(15);
     });
 
     it('an explicit line taxPercent, including 0, overrides the ticket one', () => {
       component.taxPercent.set(15);
-      const exempt = { inventoryItemId: 'x', quantity: 1, unitPrice: 100, notes: '', taxPercent: 0 };
+      const exempt = { kind: 'PRODUCT' as const, inventoryItemId: 'x', serviceId: '', itemName: '', quantity: 1, unitPrice: 100, notes: '', taxPercent: 0 };
 
       expect(component.lineTax(exempt)).toBe(0);
     });

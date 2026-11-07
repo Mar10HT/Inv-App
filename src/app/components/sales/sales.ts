@@ -22,6 +22,7 @@ import { ClientService } from '../../services/client.service';
 import { InventoryService } from '../../services/inventory/inventory.service';
 import { NotificationService } from '../../services/notification.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
+import { ServiceCatalogService } from '../../services/service-catalog.service';
 import { PermissionsService } from '../../services/permissions.service';
 import {
   Sale,
@@ -450,6 +451,7 @@ export class SalesComponent implements OnInit {
   saleService = inject(SaleService);
   warehouseService = inject(WarehouseService);
   private clientService = inject(ClientService);
+  private serviceCatalog = inject(ServiceCatalogService);
   private inventoryService = inject(InventoryService);
   private fiscalConfigService = inject(FiscalConfigService);
   private permissions = inject(PermissionsService);
@@ -511,6 +513,15 @@ export class SalesComponent implements OnInit {
       this.fiscalConfigService.get().subscribe();
     }
     this.inventoryService.loadItems();
+    // The services a sale line can pick (only the form uses them)
+    if (
+      this.permissions.hasPermission('sales:create') &&
+      this.permissions.hasPermission('services:view')
+    ) {
+      this.serviceCatalog.getAll().subscribe({
+        error: (err) => this.notifications.handleError(err),
+      });
+    }
   }
 
   openCreateDialog(): void {

@@ -858,7 +858,14 @@
     "EXCEL_TRANSFERS": "Transferencias",
     "EXCEL_STOCK_TAKES": "Conteos Físicos",
     "EXCEL_DISCHARGES": "Bajas",
-    "EXCEL_OUTFLOWS": "Salidas"
+    "EXCEL_OUTFLOWS": "Salidas",
+    "XLSX": {
+      "GENERATED_BY": "Generado el {{date}} por {{user}}",
+      "PERIOD": "Período: {{from}} al {{to}}",
+      "TODAY": "hoy",
+      "WAREHOUSE": "Bodega: {{name}}",
+      "ROWS": "{{count}} registros"
+    }
   },
   "STATUS": {
     "IN_STOCK": "En Stock",

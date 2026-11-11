@@ -259,7 +259,6 @@ export class LoanService implements OnDestroy {
     await downloadStyledXLSX(rows, {
       sheetName:      'Loans',
       filename:       `loans-${localDateKey(new Date())}.xlsx`,
-      headerColor:    '6B7BB5',
       colWidths:      [40, 10, 22, 22, 14, 14, 14, 16, 30],
       statusColIndex: 7,
     });

@@ -136,7 +136,6 @@ export class AuditService {
     await downloadStyledXLSX(rows, {
       sheetName:      'Audit Log',
       filename:       `audit-log-${localDateKey(new Date())}.xlsx`,
-      headerColor:    '64748B',
       colWidths:      [20, 10, 16, 30, 20, 28, 50],
       statusColIndex: 1, // Action column: CREATE / UPDATE / DELETE
     });

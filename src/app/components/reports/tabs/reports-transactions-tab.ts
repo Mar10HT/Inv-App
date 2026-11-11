@@ -60,7 +60,7 @@ import { provideTranslatedPaginator } from '../../../shared/translated-paginator
             (click)="csvRequested.emit()"
             class="bg-surface-elevated hover:bg-[var(--color-surface-elevated)] text-foreground px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium border border-theme">
             <lucide-icon name="Table" class="!w-4 !h-4"></lucide-icon>
-            CSV
+            Excel
           </button>
           <button
             (click)="pdfRequested.emit()"

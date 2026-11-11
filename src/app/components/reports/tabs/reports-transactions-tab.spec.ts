@@ -197,7 +197,7 @@ describe('ReportsTransactionsTab', () => {
       component.csvRequested.subscribe(csv);
       component.pdfRequested.subscribe(pdf);
 
-      button('CSV')?.click();
+      button('Excel')?.click();
       expect(csv).toHaveBeenCalledTimes(1);
       expect(pdf).not.toHaveBeenCalled();
 

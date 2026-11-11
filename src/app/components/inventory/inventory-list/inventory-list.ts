@@ -667,7 +667,6 @@ export class InventoryList implements OnInit {
     await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
       sheetName:      'Inventory',
       filename:       `inventory-${localDateKey(new Date())}.xlsx`,
-      headerColor:    '4D7C6F',
       colWidths:      [30, 40, 10, 20, 22, 14, 18],
       statusColIndex: 5, // Status column
     }));

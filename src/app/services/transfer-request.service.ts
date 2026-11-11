@@ -279,7 +279,6 @@ export class TransferRequestService implements OnDestroy {
     await downloadStyledXLSX(rows, {
       sheetName:      'Transfer Requests',
       filename:       `transfer-requests-${localDateKey(new Date())}.xlsx`,
-      headerColor:    '3B82F6',
       colWidths:      [28, 14, 22, 22, 20, 20, 40, 14, 30],
       statusColIndex: 1, // Status column
     });

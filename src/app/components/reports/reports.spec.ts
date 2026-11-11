@@ -569,11 +569,11 @@ describe('Reports', () => {
       }) as never);
     });
 
-    /** First column of every row of the last export: the item name. */
+    /** First column of every row of the last export's table (below the six-row heading): the item name. */
     const exportedNames = (): unknown[] => {
       const { workbook } = written[written.length - 1];
       return XLSX.utils
-        .sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]])
+        .sheet_to_json<Record<string, unknown>>(workbook.Sheets[workbook.SheetNames[0]], { range: 6 })
         .map((row) => Object.values(row)[0]);
     };
 
@@ -605,6 +605,18 @@ describe('Reports', () => {
       await component.exportAssignments();
 
       expect(exportedNames()).toEqual(['Main laptop']);
+    });
+
+    it('heads the file with the company, the report title and the selected warehouse', async () => {
+      await setup([item({ id: 'a', name: 'Main item', warehouseId: 'w1' })]);
+      component.selectedWarehouseId.set('w1');
+
+      await component.exportStatusReport();
+
+      const sheet = written[0].workbook.Sheets[written[0].workbook.SheetNames[0]];
+      expect(sheet['A1'].v).toBe('Olancho Net');
+      expect(sheet['A4'].v).toBe('REPORTS.PDF.STATUS_TITLE');
+      expect(sheet['A5'].v).toContain('REPORTS.XLSX.WAREHOUSE');
     });
   });
 

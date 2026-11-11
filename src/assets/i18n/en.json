@@ -858,7 +858,14 @@
     "EXCEL_TRANSFERS": "Transfer Requests",
     "EXCEL_STOCK_TAKES": "Stock Takes",
     "EXCEL_DISCHARGES": "Discharges",
-    "EXCEL_OUTFLOWS": "Outflows"
+    "EXCEL_OUTFLOWS": "Outflows",
+    "XLSX": {
+      "GENERATED_BY": "Generated on {{date}} by {{user}}",
+      "PERIOD": "Period: {{from}} to {{to}}",
+      "TODAY": "today",
+      "WAREHOUSE": "Warehouse: {{name}}",
+      "ROWS": "{{count}} rows"
+    }
   },
   "STATUS": {
     "IN_STOCK": "In Stock",

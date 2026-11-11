@@ -8,7 +8,6 @@ describe('downloadStyledXLSX', () => {
   const config: XlsxSheetConfig = {
     sheetName: 'Test',
     filename: 'test.xlsx',
-    headerColor: '4D7C6F',
     colWidths: [20, 12, 10],
     statusColIndex: 1
   };
@@ -71,26 +70,20 @@ describe('downloadStyledXLSX', () => {
   });
 
   describe('the styling', () => {
-    it('paints the header with the configured color and white bold text', async () => {
+    it('paints the header in the template green with white bold text, and filters it', async () => {
       await downloadStyledXLSX(rows, config);
 
-      expect(fill('A1')).toBe('4D7C6F');
+      expect(fill('A1')).toBe('3A5F54');
       expect(font('A1')?.bold).toBeTrue();
       expect(font('A1')?.color?.rgb).toBe('FFFFFF');
+      expect(sheet()['!autofilter']).toEqual({ ref: 'A1:C1' });
     });
 
-    it('uses dark header text for light header colors', async () => {
-      await downloadStyledXLSX(rows, { ...config, headerColor: 'FEF3C7', headerDarkText: true });
-
-      expect(fill('A1')).toBe('FEF3C7');
-      expect(font('A1')?.color?.rgb).toBe('1A1A1A');
-    });
-
-    it('stripes the body rows', async () => {
+    it('stripes the body rows with the template tint', async () => {
       await downloadStyledXLSX(rows, config);
 
       expect(fill('A2')).toBe('FFFFFF');
-      expect(fill('A3')).toBe('F1F5F9');
+      expect(fill('A3')).toBe('F7F6F1');
       expect(fill('A4')).toBe('FFFFFF');
     });
 
@@ -107,7 +100,7 @@ describe('downloadStyledXLSX', () => {
     it('leaves an unknown status with the ordinary striped style', async () => {
       await downloadStyledXLSX(rows, config);
 
-      expect(fill('B3')).toBe('F1F5F9');
+      expect(fill('B3')).toBe('F7F6F1');
       expect(font('B3')?.bold).toBeUndefined();
     });
 
@@ -123,6 +116,35 @@ describe('downloadStyledXLSX', () => {
 
       expect(fill('A2')).toBe('D1FAE5');
       expect(fill('B2')).toBe('FFFFFF');
+    });
+  });
+
+  describe('the heading', () => {
+    const heading = {
+      company: 'Olancho Net',
+      title: 'Reporte de Estado de Stock',
+      fiscalLine: 'RTN 08019015123456 · Juticalpa',
+      meta: 'Generado el 11/11/2026 por Mario · 3 registros',
+    };
+
+    it('puts company, fiscal data, title and who generated it above the table, each across its width', async () => {
+      await downloadStyledXLSX(rows, { ...config, heading });
+
+      expect([cell('A1').v, cell('A2').v, cell('A4').v, cell('A5').v]).toEqual([
+        'Olancho Net', heading.fiscalLine, heading.title, heading.meta,
+      ]);
+      expect(font('A1')?.color?.rgb).toBe('3A5F54');
+      expect(sheet()['!merges']).toContain({ s: { r: 0, c: 0 }, e: { r: 0, c: 2 } });
+    });
+
+    it('moves the table below the heading', async () => {
+      await downloadStyledXLSX(rows, { ...config, heading });
+
+      expect([cell('A7').v, cell('A8').v]).toEqual(['Name', 'Laptop']);
+      expect(fill('A7')).toBe('3A5F54');
+      expect(fill('B8')).toBe('D1FAE5'); // status coloring follows the table
+      expect(sheet()['!autofilter']).toEqual({ ref: 'A7:C7' });
+      expect(sheet()['!ref']).toBe('A1:C10');
     });
   });
 });

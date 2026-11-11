@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageEvent } from '@angular/material/paginator';
 import { firstValueFrom } from 'rxjs';
 import { LucideAngularModule } from 'lucide-angular';
-import { downloadStyledXLSX, XlsxRow } from '../../utils/xlsx.utils';
+import { downloadStyledXLSX, XlsxHeading, XlsxRow } from '../../utils/xlsx.utils';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { InventoryService } from '../../services/inventory/inventory.service';
@@ -28,6 +28,9 @@ import { ReportsTrendsTab } from './tabs/reports-trends-tab';
 import { ReportsValueTab } from './tabs/reports-value-tab';
 import { Spinner } from '../shared/spinner/spinner';
 import { localeFor } from '../../shared/app-language';
+
+/** This installation's name, for the export headings. */
+const COMPANY_NAME = 'Olancho Net';
 
 @Component({
   selector: 'app-reports',
@@ -618,6 +621,33 @@ export class Reports implements OnInit {
     return firstValueFrom(this.transactionService.getAllMovements(this.movementFilters()));
   }
 
+  /** The Olancho Net heading of a tab's Excel export: fiscal data, title, who
+   *  generated it, for which warehouse and period, and how many rows. */
+  private async xlsxHeading(titleKey: string, count: number, withPeriod = false): Promise<XlsxHeading> {
+    const t = (key: string, params?: Record<string, unknown>) => this.translate.instant(key, params);
+    const locale = localeFor(this.translate.getCurrentLang());
+    const fiscal = await this.fiscalForPdf().catch(() => null);
+    const user = this.authService.currentUser();
+    const warehouseId = this.selectedWarehouseId();
+    const warehouse = this.inventoryService.warehouses().find(w => w.id === warehouseId);
+    const from = this.dateFrom();
+    const to = this.dateTo();
+
+    const meta = [
+      t('REPORTS.XLSX.GENERATED_BY', { date: formatDateTime(new Date(), locale), user: user?.name || user?.email || '' }),
+      withPeriod && from ? t('REPORTS.XLSX.PERIOD', { from: formatDate(`${from}T12:00:00`, locale), to: to ? formatDate(`${to}T12:00:00`, locale) : t('REPORTS.XLSX.TODAY') }) : null,
+      warehouse ? t('REPORTS.XLSX.WAREHOUSE', { name: warehouse.name }) : t('REPORTS.ALL_WAREHOUSES'),
+      t('REPORTS.XLSX.ROWS', { count }),
+    ];
+
+    return {
+      company: COMPANY_NAME,
+      title: t(titleKey),
+      fiscalLine: [fiscal?.rtn ? `RTN ${fiscal.rtn}` : null, fiscal?.address, fiscal?.fiscalPhone, fiscal?.fiscalEmail].filter(Boolean).join(' · '),
+      meta: meta.filter(Boolean).join(' · '),
+    };
+  }
+
   async exportReport(): Promise<void> {
     const currency = this.selectedCurrency();
     const warehouses = this.inventoryService.warehouses();
@@ -638,10 +668,10 @@ export class Reports implements OnInit {
       [t('COMMON.STATUS')]:            t(`STATUS.${item.status}`),
     }));
 
-    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(async () => downloadStyledXLSX(rows, {
       sheetName:   'Inventory',
+      heading:     await this.xlsxHeading('REPORTS.PDF.VALUE_TITLE', rows.length),
       filename:    `inventario-valor-${currency}-${localDateKey(new Date())}.xlsx`,
-      headerColor: '4D7C6F',
       colWidths:   [30, 12, 18, 22, 22, 8, 10, 12, 12, 8, 14],
     }));
   }
@@ -656,11 +686,11 @@ export class Reports implements OnInit {
 
   async exportTransactions(): Promise<void> {
     await this.notifications.guardExport(async () => {
-      const movements = await this.allFilteredMovements();
-      await downloadStyledXLSX(this.transactionRows(movements), {
+      const rows = this.transactionRows(await this.allFilteredMovements());
+      await downloadStyledXLSX(rows, {
         sheetName:   'Transactions',
+        heading:     await this.xlsxHeading('REPORTS.PDF.TITLE', rows.length, true),
         filename:    `transacciones-${localDateKey(new Date())}.xlsx`,
-        headerColor: '60A5FA',
         colWidths:   [18, 12, 26, 22, 22, 20, 30, 12, 8, 30, 30],
       });
     });
@@ -707,10 +737,10 @@ export class Reports implements OnInit {
       [t('REPORTS.CSV.NEEDS_RESTOCK')]:  item.quantity <= item.minQuantity ? t('COMMON.YES') : t('COMMON.NO'),
     }));
 
-    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(async () => downloadStyledXLSX(rows, {
       sheetName:        'Stock Status',
+      heading:     await this.xlsxHeading('REPORTS.PDF.STATUS_TITLE', rows.length),
       filename:         `estado-stock-${localDateKey(new Date())}.xlsx`,
-      headerColor:      'B45309',
       colWidths:        [30, 12, 18, 22, 12, 10, 14, 14],
     }));
   }
@@ -734,10 +764,10 @@ export class Reports implements OnInit {
         [t('REPORTS.CSV.ASSIGNMENT_STATUS')]:   item.assignedToUserId ? t('REPORTS.ASSIGNED') : t('REPORTS.UNASSIGNED'),
       }));
 
-    await this.notifications.guardExport(() => downloadStyledXLSX(rows, {
+    await this.notifications.guardExport(async () => downloadStyledXLSX(rows, {
       sheetName:   'Assignments',
+      heading:     await this.xlsxHeading('REPORTS.PDF.ASSIGNMENTS_TITLE', rows.length),
       filename:    `asignaciones-${localDateKey(new Date())}.xlsx`,
-      headerColor: 'A78BFA',
       colWidths:   [30, 14, 14, 18, 22, 22, 28, 16, 14],
     }));
   }

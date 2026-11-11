@@ -346,7 +346,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                           />
                         </div>
-                        <div class="w-32">
+                        <div class="flex-1 min-w-0">
                           <input
                             type="number"
                             [ngModel]="item.unitPrice"
@@ -357,13 +357,6 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             [placeholder]="'SALES.UNIT_PRICE' | translate"
                           />
                         </div>
-                        <input
-                          type="text"
-                          [ngModel]="item.notes"
-                          (ngModelChange)="updateItemNotes(i, $event)"
-                          class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
-                          [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
-                        />
                         <div class="w-20">
                           <input
                             type="number"
@@ -378,6 +371,15 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                           />
                         </div>
                       </div>
+                      <!-- Notes on their own row: next to the numbers they had no room -->
+                      <input
+                        type="text"
+                        [ngModel]="item.notes"
+                        (ngModelChange)="updateItemNotes(i, $event)"
+                        [attr.aria-label]="'TRANSACTION.NOTES_OPTIONAL' | translate"
+                        class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                        [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
+                      />
                       <div class="text-right text-xs text-[var(--color-on-surface-variant)]">
                         {{ 'SALES.SUBTOTAL' | translate }}: {{ currency() }} {{ lineTotal(item).toFixed(2) }}
                       </div>

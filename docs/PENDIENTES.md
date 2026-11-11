@@ -15,7 +15,7 @@ Orden sugerido con lo que queda: **3** después del despliegue, **6/7/8/9** sin 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
 | 1 | ~~Excel "Transacciones" lee todos los movimientos~~ | — | — | Resuelto, ver abajo |
-| 2 | Formato de PDFs y exportaciones | Reducido a solo Exportaciones/Descargas CSV | Bajo | Comprobantes y reportes PDF resueltos |
+| 2 | ~~Formato de PDFs y exportaciones~~ | — | — | Hecho en `feat/exports-olanchonet` (los dos repos) |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
 | 4 | ~~`navigation.css` 780 B sobre el presupuesto~~ | — | — | Resuelto en Inv-App#43 |
 | 5 | ~~Catálogo de Servicios para cotizaciones~~ | — | — | Mergeado en `main` (API#22, Inv-App#44); falta desplegar y crear los permisos |
@@ -35,7 +35,13 @@ KPIs de merge (los tres, ya cumplidos):
 
 ### 2. Formato de PDFs y exportaciones
 
-En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan detallado). Hoy: `pdf-receipts.service.ts` (~880 líneas, API) y `pdf-export.service.ts` (~560, frontend). Detalle de lo que falta en "Formato de reportes y documentos exportables", abajo.
+Hecho el 2026-11-11 en la rama `feat/exports-olanchonet` de los dos repos, desde `olanchonet` (decisión de Mario: el estilo es solo de Olancho Net, va solo a esa rama). Mario aprobó el estilo con una imagen de ejemplo y pidió que las exportaciones de cada pestaña sean Excel con formato.
+
+- [x] **Descargas de Reportes** (API, `reports.service.ts`, commit `2e894ea`): los 8 Excel y los reportes programados abren con "Olancho Net", los datos fiscales, una línea verde, el título del reporte y "Generado el ... por ... · Bodega ... · N registros" (período en Transacciones si se pide con fechas; un reporte programado dice "por reporte programado"). Encabezado de columnas en el verde de la plantilla (`#3A5F54`), filas alternadas `#F7F6F1` con líneas finas, colores de estado de siempre, encabezado fijo con filtros, impresión horizontal ajustada al ancho con pie de página. Autor del archivo "Olancho Net" (antes "Obsid") y nombres de columna con tildes ("Descripción", "Bodega" en vez de "Almacen").
+- [x] **Exportaciones por pestaña** (frontend, `xlsx.utils.ts` y `reports.ts`, commit `f139878`): ya bajaban Excel aunque el botón decía "CSV"; ahora dice "Excel" y lleva el mismo encabezado (empresa, datos fiscales, título, quién, bodega, período y registros). Las demás exportaciones de la app (Inventario, Transferencias, Préstamos, Historial) usan la misma paleta, sin el encabezado.
+- [x] Incluye el arreglo de la descarga de Inventario que daba 400 (`fix/inventory-excel-locale`, cherry-pick), porque `olanchonet` también lo tenía.
+- Verificado: API 51 tests de reportes, lint, build; frontend 1573 tests, lint, build de prod (1.03 MB, sin cambio). En la app: descargados los 8 Excel del API y los de las pestañas Valor y Transacciones, abiertos y revisados.
+- Límite conocido: los Excel del frontend no fijan la fila de encabezado ni configuran la impresión (la librería `xlsx-js-style` no lo escribe); los del API sí.
 
 ### 3. Manual
 
@@ -227,7 +233,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
     - ~~El **Estado** sale en inglés (`ACTIVE`, `APPROVED`)~~: ya traduce por `t.statuses[ctx.status]` (línea 514), con el comentario de código confirmando que fue un fix anterior a esta sesión.
     - ~~El comprobante de venta **no trae los datos fiscales de la empresa**~~: `render()` carga `fiscalConfig` y lo pasa a `buildHeaderData()` para los 5 tipos de documento, no solo Venta (línea 1016).
     - ~~El comprobante de transferencia muestra el ID interno~~: ahora muestra su número (TRA-0001), igual que préstamos y salidas.
-- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): sin revisar todavía — alcance más amplio y sin definir, no se tocó en esta sesión.
+- [x] **Exportaciones** y **Descargas de Reportes**: hechas el 2026-11-11 en `feat/exports-olanchonet`, ver #2 arriba.
 - [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
 

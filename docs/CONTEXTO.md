@@ -56,6 +56,8 @@ Hallazgos del agente que investigó antes de planear (no asumir que ya están re
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-11-11 | Inv-App-API / Inv-App | `2e894ea` / `f139878` (rama `feat/exports-olanchonet` desde `olanchonet`, sin pushear) | **#2 Exportaciones**: los 8 Excel de Descargas y los reportes programados con el encabezado y la paleta de Olancho Net; las exportaciones de cada pestaña (el botón decía CSV) pasan a Excel con el mismo encabezado |
+| 2026-11-11 | Inv-App-API | `f9645af` (rama `fix/inventory-excel-locale` desde `main`, sin pushear) | La descarga de Excel de Inventario daba 400 siempre: el API rechazaba el parámetro de idioma que manda la app |
 | 2026-11-11 | Inv-App | `f13b790` `2c95bc2` (rama `feat/audit-and-scheduled-reports`) | **#7** Reportes Programados pasan a Reportes > Programados. **#6** Historial de Cambios en oraciones, con detalle traducido en un modal, nombres en vez de IDs y filtro por tipo de registro real |
 | 2026-11-11 | Inv-App / Inv-App-API | merge de `main` en `olanchonet` (`4cb3af5` / `805b09c`) | Servicios y los tres hotfixes llegan a `olanchonet`; docs en conflicto resueltos con la versión de `main` (ya incluía la de `olanchonet`) |
 | 2026-11-11 | Inv-App | `05bb9ec` `2364470` (hotfix en `main`) | Líneas de ítems de los 6 formularios (Ventas/Cotizaciones, Compras, Transferencias, Préstamos, Salidas, Transacciones) con los mismos colores que el resto del formulario; notas de la línea de venta en su propia fila |
@@ -154,7 +156,7 @@ Decisiones del 2026-11-06: no hace falta revisar el Postgres de `olanchonet` (no
 
 1. En producción, crear los permisos `services:*` con el SQL de `PENDIENTES.md` #5 y asignarlos en Roles (no correr `seed:rbac`, ver #8). El merge de `main` hacia `olanchonet` ya se hizo el 2026-11-11.
 2. PR de `feat/audit-and-scheduled-reports` (#6 y #7) hacia `main`; después del merge, `main` hacia `olanchonet`.
-3. #2 Exportaciones: rama propia desde `olanchonet` (decisión de Mario: el estilo es solo de Olancho Net). Alcance: Descargas de Reportes (Excel por módulo, API) y los CSV/Excel de cada pestaña de Reportes.
+3. #2 Exportaciones: hecho en `feat/exports-olanchonet` (los dos repos, desde `olanchonet`). Pushear y abrir PR hacia `olanchonet`. Y `fix/inventory-excel-locale` (API) con PR hacia `main`.
 4. Tamaño de letra de 13 a 14 px (`PENDIENTES.md` #9), en su propia rama.
 5. `seed:rbac` en modo "solo agregar" (`PENDIENTES.md` #8), para poder correrlo en producción sin perder los cambios hechos a mano en los roles del sistema.
 6. Actualizar el Manual de Usuario: 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas. Agregar Servicios cuando llegue a producción.

@@ -132,6 +132,7 @@ const PERMISSIONS: Record<string, string[]> = {
   suppliers: ['suppliers:view'],
   clients: ['clients:view'],
   categories: ['categories:view'],
+  services: ['services:view'],
   settings: ['settings:view'],
   users: ['users:view'],
   roles: ['settings:edit'],

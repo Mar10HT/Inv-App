@@ -80,6 +80,11 @@ export const routes: Routes = [
     canActivate: [permissionGuard('categories:view')]
   },
   {
+    path: 'services',
+    loadComponent: () => import('./components/services/services').then(m => m.Services),
+    canActivate: [permissionGuard('services:view')]
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./components/profile/profile').then(m => m.Profile),
     canActivate: [authGuard]

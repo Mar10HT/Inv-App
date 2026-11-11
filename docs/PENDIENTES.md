@@ -2,28 +2,31 @@
 
 Lista de problemas encontrados al probar la app y escribir el Manual de Usuario. Todo se verificó en la app corriendo (frontend `Inv-App` y backend `Inv-App-API`, rama `feat/purchase-invoices`).
 
-Última actualización: 2026-10-31.
+Última actualización: 2026-11-06.
 
 ## Plan de lo que sigue (2026-10-31)
 
 [Mar10HT/Inv-App-API#18](https://github.com/Mar10HT/Inv-App-API/pull/18) y [Mar10HT/Inv-App#42](https://github.com/Mar10HT/Inv-App/pull/42) (rama `fix/stock-take-concurrency`) ya están mergeados a `main` en los dos repos.
 
-El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md).
+El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md). Al 2026-11-03, los puntos 1 (Excel) y la mayor parte del 2 (comprobantes y reportes PDF) ya están resueltos — solo queda de 2 la revisión de Exportaciones/Descargas CSV, sin alcance definido todavía.
 
-Orden sugerido con lo que queda: **1** (Excel), **2** sigue en curso, **3** después del despliegue. Tamaños estimados midiendo el código el 2026-10-31.
+Orden sugerido con lo que queda: **3** después del despliegue, **6/7** sin empezar (nuevos del 2026-11-03). El **5** quedó implementado el 2026-11-06 en la rama `feat/services-catalog` de los dos repos, sin PR todavía.
 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
-| 1 | Excel "Transacciones" lee todos los movimientos | Chico-medio: 4–6 archivos del API, ~250 líneas | Bajo | Nada (no toca el formato) |
-| 2 | Formato de PDFs y exportaciones | Grande, sin estimar | Medio | En progreso, rama `olanchonet` |
+| 1 | ~~Excel "Transacciones" lee todos los movimientos~~ | — | — | Resuelto, ver abajo |
+| 2 | Formato de PDFs y exportaciones | Reducido a solo Exportaciones/Descargas CSV | Bajo | Comprobantes y reportes PDF resueltos |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
 | 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
+| 5 | ~~Catálogo de Servicios para cotizaciones~~ | 2 commits por repo | Medio (toca schema) | Hecho en `feat/services-catalog`, falta PR |
+| 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
+| 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
 
-### 1. Excel "Transacciones" con todos los movimientos
+### 1. Excel "Transacciones" con todos los movimientos — resuelto
 
-Descargas y Reportes Programados (`ReportsService.generateTransactionsReport`, `ScheduledReportsService` caso `TRANSACTIONS`) siguen leyendo solo la tabla `transactions`. Pasarían a usar `StockMovementsService.findAll` con período y bodega, y a agregar las columnas Documento y Origen. El estilo del archivo no cambia (eso es el punto 2).
+Verificado el 2026-11-03: ya estaba hecho desde el commit `cc4240c` (`feat/excel-transactions-movements`, mergeado). `generateTransactionsReport` lee de `StockMovementsService.findAll` (con columnas Documento y Origen), no de la tabla `transactions`, y lo mismo usa `ScheduledReportsService` para el caso `TRANSACTIONS` (llama al mismo método). Test dedicado (`reports.service.spec.ts`) cubre los 3 KPIs de abajo explícitamente: "lists a sale, a purchase, a cancellation, a transfer and an applied stock take as rows". Suite completa verificada hoy: 32/32 passing.
 
-KPIs de merge:
+KPIs de merge (los tres, ya cumplidos):
 - Para el mismo período y bodega, el Excel tiene las mismas filas que la pestaña Transacciones.
 - El reporte programado de Transacciones se genera y se envía.
 - Tests: ventas, compras, cancelaciones, transferencias y conteos aparecen en el Excel.
@@ -35,6 +38,46 @@ En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan de
 ### 3. Manual
 
 Después del despliegue: lista en la sección "Alertas", abajo.
+
+### 5. Catálogo de Servicios para cotizaciones: hecho el 2026-11-06
+
+Rama `feat/services-catalog` en los dos repos, commiteada y sin pushear. Se siguió el diseño de abajo sin cambios.
+
+- **API** `7ef7a87`: modelo `Service` (nombre único, descripción, precio sugerido `Decimal` opcional, moneda), módulo copiado de Categorías, permisos `services:view/create/edit/delete` con los mismos roles que Categorías, `SERVICE_IN_USE` al borrar uno usado.
+- **API** `80ab619`: `SaleItem.inventoryItemId` opcional y `serviceId` nuevo, los dos con `onDelete: Restrict`. Un solo helper (`resolveLines`) arma las líneas al crear y al editar. Solo las líneas de producto tocan stock: crear, confirmar, cancelar (el fix de `cancel()`) y mover una cotización de bodega. Movimientos deja fuera las líneas de servicio, y una venta de solo servicios no aparece. Errores nuevos `SALE_LINE_AMBIGUOUS` y `SALE_LINE_NAME_REQUIRED`. Test de integración contra Postgres (`test/services-catalog.int-spec.ts`).
+- **Frontend** `b01d9cb`: pantalla Servicios (Gestión, debajo de Clientes), copia de Categorías con `CrudDialog`.
+- **Frontend** `58362f6`: cada línea de Ventas/Cotizaciones tiene Producto / Servicio / Otro. Servicio sugiere el precio del catálogo y no tiene tope de stock; Otro es una descripción escrita a mano.
+- Verificado: API 561 unitarios + 21 de integración, lint, build; frontend 1555 tests, lint, build de prod; en la app (venta mixta, comprobante PDF con las tres líneas, stock y su devolución al cancelar, borrar un servicio usado, celular).
+- **Al desplegar**: el `db push` de `railway:migrate` aplica el cambio sin pérdida de datos (columna nullable, tabla, índice y FK; probado en una base con datos). Correr `railway run npm run seed:rbac` para que los roles tengan los permisos `services:*`; sin eso solo el administrador ve Servicios.
+
+KPIs de merge: CI verde en los dos repos; una venta con producto, servicio y línea suelta descuenta solo el producto y lo devuelve al cancelar; un servicio usado no se puede borrar.
+
+Diseño original (aprobado por Mario):
+
+El cliente preguntó si se pueden cotizar servicios (instalación, soporte, etc.), no solo productos de inventario. Mario pidió **las dos cosas combinadas**: un catálogo de Servicios reusable (nombre + precio sugerido guardado) *y* la posibilidad de agregar una línea de servicio suelta directo en la cotización, sin pasar por el catálogo, cuando no amerite crear una entrada fija.
+
+Plan completo (schema, archivos por tocar en los dos repos, secuencia de commits, verificación) ya escrito y confirmado por Mario: `C:\Users\mherr\.claude\plans\rustling-cuddling-meerkat.md`. Decisiones ya cerradas, no volver a preguntar:
+- `SaleItem.inventoryItemId` pasa a opcional; nuevo `serviceId` opcional (FK a `Service`); una línea sin ninguno de los dos es una línea suelta con `itemName` escrito a mano. Validado en `SalesService`, no en la base de datos (mismo patrón que el XOR de `Payment`).
+- **Sin campo `kind` discriminador** en el DTO: las tres variantes ya se distinguen solas por qué IDs vienen seteados.
+- **`Service` sin campo `Activo`**: igual de mínimo que `Category` hoy. Un servicio usado en una venta no se puede borrar (protegido por `onDelete: Restrict`, igual que Proveedor/Categoría).
+- El módulo backend de Servicios se copia casi textual de `categories/` (usa `BaseRepository`, CRUD + audit gratis); el frontend copia `categories/` + reusa `CrudDialog`; el toggle Producto/Servicio en el formulario de Ventas copia el patrón `kind: BULK/UNIQUE` que ya existe en `purchase-invoice-form-dialog.ts` (Compras).
+
+Siguiente sesión: ejecutar el plan tal cual está escrito, en el orden de commits que ya define (1. módulo Servicios backend con TDD, 2. módulo Servicios frontend, 3. cambio de schema en `SaleItem` + los 8 puntos de `sales.service.ts` que asumen `inventoryItemId` siempre presente — incluye un fix en `cancel()` que no estaba en el pedido original pero rompe si no se toca, 4. toggle de UI en `sale-form-dialog.ts`).
+
+### 6. Rediseño del Historial de Cambios (Auditoría)
+
+Mario dijo que la pantalla de Auditoría (`audit-log.ts`) es complicada de entender hoy: el bloque "Cambios" de cada entrada muestra el nombre del campo y los valores tal como los guarda la base (`unitPrice: 53.7 → 60`, `status: ACTIVE → DRAFT`), sin traducir ni formatear, y los campos que son IDs (bodega, usuario asignado, cliente) muestran el cuid interno en vez de un nombre.
+
+Diseño aprobado por Mario (mockups: https://claude.ai/artifact/Cuz4EdGJTwqDWzV67E2mVA):
+- **En la lista**: cada entrada se resume en una sola oración en lenguaje natural (ej. "Mario Herrera cambió el precio de Headset HyperX Cloud II de L 53.70 a L 60.00"), no la lista de campo→valor de hoy.
+- **Al hacer clic**: se abre un modal con el detalle completo — ahí sí la lista campo por campo, pero con el nombre del campo traducido (diccionario nuevo `AUDIT.FIELD.*`, mismo patrón que `AUDIT.ACTION.*`/`AUDIT.ENTITY.*`) y los IDs resueltos a nombres en vez del cuid crudo.
+- **Filtros**: tiene que poder filtrarse para sacar solo un tipo de evento, ej. "solo las transacciones". El filtro por entidad ya existe en el código (`selectedEntity`, incluye `Transaction`) — falta confirmar si alcanza tal cual o si Mario quiere algo más específico (¿por tipo de transacción, no solo por entidad?).
+
+Pendiente de resolver antes de implementar: de dónde sale el nombre resuelto de una referencia (bodega, usuario, cliente) — si el backend lo guarda como snapshot al momento del log (como ya hace `SaleItem.itemName`) o si el frontend lo busca en listas que ya tiene cargadas. Y cómo se arma la oración de la Opción C para cada tipo de evento (no es automático, hay que escribirla por caso).
+
+### 7. Mover Reportes Programados de Configuración a Reportes
+
+Hoy la función de Reportes Programados vive dentro de la pantalla de Configuración; Mario pidió moverla a la sección de Reportes, donde tiene más sentido por cercanía temática (ahí ya están las pestañas de Valor/Estado/Asignaciones/Transacciones/Tendencias/Descargas). Es un cambio de navegación, no de lógica — no se tocó nada todavía.
 
 ### KPIs comunes a todo PR
 
@@ -68,19 +111,21 @@ Pusheado en `feat/purchase-invoices`: backend `607d8be`, frontend `30fff85`.
 - [x] **"Ver todas" llevaba al Historial de Cambios.** Ahora abre Reportes en la pestaña Estado.
 - [x] **Ítems Únicos marcados como stock bajo (1/1).** Eran 13 en la base de prueba; el Dashboard bajó de 39 a 26 ítems con stock bajo.
 - [x] Las alertas de ítems eliminados ahora se resuelven solas.
-- [ ] **Actualizar el Manual de Usuario cuando estos arreglos lleguen a producción**:
-    - "Alertas de stock" y la pregunta frecuente de la campana: ya no esperan 6 horas, se generan al mover stock.
-    - Transacciones manuales: el recuadro "Importante" y la pregunta "Registré una transacción por error" dicen que borrar no devuelve el stock; ahora sí lo devuelve.
-    - Compras: quitar el recuadro "Importante" que pide revisar la Moneda (ya arranca en la de la Configuración Fiscal).
-    - Ventas, Préstamos, Transferencias y Salidas: ya no hay campo Referencia; cada documento se numera solo (PRE-, TRA-, SAL-, COT-). "Notas" ahora es "Comentarios". Actualizar capturas de formularios y listas.
-    - Ventas: un solo campo Cliente con la opción "Cliente ocasional".
-    - Transacciones aparece en el menú lateral; Reportes > Transacciones y Tendencias muestran todos los movimientos, con la columna Documento.
-    - Reportes Programados: se puede programar Salidas.
-    - El login y las fechas salen en español.
-    - Reportes > Transacciones: paginador, período por defecto de 90 días y exportaciones de todo el período; Tendencias muestra 30 días.
-    - Conteo Físico: "Aplicar cambios" suma o resta la diferencia y conserva lo vendido mientras tanto; los errores dicen el motivo.
-    - Ventas y Compras: no se pueden cancelar con pagos registrados (hay que anularlos primero).
-    - Clientes: Moneda del Límite de crédito.
+- [ ] **Actualizar el Manual de Usuario** — ya no es una lista de supuestos: cada punto se verificó leyendo el contenido real del manual (https://claude.ai/artifact/V18oMooHpYnxuGH9M3ySmT, última edición real 2026-10-13) el 2026-11-03. 10 puntos confirmados genuinamente desactualizados, con la frase exacta que hay que corregir:
+    - **Alertas "cada 6 horas"**: aparece 2 veces (sección Alertas + FAQ) — ya se generan al mover stock, no cada 6 horas.
+    - **Borrar transacción "no devuelve el stock"**: aparece 2 veces (recuadro Importante + FAQ) — está al revés, ahora sí lo devuelve.
+    - **Compras "el formulario empieza en USD aunque su Configuración Fiscal use HNL"**: recuadro Importante desactualizado, ya arranca en la moneda de la Configuración Fiscal.
+    - **Ventas, paso "Escriba una Referencia (opcional)"**: ese campo no existe más; falta mencionar la numeración automática (COT-/V-).
+    - **"Cliente ocasional"**: 0 menciones en todo el documento.
+    - **Transacciones "No aparece en el menú: ábrala con Ctrl+K"** y un recuadro que dice que Reportes > Transacciones/Tendencias "solo muestran lo que se registra a mano... las ventas, compras, transferencias, salidas, préstamos y conteos no aparecen ahí" — las dos cosas cambiaron, es el hallazgo más grave de los 10.
+    - **"El reporte de Salidas no se puede programar"**: ya se puede.
+    - **Conteo Físico "para que el stock quede igual a lo contado"**: ahora solo aplica la diferencia, conserva ventas/recepciones intermedias.
+    - **Cancelar con pagos registrados**: no está documentado en ningún lado (ni en "Cancelar una venta" ni en la FAQ).
+    - **Moneda del Límite de Crédito**: el paso de agregar cliente no menciona elegir moneda para el límite.
+
+    Ya están bien (no hace falta tocarlos): Tendencias dice correctamente "últimos 30 días"; el comprobante de Venta/Compra ya menciona el botón "Descargar PDF". No se revisó a fondo (bajo riesgo): login/fechas en español, paginador de 90 días en Transacciones.
+
+    Pendiente aparte, ahora sí posible: agregar al manual las capturas del nuevo formato de PDF de comprobantes y reportes (ya está listo, ver "Formato de reportes y documentos exportables" abajo).
 
 ## Revisión de los PRs a producción: resuelto el 2026-10-16
 
@@ -121,11 +166,12 @@ En progreso desde el 2026-10-31: el usuario aprobó una plantilla (olanchonet) y
 
 Falta cambiar el formato de los documentos que genera la app. Hasta que eso esté hecho, el manual no lleva capturas de ellos (los menciona sin imagen).
 
-- [ ] **Comprobantes PDF** de Ventas, Compras, Transferencias, Préstamos y Salidas: definir el formato final. Lo que se vio al probarlos:
-    - El **Estado** sale en inglés (`ACTIVE`, `APPROVED`).
-    - El comprobante de venta **no trae los datos fiscales de la empresa** (RTN, dirección, teléfono de la Configuración Fiscal).
+- [x] **Comprobantes PDF** de Ventas, Compras, Transferencias, Préstamos y Salidas: resuelto, verificado en `pdf-receipts.service.ts` el 2026-11-03.
+    - ~~El **Estado** sale en inglés (`ACTIVE`, `APPROVED`)~~: ya traduce por `t.statuses[ctx.status]` (línea 514), con el comentario de código confirmando que fue un fix anterior a esta sesión.
+    - ~~El comprobante de venta **no trae los datos fiscales de la empresa**~~: `render()` carga `fiscalConfig` y lo pasa a `buildHeaderData()` para los 5 tipos de documento, no solo Venta (línea 1016).
     - ~~El comprobante de transferencia muestra el ID interno~~: ahora muestra su número (TRA-0001), igual que préstamos y salidas.
-- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): revisar el formato junto con los comprobantes.
+- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): sin revisar todavía — alcance más amplio y sin definir, no se tocó en esta sesión.
+- [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
 
 ## Bugs

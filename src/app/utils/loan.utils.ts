@@ -95,7 +95,7 @@ export function getLoanDueDateClass(loan: Loan, now: Date = new Date()): string 
   const dueDate = new Date(loan.dueDate);
   const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-  if (daysUntilDue <= 3) return 'text-amber-400 font-medium';
-  if (daysUntilDue <= 7) return 'text-yellow-400';
+  if (daysUntilDue <= 3) return 'text-[var(--color-accent-amber)] font-medium';
+  if (daysUntilDue <= 7) return 'text-[var(--color-accent-yellow)]';
   return 'text-foreground';
 }

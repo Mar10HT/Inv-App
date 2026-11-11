@@ -129,57 +129,57 @@
   --color-secondary-on: #ffffff;
 
   /* Surfaces */
-  --color-surface: #f8fafc;
+  --color-surface: #eef1f5;
   --color-surface-variant: #ffffff;
-  --color-surface-elevated: #f1f5f9;
-  --color-surface-overlay: rgba(0, 0, 0, 0.3);
+  --color-surface-elevated: #f4f6f9;
+  --color-surface-overlay: rgba(15, 23, 42, 0.45);
 
   /* Text */
   --color-on-surface: #0f172a;
-  --color-on-surface-variant: #334155;  /* WCAG AA: 7.1:1 contrast */
-  --color-on-surface-muted: #64748b;
+  --color-on-surface-variant: #2b3a4e;  /* 11.5:1 on white */
+  --color-on-surface-muted: #55657a;
 
   /* Tailwind semantic aliases - DARK text for light theme */
   --color-foreground: #0f172a;
-  --color-foreground-muted: #334155;
-  --color-background: #f8fafc;
+  --color-foreground-muted: #2b3a4e;
+  --color-background: #eef1f5;
   --color-card: #ffffff;
-  --color-card-hover: #ffffff;
-  --color-border-muted: #cbd5e1;
+  --color-card-hover: #f8fafc;
+  --color-border-muted: #c3ccd8;
   --color-accent: #2d5a4e;
   --color-accent-foreground: #ffffff;
 
   /* Borders */
-  --color-border: #b6c2d1;
-  --color-border-subtle: #cbd5e1;
-  --color-border-strong: #94a3b8;
+  --color-border: #a3b0c2;
+  --color-border-subtle: #c3ccd8;
+  --color-border-strong: #7d8ba0;
 
   /* Semantic - Success */
-  --color-success: #059669;
+  --color-success: #047857;
   --color-success-on: #ffffff;
   --color-success-bg: #d1fae5;
   --color-success-border: #a7f3d0;
 
   /* Semantic - Warning */
-  --color-warning: #d97706;
+  --color-warning: #b45309;
   --color-warning-on: #ffffff;
   --color-warning-bg: #fef3c7;
   --color-warning-border: #fcd34d;
 
   /* Semantic - Error */
-  --color-error: #dc2626;
+  --color-error: #b91c1c;
   --color-error-on: #ffffff;
-  --color-error-bg: #fecaca;
+  --color-error-bg: #fee2e2;
   --color-error-border: #fda4af;
 
   /* Semantic - Info */
-  --color-info: #2563eb;
+  --color-info: #1d4ed8;
   --color-info-on: #ffffff;
   --color-info-bg: #dbeafe;
   --color-info-border: #bfdbfe;
 
   /* Status Colors (for badges/indicators) */
-  --color-status-success: #059669;
+  --color-status-success: #047857;
   --color-status-success-bg: #d1fae5;
   --color-status-success-border: #a7f3d0;
   --color-status-warning: #c2410c;
@@ -195,22 +195,22 @@
   /* Accent Colors (for distinct action icons) */
   --color-accent-violet: #7c3aed;
   --color-accent-violet-bg: #ede9fe;
-  --color-accent-indigo: #4f46e5;
+  --color-accent-indigo: #4338ca;
   --color-accent-indigo-bg: #e0e7ff;
-  --color-accent-purple: #9333ea;
+  --color-accent-purple: #7e22ce;
   --color-accent-purple-bg: #f3e8ff;
-  --color-accent-cyan: #0891b2;
+  --color-accent-cyan: #0e7490;
   --color-accent-cyan-bg: #cffafe;
-  --color-accent-teal: #0d9488;
+  --color-accent-teal: #0f766e;
   --color-accent-teal-bg: #ccfbf1;
-  --color-accent-amber: #d97706;
+  --color-accent-amber: #b45309;
   --color-accent-amber-bg: #fef3c7;
-  --color-accent-yellow: #ca8a04;
+  --color-accent-yellow: #a16207;
   --color-accent-yellow-bg: #fef9c3;
 
   /* Navigation */
-  --nav-hover-bg: rgba(0, 0, 0, 0.05);
-  --nav-active-bg: rgba(45, 90, 78, 0.12);
+  --nav-hover-bg: rgba(15, 23, 42, 0.06);
+  --nav-active-bg: rgba(45, 90, 78, 0.14);
 
   /* Focus ring */
   --color-focus-ring: rgba(45, 90, 78, 0.4);

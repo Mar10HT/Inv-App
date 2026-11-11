@@ -82,7 +82,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div class="absolute inset-0 bg-[var(--color-surface-overlay)]" role="presentation" (click)="close()"></div>
       <div
         #dialogEl
         role="dialog"

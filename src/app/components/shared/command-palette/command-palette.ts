@@ -76,7 +76,7 @@ interface CommandItem {
                   [ngClass]="{'bg-[var(--color-surface-elevated)]': selectedIndex() === getGlobalIndex('navigation', i)}"
                   class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-colors group">
                   <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center group-hover:bg-teal-500/20">
-                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-teal-500"></lucide-icon>
+                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-[var(--color-accent-teal)]"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
                     <p class="text-sm text-foreground">{{ item.label }}</p>
@@ -105,7 +105,7 @@ interface CommandItem {
                   [ngClass]="{'bg-[var(--color-surface-elevated)]': selectedIndex() === getGlobalIndex('action', i)}"
                   class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-colors group">
                   <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center group-hover:bg-blue-500/20">
-                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-blue-400"></lucide-icon>
+                    <lucide-icon [name]="item.icon" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-[var(--color-status-info)]"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left">
                     <p class="text-sm text-foreground">{{ item.label }}</p>
@@ -128,7 +128,7 @@ interface CommandItem {
                   [ngClass]="{'bg-[var(--color-surface-elevated)]': selectedIndex() === getGlobalIndex('item', i)}"
                   class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-elevated)] transition-colors group">
                   <div class="w-8 h-8 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center group-hover:bg-emerald-500/20">
-                    <lucide-icon name="Package" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-emerald-400"></lucide-icon>
+                    <lucide-icon name="Package" class="!w-4 !h-4 text-[var(--color-on-surface-variant)] group-hover:text-[var(--color-status-success)]"></lucide-icon>
                   </div>
                   <div class="flex-1 text-left min-w-0">
                     <p class="text-sm text-foreground truncate">{{ item.label }}</p>

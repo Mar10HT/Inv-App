@@ -61,7 +61,7 @@ import { AppDatePipe } from '../../../shared/app-date.pipe';
                   </button>
                   <button
                     (click)="openRejectDialog()"
-                    class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-3 rounded-lg transition-all flex items-center gap-2 border border-red-600/50">
+                    class="bg-red-600/20 hover:bg-red-600 text-[var(--color-status-error)] hover:text-white px-4 py-3 rounded-lg transition-all flex items-center gap-2 border border-red-600/50">
                     <lucide-icon name="X" class="!w-5 !h-5 !text-current"></lucide-icon>
                     <span>{{ 'DISCHARGES.REJECT' | translate }}</span>
                   </button>
@@ -167,7 +167,7 @@ import { AppDatePipe } from '../../../shared/app-date.pipe';
                 @if (request()!.rejectedReason) {
                   <div class="sm:col-span-2">
                     <p class="text-sm text-[var(--color-on-surface-variant)] mb-1">{{ 'DISCHARGES.REJECT_REASON' | translate }}</p>
-                    <p class="text-red-400">{{ request()!.rejectedReason }}</p>
+                    <p class="text-[var(--color-status-error)]">{{ request()!.rejectedReason }}</p>
                   </div>
                 }
               </div>
@@ -185,7 +185,7 @@ import { AppDatePipe } from '../../../shared/app-date.pipe';
 
     <!-- Reject Dialog -->
     @if (showRejectDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closeRejectDialog()">
+      <div class="fixed inset-0 bg-[var(--color-surface-overlay)] flex items-center justify-center z-50 p-4" role="presentation" (click)="closeRejectDialog()">
         <div role="dialog" aria-modal="true" aria-labelledby="discharge-detail-reject-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 id="discharge-detail-reject-title" class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>

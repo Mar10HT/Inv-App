@@ -33,7 +33,7 @@ export interface LoanFormResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div class="absolute inset-0 bg-[var(--color-surface-overlay)]" role="presentation" (click)="close()"></div>
       <div role="dialog" aria-modal="true" aria-labelledby="loan-form-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="loan-form-dialog-title" class="text-xl font-semibold text-foreground">{{ 'LOANS.NEW_LOAN' | translate }}</h2>

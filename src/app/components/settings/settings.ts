@@ -380,7 +380,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
     </div>
 
     <!-- Danger Zone Section -->
-    <div class="bg-surface-variant rounded-xl border border-red-900/50 overflow-hidden">
+    <div class="bg-surface-variant rounded-xl border border-[var(--color-error-border)] overflow-hidden">
       <div class="p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-red-900/30 flex items-center justify-center">
@@ -391,7 +391,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
           </div>
         </div>
 
-        <div class="flex items-center justify-between ml-13 p-4 bg-red-900/10 border border-red-900/30 rounded-lg">
+        <div class="flex items-center justify-between ml-13 p-4 bg-red-900/10 border border-[var(--color-error-border)] rounded-lg">
           <div>
             <p class="text-foreground font-medium">{{ 'SETTINGS.RESET_DATA' | translate }}</p>
             <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'SETTINGS.RESET_DATA_DESC' | translate }}</p>

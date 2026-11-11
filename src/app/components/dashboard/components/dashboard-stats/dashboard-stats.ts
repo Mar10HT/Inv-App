@@ -25,40 +25,40 @@ import { DashboardStats } from '../../../../services/dashboard.service';
       </div>
 
       <!-- In Stock Card -->
-      <div class="bg-surface-variant rounded-xl border border-emerald-900/50 p-6 hover:border-emerald-800/50 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-[var(--color-success-border)] p-6 hover:border-emerald-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.IN_STOCK' | translate }}</p>
             <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ stats()?.inStockItems || 0 }}</p>
           </div>
           <div class="bg-[var(--color-primary-container)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="CheckCircle2" class="!w-6 !h-6 text-emerald-500"></lucide-icon>
+            <lucide-icon name="CheckCircle2" class="!w-6 !h-6 text-[var(--color-status-success)]"></lucide-icon>
           </div>
         </div>
       </div>
 
       <!-- Low Stock Card -->
-      <div class="bg-surface-variant rounded-xl border border-orange-900/50 p-6 hover:border-orange-800/50 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-[var(--color-warning-border)] p-6 hover:border-orange-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.LOW_STOCK' | translate }}</p>
             <p class="text-3xl font-bold text-[var(--color-status-warning)]">{{ stats()?.lowStockItems || 0 }}</p>
           </div>
           <div class="bg-[var(--color-warning-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="AlertTriangle" class="!w-6 !h-6 text-orange-500"></lucide-icon>
+            <lucide-icon name="AlertTriangle" class="!w-6 !h-6 text-[var(--color-status-warning)]"></lucide-icon>
           </div>
         </div>
       </div>
 
       <!-- Total Value Card -->
-      <div class="bg-surface-variant rounded-xl border border-sky-900/50 p-6 hover:border-sky-800/50 transition-all">
+      <div class="bg-surface-variant rounded-xl border border-[var(--color-info-border)] p-6 hover:border-sky-800/50 transition-all">
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_VALUE' | translate }}</p>
             <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ formattedTotalValue() }}</p>
           </div>
           <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="DollarSign" class="!w-6 !h-6 text-sky-500"></lucide-icon>
+            <lucide-icon name="DollarSign" class="!w-6 !h-6 text-[var(--color-status-info)]"></lucide-icon>
           </div>
         </div>
       </div>
@@ -70,10 +70,10 @@ import { DashboardStats } from '../../../../services/dashboard.service';
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
-            <p class="text-3xl font-bold text-purple-400">{{ stats()?.totalUsers || 0 }}</p>
+            <p class="text-3xl font-bold text-[var(--color-accent-purple)]">{{ stats()?.totalUsers || 0 }}</p>
           </div>
           <div class="bg-[var(--color-accent-purple-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Users" class="!w-6 !h-6 text-purple-500"></lucide-icon>
+            <lucide-icon name="Users" class="!w-6 !h-6 text-[var(--color-accent-purple)]"></lucide-icon>
           </div>
         </div>
       </div>
@@ -81,10 +81,10 @@ import { DashboardStats } from '../../../../services/dashboard.service';
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'NAV.WAREHOUSES' | translate }}</p>
-            <p class="text-3xl font-bold text-cyan-400">{{ stats()?.totalWarehouses || 0 }}</p>
+            <p class="text-3xl font-bold text-[var(--color-accent-cyan)]">{{ stats()?.totalWarehouses || 0 }}</p>
           </div>
           <div class="bg-[var(--color-accent-cyan-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Warehouse" class="!w-6 !h-6 text-cyan-500"></lucide-icon>
+            <lucide-icon name="Warehouse" class="!w-6 !h-6 text-[var(--color-accent-cyan)]"></lucide-icon>
           </div>
         </div>
       </div>
@@ -92,10 +92,10 @@ import { DashboardStats } from '../../../../services/dashboard.service';
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-[var(--color-on-surface-variant)] mb-1">{{ 'NAV.CATEGORIES' | translate }}</p>
-            <p class="text-3xl font-bold text-amber-400">{{ stats()?.totalCategories || 0 }}</p>
+            <p class="text-3xl font-bold text-[var(--color-accent-amber)]">{{ stats()?.totalCategories || 0 }}</p>
           </div>
           <div class="bg-[var(--color-accent-amber-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="FolderOpen" class="!w-6 !h-6 text-amber-500"></lucide-icon>
+            <lucide-icon name="FolderOpen" class="!w-6 !h-6 text-[var(--color-accent-amber)]"></lucide-icon>
           </div>
         </div>
       </div>

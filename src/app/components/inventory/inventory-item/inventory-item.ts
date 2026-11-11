@@ -47,7 +47,7 @@ export interface InventoryItemDialogData {
         </div>
         <button
           (click)="close()"
-          class="text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-2">
+          class="text-[var(--color-primary-link)] hover:opacity-80 transition-colors flex items-center gap-2">
           <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
           {{ 'COMMON.CANCEL' | translate }}
         </button>

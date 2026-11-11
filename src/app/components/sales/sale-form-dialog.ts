@@ -267,11 +267,11 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
 
             <div class="space-y-3">
               @for (item of items(); track $index; let i = $index) {
-                <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
+                <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border)] rounded-lg p-4">
                   <div class="flex items-start gap-3">
                     <div class="flex-1 min-w-0 space-y-3">
                       <!-- Kind toggle -->
-                      <div class="flex gap-1 bg-[var(--color-surface-variant)] rounded-lg p-0.5">
+                      <div class="flex gap-1 bg-[var(--color-surface-elevated)] rounded-lg p-0.5">
                         @for (kind of lineKinds; track kind) {
                           <button
                             type="button"
@@ -293,7 +293,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             [ngModel]="item.inventoryItemId"
                             (ngModelChange)="updateItemId(i, $event)"
                             [attr.aria-label]="'SALES.LINE_KIND.PRODUCT' | translate"
-                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+                            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
                           >
                             <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
                             @for (invItem of availableItems(); track invItem.id) {
@@ -311,7 +311,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             [ngModel]="item.serviceId"
                             (ngModelChange)="updateItemService(i, $event)"
                             [attr.aria-label]="'SALES.LINE_KIND.SERVICE' | translate"
-                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+                            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
                           >
                             <option value="">{{ 'SALES.SELECT_SERVICE' | translate }}</option>
                             @for (svc of services(); track svc.id) {
@@ -330,7 +330,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             maxlength="200"
                             [attr.aria-label]="'SALES.LINE_NAME' | translate"
                             [placeholder]="'SALES.LINE_NAME_PLACEHOLDER' | translate"
-                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           />
                         }
                       }
@@ -342,7 +342,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             (ngModelChange)="updateItemQuantity(i, $event)"
                             [max]="item.kind === 'PRODUCT' ? getAvailable(item.inventoryItemId) : null"
                             min="1"
-                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                           />
                         </div>
@@ -353,7 +353,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             (ngModelChange)="updateItemPrice(i, $event)"
                             min="0"
                             step="0.01"
-                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'SALES.UNIT_PRICE' | translate"
                           />
                         </div>
@@ -361,7 +361,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                           type="text"
                           [ngModel]="item.notes"
                           (ngModelChange)="updateItemNotes(i, $event)"
-                          class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                         />
                         <div class="w-20">
@@ -374,7 +374,7 @@ const PAYMENT_CONDITIONS: PaymentCondition[] = [
                             step="0.01"
                             [placeholder]="'SALES.TAX_PERCENT' | translate"
                             [title]="'SALES.TAX_PERCENT' | translate"
-                            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           />
                         </div>
                       </div>

@@ -116,13 +116,13 @@ export interface LoanFormResult {
 
             <div class="space-y-3">
               @for (item of loanItems(); track $index; let i = $index) {
-                <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
+                <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border)] rounded-lg p-4">
                   <div class="flex items-start gap-3">
                     <div class="flex-1 min-w-0 space-y-3">
                       <select
                         [ngModel]="item.inventoryItemId"
                         (ngModelChange)="updateLoanItemId(i, $event)"
-                        class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
+                        class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
                         <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
                         @for (invItem of availableItemsForLoan(); track invItem.id) {
                           <option [value]="invItem.id" [disabled]="isItemAlreadySelected(invItem.id, i)">
@@ -136,14 +136,14 @@ export interface LoanFormResult {
                           [ngModel]="item.quantity"
                           (ngModelChange)="updateLoanItemQuantity(i, $event)"
                           min="1"
-                          class="w-24 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          class="w-24 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                         />
                         <input
                           type="text"
                           [ngModel]="item.notes"
                           (ngModelChange)="updateLoanItemNotes(i, $event)"
-                          class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                         />
                       </div>

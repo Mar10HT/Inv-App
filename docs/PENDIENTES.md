@@ -10,15 +10,15 @@ Lista de problemas encontrados al probar la app y escribir el Manual de Usuario.
 
 El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md). Al 2026-11-03, los puntos 1 (Excel) y la mayor parte del 2 (comprobantes y reportes PDF) ya están resueltos — solo queda de 2 la revisión de Exportaciones/Descargas CSV, sin alcance definido todavía.
 
-Orden sugerido con lo que queda: **3** después del despliegue, **6/7** sin empezar (nuevos del 2026-11-03). El **5** quedó implementado el 2026-11-06 en la rama `feat/services-catalog` de los dos repos, sin PR todavía.
+Orden sugerido con lo que queda: **3** después del despliegue, **6/7/8/9** sin empezar. El **5** (Catálogo de Servicios) está mergeado en `main` desde el 2026-11-11 ([Mar10HT/Inv-App-API#22](https://github.com/Mar10HT/Inv-App-API/pull/22), [Mar10HT/Inv-App#44](https://github.com/Mar10HT/Inv-App/pull/44)); el **4** se resolvió en [Mar10HT/Inv-App#43](https://github.com/Mar10HT/Inv-App/pull/43). El mismo día se subieron tres hotfixes de interfaz directo a `main`, ver "Hotfixes de interfaz: 2026-11-11" abajo.
 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
 | 1 | ~~Excel "Transacciones" lee todos los movimientos~~ | — | — | Resuelto, ver abajo |
 | 2 | Formato de PDFs y exportaciones | Reducido a solo Exportaciones/Descargas CSV | Bajo | Comprobantes y reportes PDF resueltos |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
-| 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
-| 5 | ~~Catálogo de Servicios para cotizaciones~~ | 2 commits por repo | Medio (toca schema) | Hecho en `feat/services-catalog`, falta PR |
+| 4 | ~~`navigation.css` 780 B sobre el presupuesto~~ | — | — | Resuelto en Inv-App#43 |
+| 5 | ~~Catálogo de Servicios para cotizaciones~~ | — | — | Mergeado en `main` (API#22, Inv-App#44); falta desplegar y crear los permisos |
 | 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
 | 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
 | 8 | `seed:rbac` en modo "solo agregar" | Chico: `scripts/seed-rbac.ts` y su test | Bajo | Nada |
@@ -41,9 +41,13 @@ En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan de
 
 Después del despliegue: lista en la sección "Alertas", abajo.
 
-### 5. Catálogo de Servicios para cotizaciones: hecho el 2026-11-06
+### 5. Catálogo de Servicios para cotizaciones: mergeado el 2026-11-11
 
-Rama `feat/services-catalog` en los dos repos, commiteada y sin pushear. Se siguió el diseño de abajo sin cambios.
+- [x] Implementado el 2026-11-06 en la rama `feat/services-catalog` de los dos repos, siguiendo el diseño de abajo sin cambios.
+- [x] Mergeado a `main` el 2026-11-11: [Mar10HT/Inv-App-API#22](https://github.com/Mar10HT/Inv-App-API/pull/22) y [Mar10HT/Inv-App#44](https://github.com/Mar10HT/Inv-App/pull/44).
+- [ ] Merge de `main` hacia `olanchonet` en los dos repos (despliega el cambio en producción).
+- [ ] En producción, después del despliegue: crear los permisos `services:*` con el SQL de abajo y marcarlos en Roles.
+- [ ] Agregar Servicios al Manual de Usuario cuando esté en producción.
 
 - **API** `7ef7a87`: modelo `Service` (nombre único, descripción, precio sugerido `Decimal` opcional, moneda), módulo copiado de Categorías, permisos `services:view/create/edit/delete` con los mismos roles que Categorías, `SERVICE_IN_USE` al borrar uno usado.
 - **API** `80ab619`: `SaleItem.inventoryItemId` opcional y `serviceId` nuevo, los dos con `onDelete: Restrict`. Un solo helper (`resolveLines`) arma las líneas al crear y al editar. Solo las líneas de producto tocan stock: crear, confirmar, cancelar (el fix de `cancel()`) y mover una cotización de bodega. Movimientos deja fuera las líneas de servicio, y una venta de solo servicios no aparece. Errores nuevos `SALE_LINE_AMBIGUOUS` y `SALE_LINE_NAME_REQUIRED`. Test de integración contra Postgres (`test/services-catalog.int-spec.ts`).
@@ -129,7 +133,7 @@ KPIs de merge:
 
 ## Montos en Decimal: resuelto el 2026-10-31
 
-Rama `feat/decimal-amounts-api` (Inv-App-API), 8 commits, sin PR abierto todavía. No tocó el frontend: se tomó la opción A (el API sigue devolviendo números en el JSON, el redondeo exacto queda en el servidor).
+Rama `feat/decimal-amounts-api` (Inv-App-API), 8 commits, mergeada en [Mar10HT/Inv-App-API#19](https://github.com/Mar10HT/Inv-App-API/pull/19). No tocó el frontend: se tomó la opción A (el API sigue devolviendo números en el JSON, el redondeo exacto queda en el servidor).
 
 19 campos en 8 modelos (`InventoryItem.price`, `OutflowItem.unitPrice`, `Sale.totalAmount/taxPercent/taxAmount`, `SaleItem.unitPrice/lineTotal/taxPercent/taxAmount`, `FiscalConfig.isvPercent`, `PurchaseInvoice.totalAmount/taxPercent/taxAmount`, `PurchaseInvoiceItem.unitPrice/lineTotal/taxPercent/taxAmount`, `Payment.amount`, `Client.creditLimit`) pasaron de `Float` a `Decimal` (`numeric(14,2)` montos, `numeric(5,2)` porcentajes) en los dos schemas.
 
@@ -197,7 +201,7 @@ Los dos PRs se aprobaron el 2026-10-16 con estas condiciones y seguimientos (com
 - [x] **Préstamos: lock en cada cambio de estado.** Enviar, iniciar devolución, confirmar recepción o devolución (con QR o manual) y cancelar bloquean el préstamo. La devolución sin QR (`PATCH /loans/:id/return`) ya no acepta préstamos cancelados ni sin enviar. Test de integración con las carreras.
 - [x] **`GET /reports/movements`: paginación y filtros por fecha.** Acepta `from`, `to`, `type`, `page` y `limit`; sin fechas devuelve los últimos 90 días. La pestaña Transacciones pagina desde el servidor, Tendencias pide 30 días y las exportaciones traen todo el período (misma rama).
 - [x] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: resuelto el 2026-10-31, ver "Montos en Decimal: resuelto el 2026-10-31" arriba.
-- [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
+- [x] `navigation.css` pasaba el presupuesto de 4 kB por 780 bytes: resuelto en [Mar10HT/Inv-App#43](https://github.com/Mar10HT/Inv-App/pull/43).
 
 ## Formato de reportes y documentos exportables
 
@@ -212,6 +216,16 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): sin revisar todavía — alcance más amplio y sin definir, no se tocó en esta sesión.
 - [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
+
+## Hotfixes de interfaz: 2026-11-11
+
+Pedidos de Mario, subidos directo a `main` de Inv-App (sin PR, a pedido suyo). Verificados en la app en modo oscuro y claro; 1555 tests, lint y build de producción pasan en cada uno. Todavía no están en `olanchonet`.
+
+- [x] **Colores de las líneas de ítems** (`05bb9ec`). En Ventas/Cotizaciones, Compras, Transferencias, Préstamos, Salidas y Transacciones, cada línea de ítem era un recuadro casi negro con campos que no combinaban con el resto del formulario. Ahora la línea tiene el fondo del diálogo con borde, sus campos el mismo gris que los demás, y el selector Producto/Servicio/Otro (y Por cantidad/Único) va sobre ese gris. Los campos de arriba de Transacciones tenían el mismo problema.
+- [x] **Notas de la línea de venta** (`2364470`). El campo de notas quedaba de pocos píxeles al lado de cantidad, precio e impuesto; ahora va en su propia fila.
+- [x] **Contraste del modo claro** (`7b56435`; análisis: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx). Fondo de página menos brillante, texto secundario, bordes y colores de estado/acento más oscuros, campos de formulario con borde de 3:1, y los colores Tailwind fijos (`-400/-500`, bordes `-900`, `bg-black/50`) reemplazados por tokens en 27 archivos. El modo oscuro queda igual (solo los links "Ver Todos" pasan al color de link de la app).
+- [ ] **Tamaño de letra**: quedó aparte como pendiente #9.
+- [ ] Merge de `main` hacia `olanchonet` para que lleguen a producción.
 
 ## Bugs
 

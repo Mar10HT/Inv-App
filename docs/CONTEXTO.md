@@ -10,7 +10,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 
 | Repo | Stack | Ramas activas |
 | --- | --- | --- |
-| `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `olanchonet` (formato de PDFs/reportes) |
+| `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `olanchonet` (formato de PDFs/reportes), `feat/audit-and-scheduled-reports` (#6 y #7) |
 | `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `olanchonet` (en progreso) |
 
 `feat/purchase-invoices` ya se mergeó a `main` en los dos repos (no existe más como rama activa). Este archivo y `PENDIENTES.md` viven en `docs/` de `main` desde entonces.
@@ -56,6 +56,8 @@ Hallazgos del agente que investigó antes de planear (no asumir que ya están re
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-11-11 | Inv-App | `f13b790` `2c95bc2` (rama `feat/audit-and-scheduled-reports`) | **#7** Reportes Programados pasan a Reportes > Programados. **#6** Historial de Cambios en oraciones, con detalle traducido en un modal, nombres en vez de IDs y filtro por tipo de registro real |
+| 2026-11-11 | Inv-App / Inv-App-API | merge de `main` en `olanchonet` (`4cb3af5` / `805b09c`) | Servicios y los tres hotfixes llegan a `olanchonet`; docs en conflicto resueltos con la versión de `main` (ya incluía la de `olanchonet`) |
 | 2026-11-11 | Inv-App | `05bb9ec` `2364470` (hotfix en `main`) | Líneas de ítems de los 6 formularios (Ventas/Cotizaciones, Compras, Transferencias, Préstamos, Salidas, Transacciones) con los mismos colores que el resto del formulario; notas de la línea de venta en su propia fila |
 | 2026-11-11 | Inv-App | `9c2b763` (hotfix en `main`) | **Contraste del modo claro** (reporte: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx): tokens del tema claro (fondo menos brillante, texto secundario, bordes, verdes/rojos/amarillos de estado y acentos más oscuros), borde de 3:1 en inputs/selects/textareas, y los colores Tailwind fijos (`-400/-500`, `bg-black/50`, bordes `-900`) reemplazados por tokens en toda la app. El tamaño de letra quedó como pendiente #9 |
 | 2026-11-06 | Inv-App-API / Inv-App | `7ef7a87` `80ab619` / `b01d9cb` `58362f6` (rama `feat/services-catalog`, mergeada en API#22 / Inv-App#44 el 2026-11-11) | **Catálogo de Servicios**: pantalla y API de Servicios; las líneas de una venta o cotización pueden ser producto, servicio del catálogo o una descripción escrita a mano, y solo los productos tocan stock. Ver `PENDIENTES.md` #5 |
@@ -150,9 +152,9 @@ Decisiones del 2026-11-06: no hace falta revisar el Postgres de `olanchonet` (no
 
 **Para retomar, en este orden:**
 
-1. Merge de `main` hacia `olanchonet` en los dos repos, en un horario en que no usen el sistema (despliega Servicios y los hotfixes). Después, en producción, crear los permisos `services:*` con el SQL de `PENDIENTES.md` #5 y asignarlos en Roles (no correr `seed:rbac`, ver #8).
-2. **Exportaciones y Descargas de Reportes** (`workbook.creator` sigue en "Obsid", paleta de colores no alineada a la plantilla): confirmado pendiente de verdad, sin alcance definido todavía.
-3. Rediseño del Historial de Cambios (Auditoría) y mover Reportes Programados a Reportes: diseño aprobado para el primero (ver `PENDIENTES.md` #6), el segundo es solo navegación.
+1. En producción, crear los permisos `services:*` con el SQL de `PENDIENTES.md` #5 y asignarlos en Roles (no correr `seed:rbac`, ver #8). El merge de `main` hacia `olanchonet` ya se hizo el 2026-11-11.
+2. PR de `feat/audit-and-scheduled-reports` (#6 y #7) hacia `main`; después del merge, `main` hacia `olanchonet`.
+3. #2 Exportaciones: rama propia desde `olanchonet` (decisión de Mario: el estilo es solo de Olancho Net). Alcance: Descargas de Reportes (Excel por módulo, API) y los CSV/Excel de cada pestaña de Reportes.
 4. Tamaño de letra de 13 a 14 px (`PENDIENTES.md` #9), en su propia rama.
 5. `seed:rbac` en modo "solo agregar" (`PENDIENTES.md` #8), para poder correrlo en producción sin perder los cambios hechos a mano en los roles del sistema.
 6. Actualizar el Manual de Usuario: 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas. Agregar Servicios cuando llegue a producción.

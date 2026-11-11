@@ -2,7 +2,7 @@
 
 Lista de problemas encontrados al probar la app y escribir el Manual de Usuario. Todo se verificó en la app corriendo (frontend `Inv-App` y backend `Inv-App-API`, rama `feat/purchase-invoices`).
 
-Última actualización: 2026-11-03.
+Última actualización: 2026-11-11.
 
 ## Plan de lo que sigue (2026-10-31)
 
@@ -10,17 +10,19 @@ Lista de problemas encontrados al probar la app y escribir el Manual de Usuario.
 
 El pendiente de montos en `Decimal` (antes el más grande y de más riesgo) ya está resuelto, ver "Montos en Decimal: resuelto el 2026-10-31" abajo. El de formato de PDFs/exportaciones pasó de bloqueado a en progreso: el usuario aprobó una plantilla y el trabajo está en la rama `olanchonet` de los dos repos (ver CONTEXTO.md). Al 2026-11-03, los puntos 1 (Excel) y la mayor parte del 2 (comprobantes y reportes PDF) ya están resueltos — solo queda de 2 la revisión de Exportaciones/Descargas CSV, sin alcance definido todavía.
 
-Orden sugerido con lo que queda: **3** después del despliegue, **5/6/7** sin empezar (nuevos del 2026-11-03).
+Orden sugerido con lo que queda: **3** después del despliegue, **6/7/8/9** sin empezar. El **5** (Catálogo de Servicios) está mergeado en `main` desde el 2026-11-11 ([Mar10HT/Inv-App-API#22](https://github.com/Mar10HT/Inv-App-API/pull/22), [Mar10HT/Inv-App#44](https://github.com/Mar10HT/Inv-App/pull/44)); el **4** se resolvió en [Mar10HT/Inv-App#43](https://github.com/Mar10HT/Inv-App/pull/43). El mismo día se subieron tres hotfixes de interfaz directo a `main`, ver "Hotfixes de interfaz: 2026-11-11" abajo.
 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
 | 1 | ~~Excel "Transacciones" lee todos los movimientos~~ | — | — | Resuelto, ver abajo |
 | 2 | Formato de PDFs y exportaciones | Reducido a solo Exportaciones/Descargas CSV | Bajo | Comprobantes y reportes PDF resueltos |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
-| 4 | `navigation.css` 780 B sobre el presupuesto | Mínimo | Nulo | Nada, opcional |
-| 5 | Catálogo de Servicios para cotizaciones | Sin estimar, depende de la opción elegida | Medio (toca schema) | Nada, pero falta decidir el alcance |
+| 4 | ~~`navigation.css` 780 B sobre el presupuesto~~ | — | — | Resuelto en Inv-App#43 |
+| 5 | ~~Catálogo de Servicios para cotizaciones~~ | — | — | Mergeado en `main` (API#22, Inv-App#44); falta desplegar y crear los permisos |
 | 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
 | 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
+| 8 | `seed:rbac` en modo "solo agregar" | Chico: `scripts/seed-rbac.ts` y su test | Bajo | Nada |
+| 9 | Tamaño de letra: base de 13 a 14 px | Una línea, pero revisar todas las pantallas | Medio (mueve el layout) | Nada |
 
 ### 1. Excel "Transacciones" con todos los movimientos — resuelto
 
@@ -39,7 +41,33 @@ En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan de
 
 Después del despliegue: lista en la sección "Alertas", abajo.
 
-### 5. Catálogo de Servicios para cotizaciones — diseño aprobado, listo para implementar
+### 5. Catálogo de Servicios para cotizaciones: mergeado el 2026-11-11
+
+- [x] Implementado el 2026-11-06 en la rama `feat/services-catalog` de los dos repos, siguiendo el diseño de abajo sin cambios.
+- [x] Mergeado a `main` el 2026-11-11: [Mar10HT/Inv-App-API#22](https://github.com/Mar10HT/Inv-App-API/pull/22) y [Mar10HT/Inv-App#44](https://github.com/Mar10HT/Inv-App/pull/44).
+- [ ] Merge de `main` hacia `olanchonet` en los dos repos (despliega el cambio en producción).
+- [ ] En producción, después del despliegue: crear los permisos `services:*` con el SQL de abajo y marcarlos en Roles.
+- [ ] Agregar Servicios al Manual de Usuario cuando esté en producción.
+
+- **API** `7ef7a87`: modelo `Service` (nombre único, descripción, precio sugerido `Decimal` opcional, moneda), módulo copiado de Categorías, permisos `services:view/create/edit/delete` con los mismos roles que Categorías, `SERVICE_IN_USE` al borrar uno usado.
+- **API** `80ab619`: `SaleItem.inventoryItemId` opcional y `serviceId` nuevo, los dos con `onDelete: Restrict`. Un solo helper (`resolveLines`) arma las líneas al crear y al editar. Solo las líneas de producto tocan stock: crear, confirmar, cancelar (el fix de `cancel()`) y mover una cotización de bodega. Movimientos deja fuera las líneas de servicio, y una venta de solo servicios no aparece. Errores nuevos `SALE_LINE_AMBIGUOUS` y `SALE_LINE_NAME_REQUIRED`. Test de integración contra Postgres (`test/services-catalog.int-spec.ts`).
+- **Frontend** `b01d9cb`: pantalla Servicios (Gestión, debajo de Clientes), copia de Categorías con `CrudDialog`.
+- **Frontend** `58362f6`: cada línea de Ventas/Cotizaciones tiene Producto / Servicio / Otro. Servicio sugiere el precio del catálogo y no tiene tope de stock; Otro es una descripción escrita a mano.
+- Verificado: API 561 unitarios + 21 de integración, lint, build; frontend 1555 tests, lint, build de prod; en la app (venta mixta, comprobante PDF con las tres líneas, stock y su devolución al cancelar, borrar un servicio usado, celular).
+- **Al desplegar**: el `db push` de `railway:migrate` aplica el cambio sin pérdida de datos (columna nullable, tabla, índice y FK; probado en una base con datos). Los permisos `services:*` no existen en la base hasta crearlos; sin ellos solo el administrador ve Servicios. **No correr `seed:rbac`** (decisión del 2026-11-11: Mario modificó roles del sistema en producción y el seed los devolvería a lo del código, ver #8). En su lugar, crear solo los 4 permisos contra la base de producción y marcarlos a mano en Roles para los roles que los necesiten:
+
+  ```sql
+  INSERT INTO permissions (id, key, module, action, description) VALUES
+    (gen_random_uuid()::text, 'services:view',   'services', 'view',   'View services'),
+    (gen_random_uuid()::text, 'services:create', 'services', 'create', 'Create services'),
+    (gen_random_uuid()::text, 'services:edit',   'services', 'edit',   'Edit services'),
+    (gen_random_uuid()::text, 'services:delete', 'services', 'delete', 'Delete services')
+  ON CONFLICT (key) DO NOTHING;
+  ```
+
+KPIs de merge: CI verde en los dos repos; una venta con producto, servicio y línea suelta descuenta solo el producto y lo devuelve al cancelar; un servicio usado no se puede borrar.
+
+Diseño original (aprobado por Mario):
 
 El cliente preguntó si se pueden cotizar servicios (instalación, soporte, etc.), no solo productos de inventario. Mario pidió **las dos cosas combinadas**: un catálogo de Servicios reusable (nombre + precio sugerido guardado) *y* la posibilidad de agregar una línea de servicio suelta directo en la cotización, sin pasar por el catálogo, cuando no amerite crear una entrada fija.
 
@@ -66,6 +94,34 @@ Pendiente de resolver antes de implementar: de dónde sale el nombre resuelto de
 
 Hoy la función de Reportes Programados vive dentro de la pantalla de Configuración; Mario pidió moverla a la sección de Reportes, donde tiene más sentido por cercanía temática (ahí ya están las pestañas de Valor/Estado/Asignaciones/Transacciones/Tendencias/Descargas). Es un cambio de navegación, no de lógica — no se tocó nada todavía.
 
+### 8. `seed:rbac` en modo "solo agregar"
+
+Pedido de Mario el 2026-11-11. Hoy `seed:rbac` (`scripts/seed-rbac.ts`, `syncRolePermissions`) deja los permisos de los cuatro roles del sistema (Gerente de Almacén, Operador, Observador, Externo) **exactamente** como están en `ROLE_PERMISSIONS`: agrega lo que falta y **quita** lo que no está en el código. Si alguien modificó uno de esos roles desde la pantalla de Roles, el seed borra esos cambios. Por eso no se puede correr en producción cada vez que una feature trae permisos nuevos (pasó con `services:*`, ver #5).
+
+Lo que no toca, y tiene que seguir sin tocar: los roles creados desde la app, el Administrador del Sistema (`*`) y los permisos en sí (solo hace upsert, nunca borra).
+
+Propuesta: un modo que crea los permisos que faltan y agrega a los roles del sistema los que el código les da y no tienen, **sin quitar nada nunca**. Que sea el modo por defecto (o el único que se use en producción) y que el reseteo completo quede detrás de un flag explícito (por ejemplo `--reset`). Rama propia.
+
+KPIs de merge:
+- Un rol del sistema con un permiso agregado a mano: después del seed lo conserva.
+- Un rol del sistema con un permiso quitado a mano: después del seed sigue sin él. Para eso, el seed solo asigna los permisos que **no existían** en la base antes de correrlo (los nuevos de esa versión). Confirmar con Mario antes de implementar.
+- Un permiso nuevo en el código aparece en la base y en los roles del sistema que lo tienen en `ROLE_PERMISSIONS`.
+- Corre con Bun en producción: `railway run bun scripts/seed-rbac.ts`.
+
+### 9. Tamaño de letra: base de 13 a 14 px
+
+Hallazgo del análisis de contraste del modo claro (2026-11-11, reporte: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx). Mario siente que el modo claro "fuerza la vista"; los colores ya se corrigieron (hotfix en `main`, ver CONTEXTO.md), pero lo que más pesa es el tamaño.
+
+`src/styles.css:35` fija `html { font-size: 13px }`, así que todas las clases de Tailwind quedan un 19 % más chicas: `text-xs` mide 9.75 px (badges de estado, encabezados de tabla, etiquetas), `text-sm` 11.4 px y el texto base 13 px. Con Outfit en peso 400 es poco para leer un rato largo. Afecta a los dos temas.
+
+Propuesta: subir a **14 px** (`text-xs` 10.5 px, `text-sm` 12.25 px). Es una línea, pero mueve el layout de toda la app, así que va en su propia rama y se revisa pantalla por pantalla antes de mergear.
+
+KPIs de merge:
+- Capturas antes/después de las pantallas principales (Dashboard, Inventario, Ventas y sus diálogos, Reportes, Configuración, Auditoría, menú lateral), en computadora y en celular.
+- Las tablas anchas de Ventas e Inventario no se cortan ni agregan scroll horizontal de página.
+- Ningún botón ni etiqueta queda partido en dos líneas donde antes cabía.
+- Alternativa más chica si 14 px mueve demasiado: dejar la base en 13 px y pasar solo badges y encabezados de tabla de `text-xs` a `text-sm`.
+
 ### KPIs comunes a todo PR
 
 - CI verde en los dos repos: lint, unitarios con cobertura sobre los mínimos, integración contra Postgres, build.
@@ -77,7 +133,7 @@ Hoy la función de Reportes Programados vive dentro de la pantalla de Configurac
 
 ## Montos en Decimal: resuelto el 2026-10-31
 
-Rama `feat/decimal-amounts-api` (Inv-App-API), 8 commits, sin PR abierto todavía. No tocó el frontend: se tomó la opción A (el API sigue devolviendo números en el JSON, el redondeo exacto queda en el servidor).
+Rama `feat/decimal-amounts-api` (Inv-App-API), 8 commits, mergeada en [Mar10HT/Inv-App-API#19](https://github.com/Mar10HT/Inv-App-API/pull/19). No tocó el frontend: se tomó la opción A (el API sigue devolviendo números en el JSON, el redondeo exacto queda en el servidor).
 
 19 campos en 8 modelos (`InventoryItem.price`, `OutflowItem.unitPrice`, `Sale.totalAmount/taxPercent/taxAmount`, `SaleItem.unitPrice/lineTotal/taxPercent/taxAmount`, `FiscalConfig.isvPercent`, `PurchaseInvoice.totalAmount/taxPercent/taxAmount`, `PurchaseInvoiceItem.unitPrice/lineTotal/taxPercent/taxAmount`, `Payment.amount`, `Client.creditLimit`) pasaron de `Float` a `Decimal` (`numeric(14,2)` montos, `numeric(5,2)` porcentajes) en los dos schemas.
 
@@ -145,7 +201,7 @@ Los dos PRs se aprobaron el 2026-10-16 con estas condiciones y seguimientos (com
 - [x] **Préstamos: lock en cada cambio de estado.** Enviar, iniciar devolución, confirmar recepción o devolución (con QR o manual) y cancelar bloquean el préstamo. La devolución sin QR (`PATCH /loans/:id/return`) ya no acepta préstamos cancelados ni sin enviar. Test de integración con las carreras.
 - [x] **`GET /reports/movements`: paginación y filtros por fecha.** Acepta `from`, `to`, `type`, `page` y `limit`; sin fechas devuelve los últimos 90 días. La pestaña Transacciones pagina desde el servidor, Tendencias pide 30 días y las exportaciones traen todo el período (misma rama).
 - [x] **Montos en `Decimal`/`NUMERIC`** en lugar de `Float`: resuelto el 2026-10-31, ver "Montos en Decimal: resuelto el 2026-10-31" arriba.
-- [ ] (sin prioridad) `navigation.css` pasa el presupuesto de 4 kB por 780 bytes (aviso del build, no error).
+- [x] `navigation.css` pasaba el presupuesto de 4 kB por 780 bytes: resuelto en [Mar10HT/Inv-App#43](https://github.com/Mar10HT/Inv-App/pull/43).
 
 ## Formato de reportes y documentos exportables
 
@@ -160,6 +216,16 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 - [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): sin revisar todavía — alcance más amplio y sin definir, no se tocó en esta sesión.
 - [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
+
+## Hotfixes de interfaz: 2026-11-11
+
+Pedidos de Mario, subidos directo a `main` de Inv-App (sin PR, a pedido suyo). Verificados en la app en modo oscuro y claro; 1555 tests, lint y build de producción pasan en cada uno. Todavía no están en `olanchonet`.
+
+- [x] **Colores de las líneas de ítems** (`05bb9ec`). En Ventas/Cotizaciones, Compras, Transferencias, Préstamos, Salidas y Transacciones, cada línea de ítem era un recuadro casi negro con campos que no combinaban con el resto del formulario. Ahora la línea tiene el fondo del diálogo con borde, sus campos el mismo gris que los demás, y el selector Producto/Servicio/Otro (y Por cantidad/Único) va sobre ese gris. Los campos de arriba de Transacciones tenían el mismo problema.
+- [x] **Notas de la línea de venta** (`2364470`). El campo de notas quedaba de pocos píxeles al lado de cantidad, precio e impuesto; ahora va en su propia fila.
+- [x] **Contraste del modo claro** (`7b56435`; análisis: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx). Fondo de página menos brillante, texto secundario, bordes y colores de estado/acento más oscuros, campos de formulario con borde de 3:1, y los colores Tailwind fijos (`-400/-500`, bordes `-900`, `bg-black/50`) reemplazados por tokens en 27 archivos. El modo oscuro queda igual (solo los links "Ver Todos" pasan al color de link de la app).
+- [ ] **Tamaño de letra**: quedó aparte como pendiente #9.
+- [ ] Merge de `main` hacia `olanchonet` para que lleguen a producción.
 
 ## Bugs
 
@@ -177,7 +243,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 
 Decisiones del usuario: borrar los roles duplicados; numeración automática en lugar de Referencia; un solo campo Cliente con "Cliente ocasional"; Reportes lee todos los movimientos. Commits locales en `feat/purchase-invoices` de los dos repos (ver CONTEXTO.md).
 
-- [x] **Roles del sistema duplicados.** `scripts/seed-data.ts` creaba copias en minúscula. Ahora usa las constantes RBAC, y `seed:rbac` / `POST /seed` borran las copias que ya existan (pasando sus usuarios al rol oficial). En producción se limpian la próxima vez que se corra `seed:rbac` (manual: `railway run npm run seed:rbac`, ver CONTEXTO.md).
+- [x] **Roles del sistema duplicados.** `scripts/seed-data.ts` creaba copias en minúscula. Ahora usa las constantes RBAC, y `seed:rbac` / `POST /seed` borran las copias que ya existan (pasando sus usuarios al rol oficial). En producción se limpian la próxima vez que se corra `seed:rbac` (manual: `railway run bun scripts/seed-rbac.ts`, ver CONTEXTO.md; ojo con #8).
 - [x] **Transacciones no estaba en el menú lateral.** Ahora está debajo de Conteo Físico.
 - [x] **Íconos muy chicos en el menú flotante de Comercial.** Lucide copiaba `mr-2` al svg interno; ahora miden 18 px.
 - [x] **El tema de Material no generaba las variables `--mat-sys-*`.** Ahora se generan y siguen los colores de la app en modo oscuro y claro (diálogos, paginador y menú comparados antes y después).
@@ -191,7 +257,7 @@ Decisiones del usuario: borrar los roles duplicados; numeración automática en 
 
 ### Quedó pendiente de esto
 
-- [ ] **Después de desplegar el API**: correr `railway run npm run seed:rbac` una vez para borrar los roles duplicados de producción.
+- [ ] **Después de desplegar el API**: correr `railway run bun scripts/seed-rbac.ts` una vez para borrar los roles duplicados de producción. Ojo: hoy también resetea los permisos de los roles del sistema (ver #8); esperar a que exista el modo "solo agregar" o anotar antes los cambios hechos a mano.
 - [ ] **Al desplegar el API**: `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push` (numera lo existente, mueve las referencias y crea los índices únicos). Probado sobre una copia de la base local con los mismos pasos.
 - [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. La fuente se puede unificar ya (punto 1 del plan); el estilo del archivo espera al formato.
 - [x] ~~Conteos físicos anteriores a este cambio no aparecen en Transacciones/Tendencias~~: no aplica, producción arranca con una base nueva.

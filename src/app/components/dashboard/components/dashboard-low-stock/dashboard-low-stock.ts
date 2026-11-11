@@ -29,14 +29,14 @@ export interface LowStockItem {
       </div>
       <button
         (click)="$event.stopPropagation(); viewAll.emit()"
-        class="text-sm text-sky-400 hover:text-sky-300 transition-colors cursor-pointer">
+        class="text-sm text-[var(--color-primary-link)] hover:opacity-80 transition-colors cursor-pointer">
         {{ 'COMMON.VIEW_ALL' | translate }}
       </button>
     </div>
 
     @if (items().length === 0) {
       <div class="flex flex-col items-center justify-center py-12">
-        <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-emerald-500 mb-3"></lucide-icon>
+        <lucide-icon name="CheckCircle2" class="!w-10 !h-10 text-[var(--color-status-success)] mb-3"></lucide-icon>
         <p class="text-[var(--color-on-surface-variant)] text-sm">{{ 'COMMON.NO_DATA' | translate }}</p>
       </div>
     } @else {
@@ -50,7 +50,7 @@ export interface LowStockItem {
             class="px-6 py-4 hover:bg-[var(--color-surface-variant)] transition-colors cursor-pointer">
             <div class="flex items-center gap-4">
               <div class="w-10 h-10 bg-[var(--color-warning-bg)] rounded-lg flex items-center justify-center flex-shrink-0">
-                <lucide-icon name="AlertTriangle" class="!w-5 !h-5 text-orange-500"></lucide-icon>
+                <lucide-icon name="AlertTriangle" class="!w-5 !h-5 text-[var(--color-status-warning)]"></lucide-icon>
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-foreground truncate">{{ item.name }}</p>

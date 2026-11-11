@@ -94,7 +94,7 @@ import { UserRole } from '../../../interfaces/user.interface';
         <!-- Header -->
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10">
-            <lucide-icon name="Info" class="!w-[18px] !h-[18px] text-green-500"></lucide-icon>
+            <lucide-icon name="Info" class="!w-[18px] !h-[18px] text-[var(--color-status-success)]"></lucide-icon>
           </div>
           <h3 class="text-base font-semibold text-foreground">{{ 'INVENTORY.FORM.BASIC_INFO.TITLE' | translate }}</h3>
         </div>
@@ -183,7 +183,7 @@ import { UserRole } from '../../../interfaces/user.interface';
         <!-- Header -->
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-500/10">
-            <lucide-icon name="QrCode" class="!w-[18px] !h-[18px] text-indigo-400"></lucide-icon>
+            <lucide-icon name="QrCode" class="!w-[18px] !h-[18px] text-[var(--color-accent-indigo)]"></lucide-icon>
           </div>
           <h3 class="text-base font-semibold text-foreground">{{ 'INVENTORY.FORM.IDENTIFIERS.TITLE' | translate }}</h3>
           @if (isUniqueItem()) {
@@ -296,7 +296,7 @@ import { UserRole } from '../../../interfaces/user.interface';
         <!-- Header -->
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-yellow-500/10">
-            <lucide-icon name="DollarSign" class="!w-[18px] !h-[18px] text-yellow-500"></lucide-icon>
+            <lucide-icon name="DollarSign" class="!w-[18px] !h-[18px] text-[var(--color-accent-yellow)]"></lucide-icon>
           </div>
           <h3 class="text-base font-semibold text-foreground">{{ 'INVENTORY.FORM.PRICE.TITLE' | translate }}</h3>
         </div>

@@ -14,7 +14,10 @@ export enum SaleStatus {
 
 export interface SaleItem {
   id: string;
-  inventoryItemId: string;
+  // A line is an inventory item, a catalog service, or neither (a one-off line
+  // that only has itemName). Only inventory lines take stock.
+  inventoryItemId: string | null;
+  serviceId: string | null;
   quantity: number;
   unitPrice: number;
   lineTotal: number;
@@ -90,8 +93,11 @@ export interface Sale {
   balance?: number;
 }
 
+/** Exactly one of inventoryItemId, serviceId or itemName says what the line sells. */
 export interface CreateSaleItemDto {
-  inventoryItemId: string;
+  inventoryItemId?: string;
+  serviceId?: string;
+  itemName?: string;
   quantity: number;
   unitPrice: number;
   notes?: string;

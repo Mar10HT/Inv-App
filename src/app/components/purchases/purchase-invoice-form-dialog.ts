@@ -78,7 +78,7 @@ const emptyItem = (): PurchaseItemEntry => ({
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div class="absolute inset-0 bg-[var(--color-surface-overlay)]" role="presentation" (click)="close()"></div>
       <div
         #dialogEl
         role="dialog"
@@ -236,11 +236,11 @@ const emptyItem = (): PurchaseItemEntry => ({
 
             <div class="space-y-3">
               @for (item of items(); track $index; let i = $index) {
-                <div class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
+                <div class="bg-[var(--color-surface-variant)] border border-[var(--color-border)] rounded-lg p-4">
                   <div class="flex items-start gap-3">
                     <div class="flex-1 min-w-0 space-y-3">
                       <!-- Kind toggle -->
-                      <div class="flex gap-1 bg-[var(--color-surface-variant)] rounded-lg p-0.5">
+                      <div class="flex gap-1 bg-[var(--color-surface-elevated)] rounded-lg p-0.5">
                         <button
                           type="button"
                           (click)="updateItemKind(i, ItemType.BULK)"
@@ -267,7 +267,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                         <select
                           [ngModel]="item.inventoryItemId"
                           (ngModelChange)="updateItemField(i, 'inventoryItemId', $event)"
-                          class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+                          class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
                         >
                           <option value="">{{ 'PURCHASES.SELECT_ITEM' | translate }}</option>
                           @for (invItem of availableBulkItems(); track invItem.id) {
@@ -285,7 +285,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                             [ngModel]="item.quantity"
                             (ngModelChange)="updateItemField(i, 'quantity', $event || 1)"
                             min="1"
-                            class="w-24 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="w-24 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                           />
                           <input
@@ -294,7 +294,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                             (ngModelChange)="updateItemField(i, 'unitPrice', $event || 0)"
                             min="0"
                             step="0.01"
-                            class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'PURCHASES.UNIT_PRICE' | translate"
                           />
                         </div>
@@ -304,7 +304,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                           [ngModel]="item.name"
                           (ngModelChange)="updateItemField(i, 'name', $event)"
                           maxlength="255"
-                          class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'PURCHASES.NAME_PLACEHOLDER' | translate"
                         />
                         <div class="flex gap-3">
@@ -312,14 +312,14 @@ const emptyItem = (): PurchaseItemEntry => ({
                             type="text"
                             [ngModel]="item.category"
                             (ngModelChange)="updateItemField(i, 'category', $event)"
-                            class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'PURCHASES.CATEGORY_PLACEHOLDER' | translate"
                           />
                           <input
                             type="text"
                             [ngModel]="item.model"
                             (ngModelChange)="updateItemField(i, 'model', $event)"
-                            class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'PURCHASES.MODEL' | translate"
                           />
                         </div>
@@ -329,7 +329,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                             [ngModel]="item.serviceTag"
                             (ngModelChange)="updateItemField(i, 'serviceTag', $event)"
                             maxlength="100"
-                            class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'PURCHASES.SERVICE_TAG' | translate"
                           />
                           <input
@@ -337,7 +337,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                             [ngModel]="item.serialNumber"
                             (ngModelChange)="updateItemField(i, 'serialNumber', $event)"
                             maxlength="100"
-                            class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                            class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                             [placeholder]="'PURCHASES.SERIAL_NUMBER' | translate"
                           />
                         </div>
@@ -347,7 +347,7 @@ const emptyItem = (): PurchaseItemEntry => ({
                           (ngModelChange)="updateItemField(i, 'unitPrice', $event || 0)"
                           min="0"
                           step="0.01"
-                          class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                          class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                           [placeholder]="'PURCHASES.UNIT_PRICE' | translate"
                         />
                       }

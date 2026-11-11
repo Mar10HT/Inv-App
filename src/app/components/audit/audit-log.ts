@@ -464,16 +464,16 @@ export class AuditLogComponent implements OnInit {
       [AuditAction.CREATE]: 'text-[var(--color-status-success)]',
       [AuditAction.UPDATE]: 'text-[var(--color-status-info)]',
       [AuditAction.DELETE]: 'text-[var(--color-status-error)]',
-      [AuditAction.RESTORE]: 'text-indigo-400',
+      [AuditAction.RESTORE]: 'text-[var(--color-accent-indigo)]',
       [AuditAction.LOGIN]: 'text-[var(--color-on-surface-variant)]',
       [AuditAction.LOGOUT]: 'text-[var(--color-on-surface-variant)]',
-      [AuditAction.PASSWORD_CHANGE]: 'text-yellow-400',
+      [AuditAction.PASSWORD_CHANGE]: 'text-[var(--color-accent-yellow)]',
       [AuditAction.ACCESS]: 'text-[var(--color-on-surface-muted)]',
-      [AuditAction.ASSIGN]: 'text-purple-400',
+      [AuditAction.ASSIGN]: 'text-[var(--color-accent-purple)]',
       [AuditAction.UNASSIGN]: 'text-[var(--color-status-warning)]',
-      [AuditAction.TRANSFER]: 'text-cyan-400',
-      [AuditAction.LOAN]: 'text-amber-400',
-      [AuditAction.RETURN]: 'text-teal-400'
+      [AuditAction.TRANSFER]: 'text-[var(--color-accent-cyan)]',
+      [AuditAction.LOAN]: 'text-[var(--color-accent-amber)]',
+      [AuditAction.RETURN]: 'text-[var(--color-accent-teal)]'
     };
     return classes[action] || 'text-[var(--color-on-surface-variant)]';
   }

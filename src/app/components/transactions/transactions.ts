@@ -68,7 +68,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
             <p class="text-3xl font-bold text-[var(--color-status-success)]">{{ stats().inCount }}</p>
           </div>
           <div class="bg-[var(--color-success-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="ArrowDown" class="!text-emerald-400 !w-6 !h-6"></lucide-icon>
+            <lucide-icon name="ArrowDown" class="!text-[var(--color-status-success)] !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
             <p class="text-3xl font-bold text-[var(--color-status-error)]">{{ stats().outCount }}</p>
           </div>
           <div class="bg-[var(--color-error-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="ArrowUp" class="!text-rose-400 !w-6 !h-6"></lucide-icon>
+            <lucide-icon name="ArrowUp" class="!text-[var(--color-status-error)] !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
@@ -90,7 +90,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
             <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ stats().transferCount }}</p>
           </div>
           <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="ArrowLeftRight" class="!text-blue-400 !w-6 !h-6"></lucide-icon>
+            <lucide-icon name="ArrowLeftRight" class="!text-[var(--color-status-info)] !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
     @if (error()) {
       <div class="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-xl p-4 mb-6">
         <div class="flex items-center gap-3">
-          <lucide-icon name="Info" class="!text-rose-400 !w-5 !h-5"></lucide-icon>
+          <lucide-icon name="Info" class="!text-[var(--color-status-error)] !w-5 !h-5"></lucide-icon>
           <span class="text-[var(--color-status-error)]">{{ error() }}</span>
         </div>
       </div>
@@ -151,7 +151,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                   <!-- Type Column -->
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-2">
-                      <lucide-icon [name]="getTypeIcon(transaction.type)" class="!w-4 !h-4" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'"></lucide-icon>
+                      <lucide-icon [name]="getTypeIcon(transaction.type)" class="!w-4 !h-4" [class]="transaction.type === 'IN' ? '!text-[var(--color-status-success)]' : transaction.type === 'OUT' ? '!text-[var(--color-status-error)]' : '!text-[var(--color-status-info)]'"></lucide-icon>
                       <span class="px-3 py-1 rounded-full text-xs font-medium border" [class]="getTypeBadgeClass(transaction.type)">
                         {{ 'TRANSACTION.TYPES.' + transaction.type | translate }}
                       </span>
@@ -215,7 +215,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
                 <!-- Type Badge & Date -->
                 <div class="flex justify-between items-start mb-2">
                   <div class="flex items-center gap-1">
-                    <lucide-icon [name]="getTypeIcon(transaction.type)" class="!w-3 !h-3" [class]="transaction.type === 'IN' ? '!text-emerald-400' : transaction.type === 'OUT' ? '!text-rose-400' : '!text-blue-400'"></lucide-icon>
+                    <lucide-icon [name]="getTypeIcon(transaction.type)" class="!w-3 !h-3" [class]="transaction.type === 'IN' ? '!text-[var(--color-status-success)]' : transaction.type === 'OUT' ? '!text-[var(--color-status-error)]' : '!text-[var(--color-status-info)]'"></lucide-icon>
                     <span class="px-1.5 py-0.5 rounded text-[10px] font-medium" [class]="transaction.type === 'IN' ? 'bg-[var(--color-success-bg)] text-[var(--color-status-success)]' : transaction.type === 'OUT' ? 'bg-[var(--color-error-bg)] text-[var(--color-status-error)]' : 'bg-[var(--color-info-bg)] text-[var(--color-status-info)]'">
                       {{ 'TRANSACTION.TYPES.' + transaction.type | translate }}
                     </span>

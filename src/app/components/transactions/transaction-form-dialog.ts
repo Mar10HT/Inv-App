@@ -54,7 +54,7 @@ export interface TransactionFormDialogData {
           <select
             id="transaction-type"
             formControlName="type"
-            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
+            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
             <option value="IN">{{ 'TRANSACTION.TYPES.IN' | translate }}</option>
             <option value="OUT">{{ 'TRANSACTION.TYPES.OUT' | translate }}</option>
             <option value="TRANSFER">{{ 'TRANSACTION.TYPES.TRANSFER' | translate }}</option>
@@ -70,7 +70,7 @@ export interface TransactionFormDialogData {
             <select
               id="transaction-source-warehouse"
               formControlName="sourceWarehouseId"
-              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+              class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
               [class.!border-rose-500]="form.get('sourceWarehouseId')?.invalid && form.get('sourceWarehouseId')?.touched">
               <option value="">{{ 'COMMON.NONE' | translate }}</option>
               @for (warehouse of warehouses(); track warehouse.id) {
@@ -92,7 +92,7 @@ export interface TransactionFormDialogData {
             <select
               id="transaction-dest-warehouse"
               formControlName="destinationWarehouseId"
-              class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+              class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
               [class.!border-rose-500]="form.get('destinationWarehouseId')?.invalid && form.get('destinationWarehouseId')?.touched">
               <option value="">{{ 'COMMON.NONE' | translate }}</option>
               @for (warehouse of warehouses(); track warehouse.id) {
@@ -113,7 +113,7 @@ export interface TransactionFormDialogData {
           <select
             id="transaction-user"
             formControlName="userId"
-            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
             [class.!border-rose-500]="form.get('userId')?.invalid && form.get('userId')?.touched">
             <option value="">{{ 'COMMON.NONE' | translate }}</option>
             @for (user of users(); track user.id) {
@@ -134,7 +134,7 @@ export interface TransactionFormDialogData {
             type="datetime-local"
             id="transaction-date"
             formControlName="date"
-            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             [class.!border-rose-500]="form.get('date')?.invalid && form.get('date')?.touched"
           />
           @if (form.get('date')?.invalid && form.get('date')?.touched) {
@@ -151,7 +151,7 @@ export interface TransactionFormDialogData {
             id="transaction-notes"
             formControlName="notes"
             rows="2"
-            class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
+            class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-4 py-3 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none"
             [placeholder]="'TRANSACTION.NOTES' | translate"
           ></textarea>
         </div>
@@ -173,12 +173,12 @@ export interface TransactionFormDialogData {
 
           <div formArrayName="items" class="space-y-3">
             @for (item of itemsArray.controls; track $index; let i = $index) {
-              <div [formGroupName]="i" class="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg p-4">
+              <div [formGroupName]="i" class="bg-[var(--color-surface-variant)] border border-[var(--color-border)] rounded-lg p-4">
                 <div class="flex items-start gap-3">
                   <div class="flex-1 min-w-0 space-y-3">
                     <select
                       formControlName="inventoryItemId"
-                      class="w-full bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
+                      class="w-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer">
                       <option value="">{{ 'TRANSACTION.SELECT_ITEM' | translate }}</option>
                       @for (invItem of inventoryItems(); track invItem.id) {
                         <option [value]="invItem.id">{{ invItem.name }} ({{ invItem.quantity }} {{ 'TRANSACTION.AVAILABLE' | translate }})</option>
@@ -189,13 +189,13 @@ export interface TransactionFormDialogData {
                         type="number"
                         formControlName="quantity"
                         min="1"
-                        class="w-24 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                        class="w-24 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                         [placeholder]="'TRANSACTION.QTY_PLACEHOLDER' | translate"
                       />
                       <input
                         type="text"
                         formControlName="notes"
-                        class="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                        class="flex-1 min-w-0 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-foreground text-sm placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
                         [placeholder]="'TRANSACTION.NOTES_OPTIONAL' | translate"
                       />
                     </div>

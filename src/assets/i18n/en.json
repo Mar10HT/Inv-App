@@ -28,7 +28,8 @@
     "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
-    "ADMIN": "Administration"
+    "ADMIN": "Administration",
+    "SERVICES": "Services"
   },
   "COMMON": {
     "SAVE": "Save",
@@ -352,6 +353,25 @@
       "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     }
   },
+  "SERVICE": {
+    "TITLE": "Services",
+    "SUBTITLE": "Services you can quote and sell next to products (installation, support...)",
+    "ADD": "Add Service",
+    "EDIT": "Edit Service",
+    "NAME": "Name",
+    "DESCRIPTION": "Description",
+    "PRICE": "Suggested price",
+    "CURRENCY": "Currency",
+    "NO_PRICE": "No suggested price",
+    "TOTAL": "Total Services",
+    "LIST": "Services List",
+    "NO_SERVICES": "No services yet",
+    "NO_SERVICES_DESC": "Add the services you quote often to pick them on sales",
+    "DELETE_CONFIRM": {
+      "TITLE": "Delete Service",
+      "MESSAGE": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
+  },
   "USER": {
     "TITLE": "Users",
     "SUBTITLE": "Manage user accounts and permissions",
@@ -500,7 +520,11 @@
       "auth:admin": "Perform privileged auth operations (password resets, admin links)",
       "payments:view": "View sale and purchase payments",
       "payments:create": "Record sale and purchase payments",
-      "payments:cancel": "Void recorded payments"
+      "payments:cancel": "Void recorded payments",
+      "services:view": "View the services catalog",
+      "services:create": "Create services",
+      "services:edit": "Edit services",
+      "services:delete": "Delete services"
     },
     "DELETE_CONFIRM": {
       "TITLE": "Delete Role",
@@ -666,7 +690,8 @@
       "CLIENT": "Client",
       "USER": "User",
       "TRANSACTION": "Transaction",
-      "ROLE": "Role"
+      "ROLE": "Role",
+      "SERVICE": "Service"
     }
   },
   "LOGIN": {
@@ -1248,7 +1273,16 @@
       "WHOLESALE": "Wholesale",
       "DISTRIBUTOR": "Distributor",
       "RETAIL": "Retail"
-    }
+    },
+    "LINE_KIND": {
+      "PRODUCT": "Product",
+      "SERVICE": "Service",
+      "OTHER": "Other"
+    },
+    "SELECT_SERVICE": "Select service",
+    "NO_SERVICES": "No services yet. Add them in Services.",
+    "LINE_NAME": "Description",
+    "LINE_NAME_PLACEHOLDER": "What is charged, e.g. Travel expenses"
   },
   "PAYMENTS": {
     "TITLE": "Payments",
@@ -1634,6 +1668,9 @@
     "CAI_RANGE_IN_USE": "Invoices were already issued from this range, so its starting number can't change.",
     "CAI_RANGE_BELOW_ISSUED": "The ending number can't be below the last invoice issued ({{lastIssued}}).",
     "INVALID_DATE_RANGE": "The start date can't be after the end date.",
-    "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "The count of {{item}} can't be applied: removing {{toRemove}} would take it below zero (in stock: {{available}})."
+    "STOCK_TAKE_ADJUSTMENT_BELOW_ZERO": "The count of {{item}} can't be applied: removing {{toRemove}} would take it below zero (in stock: {{available}}).",
+    "SERVICE_IN_USE": "\"{{name}}\" is on a sale or quotation and can't be deleted.",
+    "SALE_LINE_AMBIGUOUS": "A line is a product or a service, not both.",
+    "SALE_LINE_NAME_REQUIRED": "Write what is charged on lines that are neither a product nor a service."
   }
 }

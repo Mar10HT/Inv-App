@@ -55,9 +55,9 @@ import { localeFor } from '../../../shared/app-language';
             <thead class="sticky top-0 z-10">
               <tr class="bg-[var(--color-surface)]">
                 <th class="text-left px-6 py-3 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase">{{ 'REPORTS.TABLE.DATE' | translate }}</th>
-                <th class="text-center px-6 py-3 text-xs font-medium text-emerald-500 uppercase">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</th>
-                <th class="text-center px-6 py-3 text-xs font-medium text-rose-500 uppercase">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</th>
-                <th class="text-center px-6 py-3 text-xs font-medium text-blue-500 uppercase">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</th>
+                <th class="text-center px-6 py-3 text-xs font-medium text-[var(--color-status-success)] uppercase">{{ 'TRANSACTIONS.TYPE.IN' | translate }}</th>
+                <th class="text-center px-6 py-3 text-xs font-medium text-[var(--color-status-error)] uppercase">{{ 'TRANSACTIONS.TYPE.OUT' | translate }}</th>
+                <th class="text-center px-6 py-3 text-xs font-medium text-[var(--color-status-info)] uppercase">{{ 'TRANSACTIONS.TYPE.TRANSFER' | translate }}</th>
                 <th class="text-center px-6 py-3 text-xs font-medium text-[var(--color-on-surface-variant)] uppercase">Total</th>
               </tr>
             </thead>

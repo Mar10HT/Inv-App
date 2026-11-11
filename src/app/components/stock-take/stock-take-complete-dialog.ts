@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
     TranslateModule,
   ],
   template: `
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closed.emit()">
+    <div class="fixed inset-0 bg-[var(--color-surface-overlay)] flex items-center justify-center z-50 p-4" role="presentation" (click)="closed.emit()">
       <div role="dialog" aria-modal="true" aria-labelledby="stock-take-complete-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="stock-take-complete-dialog-title" class="text-xl font-semibold text-foreground">{{ 'STOCK_TAKE.COMPLETE.TITLE' | translate }}</h2>

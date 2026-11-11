@@ -166,7 +166,7 @@ import { AppDatePipe } from '../../../shared/app-date.pipe';
                           <span class="text-[var(--color-on-surface-variant)] text-sm">{{ request.resolvedAt | appDate:'mediumDate' }}</span>
                         }
                         @if (request.status === Status.REJECTED) {
-                          <span class="text-red-400 text-sm truncate max-w-[150px]" [title]="request.rejectedReason || ''">
+                          <span class="text-[var(--color-status-error)] text-sm truncate max-w-[150px]" [title]="request.rejectedReason || ''">
                             {{ request.rejectedReason || '-' }}
                           </span>
                         }
@@ -265,7 +265,7 @@ import { AppDatePipe } from '../../../shared/app-date.pipe';
 
     <!-- Reject Dialog -->
     @if (showRejectDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closeRejectDialog()">
+      <div class="fixed inset-0 bg-[var(--color-surface-overlay)] flex items-center justify-center z-50 p-4" role="presentation" (click)="closeRejectDialog()">
         <div role="dialog" aria-modal="true" aria-labelledby="reject-dialog-title" class="bg-surface-variant border border-theme rounded-xl w-full max-w-md" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme">
             <h2 id="reject-dialog-title" class="text-xl font-semibold text-foreground">{{ 'DISCHARGES.REJECT_TITLE' | translate }}</h2>
@@ -298,7 +298,7 @@ import { AppDatePipe } from '../../../shared/app-date.pipe';
 
     <!-- Share Form Dialog -->
     @if (showShareDialog) {
-      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="presentation" (click)="closeShareDialog()">
+      <div class="fixed inset-0 bg-[var(--color-surface-overlay)] flex items-center justify-center z-50 p-4" role="presentation" (click)="closeShareDialog()">
         <div role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" class="rounded-xl w-full max-w-md border border-theme" [style.background-color]="'var(--color-surface-variant)'" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <div class="px-6 py-4 border-b border-theme flex items-center justify-between">
             <h2 id="share-dialog-title" class="text-xl font-semibold" [style.color]="'var(--color-foreground)'">{{ 'DISCHARGES.SHARE_FORM.TITLE' | translate }}</h2>

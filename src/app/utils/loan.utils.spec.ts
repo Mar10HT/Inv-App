@@ -176,10 +176,10 @@ describe('loan.utils', () => {
     it('warns in amber within three days, yellow within a week, and stays neutral after that', () => {
       const open = (days: number) => loan({ status: LoanStatus.RECEIVED, dueDate: inDays(days) });
 
-      expect(getLoanDueDateClass(open(2), now)).toBe('text-amber-400 font-medium');
-      expect(getLoanDueDateClass(open(3), now)).toBe('text-amber-400 font-medium');
-      expect(getLoanDueDateClass(open(5), now)).toBe('text-yellow-400');
-      expect(getLoanDueDateClass(open(7), now)).toBe('text-yellow-400');
+      expect(getLoanDueDateClass(open(2), now)).toBe('text-[var(--color-accent-amber)] font-medium');
+      expect(getLoanDueDateClass(open(3), now)).toBe('text-[var(--color-accent-amber)] font-medium');
+      expect(getLoanDueDateClass(open(5), now)).toBe('text-[var(--color-accent-yellow)]');
+      expect(getLoanDueDateClass(open(7), now)).toBe('text-[var(--color-accent-yellow)]');
       expect(getLoanDueDateClass(open(30), now)).toBe('text-foreground');
     });
   });

@@ -536,3 +536,10 @@ button:not([class*="mat-"]):not([disabled]):active {
     scroll-behavior: auto !important;
   }
 }
+
+/* Light theme: form controls need a 3:1 border (WCAG 1.4.11); cards and tables keep the softer --color-border */
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  border-color: var(--color-border-strong) !important;
+}

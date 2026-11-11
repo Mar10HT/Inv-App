@@ -60,7 +60,7 @@ import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../../../ut
             <p class="text-3xl font-bold text-[var(--color-status-info)]">{{ totalItemsCount() }}</p>
           </div>
           <div class="bg-[var(--color-info-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Package" class="!text-sky-500 !w-6 !h-6"></lucide-icon>
+            <lucide-icon name="Package" class="!text-[var(--color-status-info)] !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>
@@ -82,7 +82,7 @@ import { formatMoney, formatMoneyByCurrency, MoneyByCurrency } from '../../../ut
             <p class="text-3xl font-bold text-[var(--color-status-warning)]">{{ valueByWarehouse().length }}</p>
           </div>
           <div class="bg-[var(--color-warning-bg)] p-3 rounded-lg flex items-center justify-center w-12 h-12 flex-shrink-0">
-            <lucide-icon name="Warehouse" class="!text-orange-500 !w-6 !h-6"></lucide-icon>
+            <lucide-icon name="Warehouse" class="!text-[var(--color-status-warning)] !w-6 !h-6"></lucide-icon>
           </div>
         </div>
       </div>

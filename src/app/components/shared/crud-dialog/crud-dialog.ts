@@ -94,18 +94,18 @@ import { Spinner } from '../spinner/spinner';
               @if (field.errorMessages) {
                 @for (errorEntry of getErrorEntries(field); track errorEntry.errorKey) {
                   @if (form.get(field.key)?.errors?.[errorEntry.errorKey]) {
-                    <p class="text-rose-400 text-sm mt-1">{{ errorEntry.translationKey | translate: errorEntry.params }}</p>
+                    <p class="text-[var(--color-status-error)] text-sm mt-1">{{ errorEntry.translationKey | translate: errorEntry.params }}</p>
                   }
                 }
               } @else {
                 @if (form.get(field.key)?.errors?.['required']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
+                  <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.REQUIRED' | translate }}</p>
                 } @else if (form.get(field.key)?.errors?.['email']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
+                  <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.EMAIL' | translate }}</p>
                 } @else if (form.get(field.key)?.errors?.['minlength']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: { length: form.get(field.key)?.errors?.['minlength']?.requiredLength } }}</p>
+                  <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.MIN_LENGTH' | translate: { length: form.get(field.key)?.errors?.['minlength']?.requiredLength } }}</p>
                 } @else if (form.get(field.key)?.errors?.['maxlength']) {
-                  <p class="text-rose-400 text-sm mt-1">{{ 'FORM.VALIDATION.MAX_LENGTH' | translate: { length: form.get(field.key)?.errors?.['maxlength']?.requiredLength } }}</p>
+                  <p class="text-[var(--color-status-error)] text-sm mt-1">{{ 'FORM.VALIDATION.MAX_LENGTH' | translate: { length: form.get(field.key)?.errors?.['maxlength']?.requiredLength } }}</p>
                 }
               }
             }

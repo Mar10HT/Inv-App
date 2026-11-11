@@ -118,9 +118,9 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
                 <h3 class="text-xl font-semibold text-[var(--color-status-success)]">{{ 'IMPORT.SUCCESS' | translate }}</h3>
               } @else {
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--color-accent-amber-bg)] rounded-full mb-4">
-                  <lucide-icon name="AlertTriangle" class="!w-10 !h-10 text-amber-400"></lucide-icon>
+                  <lucide-icon name="AlertTriangle" class="!w-10 !h-10 text-[var(--color-accent-amber)]"></lucide-icon>
                 </div>
-                <h3 class="text-xl font-semibold text-amber-400">{{ 'IMPORT.PARTIAL_SUCCESS' | translate }}</h3>
+                <h3 class="text-xl font-semibold text-[var(--color-accent-amber)]">{{ 'IMPORT.PARTIAL_SUCCESS' | translate }}</h3>
               }
             </div>
 

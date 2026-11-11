@@ -22,7 +22,7 @@ import { buildQrPrintHtml, isImageDataUrl } from '../../utils/qr-print.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div class="absolute inset-0 bg-[var(--color-surface-overlay)]" role="presentation" (click)="close()"></div>
       <div role="dialog" aria-modal="true" aria-labelledby="loan-qr-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-md">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="loan-qr-dialog-title" class="text-xl font-semibold text-foreground">
@@ -141,7 +141,7 @@ export interface ScanQrResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div class="absolute inset-0 bg-black/50" role="presentation" (click)="close()"></div>
+      <div class="absolute inset-0 bg-[var(--color-surface-overlay)]" role="presentation" (click)="close()"></div>
       <div role="dialog" aria-modal="true" aria-labelledby="loan-scan-dialog-title" class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-md">
         <div class="px-6 py-4 border-b border-theme">
           <h2 id="loan-scan-dialog-title" class="text-xl font-semibold text-foreground">{{ 'LOANS.QR.SCAN_TITLE' | translate }}</h2>

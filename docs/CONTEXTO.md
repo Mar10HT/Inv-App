@@ -2,7 +2,7 @@
 
 Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada tarea. La lista de tareas está en [`PENDIENTES.md`](./PENDIENTES.md); este archivo explica el proyecto, lo hecho, las decisiones tomadas y cómo trabajar.
 
-Última actualización: 2026-11-03.
+Última actualización: 2026-11-11.
 
 ## El proyecto
 
@@ -11,7 +11,7 @@ Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada
 | Repo | Stack | Ramas activas |
 | --- | --- | --- |
 | `Mar10HT/Inv-App` | Angular 19 (standalone, signals, zoneless), Tailwind, Karma | `olanchonet` (formato de PDFs/reportes) |
-| `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `feat/decimal-amounts-api` (listo, sin PR), `olanchonet` (en progreso) |
+| `Mar10HT/Inv-App-API` | NestJS 11 + Prisma 6 (PostgreSQL), Jest, Bun en producción | `olanchonet` (en progreso) |
 
 `feat/purchase-invoices` ya se mergeó a `main` en los dos repos (no existe más como rama activa). Este archivo y `PENDIENTES.md` viven en `docs/` de `main` desde entonces.
 
@@ -56,6 +56,9 @@ Hallazgos del agente que investigó antes de planear (no asumir que ya están re
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-11-11 | Inv-App | `05bb9ec` `2364470` (hotfix en `main`) | Líneas de ítems de los 6 formularios (Ventas/Cotizaciones, Compras, Transferencias, Préstamos, Salidas, Transacciones) con los mismos colores que el resto del formulario; notas de la línea de venta en su propia fila |
+| 2026-11-11 | Inv-App | `9c2b763` (hotfix en `main`) | **Contraste del modo claro** (reporte: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx): tokens del tema claro (fondo menos brillante, texto secundario, bordes, verdes/rojos/amarillos de estado y acentos más oscuros), borde de 3:1 en inputs/selects/textareas, y los colores Tailwind fijos (`-400/-500`, `bg-black/50`, bordes `-900`) reemplazados por tokens en toda la app. El tamaño de letra quedó como pendiente #9 |
+| 2026-11-06 | Inv-App-API / Inv-App | `7ef7a87` `80ab619` / `b01d9cb` `58362f6` (rama `feat/services-catalog`, mergeada en API#22 / Inv-App#44 el 2026-11-11) | **Catálogo de Servicios**: pantalla y API de Servicios; las líneas de una venta o cotización pueden ser producto, servicio del catálogo o una descripción escrita a mano, y solo los productos tocan stock. Ver `PENDIENTES.md` #5 |
 | 2026-11-03 | Inv-App | `35bf9f3` `289f62f` `007ef2d` `4f6a99e` (sin pushear, esperando confirmación) | **Pendientes verificados contra el código real, no asumidos**: Excel "Transacciones" y el formato de comprobantes PDF (estado traducido, datos fiscales) ya estaban resueltos de antes — se cerraron en `PENDIENTES.md` con la evidencia. El overflow horizontal móvil reportado en el iPhone de Mario resultó ser caché vieja de Safari (se arregló con hard-refresh), no un bug — retirado. Se agregaron como pendientes nuevos: rediseño del Historial de Cambios (mockups aprobados: https://claude.ai/artifact/Cuz4EdGJTwqDWzV67E2mVA) y mover Reportes Programados a la sección Reportes. También confirmado pendiente de verdad: Exportaciones/Descargas de Reportes (`workbook.creator` sigue diciendo "Obsid", paleta de colores no alineada a la plantilla) |
 | 2026-11-03 | Inv-App | `0851a04` (main) / `8b73113` (merge a olanchonet) | Botón "Descargar PDF" agregado a las cotizaciones (antes solo ventas confirmadas podían descargar el comprobante) — el backend ya lo soportaba, era un hueco del frontend. Va en `main` por ser genérico |
 | 2026-11-03 | Inv-App-API | `591d8ab` | Pie de página del comprobante de Venta/Cotización dice "Olancho Net" en vez de "Obsid" — específico de esta instalación, queda solo en `olanchonet` |
@@ -119,10 +122,12 @@ Desde la terminal, sin entrar al panel de Railway:
 npm i -g @railway/cli        # una sola vez
 railway login                # una sola vez
 cd inv-app-api && railway link   # una sola vez: proyecto y servicio del API
-railway run npm run seed:rbac    # cada vez que se necesite
+railway run bun scripts/seed-rbac.ts   # cada vez que se necesite (producción usa Bun)
 ```
 
-`railway run` corre el script en la máquina local con las variables de producción (incluida `DATABASE_URL`). Alternativa sin CLI: `DATABASE_URL="<URL pública de Postgres>" npm run seed:rbac` (no guardar la URL en el repo).
+`railway run` corre el script en la máquina local con las variables de producción (incluida `DATABASE_URL`). Alternativa sin CLI: `DATABASE_URL="<URL pública de Postgres>" bun scripts/seed-rbac.ts` (no guardar la URL en el repo). Verificado con Bun el 2026-11-11.
+
+**Cuidado (2026-11-11):** además de crear permisos, el seed deja los permisos de Gerente de Almacén, Operador, Observador y Externo exactamente como en el código, y borra lo que se les haya agregado a mano desde Roles. Mario modificó roles del sistema en producción, así que **no correrlo** hasta que exista el modo "solo agregar" (`PENDIENTES.md` #8). Mientras tanto, los permisos nuevos de una feature se crean con un `INSERT ... ON CONFLICT (key) DO NOTHING` en la tabla `permissions` y se asignan a mano en Roles (ejemplo en `PENDIENTES.md` #5). Los roles creados desde la app, el Administrador del Sistema y los permisos existentes nunca se tocan.
 
 ## Herramientas y trucos
 
@@ -139,14 +144,15 @@ railway run npm run seed:rbac    # cada vez que se necesite
 
 ## Próximos pasos
 
-Estado al 2026-11-03 (fin de sesión, cortada a las 6:10pm a pedido de Mario): los 4 PRs de producción ya están mergeados. `feat/decimal-amounts-api` (API) sigue lista y sin PR abierto, sin novedad. La rama `olanchonet` del formato de PDFs está funcionalmente terminada (comprobantes + los 4 reportes), con dos retoques chicos de hoy (botón Descargar PDF en cotizaciones, branding "Olancho Net"). Producción (`obsid.olanchonet.com`) sigue en pie.
+Estado al 2026-11-11: el Catálogo de Servicios está mergeado en `main` ([Mar10HT/Inv-App-API#22](https://github.com/Mar10HT/Inv-App-API/pull/22), [Mar10HT/Inv-App#44](https://github.com/Mar10HT/Inv-App/pull/44)), junto con tres hotfixes de interfaz subidos directo a `main` (colores de las líneas de ítems, notas de la línea de venta, contraste del modo claro; ver `PENDIENTES.md`). Nada de esto está todavía en `olanchonet`. También están mergeados [Mar10HT/Inv-App-API#19](https://github.com/Mar10HT/Inv-App-API/pull/19) (Decimal), #20 (Excel de Transacciones desde movimientos), #21 (PDF de inventario huérfano borrado) y [Mar10HT/Inv-App#43](https://github.com/Mar10HT/Inv-App/pull/43) (`navigation.css`). Los commits de docs del 2026-11-03 ya están pusheados en `olanchonet`.
+
+Decisiones del 2026-11-06: no hace falta revisar el Postgres de `olanchonet` (no había datos cuando pasó el incidente) y el fix del health check (`c56719b`) no se portea a `main` por ahora.
 
 **Para retomar, en este orden:**
 
-1. **Pushear los 3 commits de docs que quedaron esperando la confirmación de las 6pm** (`35bf9f3`, `289f62f`, `007ef2d`, `4f6a99e` en `olanchonet` de Inv-App — solo documentación, sin riesgo real, Mario pidió esperar igual por el horario de uso del sistema).
-2. **Ejecutar el plan del Catálogo de Servicios**, ya aprobado por Mario: `C:\Users\mherr\.claude\plans\rustling-cuddling-meerkat.md`. Tiene el schema, los archivos exactos a tocar en los dos repos y la secuencia de commits — no hace falta volver a planear ni preguntar nada, seguir el plan tal cual.
-3. **Exportaciones y Descargas de Reportes** (`workbook.creator` sigue en "Obsid", paleta de colores no alineada a la plantilla) — confirmado pendiente de verdad, sin alcance definido todavía.
-4. Rediseño del Historial de Cambios (Auditoría) y mover Reportes Programados a Reportes — diseño aprobado para el primero (ver `PENDIENTES.md` #6), el segundo es solo navegación.
-5. Actualizar el Manual de Usuario — 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas.
-6. Seguimientos del incidente de producción, todavía sin tocar: portear a `main` el fix del timeout del health check (`c56719b`, Inv-App-API) y confirmar que no hubo pérdida real de datos en el Postgres de `olanchonet` (el `initdb` que apareció esa madrugada).
-7. Abrir el PR de `feat/decimal-amounts-api` una vez verificada la Fase 0 contra producción (el usuario lo prueba directo en producción).
+1. Merge de `main` hacia `olanchonet` en los dos repos, en un horario en que no usen el sistema (despliega Servicios y los hotfixes). Después, en producción, crear los permisos `services:*` con el SQL de `PENDIENTES.md` #5 y asignarlos en Roles (no correr `seed:rbac`, ver #8).
+2. **Exportaciones y Descargas de Reportes** (`workbook.creator` sigue en "Obsid", paleta de colores no alineada a la plantilla): confirmado pendiente de verdad, sin alcance definido todavía.
+3. Rediseño del Historial de Cambios (Auditoría) y mover Reportes Programados a Reportes: diseño aprobado para el primero (ver `PENDIENTES.md` #6), el segundo es solo navegación.
+4. Tamaño de letra de 13 a 14 px (`PENDIENTES.md` #9), en su propia rama.
+5. `seed:rbac` en modo "solo agregar" (`PENDIENTES.md` #8), para poder correrlo en producción sin perder los cambios hechos a mano en los roles del sistema.
+6. Actualizar el Manual de Usuario: 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas. Agregar Servicios cuando llegue a producción.

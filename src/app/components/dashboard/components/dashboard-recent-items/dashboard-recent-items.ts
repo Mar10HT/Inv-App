@@ -18,7 +18,7 @@ import { InventoryItemInterface, InventoryStatus } from '../../../../interfaces/
         </div>
         <button
           (click)="viewAllRequested.emit()"
-          class="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+          class="text-sm text-[var(--color-primary-link)] hover:opacity-80 transition-colors">
           {{ 'COMMON.VIEW_ALL' | translate }}
         </button>
       </div>

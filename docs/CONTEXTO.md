@@ -120,10 +120,12 @@ Desde la terminal, sin entrar al panel de Railway:
 npm i -g @railway/cli        # una sola vez
 railway login                # una sola vez
 cd inv-app-api && railway link   # una sola vez: proyecto y servicio del API
-railway run npm run seed:rbac    # cada vez que se necesite
+railway run bun scripts/seed-rbac.ts   # cada vez que se necesite (producción usa Bun)
 ```
 
-`railway run` corre el script en la máquina local con las variables de producción (incluida `DATABASE_URL`). Alternativa sin CLI: `DATABASE_URL="<URL pública de Postgres>" npm run seed:rbac` (no guardar la URL en el repo).
+`railway run` corre el script en la máquina local con las variables de producción (incluida `DATABASE_URL`). Alternativa sin CLI: `DATABASE_URL="<URL pública de Postgres>" bun scripts/seed-rbac.ts` (no guardar la URL en el repo). Verificado con Bun el 2026-11-11.
+
+**Cuidado (2026-11-11):** además de crear permisos, el seed deja los permisos de Gerente de Almacén, Operador, Observador y Externo exactamente como en el código, y borra lo que se les haya agregado a mano desde Roles. Mario modificó roles del sistema en producción, así que **no correrlo** hasta que exista el modo "solo agregar" (`PENDIENTES.md` #8). Mientras tanto, los permisos nuevos de una feature se crean con un `INSERT ... ON CONFLICT (key) DO NOTHING` en la tabla `permissions` y se asignan a mano en Roles (ejemplo en `PENDIENTES.md` #5). Los roles creados desde la app, el Administrador del Sistema y los permisos existentes nunca se tocan.
 
 ## Herramientas y trucos
 
@@ -146,7 +148,8 @@ Decisiones del 2026-11-06: no hace falta revisar el Postgres de `olanchonet` (no
 
 **Para retomar, en este orden:**
 
-1. Pushear `feat/services-catalog` en los dos repos (con confirmación) y abrir los PRs si Mario los pide. Después del merge: merge de `main` hacia `olanchonet` en los dos repos, y en producción `railway run npm run seed:rbac` para los permisos `services:*`.
+1. Pushear `feat/services-catalog` en los dos repos (con confirmación) y abrir los PRs si Mario los pide. Después del merge: merge de `main` hacia `olanchonet` en los dos repos, y en producción crear los permisos `services:*` con el SQL de `PENDIENTES.md` #5 y asignarlos en Roles (no correr `seed:rbac`, ver #8).
 2. **Exportaciones y Descargas de Reportes** (`workbook.creator` sigue en "Obsid", paleta de colores no alineada a la plantilla): confirmado pendiente de verdad, sin alcance definido todavía.
 3. Rediseño del Historial de Cambios (Auditoría) y mover Reportes Programados a Reportes: diseño aprobado para el primero (ver `PENDIENTES.md` #6), el segundo es solo navegación.
-4. Actualizar el Manual de Usuario: 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas. Agregar Servicios cuando llegue a producción.
+4. `seed:rbac` en modo "solo agregar" (`PENDIENTES.md` #8), para poder correrlo en producción sin perder los cambios hechos a mano en los roles del sistema.
+5. Actualizar el Manual de Usuario: 10 puntos confirmados desactualizados, el detalle exacto de cada uno está en `PENDIENTES.md`, sección Alertas. Agregar Servicios cuando llegue a producción.

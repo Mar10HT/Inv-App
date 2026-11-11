@@ -23,6 +23,7 @@ import { ReportsStatusTab } from './tabs/reports-status-tab';
 import { ReportsTransactionsTab } from './tabs/reports-transactions-tab';
 import { ReportsTrendsTab } from './tabs/reports-trends-tab';
 import { ReportsValueTab } from './tabs/reports-value-tab';
+import { ReportsScheduledTab } from './tabs/reports-scheduled-tab';
 import { Spinner } from '../shared/spinner/spinner';
 import { localeFor } from '../../shared/app-language';
 
@@ -35,6 +36,7 @@ import { localeFor } from '../../shared/app-language';
     TranslateModule,
     ReportsAssignmentsTab,
     ReportsDownloadsTab,
+    ReportsScheduledTab,
     ReportsStatusTab,
     ReportsTransactionsTab,
     ReportsTrendsTab,
@@ -143,6 +145,15 @@ import { localeFor } from '../../shared/app-language';
           <lucide-icon name="Download" class="!w-4 !h-4"></lucide-icon>
           {{ 'REPORTS.TAB_DOWNLOADS' | translate }}
         </button>
+        <button
+          (click)="onTabChange(6)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === 6"
+          [class]="activeTab() === 6 ? 'bg-[var(--color-primary)] text-white' : 'bg-surface-elevated text-[var(--color-on-surface-variant)] hover:text-foreground'"
+          class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+          <lucide-icon name="CalendarClock" class="!w-4 !h-4"></lucide-icon>
+          {{ 'REPORTS.TAB_SCHEDULED' | translate }}
+        </button>
       </div>
     </div>
 
@@ -231,6 +242,10 @@ import { localeFor } from '../../shared/app-language';
     @if (activeTab() === 5) {
       <app-reports-downloads-tab [warehouseId]="selectedWarehouseId()" />
     }
+    <!-- Tab 6: Scheduled reports (moved here from Settings) -->
+    @if (activeTab() === 6) {
+      <app-reports-scheduled-tab />
+    }
   </div>
 </div>
   `,
@@ -244,7 +259,7 @@ export class Reports implements OnInit {
   private route = inject(ActivatedRoute);
 
   /** Values accepted in ?tab=, in tab order (e.g. the alert bell links to ?tab=status). */
-  private static readonly TAB_IDS = ['value', 'transactions', 'status', 'assignments', 'trends', 'downloads'];
+  private static readonly TAB_IDS = ['value', 'transactions', 'status', 'assignments', 'trends', 'downloads', 'scheduled'];
 
   // Tab state
   activeTab = signal<number>(0);
@@ -302,10 +317,11 @@ export class Reports implements OnInit {
   private tabSource = computed(() => {
     const tab = this.activeTab();
     if (tab === 1 || tab === 4) return 'transactions';
-    return tab === 5 ? null : 'items';
+    // Downloads and Scheduled load their own data
+    return tab === 5 || tab === 6 ? null : 'items';
   });
 
-  /** Tabs 1 and 4 show their own spinner while the transactions load, and 5 has nothing to wait for. */
+  /** Tabs 1 and 4 show their own spinner while the transactions load; 5 and 6 have nothing to wait for. */
   showSpinner = computed(() => this.tabSource() === 'items' && this.loading());
 
   tabError = computed(() => {

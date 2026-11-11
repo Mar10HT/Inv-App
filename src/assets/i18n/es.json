@@ -852,7 +852,8 @@
     "EXCEL_TRANSFERS": "Transferencias",
     "EXCEL_STOCK_TAKES": "Conteos Físicos",
     "EXCEL_DISCHARGES": "Bajas",
-    "EXCEL_OUTFLOWS": "Salidas"
+    "EXCEL_OUTFLOWS": "Salidas",
+    "TAB_SCHEDULED": "Programados"
   },
   "STATUS": {
     "IN_STOCK": "En Stock",
@@ -1533,7 +1534,8 @@
       "STOCK_TAKES": "Conteos Físicos",
       "DISCHARGES": "Bajas",
       "OUTFLOWS": "Salidas"
-    }
+    },
+    "MOVED": "Ahora están en Reportes, en la pestaña Programados."
   },
   "PAGINATOR": {
     "ITEMS_PER_PAGE": "Elementos por página",

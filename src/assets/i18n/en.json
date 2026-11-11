@@ -852,7 +852,8 @@
     "EXCEL_TRANSFERS": "Transfer Requests",
     "EXCEL_STOCK_TAKES": "Stock Takes",
     "EXCEL_DISCHARGES": "Discharges",
-    "EXCEL_OUTFLOWS": "Outflows"
+    "EXCEL_OUTFLOWS": "Outflows",
+    "TAB_SCHEDULED": "Scheduled"
   },
   "STATUS": {
     "IN_STOCK": "In Stock",
@@ -1533,7 +1534,8 @@
       "STOCK_TAKES": "Stock Takes",
       "DISCHARGES": "Discharges",
       "OUTFLOWS": "Outflows"
-    }
+    },
+    "MOVED": "They are now in Reports, under the Scheduled tab."
   },
   "PAGINATOR": {
     "ITEMS_PER_PAGE": "Items per page",

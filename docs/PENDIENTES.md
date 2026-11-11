@@ -2,7 +2,7 @@
 
 Lista de problemas encontrados al probar la app y escribir el Manual de Usuario. Todo se verificó en la app corriendo (frontend `Inv-App` y backend `Inv-App-API`, rama `feat/purchase-invoices`).
 
-Última actualización: 2026-11-06.
+Última actualización: 2026-11-11.
 
 ## Plan de lo que sigue (2026-10-31)
 
@@ -22,6 +22,7 @@ Orden sugerido con lo que queda: **3** después del despliegue, **6/7** sin empe
 | 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
 | 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
 | 8 | `seed:rbac` en modo "solo agregar" | Chico: `scripts/seed-rbac.ts` y su test | Bajo | Nada |
+| 9 | Tamaño de letra: base de 13 a 14 px | Una línea, pero revisar todas las pantallas | Medio (mueve el layout) | Nada |
 
 ### 1. Excel "Transacciones" con todos los movimientos — resuelto
 
@@ -102,6 +103,20 @@ KPIs de merge:
 - Un rol del sistema con un permiso quitado a mano: después del seed sigue sin él. Para eso, el seed solo asigna los permisos que **no existían** en la base antes de correrlo (los nuevos de esa versión). Confirmar con Mario antes de implementar.
 - Un permiso nuevo en el código aparece en la base y en los roles del sistema que lo tienen en `ROLE_PERMISSIONS`.
 - Corre con Bun en producción: `railway run bun scripts/seed-rbac.ts`.
+
+### 9. Tamaño de letra: base de 13 a 14 px
+
+Hallazgo del análisis de contraste del modo claro (2026-11-11, reporte: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx). Mario siente que el modo claro "fuerza la vista"; los colores ya se corrigieron (hotfix en `main`, ver CONTEXTO.md), pero lo que más pesa es el tamaño.
+
+`src/styles.css:35` fija `html { font-size: 13px }`, así que todas las clases de Tailwind quedan un 19 % más chicas: `text-xs` mide 9.75 px (badges de estado, encabezados de tabla, etiquetas), `text-sm` 11.4 px y el texto base 13 px. Con Outfit en peso 400 es poco para leer un rato largo. Afecta a los dos temas.
+
+Propuesta: subir a **14 px** (`text-xs` 10.5 px, `text-sm` 12.25 px). Es una línea, pero mueve el layout de toda la app, así que va en su propia rama y se revisa pantalla por pantalla antes de mergear.
+
+KPIs de merge:
+- Capturas antes/después de las pantallas principales (Dashboard, Inventario, Ventas y sus diálogos, Reportes, Configuración, Auditoría, menú lateral), en computadora y en celular.
+- Las tablas anchas de Ventas e Inventario no se cortan ni agregan scroll horizontal de página.
+- Ningún botón ni etiqueta queda partido en dos líneas donde antes cabía.
+- Alternativa más chica si 14 px mueve demasiado: dejar la base en 13 px y pasar solo badges y encabezados de tabla de `text-xs` a `text-sm`.
 
 ### KPIs comunes a todo PR
 

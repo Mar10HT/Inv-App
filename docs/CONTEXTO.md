@@ -2,7 +2,7 @@
 
 Documento para retomar el trabajo en otra sesión. Se actualiza al terminar cada tarea. La lista de tareas está en [`PENDIENTES.md`](./PENDIENTES.md); este archivo explica el proyecto, lo hecho, las decisiones tomadas y cómo trabajar.
 
-Última actualización: 2026-11-06.
+Última actualización: 2026-11-11.
 
 ## El proyecto
 
@@ -56,6 +56,8 @@ Hallazgos del agente que investigó antes de planear (no asumir que ya están re
 
 | Fecha | Repo | Commit | Qué |
 | --- | --- | --- | --- |
+| 2026-11-11 | Inv-App | `05bb9ec` `2364470` (hotfix en `main`) | Líneas de ítems de los 6 formularios (Ventas/Cotizaciones, Compras, Transferencias, Préstamos, Salidas, Transacciones) con los mismos colores que el resto del formulario; notas de la línea de venta en su propia fila |
+| 2026-11-11 | Inv-App | `9c2b763` (hotfix en `main`) | **Contraste del modo claro** (reporte: https://claude.ai/artifact/Hngej9oCpb9hjaSotmVNmx): tokens del tema claro (fondo menos brillante, texto secundario, bordes, verdes/rojos/amarillos de estado y acentos más oscuros), borde de 3:1 en inputs/selects/textareas, y los colores Tailwind fijos (`-400/-500`, `bg-black/50`, bordes `-900`) reemplazados por tokens en toda la app. El tamaño de letra quedó como pendiente #9 |
 | 2026-11-06 | Inv-App-API / Inv-App | `7ef7a87` `80ab619` / `b01d9cb` `58362f6` (rama `feat/services-catalog`, sin pushear) | **Catálogo de Servicios**: pantalla y API de Servicios; las líneas de una venta o cotización pueden ser producto, servicio del catálogo o una descripción escrita a mano, y solo los productos tocan stock. Ver `PENDIENTES.md` #5 |
 | 2026-11-03 | Inv-App | `35bf9f3` `289f62f` `007ef2d` `4f6a99e` (sin pushear, esperando confirmación) | **Pendientes verificados contra el código real, no asumidos**: Excel "Transacciones" y el formato de comprobantes PDF (estado traducido, datos fiscales) ya estaban resueltos de antes — se cerraron en `PENDIENTES.md` con la evidencia. El overflow horizontal móvil reportado en el iPhone de Mario resultó ser caché vieja de Safari (se arregló con hard-refresh), no un bug — retirado. Se agregaron como pendientes nuevos: rediseño del Historial de Cambios (mockups aprobados: https://claude.ai/artifact/Cuz4EdGJTwqDWzV67E2mVA) y mover Reportes Programados a la sección Reportes. También confirmado pendiente de verdad: Exportaciones/Descargas de Reportes (`workbook.creator` sigue diciendo "Obsid", paleta de colores no alineada a la plantilla) |
 | 2026-11-03 | Inv-App | `0851a04` (main) / `8b73113` (merge a olanchonet) | Botón "Descargar PDF" agregado a las cotizaciones (antes solo ventas confirmadas podían descargar el comprobante) — el backend ya lo soportaba, era un hueco del frontend. Va en `main` por ser genérico |

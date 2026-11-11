@@ -21,6 +21,7 @@ Orden sugerido con lo que queda: **3** después del despliegue, **6/7** sin empe
 | 5 | ~~Catálogo de Servicios para cotizaciones~~ | 2 commits por repo | Medio (toca schema) | Hecho en `feat/services-catalog`, falta PR |
 | 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
 | 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
+| 8 | `seed:rbac` en modo "solo agregar" | Chico: `scripts/seed-rbac.ts` y su test | Bajo | Nada |
 
 ### 1. Excel "Transacciones" con todos los movimientos — resuelto
 
@@ -48,7 +49,16 @@ Rama `feat/services-catalog` en los dos repos, commiteada y sin pushear. Se sigu
 - **Frontend** `b01d9cb`: pantalla Servicios (Gestión, debajo de Clientes), copia de Categorías con `CrudDialog`.
 - **Frontend** `58362f6`: cada línea de Ventas/Cotizaciones tiene Producto / Servicio / Otro. Servicio sugiere el precio del catálogo y no tiene tope de stock; Otro es una descripción escrita a mano.
 - Verificado: API 561 unitarios + 21 de integración, lint, build; frontend 1555 tests, lint, build de prod; en la app (venta mixta, comprobante PDF con las tres líneas, stock y su devolución al cancelar, borrar un servicio usado, celular).
-- **Al desplegar**: el `db push` de `railway:migrate` aplica el cambio sin pérdida de datos (columna nullable, tabla, índice y FK; probado en una base con datos). Correr `railway run npm run seed:rbac` para que los roles tengan los permisos `services:*`; sin eso solo el administrador ve Servicios.
+- **Al desplegar**: el `db push` de `railway:migrate` aplica el cambio sin pérdida de datos (columna nullable, tabla, índice y FK; probado en una base con datos). Los permisos `services:*` no existen en la base hasta crearlos; sin ellos solo el administrador ve Servicios. **No correr `seed:rbac`** (decisión del 2026-11-11: Mario modificó roles del sistema en producción y el seed los devolvería a lo del código, ver #8). En su lugar, crear solo los 4 permisos contra la base de producción y marcarlos a mano en Roles para los roles que los necesiten:
+
+  ```sql
+  INSERT INTO permissions (id, key, module, action, description) VALUES
+    (gen_random_uuid()::text, 'services:view',   'services', 'view',   'View services'),
+    (gen_random_uuid()::text, 'services:create', 'services', 'create', 'Create services'),
+    (gen_random_uuid()::text, 'services:edit',   'services', 'edit',   'Edit services'),
+    (gen_random_uuid()::text, 'services:delete', 'services', 'delete', 'Delete services')
+  ON CONFLICT (key) DO NOTHING;
+  ```
 
 KPIs de merge: CI verde en los dos repos; una venta con producto, servicio y línea suelta descuenta solo el producto y lo devuelve al cancelar; un servicio usado no se puede borrar.
 
@@ -78,6 +88,20 @@ Pendiente de resolver antes de implementar: de dónde sale el nombre resuelto de
 ### 7. Mover Reportes Programados de Configuración a Reportes
 
 Hoy la función de Reportes Programados vive dentro de la pantalla de Configuración; Mario pidió moverla a la sección de Reportes, donde tiene más sentido por cercanía temática (ahí ya están las pestañas de Valor/Estado/Asignaciones/Transacciones/Tendencias/Descargas). Es un cambio de navegación, no de lógica — no se tocó nada todavía.
+
+### 8. `seed:rbac` en modo "solo agregar"
+
+Pedido de Mario el 2026-11-11. Hoy `seed:rbac` (`scripts/seed-rbac.ts`, `syncRolePermissions`) deja los permisos de los cuatro roles del sistema (Gerente de Almacén, Operador, Observador, Externo) **exactamente** como están en `ROLE_PERMISSIONS`: agrega lo que falta y **quita** lo que no está en el código. Si alguien modificó uno de esos roles desde la pantalla de Roles, el seed borra esos cambios. Por eso no se puede correr en producción cada vez que una feature trae permisos nuevos (pasó con `services:*`, ver #5).
+
+Lo que no toca, y tiene que seguir sin tocar: los roles creados desde la app, el Administrador del Sistema (`*`) y los permisos en sí (solo hace upsert, nunca borra).
+
+Propuesta: un modo que crea los permisos que faltan y agrega a los roles del sistema los que el código les da y no tienen, **sin quitar nada nunca**. Que sea el modo por defecto (o el único que se use en producción) y que el reseteo completo quede detrás de un flag explícito (por ejemplo `--reset`). Rama propia.
+
+KPIs de merge:
+- Un rol del sistema con un permiso agregado a mano: después del seed lo conserva.
+- Un rol del sistema con un permiso quitado a mano: después del seed sigue sin él. Para eso, el seed solo asigna los permisos que **no existían** en la base antes de correrlo (los nuevos de esa versión). Confirmar con Mario antes de implementar.
+- Un permiso nuevo en el código aparece en la base y en los roles del sistema que lo tienen en `ROLE_PERMISSIONS`.
+- Corre con Bun en producción: `railway run bun scripts/seed-rbac.ts`.
 
 ### KPIs comunes a todo PR
 
@@ -190,7 +214,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
 
 Decisiones del usuario: borrar los roles duplicados; numeración automática en lugar de Referencia; un solo campo Cliente con "Cliente ocasional"; Reportes lee todos los movimientos. Commits locales en `feat/purchase-invoices` de los dos repos (ver CONTEXTO.md).
 
-- [x] **Roles del sistema duplicados.** `scripts/seed-data.ts` creaba copias en minúscula. Ahora usa las constantes RBAC, y `seed:rbac` / `POST /seed` borran las copias que ya existan (pasando sus usuarios al rol oficial). En producción se limpian la próxima vez que se corra `seed:rbac` (manual: `railway run npm run seed:rbac`, ver CONTEXTO.md).
+- [x] **Roles del sistema duplicados.** `scripts/seed-data.ts` creaba copias en minúscula. Ahora usa las constantes RBAC, y `seed:rbac` / `POST /seed` borran las copias que ya existan (pasando sus usuarios al rol oficial). En producción se limpian la próxima vez que se corra `seed:rbac` (manual: `railway run bun scripts/seed-rbac.ts`, ver CONTEXTO.md; ojo con #8).
 - [x] **Transacciones no estaba en el menú lateral.** Ahora está debajo de Conteo Físico.
 - [x] **Íconos muy chicos en el menú flotante de Comercial.** Lucide copiaba `mr-2` al svg interno; ahora miden 18 px.
 - [x] **El tema de Material no generaba las variables `--mat-sys-*`.** Ahora se generan y siguen los colores de la app en modo oscuro y claro (diálogos, paginador y menú comparados antes y después).
@@ -204,7 +228,7 @@ Decisiones del usuario: borrar los roles duplicados; numeración automática en 
 
 ### Quedó pendiente de esto
 
-- [ ] **Después de desplegar el API**: correr `railway run npm run seed:rbac` una vez para borrar los roles duplicados de producción.
+- [ ] **Después de desplegar el API**: correr `railway run bun scripts/seed-rbac.ts` una vez para borrar los roles duplicados de producción. Ojo: hoy también resetea los permisos de los roles del sistema (ver #8); esperar a que exista el modo "solo agregar" o anotar antes los cambios hechos a mano.
 - [ ] **Al desplegar el API**: `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push` (numera lo existente, mueve las referencias y crea los índices únicos). Probado sobre una copia de la base local con los mismos pasos.
 - [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. La fuente se puede unificar ya (punto 1 del plan); el estilo del archivo espera al formato.
 - [x] ~~Conteos físicos anteriores a este cambio no aparecen en Transacciones/Tendencias~~: no aplica, producción arranca con una base nueva.

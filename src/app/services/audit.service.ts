@@ -5,7 +5,6 @@ import { LoggerService } from './logger.service';
 import {
   AuditLog,
   AuditAction,
-  AuditEntity,
   AuditChange,
   BackendAuditLog,
   BackendAuditResponse
@@ -59,10 +58,9 @@ export class AuditService {
    */
   private mapBackendLog(log: BackendAuditLog): AuditLog {
     const changes: AuditChange[] = [];
+    const { before, after, fields } = this.normalize(log.changes);
 
-    if (log.changes) {
-      const { before, after, fields } = log.changes;
-
+    if (before || after) {
       if (before && after) {
         // Compare before/after to generate change list
         const allKeys = new Set([...Object.keys(before), ...Object.keys(after)]);
@@ -98,47 +96,53 @@ export class AuditService {
       }
     }
 
-    // Extract entity name from changes data
-    const entityName = (log.changes?.after?.['name'] as string | undefined)
-      || (log.changes?.before?.['name'] as string | undefined)
+    const entityName = (after?.['name'] as string | undefined)
+      || (before?.['name'] as string | undefined)
       || log.entityId;
 
     return {
       id: log.id,
       action: (log.action as AuditAction) || AuditAction.CREATE,
-      entity: (log.entity as AuditEntity) || AuditEntity.INVENTORY_ITEM,
+      entity: log.entity,
       entityId: log.entityId,
       entityName,
       userId: log.user?.id || log.userId || '',
       userName: log.user?.name || log.user?.email || 'System',
       userEmail: log.user?.email || '',
       changes,
+      before,
+      after,
       createdAt: new Date(log.createdAt)
     };
   }
 
   /**
-   * Export logs to CSV
+   * Most entries log { before, after, fields }; some log their data flat
+   * ({ status: 'RECEIVED' }, { newQty, previousQty, source }). A flat one is
+   * read as the after side, so its data still shows.
    */
-  async exportToXLSX(logs?: AuditLog[]): Promise<void> {
-    const data = logs || this.logsSignal();
+  private normalize(changes: BackendAuditLog['changes']): {
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
+    fields?: string[];
+  } {
+    if (!changes) return {};
+    if ('before' in changes || 'after' in changes) {
+      return { before: changes.before ?? undefined, after: changes.after ?? undefined, fields: changes.fields };
+    }
+    return { after: changes };
+  }
 
-    const rows = data.map(log => ({
-      Date:          log.createdAt.toLocaleString(),
-      Action:        log.action,
-      Entity:        log.entity,
-      'Entity Name': log.entityName,
-      User:          log.userName,
-      Email:         log.userEmail,
-      Changes:       log.changes.map(c => `${c.field}: ${c.oldValue} → ${c.newValue}`).join(' | '),
-    }));
-
+  /**
+   * Download the given rows as an Excel file. The page words them (translated
+   * columns, the same sentence as the list), so the file reads like the screen.
+   */
+  async exportToXLSX(rows: Record<string, string>[]): Promise<void> {
     await downloadStyledXLSX(rows, {
       sheetName:      'Audit Log',
       filename:       `audit-log-${localDateKey(new Date())}.xlsx`,
       headerColor:    '64748B',
-      colWidths:      [20, 10, 16, 30, 20, 28, 50],
-      statusColIndex: 1, // Action column: CREATE / UPDATE / DELETE
+      colWidths:      [20, 22, 18, 22, 60, 60],
     });
   }
 }

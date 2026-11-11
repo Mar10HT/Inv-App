@@ -1,14 +1,26 @@
-import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, effect, ChangeDetectionStrategy, HostListener, LOCALE_ID } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { A11yModule } from '@angular/cdk/a11y';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuditService } from '../../services/audit.service';
 import { NotificationService } from '../../services/notification.service';
-import { AuditLog, AuditAction, AuditEntity } from '../../interfaces/audit.interface';
+import { InventoryService } from '../../services/inventory/inventory.service';
+import { UserService } from '../../services/user.service';
+import { ClientService } from '../../services/client.service';
+import { ServiceCatalogService } from '../../services/service-catalog.service';
+import { AuditLog, AuditAction } from '../../interfaces/audit.interface';
 import { provideTranslatedPaginator } from '../../shared/translated-paginator-intl';
 import { AppDatePipe } from '../../shared/app-date.pipe';
+import { localeFor } from '../../shared/app-language';
+import { AuditDescriber, AuditRefs, NameMap } from './audit-describer';
+
+const namesOf = (list: readonly { id: string; name?: string | null; email?: string }[]): NameMap =>
+  new Map(list.map((x) => [x.id, x.name || x.email || x.id]));
 
 @Component({
   selector: 'app-audit-log',
@@ -17,6 +29,7 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
+    A11yModule,
     LucideAngularModule,
     MatPaginatorModule,
     TranslateModule,
@@ -48,9 +61,11 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
             <div class="flex-1">
               <div class="relative">
                 <input
+                  id="audit-search"
                   type="text"
                   [(ngModel)]="searchQuery"
                   (ngModelChange)="applyFilters()"
+                  [attr.aria-label]="'AUDIT.SEARCH_PLACEHOLDER' | translate"
                   [placeholder]="'AUDIT.SEARCH_PLACEHOLDER' | translate"
                   class="w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 pl-11 text-foreground placeholder-[var(--color-on-surface-muted)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
@@ -59,29 +74,33 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
             </div>
 
             <!-- Action Filter -->
-            <div class="lg:w-48">
+            <div class="lg:w-56">
               <select
+                id="audit-action"
                 [(ngModel)]="selectedAction"
                 (ngModelChange)="onActionFilterChange()"
+                [attr.aria-label]="'AUDIT.ALL_ACTIONS' | translate"
                 class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'AUDIT.ALL_ACTIONS' | translate }}</option>
                 @for (action of actions; track action) {
-                  <option [value]="action">{{ getActionLabel(action) }}</option>
+                  <option [value]="action">{{ describer().actionName(action) }}</option>
                 }
               </select>
             </div>
 
-            <!-- Entity Filter -->
-            <div class="lg:w-48">
+            <!-- Record type filter: built from what the loaded entries are about -->
+            <div class="lg:w-56">
               <select
+                id="audit-entity"
                 [(ngModel)]="selectedEntity"
                 (ngModelChange)="applyFilters()"
+                [attr.aria-label]="'AUDIT.ALL_ENTITIES' | translate"
                 class="select-chevron w-full bg-[var(--color-surface-elevated)] border border-theme rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all cursor-pointer appearance-none"
               >
                 <option value="all">{{ 'AUDIT.ALL_ENTITIES' | translate }}</option>
-                @for (entity of entities; track entity) {
-                  <option [value]="entity">{{ getEntityLabel(entity) }}</option>
+                @for (entity of entityOptions(); track entity.value) {
+                  <option [value]="entity.value">{{ entity.label }}</option>
                 }
               </select>
             </div>
@@ -163,80 +182,39 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
             <p class="text-[var(--color-on-surface-variant)] text-sm mt-1">{{ 'AUDIT.SHOWING' | translate:{ count: paginatedLogs().length, total: filteredLogs().length } }}</p>
           </div>
 
-          <!-- Log Items -->
-          <div class="divide-y divide-[var(--color-border-subtle)]">
+          <!-- One sentence per entry; the detail opens on click -->
+          <ul class="divide-y divide-[var(--color-border-subtle)]">
             @for (log of paginatedLogs(); track log.id) {
-              <div class="p-4 hover:bg-[var(--color-surface-variant)] transition-colors">
-                <div class="flex items-start gap-4">
-                  <!-- Icon -->
+              <li>
+                <button
+                  type="button"
+                  (click)="openDetail(log)"
+                  [attr.aria-label]="('AUDIT.VIEW_DETAIL' | translate) + ': ' + sentenceText(log)"
+                  class="w-full text-left p-4 flex items-start gap-4 hover:bg-[var(--color-surface-elevated)] focus-visible:bg-[var(--color-surface-elevated)] focus:outline-none transition-colors">
                   <div [class]="getActionIconClass(log.action)" class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
                     <lucide-icon [name]="getActionIcon(log.action)" class="!w-5 !h-5"></lucide-icon>
                   </div>
-
-                  <!-- Content -->
                   <div class="flex-1 min-w-0">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2">
-                      <div>
-                        <p class="text-foreground font-medium">
-                          <span [class]="getActionTextClass(log.action)">{{ getActionLabel(log.action) }}</span>
-                          <span class="text-[var(--color-on-surface-variant)]"> - </span>
-                          <span class="text-[var(--color-on-surface-variant)]">{{ getEntityLabel(log.entity) }}</span>
-                        </p>
-                        <p class="text-[var(--color-on-surface-variant)] text-sm">{{ log.entityName }}</p>
-                      </div>
-                      <div class="text-sm text-[var(--color-on-surface-variant)]">
-                        {{ log.createdAt | appDate:'medium' }}
-                      </div>
-                    </div>
-
-                    <!-- User Info -->
-                    <div class="flex items-center gap-2 mt-2 text-sm text-[var(--color-on-surface-variant)]">
-                      <lucide-icon name="User" class="!w-3.5 !h-3.5"></lucide-icon>
-                      <span>{{ log.userName }}</span>
-                      @if (log.userEmail && log.userEmail !== log.userName) {
-                        <span class="text-[var(--color-on-surface-muted)]">({{ log.userEmail }})</span>
-                      }
-                    </div>
-
-                    <!-- Changes -->
-                    @if (log.changes && log.changes.length > 0) {
-                      <div class="mt-3 bg-[var(--color-surface-variant)] rounded-lg p-3">
-                        <p class="text-xs text-[var(--color-on-surface-variant)] mb-2">{{ 'AUDIT.CHANGES' | translate }}:</p>
-                        <div class="space-y-1">
-                          @for (change of log.changes; track change.field) {
-                            <div class="text-xs">
-                              <span class="text-[var(--color-on-surface-variant)]">{{ change.field }}:</span>
-                              <span class="text-[var(--color-status-error)] line-through ml-2">{{ change.oldValue ?? 'null' }}</span>
-                              <span class="text-[var(--color-on-surface-muted)] mx-1">&rarr;</span>
-                              <span class="text-[var(--color-status-success)]">{{ change.newValue ?? 'null' }}</span>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    }
-
-                    <!-- Metadata -->
-                    @if (log.metadata) {
-                      <div class="mt-2 text-xs text-[var(--color-on-surface-variant)]">
-                        @if (log.metadata['assignedTo']) {
-                          <span>{{ 'AUDIT.ASSIGNED_TO' | translate }}: {{ log.metadata['assignedTo'] }}</span>
-                        }
-                        @if (log.metadata['borrower']) {
-                          <span>{{ 'AUDIT.BORROWER' | translate }}: {{ log.metadata['borrower'] }}</span>
-                        }
-                      </div>
-                    }
+                    <p class="text-foreground leading-relaxed">
+                      <span class="font-semibold">{{ log.userName }}</span>
+                      {{ describer().sentence(log).text }}
+                    </p>
+                    <p class="mt-1 text-sm text-[var(--color-on-surface-variant)] flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span class="px-2 py-0.5 rounded-full bg-[var(--color-surface-elevated)] text-xs">{{ describer().entityName(log.entity) }}</span>
+                      <span>{{ log.createdAt | appDate:'medium' }}</span>
+                    </p>
                   </div>
-                </div>
-              </div>
+                  <lucide-icon name="ChevronRight" class="!w-4 !h-4 mt-3 text-[var(--color-on-surface-muted)] flex-shrink-0" aria-hidden="true"></lucide-icon>
+                </button>
+              </li>
             } @empty {
-              <div class="p-12 text-center">
+              <li class="p-12 text-center">
                 <lucide-icon name="History" class="!w-14 !h-14 text-[var(--color-on-surface-muted)] mb-4"></lucide-icon>
                 <h3 class="text-lg font-semibold text-[var(--color-on-surface-variant)] mb-2">{{ 'AUDIT.NO_LOGS' | translate }}</h3>
                 <p class="text-[var(--color-on-surface-muted)]">{{ 'AUDIT.NO_LOGS_DESC' | translate }}</p>
-              </div>
+              </li>
             }
-          </div>
+          </ul>
 
           <!-- Pagination -->
           @if (filteredLogs().length > pageSize()) {
@@ -255,30 +233,110 @@ import { AppDatePipe } from '../../shared/app-date.pipe';
         </div>
       </div>
     </div>
+
+    <!-- Detail of one entry -->
+    @if (selected(); as log) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-[var(--color-surface-overlay)]" role="presentation" (click)="closeDetail()"></div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="audit-detail-title"
+          cdkTrapFocus
+          cdkTrapFocusAutoCapture
+          class="relative bg-surface-variant border border-theme rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div class="px-6 py-4 border-b border-theme flex items-start gap-4">
+            <div [class]="getActionIconClass(log.action)" class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <lucide-icon [name]="getActionIcon(log.action)" class="!w-5 !h-5"></lucide-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 id="audit-detail-title" class="text-lg font-semibold text-foreground">
+                {{ describer().entityName(log.entity) }}@if (describer().label(log); as name) {: {{ name }}}
+              </h2>
+              <p class="text-[var(--color-on-surface-variant)] mt-1">
+                <span class="font-semibold text-foreground">{{ log.userName }}</span>
+                {{ describer().sentence(log).text }}
+              </p>
+            </div>
+            <button
+              type="button"
+              (click)="closeDetail()"
+              [attr.aria-label]="'COMMON.CLOSE' | translate"
+              class="p-2 rounded-lg text-[var(--color-on-surface-variant)] hover:text-foreground hover:bg-[var(--color-surface-elevated)]">
+              <lucide-icon name="X" class="!w-4 !h-4"></lucide-icon>
+            </button>
+          </div>
+
+          <dl class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm border-b border-theme">
+            <div>
+              <dt class="text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DETAIL.USER' | translate }}</dt>
+              <dd class="text-foreground">{{ log.userName }}@if (log.userEmail && log.userEmail !== log.userName) {<span class="ml-1 text-[var(--color-on-surface-variant)]">({{ log.userEmail }})</span>}</dd>
+            </div>
+            <div>
+              <dt class="text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DETAIL.DATE' | translate }}</dt>
+              <dd class="text-foreground">{{ log.createdAt | appDate:'medium' }}</dd>
+            </div>
+            <div>
+              <dt class="text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DETAIL.ACTION' | translate }}</dt>
+              <dd class="text-foreground">{{ describer().actionName(log.action) }}</dd>
+            </div>
+            <div>
+              <dt class="text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DETAIL.RECORD' | translate }}</dt>
+              <dd class="text-foreground">{{ describer().entityName(log.entity) }}</dd>
+            </div>
+          </dl>
+
+          <div class="px-6 py-4">
+            @if (detailRows().length) {
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-left text-[var(--color-on-surface-variant)]">
+                      <th scope="col" class="py-2 pr-4 font-medium">{{ 'AUDIT.DETAIL.FIELD' | translate }}</th>
+                      @if (detailHasBefore()) {
+                        <th scope="col" class="py-2 pr-4 font-medium">{{ 'AUDIT.DETAIL.BEFORE' | translate }}</th>
+                        <th scope="col" class="py-2 font-medium">{{ 'AUDIT.DETAIL.AFTER' | translate }}</th>
+                      } @else {
+                        <th scope="col" class="py-2 font-medium">{{ 'AUDIT.DETAIL.VALUE' | translate }}</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-[var(--color-border-subtle)]">
+                    @for (row of detailRows(); track row.field) {
+                      <tr>
+                        <th scope="row" class="py-2 pr-4 text-left font-normal text-[var(--color-on-surface-variant)] align-top">{{ row.label }}</th>
+                        @if (detailHasBefore()) {
+                          <td class="py-2 pr-4 align-top text-[var(--color-status-error)] break-words">{{ row.before }}</td>
+                          <td class="py-2 align-top text-[var(--color-status-success)] break-words">{{ row.after }}</td>
+                        } @else {
+                          <td class="py-2 align-top text-foreground break-words">{{ row.after }}</td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <p class="text-sm text-[var(--color-on-surface-variant)]">{{ 'AUDIT.DETAIL.NO_FIELDS' | translate }}</p>
+            }
+          </div>
+        </div>
+      </div>
+    }
   `
 })
 export class AuditLogComponent implements OnInit {
   auditService = inject(AuditService);
   private translate = inject(TranslateService);
   private notifications = inject(NotificationService);
-
-  // Expose enums
-  AuditAction = AuditAction;
-  AuditEntity = AuditEntity;
+  private inventory = inject(InventoryService);
+  private userService = inject(UserService);
+  private clientService = inject(ClientService);
+  private serviceCatalog = inject(ServiceCatalogService);
+  private startupLocale = inject(LOCALE_ID);
 
   // Filter options
   actions = Object.values(AuditAction);
-  // Backend entity strings actually written to the audit log
-  entities: string[] = [
-    'InventoryItem',
-    'Warehouse',
-    'Supplier',
-    'Category',
-    'User',
-    'Transaction',
-    'Loan',
-    'TransferRequest',
-  ];
 
   // Filter state
   searchQuery = '';
@@ -288,6 +346,61 @@ export class AuditLogComponent implements OnInit {
   // Pagination (signals: paginatedLogs only re-evaluates when a signal it reads changes)
   pageIndex = signal(0);
   pageSize = signal(10);
+
+  /** The entry whose detail is open. */
+  selected = signal<AuditLog | null>(null);
+
+  /** Bumped on a language switch, so the sentences are worded again. */
+  private lang = signal(this.translate.getCurrentLang());
+
+  // Lists the names come from: null until loaded (a 403 leaves them null)
+  private users = signal<NameMap>(null);
+  private clients = signal<NameMap>(null);
+  private services = signal<NameMap>(null);
+
+  private refs = computed<AuditRefs>(() => {
+    const warehouses = this.inventory.warehouses();
+    const suppliers = this.inventory.suppliers();
+    const items = this.inventory.items();
+    return {
+      warehouses: warehouses.length ? namesOf(warehouses) : null,
+      suppliers: suppliers.length ? namesOf(suppliers) : null,
+      items: items.length ? namesOf(items) : null,
+      users: this.users(),
+      clients: this.clients(),
+      services: this.services(),
+    };
+  });
+
+  describer = computed(() => {
+    const lang = this.lang();
+    return new AuditDescriber(
+      {
+        t: (key, params) => this.translate.instant(key, params),
+        has: (key) => this.translate.instant(key) !== key,
+        locale: lang ? localeFor(lang) : this.startupLocale,
+      },
+      this.refs(),
+      this.auditService.logs(),
+    );
+  });
+
+  /** The kinds of record present in the loaded entries, by their translated name. */
+  entityOptions = computed(() => {
+    const d = this.describer();
+    const kinds = [...new Set(this.auditService.logs().map((l) => l.entity as string))];
+    return kinds
+      .map((value) => ({ value, label: d.entityName(value) }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
+
+  detailRows = computed(() => {
+    const log = this.selected();
+    return log ? this.describer().details(log) : [];
+  });
+
+  /** A create only has values; an edit has a before and an after. */
+  detailHasBefore = computed(() => this.detailRows().some((r) => r.before !== '—'));
 
   // Filtered logs signal
   private filteredLogsSignal = signal<AuditLog[]>([]);
@@ -313,21 +426,32 @@ export class AuditLogComponent implements OnInit {
   });
 
   constructor() {
-    // Re-apply filters when logs change (e.g., after API response)
+    this.translate.onLangChange.pipe(takeUntilDestroyed()).subscribe((e) => this.lang.set(e.lang));
+
+    // Re-apply filters when the logs or their wording change (names arrive after the logs)
     effect(() => {
-      this.auditService.logs(); // Track the signal
+      this.auditService.logs();
+      this.describer();
       this.applyFilters();
     });
   }
 
   ngOnInit(): void {
     this.reloadFromServer();
+    this.loadNames();
+  }
+
+  /** Names for the ids in the entries. Warehouses, suppliers and items come with InventoryService. */
+  private loadNames(): void {
+    this.userService.getAll().subscribe({ next: (list) => this.users.set(namesOf(list)), error: () => undefined });
+    this.clientService.getAll().subscribe({ next: (list) => this.clients.set(namesOf(list)), error: () => undefined });
+    this.serviceCatalog.getAll().subscribe({ next: (list) => this.services.set(namesOf(list)), error: () => undefined });
   }
 
   /**
    * The action filter is server-side: the backend hides auth/access events
    * by default, so picking LOGIN/ACCESS in the dropdown requires re-fetching
-   * with that action explicitly. Other filters (search, entity) stay
+   * with that action explicitly. Other filters (search, record type) stay
    * client-side over the loaded page.
    */
   private reloadFromServer(): void {
@@ -344,18 +468,19 @@ export class AuditLogComponent implements OnInit {
 
   applyFilters(): void {
     let logs = this.auditService.logs();
+    const d = this.describer();
 
-    // Search filter
+    // Search over what the screen shows: who, the record's name and the sentence
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       logs = logs.filter(log =>
-        log.entityName.toLowerCase().includes(query) ||
         log.userName.toLowerCase().includes(query) ||
-        (log.userEmail?.toLowerCase().includes(query) ?? false)
+        (log.userEmail?.toLowerCase().includes(query) ?? false) ||
+        d.label(log).toLowerCase().includes(query) ||
+        d.sentence(log).text.toLowerCase().includes(query)
       );
     }
 
-    // Entity filter
     if (this.selectedEntity !== 'all') {
       logs = logs.filter(log => log.entity === this.selectedEntity);
     }
@@ -388,37 +513,17 @@ export class AuditLogComponent implements OnInit {
     this.pageSize.set(event.pageSize);
   }
 
-  getActionLabel(action: AuditAction): string {
-    const labels: Record<AuditAction, string> = {
-      [AuditAction.CREATE]: this.translate.instant('AUDIT.ACTION.CREATE'),
-      [AuditAction.UPDATE]: this.translate.instant('AUDIT.ACTION.UPDATE'),
-      [AuditAction.DELETE]: this.translate.instant('AUDIT.ACTION.DELETE'),
-      [AuditAction.RESTORE]: this.translate.instant('AUDIT.ACTION.RESTORE'),
-      [AuditAction.LOGIN]: this.translate.instant('AUDIT.ACTION.LOGIN'),
-      [AuditAction.LOGOUT]: this.translate.instant('AUDIT.ACTION.LOGOUT'),
-      [AuditAction.PASSWORD_CHANGE]: this.translate.instant('AUDIT.ACTION.PASSWORD_CHANGE'),
-      [AuditAction.ACCESS]: this.translate.instant('AUDIT.ACTION.ACCESS'),
-      [AuditAction.ASSIGN]: this.translate.instant('AUDIT.ACTION.ASSIGN'),
-      [AuditAction.UNASSIGN]: this.translate.instant('AUDIT.ACTION.UNASSIGN'),
-      [AuditAction.TRANSFER]: this.translate.instant('AUDIT.ACTION.TRANSFER'),
-      [AuditAction.LOAN]: this.translate.instant('AUDIT.ACTION.LOAN'),
-      [AuditAction.RETURN]: this.translate.instant('AUDIT.ACTION.RETURN')
-    };
-    return labels[action] || action;
+  sentenceText(log: AuditLog): string {
+    return `${log.userName} ${this.describer().sentence(log).text}`;
   }
 
-  getEntityLabel(entity: string): string {
-    const labels: Record<string, string> = {
-      InventoryItem: this.translate.instant('AUDIT.ENTITY.INVENTORY_ITEM'),
-      Warehouse: this.translate.instant('AUDIT.ENTITY.WAREHOUSE'),
-      Supplier: this.translate.instant('AUDIT.ENTITY.SUPPLIER'),
-      Category: this.translate.instant('AUDIT.ENTITY.CATEGORY'),
-      User: this.translate.instant('AUDIT.ENTITY.USER'),
-      Transaction: this.translate.instant('AUDIT.ENTITY.TRANSACTION'),
-      Loan: this.translate.instant('AUDIT.ENTITY.LOAN'),
-      TransferRequest: this.translate.instant('AUDIT.ENTITY.TRANSFER_REQUEST'),
-    };
-    return labels[entity] || entity;
+  openDetail(log: AuditLog): void {
+    this.selected.set(log);
+  }
+
+  @HostListener('document:keydown.escape')
+  closeDetail(): void {
+    this.selected.set(null);
   }
 
   getActionIcon(action: AuditAction): string {
@@ -459,26 +564,22 @@ export class AuditLogComponent implements OnInit {
     return classes[action] || 'bg-[var(--color-surface-elevated)] text-[var(--color-on-surface-variant)]';
   }
 
-  getActionTextClass(action: AuditAction): string {
-    const classes: Record<AuditAction, string> = {
-      [AuditAction.CREATE]: 'text-[var(--color-status-success)]',
-      [AuditAction.UPDATE]: 'text-[var(--color-status-info)]',
-      [AuditAction.DELETE]: 'text-[var(--color-status-error)]',
-      [AuditAction.RESTORE]: 'text-[var(--color-accent-indigo)]',
-      [AuditAction.LOGIN]: 'text-[var(--color-on-surface-variant)]',
-      [AuditAction.LOGOUT]: 'text-[var(--color-on-surface-variant)]',
-      [AuditAction.PASSWORD_CHANGE]: 'text-[var(--color-accent-yellow)]',
-      [AuditAction.ACCESS]: 'text-[var(--color-on-surface-muted)]',
-      [AuditAction.ASSIGN]: 'text-[var(--color-accent-purple)]',
-      [AuditAction.UNASSIGN]: 'text-[var(--color-status-warning)]',
-      [AuditAction.TRANSFER]: 'text-[var(--color-accent-cyan)]',
-      [AuditAction.LOAN]: 'text-[var(--color-accent-amber)]',
-      [AuditAction.RETURN]: 'text-[var(--color-accent-teal)]'
-    };
-    return classes[action] || 'text-[var(--color-on-surface-variant)]';
-  }
-
+  /** The Excel file reads like the screen: translated columns, the same sentence and the worded detail. */
   async exportToCSV(): Promise<void> {
-    await this.notifications.guardExport(() => this.auditService.exportToXLSX(this.filteredLogs()));
+    const d = this.describer();
+    const t = (key: string) => this.translate.instant(key);
+    const lang = this.lang();
+    const locale = lang ? localeFor(lang) : this.startupLocale;
+    const rows = this.filteredLogs().map((log) => ({
+      [t('AUDIT.DETAIL.DATE')]: formatDate(log.createdAt, 'dd/MM/yyyy HH:mm', locale),
+      [t('AUDIT.DETAIL.USER')]: log.userEmail && log.userEmail !== log.userName ? `${log.userName} (${log.userEmail})` : log.userName,
+      [t('AUDIT.DETAIL.ACTION')]: d.actionName(log.action),
+      [t('AUDIT.DETAIL.RECORD')]: [d.entityName(log.entity), d.label(log)].filter(Boolean).join(': '),
+      [t('AUDIT.DETAIL.DESCRIPTION')]: this.sentenceText(log),
+      [t('AUDIT.CHANGES')]: d.details(log)
+        .map((r) => (r.before === '—' ? `${r.label}: ${r.after}` : `${r.label}: ${r.before} → ${r.after}`))
+        .join(' | '),
+    }));
+    await this.notifications.guardExport(() => this.auditService.exportToXLSX(rows));
   }
 }

@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, WritableSignal } from '@angular/core';
+import { signal } from '@angular/core';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { of, throwError } from 'rxjs';
 
 import { Settings } from './settings';
-import { ScheduledReport, ScheduledReportsService } from '../../services/scheduled-reports.service';
 import { FiscalConfigService } from '../../services/fiscal-config.service';
 import { CaiRangeService } from '../../services/cai-range.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -20,18 +19,6 @@ import { provideTestBedDefaults } from '../../../testing/test-providers';
 import { environment } from '../../../environments/environment';
 
 const api = (path: string): string => `${environment.apiUrl}${path}`;
-
-const report = (overrides: Partial<ScheduledReport> = {}): ScheduledReport => ({
-  id: 'r1',
-  reportType: 'INVENTORY',
-  frequency: 'WEEKLY',
-  recipientEmails: 'a@x.com',
-  locale: 'en',
-  isActive: true,
-  nextSendAt: '2026-10-01T00:00:00Z',
-  createdAt: '2026-09-01T00:00:00Z',
-  ...overrides
-});
 
 const fiscalConfigFixture = (overrides: Partial<FiscalConfig> = {}): FiscalConfig => ({
   id: 'fc1',
@@ -68,7 +55,6 @@ describe('Settings actions', () => {
   let fixture: ComponentFixture<Settings>;
   let component: Settings;
   let backend: HttpTestingController;
-  let reports: jasmine.SpyObj<ScheduledReportsService>;
   let fiscalConfig: jasmine.SpyObj<FiscalConfigService>;
   let caiRanges: jasmine.SpyObj<CaiRangeService>;
   let confirm: jasmine.SpyObj<ConfirmService>;
@@ -78,15 +64,6 @@ describe('Settings actions', () => {
 
   beforeEach(async () => {
     localStorage.removeItem('language');
-    reports = jasmine.createSpyObj<ScheduledReportsService>(
-      'ScheduledReportsService',
-      ['loadAll', 'create', 'update', 'delete', 'sendNow'],
-      { reports: signal([]), isLoading: signal(false) } as never
-    );
-    reports.create.and.returnValue(of(report()));
-    reports.update.and.returnValue(of(report()));
-    reports.delete.and.returnValue(of(undefined));
-    reports.sendNow.and.returnValue(of(undefined));
     fiscalConfig = jasmine.createSpyObj<FiscalConfigService>(
       'FiscalConfigService',
       ['get', 'update'],
@@ -111,7 +88,6 @@ describe('Settings actions', () => {
       imports: [Settings],
       providers: [
         ...provideTestBedDefaults(),
-        { provide: ScheduledReportsService, useValue: reports },
         { provide: FiscalConfigService, useValue: fiscalConfig },
         { provide: CaiRangeService, useValue: caiRanges },
         { provide: ConfirmService, useValue: confirm },
@@ -136,10 +112,9 @@ describe('Settings actions', () => {
   };
 
   describe('opening the page', () => {
-    it('loads the scheduled reports and the notification preferences of the user', () => {
+    it('loads the notification preferences of the user', () => {
       loadPreferences({ emailNotifications: false, lowStockAlerts: true });
 
-      expect(reports.loadAll).toHaveBeenCalledTimes(1);
       expect(component.emailNotifications()).toBeFalse();
       expect(component.lowStockAlerts()).toBeTrue();
     });
@@ -277,8 +252,8 @@ describe('Settings actions', () => {
     });
   });
 
-  describe('the scheduled reports section', () => {
-    // Behind a permission, so nothing else renders it: every icon it draws has to be registered
+  describe('the scheduled reports link', () => {
+    // Scheduled reports moved to Reports; Settings only points there
     const renderFor = async (permissions: string[]): Promise<void> => {
       loadPreferences();
       await TestBed.inject(NgxPermissionsService).loadPermissions(permissions);
@@ -287,130 +262,19 @@ describe('Settings actions', () => {
       fixture.detectChanges();
     };
 
-    it('is drawn, with an icon for the empty list, for a user who can see reports', async () => {
+    it('points who can see reports to the Scheduled tab of Reports', async () => {
       await renderFor(['reports:view']);
 
-      expect(fixture.nativeElement.textContent).toContain('SCHEDULED_REPORTS.TITLE');
-    });
-
-    it('is drawn with a switch for each report it lists', async () => {
-      (reports as unknown as { reports: WritableSignal<ScheduledReport[]> }).reports.set([report({ id: 'on', isActive: true }), report({ id: 'off', isActive: false })]);
-
-      await renderFor(['reports:view']);
-
-      expect(fixture.nativeElement.querySelectorAll('lucide-icon').length).toBeGreaterThan(0);
+      const link: HTMLAnchorElement | null = fixture.nativeElement.querySelector('a[href*="tab=scheduled"]');
+      expect(link).not.toBeNull();
+      expect(link?.getAttribute('href')).toBe('/reports?tab=scheduled');
+      expect(link?.textContent).toContain('SCHEDULED_REPORTS.MOVED');
     });
 
     it('is left out for a user who cannot see reports', async () => {
       await renderFor([]);
 
       expect(fixture.nativeElement.textContent).not.toContain('SCHEDULED_REPORTS.TITLE');
-    });
-  });
-
-  describe('scheduled reports', () => {
-    beforeEach(() => loadPreferences());
-
-    it('the form opens with the defaults, and closes when toggled again', () => {
-      component.scheduledForm.recipientEmails = 'left over';
-
-      component.toggleScheduledForm();
-
-      expect(component.showScheduledForm()).toBeTrue();
-      expect(component.scheduledForm).toEqual({ reportType: 'INVENTORY', frequency: 'WEEKLY', recipientEmails: '', locale: 'es' });
-
-      component.toggleScheduledForm();
-      expect(component.showScheduledForm()).toBeFalse();
-    });
-
-    it('cancel closes the form and forgets the report being edited', () => {
-      component.showScheduledForm.set(true);
-      component.editingReport.set(report());
-
-      component.cancelScheduledForm();
-
-      expect(component.showScheduledForm()).toBeFalse();
-      expect(component.editingReport()).toBeNull();
-    });
-
-    it('saving a new report creates it, closes the form and says so', () => {
-      component.showScheduledForm.set(true);
-      component.scheduledForm.recipientEmails = 'boss@x.com';
-
-      component.saveScheduledReport();
-
-      expect(reports.create).toHaveBeenCalledOnceWith({ reportType: 'INVENTORY', frequency: 'WEEKLY', recipientEmails: 'boss@x.com', locale: 'es' });
-      expect(reports.update).not.toHaveBeenCalled();
-      expect(component.showScheduledForm()).toBeFalse();
-      expect(notifications.success).toHaveBeenCalledOnceWith('SCHEDULED_REPORTS.CREATED');
-    });
-
-    it('saving a report being edited updates it by its id', () => {
-      component.editingReport.set(report({ id: 'r9' }));
-
-      component.saveScheduledReport();
-
-      expect(reports.update).toHaveBeenCalledOnceWith('r9', { reportType: 'INVENTORY', frequency: 'WEEKLY', recipientEmails: '', locale: 'es' });
-      expect(reports.create).not.toHaveBeenCalled();
-      expect(notifications.success).toHaveBeenCalledOnceWith('SCHEDULED_REPORTS.UPDATED');
-    });
-
-    it('reports an error, and keeps the form open, when saving fails', () => {
-      reports.create.and.returnValue(throwError(() => failure));
-      component.showScheduledForm.set(true);
-
-      component.saveScheduledReport();
-
-      expect(notifications.handleError).toHaveBeenCalledOnceWith(failure as never);
-      expect(component.showScheduledForm()).toBeTrue();
-      expect(notifications.success).not.toHaveBeenCalled();
-    });
-
-    it('reports an error when updating fails', () => {
-      reports.update.and.returnValue(throwError(() => failure));
-      component.editingReport.set(report());
-
-      component.saveScheduledReport();
-
-      expect(notifications.handleError).toHaveBeenCalledOnceWith(failure as never);
-    });
-
-    it('toggleReportActive pauses an active report and resumes a paused one', () => {
-      component.toggleReportActive(report({ id: 'r1', isActive: true }));
-      component.toggleReportActive(report({ id: 'r2', isActive: false }));
-
-      expect(reports.update.calls.allArgs()).toEqual([
-        ['r1', { isActive: false }],
-        ['r2', { isActive: true }]
-      ]);
-    });
-
-    it('toggleReportActive reports a failure', () => {
-      reports.update.and.returnValue(throwError(() => failure));
-
-      component.toggleReportActive(report());
-
-      expect(notifications.handleError).toHaveBeenCalledOnceWith(failure as never);
-    });
-
-    it('deleting a report says so, or reports the failure', () => {
-      component.deleteScheduledReport('r1');
-      expect(reports.delete).toHaveBeenCalledOnceWith('r1');
-      expect(notifications.success).toHaveBeenCalledOnceWith('SCHEDULED_REPORTS.DELETED');
-
-      reports.delete.and.returnValue(throwError(() => failure));
-      component.deleteScheduledReport('r2');
-      expect(notifications.handleError).toHaveBeenCalledOnceWith(failure as never);
-    });
-
-    it('sending a report now says so, or reports the failure', () => {
-      component.sendReportNow('r1');
-      expect(reports.sendNow).toHaveBeenCalledOnceWith('r1');
-      expect(notifications.success).toHaveBeenCalledOnceWith('SCHEDULED_REPORTS.SENT_NOW');
-
-      reports.sendNow.and.returnValue(throwError(() => failure));
-      component.sendReportNow('r2');
-      expect(notifications.handleError).toHaveBeenCalledOnceWith(failure as never);
     });
   });
 

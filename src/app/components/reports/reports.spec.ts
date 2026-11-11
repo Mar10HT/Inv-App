@@ -129,6 +129,11 @@ describe('Reports', () => {
       expect(component.activeTab()).toBe(2);
     });
 
+    it('opens the Scheduled tab for ?tab=scheduled, where Settings links', async () => {
+      await setup([], [], of([]), of([]), [withTab('scheduled')]);
+      expect(component.activeTab()).toBe(6);
+    });
+
     it('stays on the first tab for an unknown ?tab value', async () => {
       await setup([], [], of([]), of([]), [withTab('nope')]);
       expect(component.activeTab()).toBe(0);

@@ -15,12 +15,12 @@ Orden sugerido con lo que queda: **3** después del despliegue, **6/7/8/9** sin 
 | # | Pendiente | Tamaño | Riesgo | Depende de |
 |---|---|---|---|---|
 | 1 | ~~Excel "Transacciones" lee todos los movimientos~~ | — | — | Resuelto, ver abajo |
-| 2 | Formato de PDFs y exportaciones | Reducido a solo Exportaciones/Descargas CSV | Bajo | Comprobantes y reportes PDF resueltos |
+| 2 | ~~Formato de PDFs y exportaciones~~ | — | — | Hecho en `feat/exports-olanchonet` (los dos repos) |
 | 3 | Actualizar el Manual de Usuario | Medio (texto y capturas) | Bajo | Que esté en producción |
 | 4 | ~~`navigation.css` 780 B sobre el presupuesto~~ | — | — | Resuelto en Inv-App#43 |
 | 5 | ~~Catálogo de Servicios para cotizaciones~~ | — | — | Mergeado en `main` (API#22, Inv-App#44); falta desplegar y crear los permisos |
-| 6 | Rediseño del Historial de Cambios (Auditoría) | Mediano: traducción de campos/valores + modal de detalle + filtro por entidad | Bajo | Nada, diseño ya aprobado |
-| 7 | Mover Reportes Programados de Configuración a Reportes | Chico, es solo de navegación/UI | Bajo | Nada |
+| 6 | ~~Rediseño del Historial de Cambios (Auditoría)~~ | — | — | Hecho en `feat/audit-and-scheduled-reports` |
+| 7 | ~~Mover Reportes Programados de Configuración a Reportes~~ | — | — | Hecho en `feat/audit-and-scheduled-reports` |
 | 8 | `seed:rbac` en modo "solo agregar" | Chico: `scripts/seed-rbac.ts` y su test | Bajo | Nada |
 | 9 | Tamaño de letra: base de 13 a 14 px | Una línea, pero revisar todas las pantallas | Medio (mueve el layout) | Nada |
 
@@ -35,7 +35,13 @@ KPIs de merge (los tres, ya cumplidos):
 
 ### 2. Formato de PDFs y exportaciones
 
-En progreso, rama `olanchonet` en los dos repos (ver CONTEXTO.md para el plan detallado). Hoy: `pdf-receipts.service.ts` (~880 líneas, API) y `pdf-export.service.ts` (~560, frontend). Detalle de lo que falta en "Formato de reportes y documentos exportables", abajo.
+Hecho el 2026-11-11 en la rama `feat/exports-olanchonet` de los dos repos, desde `olanchonet` (decisión de Mario: el estilo es solo de Olancho Net, va solo a esa rama). Mario aprobó el estilo con una imagen de ejemplo y pidió que las exportaciones de cada pestaña sean Excel con formato.
+
+- [x] **Descargas de Reportes** (API, `reports.service.ts`, commit `2e894ea`): los 8 Excel y los reportes programados abren con "Olancho Net", los datos fiscales, una línea verde, el título del reporte y "Generado el ... por ... · Bodega ... · N registros" (período en Transacciones si se pide con fechas; un reporte programado dice "por reporte programado"). Encabezado de columnas en el verde de la plantilla (`#3A5F54`), filas alternadas `#F7F6F1` con líneas finas, colores de estado de siempre, encabezado fijo con filtros, impresión horizontal ajustada al ancho con pie de página. Autor del archivo "Olancho Net" (antes "Obsid") y nombres de columna con tildes ("Descripción", "Bodega" en vez de "Almacen").
+- [x] **Exportaciones por pestaña** (frontend, `xlsx.utils.ts` y `reports.ts`, commit `f139878`): ya bajaban Excel aunque el botón decía "CSV"; ahora dice "Excel" y lleva el mismo encabezado (empresa, datos fiscales, título, quién, bodega, período y registros). Las demás exportaciones de la app (Inventario, Transferencias, Préstamos, Historial) usan la misma paleta, sin el encabezado.
+- [x] Incluye el arreglo de la descarga de Inventario que daba 400 (`fix/inventory-excel-locale`, cherry-pick), porque `olanchonet` también lo tenía.
+- Verificado: API 51 tests de reportes, lint, build; frontend 1573 tests, lint, build de prod (1.03 MB, sin cambio). En la app: descargados los 8 Excel del API y los de las pestañas Valor y Transacciones, abiertos y revisados.
+- Límite conocido: los Excel del frontend no fijan la fila de encabezado ni configuran la impresión (la librería `xlsx-js-style` no lo escribe); los del API sí.
 
 ### 3. Manual
 
@@ -79,7 +85,19 @@ Plan completo (schema, archivos por tocar en los dos repos, secuencia de commits
 
 Siguiente sesión: ejecutar el plan tal cual está escrito, en el orden de commits que ya define (1. módulo Servicios backend con TDD, 2. módulo Servicios frontend, 3. cambio de schema en `SaleItem` + los 8 puntos de `sales.service.ts` que asumen `inventoryItemId` siempre presente — incluye un fix en `cancel()` que no estaba en el pedido original pero rompe si no se toca, 4. toggle de UI en `sale-form-dialog.ts`).
 
-### 6. Rediseño del Historial de Cambios (Auditoría)
+### 6. Rediseño del Historial de Cambios (Auditoría): hecho el 2026-11-11
+
+Rama `feat/audit-and-scheduled-reports` (Inv-App, desde `main`), commit `2c95bc2`. Decisiones de Mario del 2026-11-11: los nombres los busca la pantalla en las listas que ya carga (sin cambios en la base; lo borrado sale como "(eliminado)"), y el filtro es por tipo de registro.
+
+- [x] Cada entrada es una oración ("canceló la venta V-0005. Motivo: ...", "cambió precio del ítem Headset de HNL 53.70 a HNL 60.00"), con redacción propia para cotizaciones, pagos, ajustes y líneas de conteo, cambios de estado y uno, dos o muchos campos editados.
+- [x] Al hacer clic, un modal con cada campo traducido (`AUDIT.FIELD.*`) y sus valores en palabras: estados, sí/no, fechas, montos con moneda, IDs como nombres. Antes y después en una edición; una sola columna en una creación.
+- [x] El filtro de tipo de registro se arma con lo que hay cargado, con los nombres que de verdad escribe el API. La lista fija vieja no tenía ventas, compras, pagos ni otros.
+- [x] Los registros que el API guarda sin antes/después (estados de préstamos, ajustes por conteo) antes no mostraban nada; ahora sí.
+- [x] La exportación a Excel usa la misma oración y el detalle traducido.
+
+KPIs de merge: CI verde; en la app, una venta cancelada, un cambio de precio y un ajuste por conteo se leen en una oración y su detalle sale traducido; filtrar por "Venta" deja solo ventas.
+
+Diseño original:
 
 Mario dijo que la pantalla de Auditoría (`audit-log.ts`) es complicada de entender hoy: el bloque "Cambios" de cada entrada muestra el nombre del campo y los valores tal como los guarda la base (`unitPrice: 53.7 → 60`, `status: ACTIVE → DRAFT`), sin traducir ni formatear, y los campos que son IDs (bodega, usuario asignado, cliente) muestran el cuid interno en vez de un nombre.
 
@@ -90,9 +108,11 @@ Diseño aprobado por Mario (mockups: https://claude.ai/artifact/Cuz4EdGJTwqDWzV6
 
 Pendiente de resolver antes de implementar: de dónde sale el nombre resuelto de una referencia (bodega, usuario, cliente) — si el backend lo guarda como snapshot al momento del log (como ya hace `SaleItem.itemName`) o si el frontend lo busca en listas que ya tiene cargadas. Y cómo se arma la oración de la Opción C para cada tipo de evento (no es automático, hay que escribirla por caso).
 
-### 7. Mover Reportes Programados de Configuración a Reportes
+### 7. Mover Reportes Programados de Configuración a Reportes: hecho el 2026-11-11
 
-Hoy la función de Reportes Programados vive dentro de la pantalla de Configuración; Mario pidió moverla a la sección de Reportes, donde tiene más sentido por cercanía temática (ahí ya están las pestañas de Valor/Estado/Asignaciones/Transacciones/Tendencias/Descargas). Es un cambio de navegación, no de lógica — no se tocó nada todavía.
+Rama `feat/audit-and-scheduled-reports`, commit `f13b790`. Ahora es la pestaña Reportes > Programados (`?tab=scheduled`); Configuración deja una tarjeta que lleva ahí. Agregar, pausar y borrar piden `reports:export`, igual que el API (antes un usuario de solo lectura veía esos botones y recibía 403).
+
+Pedido original: hoy la función de Reportes Programados vive dentro de la pantalla de Configuración; Mario pidió moverla a la sección de Reportes, donde tiene más sentido por cercanía temática (ahí ya están las pestañas de Valor/Estado/Asignaciones/Transacciones/Tendencias/Descargas). Es un cambio de navegación, no de lógica — no se tocó nada todavía.
 
 ### 8. `seed:rbac` en modo "solo agregar"
 
@@ -213,7 +233,7 @@ Falta cambiar el formato de los documentos que genera la app. Hasta que eso est�
     - ~~El **Estado** sale en inglés (`ACTIVE`, `APPROVED`)~~: ya traduce por `t.statuses[ctx.status]` (línea 514), con el comentario de código confirmando que fue un fix anterior a esta sesión.
     - ~~El comprobante de venta **no trae los datos fiscales de la empresa**~~: `render()` carga `fiscalConfig` y lo pasa a `buildHeaderData()` para los 5 tipos de documento, no solo Venta (línea 1016).
     - ~~El comprobante de transferencia muestra el ID interno~~: ahora muestra su número (TRA-0001), igual que préstamos y salidas.
-- [ ] **Exportaciones** (Exportar en Inventario, Transferencias y Préstamos; CSV del Historial) y **Descargas de Reportes** (Excel por módulo, CSV/PDF por pestaña): sin revisar todavía — alcance más amplio y sin definir, no se tocó en esta sesión.
+- [x] **Exportaciones** y **Descargas de Reportes**: hechas el 2026-11-11 en `feat/exports-olanchonet`, ver #2 arriba.
 - [x] **Reportes PDF del frontend** (`Inv-App/src/app/services/pdf-export.service.ts`): resuelto el 2026-11-03. Los 4 reportes (Transacciones, Valor de Inventario, Estado, Asignaciones) migrados al kit `services/pdf/report-components.ts`. Estado y Asignaciones mantienen sus headers de color semántico (rojo/ámbar/gris) vía el override `headerColors` de `drawTable()`. El código viejo de tarjetas en `pdf-drawing.base.ts` quedó podado (solo sobrevive `getTransactionTypeName`).
 - [ ] Cuando el formato esté listo, agregar al manual las capturas de los comprobantes y reportes.
 
@@ -259,7 +279,7 @@ Decisiones del usuario: borrar los roles duplicados; numeración automática en 
 
 - [ ] **Después de desplegar el API**: correr `railway run bun scripts/seed-rbac.ts` una vez para borrar los roles duplicados de producción. Ojo: hoy también resetea los permisos de los roles del sistema (ver #8); esperar a que exista el modo "solo agregar" o anotar antes los cambios hechos a mano.
 - [ ] **Al desplegar el API**: `railway:migrate` corre `prisma/migrate-document-numbers.sql` antes del `db push` (numera lo existente, mueve las referencias y crea los índices únicos). Probado sobre una copia de la base local con los mismos pasos.
-- [ ] **Excel "Transacciones" (Descargas y Reportes Programados)** sigue saliendo solo con las transacciones manuales; la pestaña ya muestra todo. La fuente se puede unificar ya (punto 1 del plan); el estilo del archivo espera al formato.
+- [x] **Excel "Transacciones" (Descargas y Reportes Programados)**: ya lee todos los movimientos (punto 1 del plan, resuelto).
 - [x] ~~Conteos físicos anteriores a este cambio no aparecen en Transacciones/Tendencias~~: no aplica, producción arranca con una base nueva.
 - [x] **Cambiar de idioma**: resuelto. Las fechas siguen el idioma al instante (pipe `appDate` en lugar de `date`; Inventario y Reportes también). Quedan fuera las exportaciones de Transferencias y Auditoría, que entran en el trabajo de formato.
 - [x] **Errores sin código**: resuelto. La validación de formularios llega con el código `VALIDATION_FAILED` y muestra un mensaje genérico traducido. Un error sin código o sin traducción muestra el texto del servidor y deja un aviso en consola. Un test del API falla si se lanza una excepción 400/409/422 sin `apiError(...)`, y otro del frontend falla si es/en no traducen los mismos códigos.
